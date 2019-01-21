@@ -1,9 +1,7 @@
 .DS_Store
 node_modules
-log/
 builds/
-dist/
-public/
-npm-debug.log
+/dist
 /.env
-/secrets/.env
+/.cache
+npm-debug.log
