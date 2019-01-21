@@ -1,0 +1,6 @@
+query AccountSearchQuery {
+  accounts(token: "") { id, accountName, display, type, photo, verified }
+}
+query AccountQuery {
+  account(accountName: "", id: "") { id, accountName, display, type, photo, verified }
+}
