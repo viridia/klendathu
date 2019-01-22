@@ -46,6 +46,14 @@ export interface ThemeInterface {
   buttonSecondaryTextColor: string;
   buttonSecondaryBorderColor?: string;
 
+  // Dialogs
+  dialogBackdropColor: string;
+  dialogBgColor: string;
+  dialogBorder: string;
+  dialogHeaderBgColor: string;
+  dialogHeaderTextColor: string;
+  dialogShadow: string;
+
 // contentBgColor: string;
 
 // // Cards

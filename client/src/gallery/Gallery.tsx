@@ -6,8 +6,9 @@ import { themeDefault, styled, ThemeProvider, ThemeProps, GlobalStyle } from '..
 import { registry } from './registry';
 import { lighten } from 'polished';
 
-import './pages/buttons.tsx';
-import './pages/colors.tsx';
+import './pages/buttons';
+import './pages/colors';
+import './pages/dialogs';
 
 const GalleryPage = styled.section`
   position: absolute;

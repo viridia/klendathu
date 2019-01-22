@@ -1,5 +1,5 @@
 import { /* ThemeInterface, */ dye } from './theme';
-import { desaturate } from 'polished';
+import { desaturate, transparentize } from 'polished';
 
 const primary = '#9c27b0';
 const diluted = desaturate(0.2, primary);
@@ -39,4 +39,12 @@ export const themeDefault /*: ThemeInterface */ = {
   // Secondary button
   buttonSecondaryBgColor: dye(0.8, primary),
   buttonSecondaryTextColor: dye(0.2, primary),
+
+  // Dialogs
+  dialogBackdropColor: dye(0.1, primary),
+  dialogBgColor: dye(0.9, primary),
+  dialogBorder: `1px solid ${dye(0.7, desaturate(0.2, primary))}`,
+  dialogHeaderBgColor: dye(0.8, primary),
+  dialogHeaderTextColor: dye(0.1, primary),
+  dialogShadow: `1px 2px 6px 6px ${dye(0.1, transparentize(0.9, desaturate(0.3, primary)))}`,
 };
