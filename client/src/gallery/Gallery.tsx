@@ -4,10 +4,10 @@ import { NavLink, BrowserRouter as Router, Switch, Route } from 'react-router-do
 import { Normalize } from 'styled-normalize';
 import { themeDefault, styled, ThemeProvider, ThemeProps, GlobalStyle } from '../style';
 import { registry } from './registry';
+import { lighten } from 'polished';
 
 import './pages/buttons.tsx';
 import './pages/colors.tsx';
-import { lighten } from 'polished';
 
 const GalleryPage = styled.section`
   position: absolute;

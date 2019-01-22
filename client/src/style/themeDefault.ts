@@ -24,8 +24,9 @@ export const themeDefault /*: ThemeInterface */ = {
   leftNavTextColor: dye(0.1, diluted),
 
   // Default button style
-  buttonDefaultBgColor: dye(0.8, primary),
+  buttonDefaultBgColor: dye(0.9, primary),
   buttonDefaultTextColor: dye(0.2, primary),
+  buttonDefaultBorderColor: dye(0.6, desaturate(0.4, primary)),
 
   // Action button
   buttonActionBgColor: primary,
@@ -36,6 +37,6 @@ export const themeDefault /*: ThemeInterface */ = {
   buttonPrimaryTextColor: dye(0.1, primary),
 
   // Secondary button
-  buttonSecondaryBgColor: dye(0.85, primary),
-  buttonSecondaryTextColor: dye(0.1, primary),
+  buttonSecondaryBgColor: dye(0.8, primary),
+  buttonSecondaryTextColor: dye(0.2, primary),
 };

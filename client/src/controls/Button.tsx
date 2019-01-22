@@ -22,7 +22,8 @@ function ButtonImpl({ children, className, type, small, ...attrs }: ButtonProps)
 
 export const Button = styled(ButtonImpl)`
   align-items: center;
-  border: none;
+  border: ${(props: ThemeProps) => props.theme.buttonDefaultBorderColor
+      ? `1px solid ${props.theme.buttonDefaultBorderColor}` : 'none'};
   border-radius: 4px;
   background-color: ${(props: ThemeProps) => props.theme.buttonDefaultBgColor};
   color: ${(props: ThemeProps) => props.theme.buttonDefaultTextColor};
@@ -37,7 +38,8 @@ export const Button = styled(ButtonImpl)`
 
   &:focus {
     box-shadow: 0 0 0 3px
-      ${(props: ThemeProps) => transparentize(0.2, props.theme.buttonDefaultBgColor)};
+      ${(props: ThemeProps) => transparentize(0.7, props.theme.primaryColor)};
+    z-index: 1;
   }
 
   &:hover:not([disabled]) {
@@ -49,14 +51,10 @@ export const Button = styled(ButtonImpl)`
   }
 
   &.action {
+    border: none;
     background-color: ${(props: ThemeProps) => props.theme.buttonActionBgColor};
     color: ${(props: ThemeProps) => props.theme.buttonActionTextColor};
     > svg { fill: ${(props: ThemeProps) => props.theme.buttonActionTextColor}; }
-
-    &:focus {
-      box-shadow: 0 0 0 3px
-        ${(props: ThemeProps) => transparentize(0.5, props.theme.buttonActionBgColor)};
-    }
 
     &:hover:not([disabled]) {
       background-color: ${(props: ThemeProps) => darken(0.05, props.theme.buttonActionBgColor)};
@@ -68,14 +66,10 @@ export const Button = styled(ButtonImpl)`
   }
 
   &.primary {
+    border: none;
     background-color: ${(props: ThemeProps) => props.theme.buttonPrimaryBgColor};
     color: ${(props: ThemeProps) => props.theme.buttonPrimaryTextColor};
     > svg { fill: ${(props: ThemeProps) => props.theme.buttonPrimaryTextColor}; }
-
-    &:focus {
-      box-shadow: 0 0 0 3px
-        ${(props: ThemeProps) => transparentize(0.3, props.theme.buttonPrimaryBgColor)};
-    }
 
     &:hover:not([disabled]) {
       background-color: ${(props: ThemeProps) => darken(0.05, props.theme.buttonPrimaryBgColor)};
@@ -87,14 +81,10 @@ export const Button = styled(ButtonImpl)`
   }
 
   &.secondary {
+    border: none;
     background-color: ${(props: ThemeProps) => props.theme.buttonSecondaryBgColor};
     color: ${(props: ThemeProps) => props.theme.buttonSecondaryTextColor};
     > svg { fill: ${(props: ThemeProps) => props.theme.buttonSecondaryTextColor}; }
-
-    &:focus {
-      box-shadow: 0 0 0 3px
-        ${(props: ThemeProps) => transparentize(0.1, props.theme.buttonSecondaryBgColor)};
-    }
 
     &:hover:not([disabled]) {
       background-color: ${(props: ThemeProps) => darken(0.05, props.theme.buttonSecondaryBgColor)};

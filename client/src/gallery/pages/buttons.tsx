@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { styled } from '../../style';
 import { register } from '../registry';
-import { Button } from '../../controls';
+import { Button, ButtonGroup } from '../../controls';
 import IconAddBox from '../../svg-compiled/icons/IcAddBox';
 
 const DisplayGroup = styled.section`
@@ -55,6 +55,13 @@ function Buttons() {
         <Button type="secondary"><IconAddBox /> Secondary</Button>
       </DisplayGroup>
       <header>Button Groups</header>
+      <DisplayGroup className="column">
+        <ButtonGroup>
+          <Button>One</Button>
+          <Button>Two</Button>
+          <Button>Three</Button>
+        </ButtonGroup>
+      </DisplayGroup>
     </React.Fragment>
   );
 }
