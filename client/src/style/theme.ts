@@ -6,11 +6,10 @@ export const dye = (amount: number, base: string) =>
     amount > 0.5 ? tint((amount - 0.5) * 2, base) : shade(1.0 - amount * 2, base);
 
 export interface ThemeInterface {
-  primaryColor: string;
 
   // General
-  themeColor: string;
-  focusOutlineColor: string;
+  primaryColor: string;
+  dilutedColor: string;
 
   // Text colors
   textLight: string;
@@ -18,73 +17,67 @@ export interface ThemeInterface {
   textDarkDisabled: string;
   textDarkAccent: string;
 
-  // Action button
-  buttonActionBg: string;
-  buttonActionTextColor: string;
-  buttonActionBorderColor: string;
+  // Page
+  pageBgColor: string;
+  headerTextColor: string;
+  headerBgColor: string;
 
-  // Primary button
-  buttonPrimaryBg: string;
-  buttonPrimaryTextColor: string;
-  buttonPrimaryBorderColor: string;
-
-  // Secondary button
-  buttonSecondaryBg: string;
-  buttonSecondaryTextColor: string;
-  buttonSecondaryBorderColor: string;
+  // Left Nav
+  leftNavBgColor: string;
+  leftNavTextColor: string;
 
   // Default button style
-  buttonDefaultBg: string;
+  buttonDefaultBgColor: string;
   buttonDefaultTextColor: string;
-  buttonDefaultBorderColor: string;
+  buttonDefaultBorderColor?: string;
 
-// // Background colors
-// bg0: string;
-// bg1: string;
-// bg2: string;
-// bg3: string;
-// bg4: string;
-// bg5: string;
-// bg6: string;
-// bg7: string;
-// bg8: string;
-// bg9: string;
+  // Action button
+  buttonActionBgColor: string;
+  buttonActionTextColor: string;
+  buttonActionBorderColor?: string;
 
-// leftNavBg: string;
-// leftNavFg: string;
+  // Primary button
+  buttonPrimaryBgColor: string;
+  buttonPrimaryTextColor: string;
+  buttonPrimaryBorderColor?: string;
 
-// contentBg: string;
+  // Secondary button
+  buttonSecondaryBgColor: string;
+  buttonSecondaryTextColor: string;
+  buttonSecondaryBorderColor?: string;
+
+// contentBgColor: string;
 
 // // Cards
-// // cardBg: string;
+// // cardBgColor: string;
 // cardBgAlt: string;
 // cardBorder: string;
-// cardHeaderBg: lighten(bg1, 10%);
+// cardHeaderBgColor: lighten(bg1, 10%);
 
-// cardBg: lighten(bg0, 5%);
+// cardBgColor: lighten(bg0, 5%);
 // cardShadow: rgba(0,0,0,0.14);
 // cardHeaderDividerColor: darken(bg1, 5%);
 // cardFooterDividerColor: darken(bg1, 5%);
 
-// accentedCardHeaderBg: bg2;
+// accentedCardHeaderBgColor: bg2;
 
-// internalCardBg: lighten(bg0, 15%);
+// internalCardBgColor: lighten(bg0, 15%);
 // internalCardBorder: lighten(cardBorder, 10%);
 
 // // Mass edit
-// massEditBg: string;
+// massEditBgColor: string;
 
 // // Menus
-// dropdownLinkActiveBg: bg1;
+// dropdownLinkActiveBgColor: bg1;
 
 // // Scrollbars
 // scrollbarThumbColor: rgba(bg7, .5);
 // scrollbarInactiveThumbColor: rgba(bg7, .3);
 
 // // Social login buttons
-// buttonLoginGoogleBg: string;
-// buttonLoginGitHubBg: string;
-// buttonLoginFacebookBg: string;
+// buttonLoginGoogleBgColor: string;
+// buttonLoginGitHubBgColor: string;
+// buttonLoginFacebookBgColor: string;
 
 // // Labels
 // labelText: string;

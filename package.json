@@ -5,9 +5,11 @@
   "main": "index.js",
   "scripts": {
     "build-client": "parcel build client/src/index.html",
+    "build-icons": "cd client/src && npx @svgr/cli --ext tsx --out-dir=svg-compiled icons/*.svg",
+    "client": "parcel client/src/index.html",
+    "gallery": "parcel client/src/gallery.html",
     "gen-types": "apollo client:codegen --target typescript --outputFlat=common/types/gql",
     "start": "nodemon -w ./server/src --ext ts --exec ts-node -- -P ./server/tsconfig.json ./server/src/index.ts",
-    "start-client": "parcel client/src/index.html",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -17,6 +19,8 @@
   "author": "Talin <viridia@gmail.com>",
   "license": "Apache-2.0",
   "dependencies": {
+    "@svgr/cli": "^4.1.0",
+    "@svgr/parcel-plugin-svgr": "^4.1.0",
     "apollo": "^2.3.0",
     "apollo-server-express": "^2.3.1",
     "bcryptjs": "^2.4.3",

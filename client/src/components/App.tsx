@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { hot } from 'react-hot-loader';
-import { dye, styled, ThemeProvider, createGlobalStyle } from '../style';
+import { dye, styled, ThemeProvider, GlobalStyle } from '../style';
 import { Button } from '../controls';
 import { Normalize } from 'styled-normalize';
 
@@ -8,13 +8,6 @@ const baseColor = '#9c27b0';
 
 const Card = styled.section`
   border: 1px solid red;
-`;
-
-const GlobalStyle = createGlobalStyle`
-  body {
-    background-color: #ffdddd;
-    font-family: 'Ubuntu', sans-serif;
-  }
 `;
 
 const Swatch = styled.div`

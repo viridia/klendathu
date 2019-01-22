@@ -1,10 +1,41 @@
-import { ThemeInterface, dye } from './theme';
+import { /* ThemeInterface, */ dye } from './theme';
+import { desaturate } from 'polished';
 
-const baseColor = '#9c27b0';
+const primary = '#9c27b0';
+const diluted = desaturate(0.2, primary);
 
-export const themeDefault: ThemeInterface = {
-  themeColor: baseColor,
+export const themeDefault /*: ThemeInterface */ = {
+  primaryColor: primary,
+  dilutedColor: diluted,
 
-  buttonPrimaryTextColor: dye(0.5, baseColor),
-  buttonActionTextColor: dye(0.5, baseColor),
+  // Text colors
+  // textLight: string;
+  textDark: '#222',
+  textDarkDisabled: dye(0.4, diluted),
+  textDarkAccent: dye(0.4, primary),
+
+  // Page
+  pageBgColor: dye(0.9, primary),
+  headerTextColor: '#fff',
+  headerBgColor: dye(0.5, primary),
+
+  // Left Nav
+  leftNavBgColor: dye(0.7, diluted),
+  leftNavTextColor: dye(0.1, diluted),
+
+  // Default button style
+  buttonDefaultBgColor: dye(0.8, primary),
+  buttonDefaultTextColor: dye(0.2, primary),
+
+  // Action button
+  buttonActionBgColor: primary,
+  buttonActionTextColor: dye(0.9, primary),
+
+  // Primary button
+  buttonPrimaryBgColor: dye(0.7, primary),
+  buttonPrimaryTextColor: dye(0.1, primary),
+
+  // Secondary button
+  buttonSecondaryBgColor: dye(0.85, primary),
+  buttonSecondaryTextColor: dye(0.1, primary),
 };
