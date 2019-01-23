@@ -8,6 +8,7 @@ import { lighten } from 'polished';
 
 import './pages/buttons';
 import './pages/cards';
+import './pages/chips';
 import './pages/colors';
 import './pages/dialogs';
 import './pages/forms';
@@ -67,6 +68,10 @@ const GalleryPage = styled.section`
       font-weight: bold;
       font-size: 120%;
       margin-bottom: 8px;
+      margin-top: 8px;
+      &:first-child {
+        margin-top: 0;
+      }
     }
   }
 `;
