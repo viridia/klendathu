@@ -9,6 +9,8 @@
     "client": "parcel client/src/index.html",
     "gallery": "parcel client/src/gallery.html",
     "gen-types": "apollo client:codegen --target typescript --outputFlat=common/types/gql",
+    "lint-client": "tslint --project client --exclude **/svg-compiled/icons/*.tsx",
+    "lint-server": "tslint --project server",
     "start": "nodemon -w ./server/src --ext ts --exec ts-node -- -P ./server/tsconfig.json ./server/src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -21,6 +23,8 @@
   "dependencies": {
     "apollo": "^2.3.0",
     "apollo-server-express": "^2.3.1",
+    "axios": "^0.18.0",
+    "babel-plugin-styled-components": "^1.10.0",
     "bcryptjs": "^2.4.3",
     "bind-decorator": "^1.0.11",
     "bson": "^4.0.1",
@@ -31,6 +35,7 @@
     "graphql": "^14.1.1",
     "jwt-simple": "^0.5.5",
     "mobx": "^5.9.0",
+    "mobx-react": "^5.4.3",
     "mongodb": "^3.1.12",
     "nodemon": "^1.18.9",
     "parcel-bundler": "^1.11.0",
@@ -84,7 +89,6 @@
     "babel-core": "^6.26.3",
     "jest": "^23.6.0",
     "tslint": "^5.12.1",
-    "tslint-react": "^3.6.0",
-    "vue-template-compiler": "^2.5.22"
+    "tslint-react": "^3.6.0"
   }
 }

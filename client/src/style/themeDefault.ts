@@ -7,6 +7,7 @@ const diluted = desaturate(0.2, primary);
 export const themeDefault: ThemeInterface = {
   primaryColor: primary,
   dilutedColor: diluted,
+  focusColor: transparentize(0.7, primary),
 
   // Text colors
   textDark: '#222',
@@ -22,22 +23,26 @@ export const themeDefault: ThemeInterface = {
   leftNavBgColor: dye(0.7, diluted),
   leftNavTextColor: dye(0.1, diluted),
 
-  // Default button style
-  buttonDefaultBgColor: dye(0.9, primary),
-  buttonDefaultTextColor: dye(0.2, primary),
-  buttonDefaultBorderColor: dye(0.6, desaturate(0.4, primary)),
-
-  // Action button
-  buttonActionBgColor: primary,
-  buttonActionTextColor: dye(0.9, primary),
-
-  // Primary button
-  buttonPrimaryBgColor: dye(0.7, primary),
-  buttonPrimaryTextColor: dye(0.1, primary),
-
-  // Secondary button
-  buttonSecondaryBgColor: dye(0.8, primary),
-  buttonSecondaryTextColor: dye(0.2, primary),
+  // Button styles
+  buttonColors: {
+    default: {
+      bg: dye(0.9, primary),
+      text: dye(0.2, primary),
+      border: dye(0.6, desaturate(0.4, primary)),
+    },
+    action: {
+      bg: primary,
+      text: dye(0.9, primary),
+    },
+    primary: {
+      bg: dye(0.7, primary),
+      text: dye(0.1, primary),
+    },
+    secondary: {
+      bg: dye(0.8, primary),
+      text: dye(0.2, primary),
+    }
+  },
 
   // Dialogs
   dialogBackdropColor: dye(0.1, primary),
@@ -50,7 +55,11 @@ export const themeDefault: ThemeInterface = {
   // Cards
   cardBgColor: dye(0.94, primary),
   cardBorderColor: dye(0.7, diluted),
-  cardShadowColor: transparentize(0.86, dye(0.1, diluted)),
+  cardShadowColor: transparentize(0.86, dye(0.4, primary)),
   cardHeaderBgColor: dye(0.88, primary),
   cardHeaderDividerColor: transparentize(0.8, dye(0.1, diluted)),
+
+  // Forms
+  inputBorderColor: dye(0.85, diluted),
+  inputBgColor: dye(1, primary),
 };

@@ -10,6 +10,7 @@ import './pages/buttons';
 import './pages/cards';
 import './pages/colors';
 import './pages/dialogs';
+import './pages/forms';
 
 const GalleryPage = styled.section`
   position: absolute;

@@ -5,11 +5,18 @@ import { shade, tint } from 'polished';
 export const dye = (amount: number, base: string) =>
     amount > 0.5 ? tint((amount - 0.5) * 2, base) : shade(1.0 - amount * 2, base);
 
+export interface ButtonColors {
+  bg: string;
+  text: string;
+  border?: string;
+}
+
 export interface ThemeInterface {
 
   // General
   primaryColor: string;
   dilutedColor: string;
+  focusColor: string;
 
   // Text colors
   textDark: string;
@@ -25,25 +32,13 @@ export interface ThemeInterface {
   leftNavBgColor: string;
   leftNavTextColor: string;
 
-  // Default button style
-  buttonDefaultBgColor: string;
-  buttonDefaultTextColor: string;
-  buttonDefaultBorderColor?: string;
-
-  // Action button
-  buttonActionBgColor: string;
-  buttonActionTextColor: string;
-  buttonActionBorderColor?: string;
-
-  // Primary button
-  buttonPrimaryBgColor: string;
-  buttonPrimaryTextColor: string;
-  buttonPrimaryBorderColor?: string;
-
-  // Secondary button
-  buttonSecondaryBgColor: string;
-  buttonSecondaryTextColor: string;
-  buttonSecondaryBorderColor?: string;
+  // Button styles
+  buttonColors: {
+    default: ButtonColors;
+    action: ButtonColors;
+    primary: ButtonColors;
+    secondary: ButtonColors;
+  };
 
   // Dialogs
   dialogBackdropColor: string;
@@ -52,6 +47,10 @@ export interface ThemeInterface {
   dialogHeaderBgColor: string;
   dialogHeaderTextColor: string;
   dialogShadow: string;
+
+  // Forms
+  inputBorderColor: string;
+  inputBgColor: string;
 
 // contentBgColor: string;
 

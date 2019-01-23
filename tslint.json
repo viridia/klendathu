@@ -31,7 +31,6 @@
     "no-string-throw": true,
     "no-unnecessary-type-assertion": true,
     "no-unsafe-finally": true,
-    "no-unused-variable": {"severity": "warning"},
     "no-use-before-declare": true,
     "no-var-keyword": {"severity": "warning"},
     "no-void-expression": [true, "ignore-arrow-function-shorthand"],
@@ -44,6 +43,10 @@
     "triple-equals": {"severity": "warning"},
     "unified-signatures": {"severity": "warning"}
   },
-
-  "defaultSeverity": "error"
+  "defaultSeverity": "error",
+  "linterOptions": {
+    "exclude": [
+      "client/src/svg-compiled"
+    ]
+  }
 }

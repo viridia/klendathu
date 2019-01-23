@@ -1,7 +1,7 @@
 import * as React from 'react';
 import classNames from 'classnames';
 import { styled, ThemeProps } from '../style';
-import { transparentize, darken } from 'polished';
+import { darken } from 'polished';
 
 export type ButtonStyle = 'action' | 'primary' | 'secondary';
 
@@ -22,11 +22,11 @@ function ButtonImpl({ children, className, type, small, ...attrs }: ButtonProps)
 
 export const Button = styled(ButtonImpl)`
   align-items: center;
-  border: ${(props: ThemeProps) => props.theme.buttonDefaultBorderColor
-      ? `1px solid ${props.theme.buttonDefaultBorderColor}` : 'none'};
+  border: ${(props: ThemeProps) => props.theme.buttonColors.default.border
+      ? `1px solid ${props.theme.buttonColors.default.border}` : 'none'};
   border-radius: 4px;
-  background-color: ${(props: ThemeProps) => props.theme.buttonDefaultBgColor};
-  color: ${(props: ThemeProps) => props.theme.buttonDefaultTextColor};
+  background-color: ${(props: ThemeProps) => props.theme.buttonColors.default.bg};
+  color: ${(props: ThemeProps) => props.theme.buttonColors.default.text};
   display: inline-flex;
   padding: 0 12px;
   height: 32px;
@@ -37,61 +37,62 @@ export const Button = styled(ButtonImpl)`
   }
 
   &:focus {
-    box-shadow: 0 0 0 3px
-      ${(props: ThemeProps) => transparentize(0.7, props.theme.primaryColor)};
+    box-shadow: 0 0 0 3px ${(props: ThemeProps) => props.theme.focusColor};
     z-index: 1;
   }
 
   &:hover:not([disabled]) {
-    background-color: ${(props: ThemeProps) => darken(0.05, props.theme.buttonDefaultBgColor)};
+    background-color: ${(props: ThemeProps) => darken(0.05, props.theme.buttonColors.default.bg)};
   }
 
   &:active:not([disabled]) {
-    background-color: ${(props: ThemeProps) => darken(0.15, props.theme.buttonDefaultBgColor)};
+    background-color: ${(props: ThemeProps) => darken(0.15, props.theme.buttonColors.default.bg)};
   }
 
   &.action {
     border: none;
-    background-color: ${(props: ThemeProps) => props.theme.buttonActionBgColor};
-    color: ${(props: ThemeProps) => props.theme.buttonActionTextColor};
-    > svg { fill: ${(props: ThemeProps) => props.theme.buttonActionTextColor}; }
+    background-color: ${(props: ThemeProps) => props.theme.buttonColors.action.bg};
+    color: ${(props: ThemeProps) => props.theme.buttonColors.action.text};
+    > svg { fill: ${(props: ThemeProps) => props.theme.buttonColors.action.text}; }
 
     &:hover:not([disabled]) {
-      background-color: ${(props: ThemeProps) => darken(0.05, props.theme.buttonActionBgColor)};
+      background-color: ${(props: ThemeProps) => darken(0.05, props.theme.buttonColors.action.bg)};
     }
 
     &:active:not([disabled]) {
-      background-color: ${(props: ThemeProps) => darken(0.2, props.theme.buttonActionBgColor)};
+      background-color: ${(props: ThemeProps) => darken(0.2, props.theme.buttonColors.action.bg)};
     }
   }
 
   &.primary {
     border: none;
-    background-color: ${(props: ThemeProps) => props.theme.buttonPrimaryBgColor};
-    color: ${(props: ThemeProps) => props.theme.buttonPrimaryTextColor};
-    > svg { fill: ${(props: ThemeProps) => props.theme.buttonPrimaryTextColor}; }
+    background-color: ${(props: ThemeProps) => props.theme.buttonColors.primary.bg};
+    color: ${(props: ThemeProps) => props.theme.buttonColors.primary.text};
+    > svg { fill: ${(props: ThemeProps) => props.theme.buttonColors.primary.text}; }
 
     &:hover:not([disabled]) {
-      background-color: ${(props: ThemeProps) => darken(0.05, props.theme.buttonPrimaryBgColor)};
+      background-color: ${(props: ThemeProps) => darken(0.05, props.theme.buttonColors.primary.bg)};
     }
 
     &:active:not([disabled]) {
-      background-color: ${(props: ThemeProps) => darken(0.2, props.theme.buttonPrimaryBgColor)};
+      background-color: ${(props: ThemeProps) => darken(0.2, props.theme.buttonColors.primary.bg)};
     }
   }
 
   &.secondary {
     border: none;
-    background-color: ${(props: ThemeProps) => props.theme.buttonSecondaryBgColor};
-    color: ${(props: ThemeProps) => props.theme.buttonSecondaryTextColor};
-    > svg { fill: ${(props: ThemeProps) => props.theme.buttonSecondaryTextColor}; }
+    background-color: ${(props: ThemeProps) => props.theme.buttonColors.secondary.bg};
+    color: ${(props: ThemeProps) => props.theme.buttonColors.secondary.text};
+    > svg { fill: ${(props: ThemeProps) => props.theme.buttonColors.secondary.text}; }
 
     &:hover:not([disabled]) {
-      background-color: ${(props: ThemeProps) => darken(0.05, props.theme.buttonSecondaryBgColor)};
+      background-color: ${(props: ThemeProps) =>
+          darken(0.05, props.theme.buttonColors.secondary.bg)};
     }
 
     &:active:not([disabled]) {
-      background-color: ${(props: ThemeProps) => darken(0.1, props.theme.buttonSecondaryBgColor)};
+      background-color: ${(props: ThemeProps) =>
+          darken(0.1, props.theme.buttonColors.secondary.bg)};
     }
   }
 
@@ -103,6 +104,6 @@ export const Button = styled(ButtonImpl)`
   > svg {
     margin-right: 4px;
     margin-left: -5px;
-    fill: ${(props: ThemeProps) => props.theme.buttonDefaultTextColor};
+    fill: ${(props: ThemeProps) => props.theme.buttonColors.default.text};
   }
 `;

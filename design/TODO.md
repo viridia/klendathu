@@ -1,6 +1,5 @@
 # Components
 
-* Card
 * Checkbox
 * Radio Button
 * Switch
@@ -14,3 +13,13 @@
   * Chip
 * DiscloseButton
 * RelativeDate
+
+# Form controls
+
+* AutoNavigate
+* Form
+* TextInput
+* TextArea
+  * placeholders
+  * focus
+  *
