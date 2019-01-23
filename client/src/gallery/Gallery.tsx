@@ -7,6 +7,7 @@ import { registry } from './registry';
 import { lighten } from 'polished';
 
 import './pages/buttons';
+import './pages/cards';
 import './pages/colors';
 import './pages/dialogs';
 

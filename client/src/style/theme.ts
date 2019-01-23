@@ -12,7 +12,6 @@ export interface ThemeInterface {
   dilutedColor: string;
 
   // Text colors
-  textLight: string;
   textDark: string;
   textDarkDisabled: string;
   textDarkAccent: string;
@@ -59,13 +58,12 @@ export interface ThemeInterface {
 // // Cards
 // // cardBgColor: string;
 // cardBgAlt: string;
-// cardBorder: string;
-// cardHeaderBgColor: lighten(bg1, 10%);
+  cardBgColor: string;
+  cardBorderColor: string;
+  cardShadowColor: string;
 
-// cardBgColor: lighten(bg0, 5%);
-// cardShadow: rgba(0,0,0,0.14);
-// cardHeaderDividerColor: darken(bg1, 5%);
-// cardFooterDividerColor: darken(bg1, 5%);
+  cardHeaderBgColor: string;
+  cardHeaderDividerColor: string;
 
 // accentedCardHeaderBgColor: bg2;
 
@@ -89,7 +87,6 @@ export interface ThemeInterface {
 
 // // Labels
 // labelText: string;
-
 }
 
 export interface ThemeProps {

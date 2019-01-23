@@ -1,15 +1,14 @@
-import { /* ThemeInterface, */ dye } from './theme';
+import { ThemeInterface, dye } from './theme';
 import { desaturate, transparentize } from 'polished';
 
 const primary = '#9c27b0';
 const diluted = desaturate(0.2, primary);
 
-export const themeDefault /*: ThemeInterface */ = {
+export const themeDefault: ThemeInterface = {
   primaryColor: primary,
   dilutedColor: diluted,
 
   // Text colors
-  // textLight: string;
   textDark: '#222',
   textDarkDisabled: dye(0.4, diluted),
   textDarkAccent: dye(0.4, primary),
@@ -47,4 +46,11 @@ export const themeDefault /*: ThemeInterface */ = {
   dialogHeaderBgColor: dye(0.8, primary),
   dialogHeaderTextColor: dye(0.1, primary),
   dialogShadow: `1px 2px 6px 6px ${dye(0.1, transparentize(0.9, desaturate(0.3, primary)))}`,
+
+  // Cards
+  cardBgColor: dye(0.94, primary),
+  cardBorderColor: dye(0.7, diluted),
+  cardShadowColor: transparentize(0.86, dye(0.1, diluted)),
+  cardHeaderBgColor: dye(0.88, primary),
+  cardHeaderDividerColor: transparentize(0.8, dye(0.1, diluted)),
 };

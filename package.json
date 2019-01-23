@@ -19,8 +19,6 @@
   "author": "Talin <viridia@gmail.com>",
   "license": "Apache-2.0",
   "dependencies": {
-    "@svgr/cli": "^4.1.0",
-    "@svgr/parcel-plugin-svgr": "^4.1.0",
     "apollo": "^2.3.0",
     "apollo-server-express": "^2.3.1",
     "bcryptjs": "^2.4.3",
@@ -32,6 +30,7 @@
     "form-data": "^2.3.3",
     "graphql": "^14.1.1",
     "jwt-simple": "^0.5.5",
+    "mobx": "^5.9.0",
     "mongodb": "^3.1.12",
     "nodemon": "^1.18.9",
     "parcel-bundler": "^1.11.0",
@@ -51,12 +50,13 @@
     "react-transition-group": "^2.5.3",
     "styled-components": "^4.1.3",
     "styled-normalize": "^8.0.4",
-    "stylus": "^0.54.5",
     "ts-node": "^7.0.1",
     "typescript": "^3.2.4",
     "winston": "^3.1.0"
   },
   "devDependencies": {
+    "@svgr/cli": "^4.1.0",
+    "@svgr/parcel-plugin-svgr": "^4.1.0",
     "@types/bcryptjs": "^2.4.2",
     "@types/bson": "^1.0.11",
     "@types/classnames": "^2.2.7",
