@@ -32,8 +32,6 @@ export const TextArea = styled.textarea`
 type FormLayout = 'stacked' | 'inline' | 'ledger';
 
 export interface FormProps extends React.ButtonHTMLAttributes<HTMLFormElement> {
-  children?: React.ReactNode;
-  className?: string;
   layout?: FormLayout;
 }
 

@@ -6,8 +6,6 @@ import { darken } from 'polished';
 export type ButtonStyle = 'action' | 'primary' | 'secondary';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  children?: React.ReactNode;
-  className?: string;
   small?: boolean;
   type?: ButtonStyle;
 }

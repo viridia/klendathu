@@ -6,11 +6,10 @@
 * Tabs
   * TabGroup
 * AutoComplete
-  * Chip
 * DiscloseButton
 * RelativeDate
 * DropDownButton
 
 # Form controls
 
-* placeholders
+* placeholder text

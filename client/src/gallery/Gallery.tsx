@@ -12,6 +12,7 @@ import './pages/chips';
 import './pages/colors';
 import './pages/dialogs';
 import './pages/forms';
+import './pages/toggles';
 
 const GalleryPage = styled.section`
   position: absolute;
