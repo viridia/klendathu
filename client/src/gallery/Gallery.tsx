@@ -12,6 +12,7 @@ import './pages/chips';
 import './pages/colors';
 import './pages/dialogs';
 import './pages/forms';
+import './pages/tabs';
 import './pages/toggles';
 
 const GalleryPage = styled.section`
@@ -64,6 +65,8 @@ const GalleryPage = styled.section`
 
   > .preview {
     padding: 8px;
+    display: flex;
+    flex-direction: column;
 
     > header {
       font-weight: bold;

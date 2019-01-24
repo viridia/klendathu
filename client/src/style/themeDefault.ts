@@ -44,6 +44,14 @@ export const themeDefault: ThemeInterface = {
     }
   },
 
+  // Tabs
+  tabTextColor: dye(0.4, diluted),
+  tabBgColor: 'transparent',
+  tabBorderColor: dye(0.8, primary),
+  tabActiveTextColor: dye(0.2, primary),
+  tabActiveBgColor: dye(0.85, primary),
+  tabActiveBorderColor: dye(0.4, primary),
+
   // Dialogs
   dialogBackdropColor: dye(0.1, primary),
   dialogBgColor: dye(0.9, primary),

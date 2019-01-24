@@ -1,8 +1,5 @@
 # Components
 
-* Checkbox
-* Radio Button
-* Switch
 * Tabs
   * TabGroup
 * AutoComplete
@@ -13,3 +10,7 @@
 # Form controls
 
 * placeholder text
+
+# Future
+
+* Switch
