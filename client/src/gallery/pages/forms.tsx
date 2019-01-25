@@ -10,13 +10,13 @@ function Forms() {
         <div style={{ padding: '12px'}}>
           <Form>
             <FormLabel>First Name:</FormLabel>
-            <TextInput />
+            <TextInput name="first-name" validationStatus="success" validationMsg="Good to go!" />
             <FormLabel>Last Name:</FormLabel>
-            <TextInput />
+            <TextInput validationStatus="error" validationMsg="Name must not be empty!" />
             <FormLabel>Address:</FormLabel>
-            <TextInput />
+            <TextInput name="street" validationStatus="warning" validationMsg="Weak password"  />
             <FormLabel>City:</FormLabel>
-            <TextInput />
+            <TextInput name="city" />
             <FormLabel>Zip:</FormLabel>
             <TextArea rows={4} />
           </Form>

@@ -34,6 +34,11 @@ function Tabs() {
             Route One
           </DemoCard>
         </Route>
+        <Route path="/tabs">
+          <DemoCard>
+            No Tab Selected
+          </DemoCard>
+        </Route>
       </Switch>
     </React.Fragment>
   );

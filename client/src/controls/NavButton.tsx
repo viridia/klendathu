@@ -2,25 +2,25 @@ import * as React from 'react';
 import classNames from 'classnames';
 import { styled } from '../style';
 import { darken } from 'polished';
+import { ButtonStyle } from './Button';
+import { NavLink, NavLinkProps } from 'react-router-dom';
 
-export type ButtonStyle = 'action' | 'primary' | 'secondary' | 'default';
-
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface NavButtonProps extends NavLinkProps {
   small?: boolean;
   kind?: ButtonStyle;
-  type?: string;
+  disabled?: boolean;
 }
 
-function ButtonImpl({ children, className, kind, small, ...attrs }: ButtonProps) {
+function NavButtonImpl({ children, className, kind, small, ...attrs }: NavButtonProps) {
   return (
-    <button className={classNames(className, kind, { small })} {...attrs}>
+    <NavLink className={classNames(className, kind, { small })} {...attrs}>
       {children}
-    </button>
+    </NavLink>
   );
 }
 
-/** A standard button. */
-export const Button = styled(ButtonImpl)`
+/** Looks like a button, but is actually an anchor tag. */
+export const NavButton = styled(NavButtonImpl)`
   align-items: center;
   border: ${props => props.theme.buttonColors[props.kind].border
       ? `1px solid ${props.theme.buttonColors[props.kind].border}` : 'none'};
@@ -31,9 +31,11 @@ export const Button = styled(ButtonImpl)`
   padding: 0 12px;
   height: 32px;
   outline: none;
+  text-decoration: none;
 
   &[disabled] {
     opacity: 0.7;
+    pointer-events: none;
   }
 
   &:focus {
@@ -61,4 +63,4 @@ export const Button = styled(ButtonImpl)`
   }
 `;
 
-Button.defaultProps = { kind: 'default' };
+NavButton.defaultProps = { kind: 'default' };
