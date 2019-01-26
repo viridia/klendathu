@@ -68,6 +68,7 @@ const GalleryPage = styled.section`
     padding: 8px;
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
 
     > header {
       font-weight: bold;
@@ -77,6 +78,10 @@ const GalleryPage = styled.section`
       &:first-child {
         margin-top: 0;
       }
+    }
+
+    > * {
+      flex-shrink: 0;
     }
   }
 `;

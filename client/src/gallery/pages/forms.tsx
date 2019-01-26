@@ -17,6 +17,8 @@ function Forms() {
             <TextInput name="street" validationStatus="warning" validationMsg="Weak password"  />
             <FormLabel>City:</FormLabel>
             <TextInput name="city" />
+            <FormLabel>State:</FormLabel>
+            <TextInput name="state" />
             <FormLabel>Zip:</FormLabel>
             <TextArea rows={4} />
           </Form>
