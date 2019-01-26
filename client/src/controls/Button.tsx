@@ -11,12 +11,16 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   type?: string;
 }
 
-function ButtonImpl({ children, className, kind, small, ...attrs }: ButtonProps) {
-  return (
-    <button className={classNames(className, kind, { small })} {...attrs}>
-      {children}
-    </button>
-  );
+// This needs to be a class so it can accept refs.
+class ButtonImpl extends React.Component<ButtonProps> {
+  public render() {
+    const { children, className, kind, small, ...attrs } = this.props;
+    return (
+      <button className={classNames(className, kind, { small })} {...attrs}>
+        {children}
+      </button>
+    );
+  }
 }
 
 /** A standard button. */

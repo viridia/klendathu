@@ -28,19 +28,22 @@ export const themeDefault: ThemeInterface = {
     default: {
       bg: dye(0.9, primary),
       text: dye(0.2, primary),
-      border: dye(0.6, desaturate(0.4, primary)),
+      border: dye(0.7, desaturate(0.4, primary)),
     },
     action: {
       bg: primary,
       text: dye(0.9, primary),
+      border: dye(0.43, primary),
     },
     primary: {
       bg: dye(0.7, primary),
       text: dye(0.1, primary),
+      border: dye(0.63, primary),
     },
     secondary: {
       bg: dye(0.8, primary),
       text: dye(0.2, primary),
+      border: dye(0.73, primary),
     }
   },
 
@@ -59,6 +62,15 @@ export const themeDefault: ThemeInterface = {
   dialogHeaderBgColor: dye(0.8, primary),
   dialogHeaderTextColor: dye(0.1, primary),
   dialogShadow: `1px 2px 6px 6px ${dye(0.1, transparentize(0.9, desaturate(0.3, primary)))}`,
+
+  // Menus
+  menuBgColor: dye(1.0, primary),
+  menuTextColor: '#222',
+  menuBorderColor: dye(0.7, diluted),
+  menuFocusBgColor: dye(0.5, primary),
+  menuFocusTextColor: dye(0.9, primary),
+  menuHoverBgColor: dye(0.95, primary),
+  menuHoverTextColor: '#222',
 
   // Cards
   cardBgColor: dye(0.94, primary),

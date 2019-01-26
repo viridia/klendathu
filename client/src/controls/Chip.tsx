@@ -55,7 +55,6 @@ export const Chip = styled(ChipImpl).attrs(props => ({
     height: 16px;
     justify-content: center;
     margin-right: -4px;
-    margin-top: 1px;
     outline: none;
     padding: 0;
     width: 16px;

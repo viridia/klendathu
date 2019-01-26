@@ -56,6 +56,15 @@ export interface ThemeInterface {
   dialogHeaderTextColor: string;
   dialogShadow: string;
 
+  // Menus
+  menuBgColor: string;
+  menuTextColor: string;
+  menuBorderColor: string;
+  menuFocusBgColor: string;
+  menuFocusTextColor: string;
+  menuHoverBgColor: string;
+  menuHoverTextColor: string;
+
   // Forms
   inputBorderColor: string;
   inputBgColor: string;
