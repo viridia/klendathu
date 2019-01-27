@@ -23,11 +23,11 @@ const GalleryPage = styled.section`
   top: 0;
   bottom: 0;
   display: grid;
-  flex-direction: column;
+  /* flex-direction: column; */
   flex: 1;
   overflow-x: hidden;
-  color:  ${(props: ThemeProps) => props.theme.textDark};
-  background-color:  ${(props: ThemeProps) => props.theme.pageBgColor};
+  color: ${props => props.theme.textDark};
+  background-color: ${props => props.theme.pageBgColor};
   grid-template-rows: 32px auto;
   grid-template-columns: 12em auto;
   grid-template-areas:
@@ -39,8 +39,8 @@ const GalleryPage = styled.section`
     align-items: center;
     padding: 0 12px;
     font-weight: bold;
-    color:  ${(props: ThemeProps) => props.theme.headerTextColor};
-    background-color:  ${(props: ThemeProps) => props.theme.headerBgColor};
+    color: ${props => props.theme.headerTitleColor};
+    background-color: ${props => props.theme.headerBgColor};
     grid-area: header;
   }
 
@@ -48,18 +48,18 @@ const GalleryPage = styled.section`
     display: flex;
     flex-direction: column;
 
-    color:  ${(props: ThemeProps) => props.theme.leftNavTextColor};
-    background-color:  ${(props: ThemeProps) => props.theme.leftNavBgColor};
+    color: ${props => props.theme.leftNavTextColor};
+    background-color: ${props => props.theme.leftNavBgColor};
 
     > a {
       display: block;
       padding: 6px 12px;
       font-weight: bold;
       text-decoration: none;
-      color:  ${(props: ThemeProps) => props.theme.leftNavTextColor};
+      color: ${props => props.theme.leftNavTextColor};
 
       &.selected {
-        background-color:  ${(props: ThemeProps) => lighten(0.1, props.theme.leftNavBgColor)};
+        background-color: ${props => lighten(0.1, props.theme.leftNavBgColor)};
       }
     }
   }

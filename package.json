@@ -73,6 +73,7 @@
     "@types/form-data": "^2.2.1",
     "@types/jest": "^23.3.13",
     "@types/mongodb": "^3.1.19",
+    "@types/parcel-bundler": "^1.10.1",
     "@types/passport": "^1.0.0",
     "@types/passport-anonymous": "^1.0.3",
     "@types/passport-github2": "^1.2.2",

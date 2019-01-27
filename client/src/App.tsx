@@ -4,8 +4,7 @@ import { themeDefault, ThemeProvider, GlobalStyle } from './style';
 import { Normalize } from 'styled-normalize';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { AccountPage } from './account/AccountPage';
-
-// import { MainPage } from './main/MainPage';
+import { MainPage } from './main/MainPage';
 
 // import '../styles/scrollbars.scss';
 // import '../styles/table.scss';
@@ -20,7 +19,7 @@ class App extends React.Component<{}> {
           <Router>
             <Switch>
               <Route path="/account" component={AccountPage} />
-              {/* <Route path="/" component={MainPage} /> */}
+              <Route path="/" component={MainPage} />
             </Switch>
           </Router>
         </React.Fragment>

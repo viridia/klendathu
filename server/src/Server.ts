@@ -1,11 +1,13 @@
 import * as express from 'express';
 import * as http from 'http';
+import * as path from 'path';
 import { MongoClient, Db } from 'mongodb';
 import { ApolloServer } from 'apollo-server-express';
 import { typeDefs } from './schema';
 import { logger } from './logger';
 import { Context, resolverMap } from './resolvers';
 import { ensureCollections } from './db/helpers';
+import * as Bundler from 'parcel-bundler';
 
 // Connection URL
 const dbUrl = 'mongodb://localhost:27017';
@@ -24,6 +26,7 @@ export class Server {
   });
   public httpServer: http.Server;
 
+  // Note this is called after routes have been created
   public async start() {
     logger.debug('=== Klendathu Server ===');
 
@@ -53,6 +56,13 @@ export class Server {
 
     // Other middleware
     // TODO
+
+    // Proxy client
+    if (process.env.CLIENT_PROXY === 'true') {
+      const indexPage = path.resolve(__dirname, '../../client/src/index.html');
+      const bundler = new Bundler(indexPage, {});
+      this.app.use((bundler as any).middleware());
+    }
 
     // Start HTTP listener
     this.httpServer = this.app.listen({ port: 4000 }, () => {

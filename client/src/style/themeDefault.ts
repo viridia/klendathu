@@ -16,11 +16,12 @@ export const themeDefault: ThemeInterface = {
 
   // Page
   pageBgColor: dye(0.9, primary),
-  headerTextColor: '#fff',
+  headerTitleColor: dye(0.95, primary),
+  headerSubTitleColor: dye(0.85, primary),
   headerBgColor: dye(0.5, primary),
 
   // Left Nav
-  leftNavBgColor: dye(0.7, diluted),
+  leftNavBgColor: dye(0.8, desaturate(0.35, primary)),
   leftNavTextColor: dye(0.1, diluted),
 
   // Button styles
@@ -31,7 +32,7 @@ export const themeDefault: ThemeInterface = {
       border: dye(0.7, desaturate(0.4, primary)),
     },
     action: {
-      bg: primary,
+      bg: dye(0.57, primary),
       text: dye(0.9, primary),
       border: dye(0.43, primary),
     },

@@ -160,20 +160,6 @@ export class LoginForm extends React.Component<RouteComponentProps<{}>> {
           </TwitterProviderButton>
         </ProviderList>
       </LoginCard>
-      //   <div className="username-login">
-      //     <div className="button-row">
-      //       <section>
-      //         <LinkContainer to={{ ...this.props.location, pathname: '/account/register' }}>
-      //           <Button bsStyle="link">Create Account</Button>
-      //         </LinkContainer>
-      //         <LinkContainer to={{ ...this.props.location, pathname: '/account/recover' }}>
-      //           <Button bsStyle="link">Forgot Password?</Button>
-      //         </LinkContainer>
-      //       </section>
-      //       <Button kind="primary" type="submit" disabled={!canSubmit}>Sign In</Button>
-      //     </div>
-      //   </div>
-      // </Form>
     );
   }
 
