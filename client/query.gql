@@ -1,6 +1,17 @@
-query AccountSearchQuery {
-  accounts(token: "") { id, accountName, display, type, photo, verified }
+query AccountSearchQuery($token: String!) {
+  accounts(token: $token) {
+    id,
+    accountName,
+    display,
+    type,
+    photo,
+ }
 }
-query AccountQuery {
-  account(accountName: "", id: "") { id, accountName, display, type, photo, verified }
+
+query AccountQuery($accountName: String, $id: ID) {
+  account(accountName: $accountName, id: $id) { id, accountName, display, type, photo }
+}
+
+mutation CreateAccount($input: AccountInput) {
+  createUserAccount(input: $input) { id, accountName, display, type, photo, verified }
 }

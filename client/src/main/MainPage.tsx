@@ -7,6 +7,8 @@ import { Header } from '../header/Header';
 import { LeftNav } from '../nav/LeftNav';
 import { styled } from '../style';
 import { ProjectListView } from '../projects/ProjectListView';
+import { session } from '../models';
+import { SetupAccountDialog } from '../settings/SetupAccountDialog';
 
 const MainPageLayout = styled(Page)`
   display: grid;
@@ -34,21 +36,25 @@ const ContentPaneLayout = styled.section`
 export class MainPage extends React.Component<RouteComponentProps<{}>> {
   // private memberships: Memberships;
 
-  // public componentWillMount() {
-  //   this.memberships = new Memberships();
-  //   if (!session.isLoggedIn) {
-  //     session.resume(this.props.location, this.props.history);
-  //   }
-  // }
+  public componentWillMount() {
+    // this.memberships = new Memberships();
+    if (!session.isLoggedIn) {
+      session.resume(this.props.location, this.props.history);
+    }
+  }
 
-  // public componentWillUpdate() {
-  //   this.memberships.release();
-  //   if (!session.isLoggedIn) {
-  //     session.resume(this.props.location, this.props.history);
-  //   }
-  // }
+  public componentWillUpdate() {
+    // this.memberships.release();
+    if (!session.isLoggedIn) {
+      session.resume(this.props.location, this.props.history);
+    }
+  }
 
   public render() {
+    const showEmailVerification = false;
+    const showSetupAccount =
+        session.isLoggedIn && session.account &&
+        !(session.account.accountName && session.account.display);
     return (
       <MainPageLayout>
         <ToastContainer
@@ -68,6 +74,8 @@ export class MainPage extends React.Component<RouteComponentProps<{}>> {
             />
           </Switch>
         </ContentPaneLayout>
+        {/* {showEmailVerification && <EmailVerificationDialog />} */}
+        {!showEmailVerification && showSetupAccount && <SetupAccountDialog />}
       </MainPageLayout>
     );
   }

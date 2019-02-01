@@ -5,4 +5,8 @@ export const resolverMap = {
   Query: {
     ...account.queries,
   },
+  Mutation: {
+    ...account.mutations,
+  },
+  ...account.types,
 };

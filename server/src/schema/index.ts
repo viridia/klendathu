@@ -8,10 +8,10 @@ scalar DateTime
 
 type Query {
   "Access an account either by the account name or by the database id."
-  account(accountName: String, id: ID): Account
+  account(accountName: String, id: ID): PublicAccount
 
   "Search accounts by display name or account name."
-  accounts(token: String!): [Account!]!
+  accounts(token: String!, type: AccountType): [PublicAccount!]!
 
   "Return information about the current user."
   me: Account

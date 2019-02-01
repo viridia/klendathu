@@ -1,12 +1,12 @@
 import * as React from 'react';
-// import { Errors } from '../../../common/types/json';
-import { Card, Form, TextInput, FormLabel, LinkButton, Button, NavButton } from '../controls';
+import { Errors } from '../../../common/types/json';
+import { Card, Form, TextInput, FormLabel, LinkButton, Button, NavButton, AutoNavigate } from '../controls';
 import { RouteComponentProps, NavLink } from 'react-router-dom';
 import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { styled } from '../style';
-// import { session } from '../../models';
-// import { RequestError } from '../network/RequestError';
+import { session } from '../models';
+import { RequestError } from '../network/RequestError';
 
 import googleImg from '../icons/google.png';
 import githubImg from '../icons/github.png';
@@ -114,6 +114,7 @@ export class LoginForm extends React.Component<RouteComponentProps<{}>> {
     return (
       <LoginCard>
         <Form layout="stacked" onSubmit={this.onSubmit}>
+          <AutoNavigate autoSelect={true} />
           <FormLabel>Email</FormLabel>
           <TextInput
               id="username"
@@ -178,20 +179,20 @@ export class LoginForm extends React.Component<RouteComponentProps<{}>> {
     e.preventDefault();
     this.emailError = '';
     this.passwordError = '';
-    // session.login(this.email, this.password).then(result => {
-    //   this.props.history.replace('/');
-    // }, (error: RequestError) => {
-    //   switch (error.code) {
-    //     case Errors.NOT_FOUND:
-    //       this.emailError = 'Unknown email address.';
-    //       break;
-    //     case Errors.INCORRECT_PASSWORD:
-    //       this.emailError = 'Incorrect password for this email address.';
-    //       break;
-    //     default:
-    //       this.emailError = error.message || error.code;
-    //       break;
-    //   }
-    // });
+    session.login(this.email, this.password).then(result => {
+      this.props.history.replace('/');
+    }, (error: RequestError) => {
+      switch (error.code) {
+        case Errors.NOT_FOUND:
+          this.emailError = 'Unknown email address.';
+          break;
+        case Errors.INCORRECT_PASSWORD:
+          this.passwordError = 'Incorrect password for this email address.';
+          break;
+        default:
+          this.emailError = error.message || error.code;
+          break;
+      }
+    });
   }
 }

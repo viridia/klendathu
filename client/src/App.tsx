@@ -5,9 +5,8 @@ import { Normalize } from 'styled-normalize';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { AccountPage } from './account/AccountPage';
 import { MainPage } from './main/MainPage';
-
-// import '../styles/scrollbars.scss';
-// import '../styles/table.scss';
+import { ApolloProvider, Query } from 'react-apollo';
+import { client } from './graphql/client';
 
 class App extends React.Component<{}> {
   public render() {
@@ -16,12 +15,15 @@ class App extends React.Component<{}> {
         <React.Fragment>
           <Normalize />
           <GlobalStyle />
-          <Router>
-            <Switch>
-              <Route path="/account" component={AccountPage} />
-              <Route path="/" component={MainPage} />
-            </Switch>
-          </Router>
+          <ApolloProvider client={client}>
+            {/* <Accounts /> */}
+            <Router>
+              <Switch>
+                <Route path="/account" component={AccountPage} />
+                <Route path="/" component={MainPage} />
+              </Switch>
+            </Router>
+          </ApolloProvider>
         </React.Fragment>
       </ThemeProvider>
     );

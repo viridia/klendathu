@@ -1,10 +1,10 @@
 import * as React from 'react';
 import bind from 'bind-decorator';
-// import { Errors } from '../../../common/types/json';
+import { Errors } from '../../../common/types/json';
 import { RouteComponentProps } from 'react-router-dom';
 import { action, observable } from 'mobx';
-// import { createUserAccount } from '../../network/requests';
-// import { RequestError } from '../../network';
+import { createUserAccount } from '../network/requests';
+import { RequestError } from '../network';
 import { observer } from 'mobx-react';
 import { styled } from '../style';
 import { Card, Form, TextInput, FormLabel, Button, NavButton, NavLink } from '../controls';
@@ -115,27 +115,27 @@ export class RegisterForm extends React.Component<RouteComponentProps<{}>> {
       return;
     }
 
-    // createUserAccount(this.email, this.password).then(account => {
-    //   this.props.history.replace('/');
-    // }, (error: RequestError) => {
-    //   switch (error.code) {
-    //     case Errors.INVALID_EMAIL:
-    //       this.emailError = 'Invalid email address.';
-    //       break;
+    createUserAccount(this.email, this.password).then(account => {
+      this.props.history.replace('/');
+    }, (error: RequestError) => {
+      switch (error.code) {
+        case Errors.INVALID_EMAIL:
+          this.emailError = 'Invalid email address.';
+          break;
 
-    //     case Errors.PASSWORD_TOO_SHORT:
-    //       this.passwordError = 'The password should be at least 6 characters.';
-    //       break;
+        case Errors.PASSWORD_TOO_SHORT:
+          this.passwordError = 'The password should be at least 6 characters.';
+          break;
 
-    //     case Errors.EXISTS:
-    //       this.passwordError = 'The email address is already in use by another account.';
-    //       break;
+        case Errors.EXISTS:
+          this.passwordError = 'The email address is already in use by another account.';
+          break;
 
-    //     default:
-    //       this.emailError = error.message || error.code;
-    //       break;
-    //   }
-    // });
+        default:
+          this.emailError = error.message || error.code;
+          break;
+      }
+    });
   }
 
   @bind

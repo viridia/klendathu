@@ -123,7 +123,7 @@ export const TextArea = styled(TextAreaImpl)`
 
 type FormLayout = 'stacked' | 'inline' | 'ledger';
 
-export interface FormProps extends React.ButtonHTMLAttributes<HTMLFormElement> {
+export interface FormProps extends React.FormHTMLAttributes<HTMLFormElement> {
   layout?: FormLayout;
 }
 

@@ -26,7 +26,7 @@ export class Server {
   });
   public httpServer: http.Server;
 
-  // Note this is called after routes have been created
+  // Note this is called *after* routes have been created
   public async start() {
     logger.debug('=== Klendathu Server ===');
 
@@ -80,6 +80,7 @@ export class Server {
     return {
       db: this.db,
       client: this.client,
+      user: (req as any).user,
     };
   }
 }

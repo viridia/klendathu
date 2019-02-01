@@ -15,7 +15,7 @@ export interface AccountRecord {
   display: string;
 
   /** Whether this is a person or an organization. */
-  type: 'user' | 'organization';
+  type: 'USER' | 'ORGANIZATION';
 
   /** Profile photo (URL). */
   photo?: string;

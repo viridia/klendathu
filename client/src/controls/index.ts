@@ -1,3 +1,5 @@
+export { AutoNavigate } from './AutoNavigate';
+export { Avatar } from './Avatar';
 export { Button, ButtonStyle } from './Button';
 export { ButtonGroup } from './ButtonGroup';
 export { Card } from './Card';

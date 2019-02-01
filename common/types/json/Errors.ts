@@ -8,6 +8,10 @@ export enum Errors {
   EXISTS = 'exists',
   SCHEMA = 'schema-validation',
 
+  TEXT_MISSING = 'text-missing',
+  TEXT_TOO_SHORT = 'text-too-short',
+  TEXT_INVALID_CHARS = 'text-invalid-chars',
+
   INVALID_LINK = 'invalid-link',
   MISSING_NAME = 'missing-name',
   MISSING_COLOR = 'missing-color',
@@ -15,10 +19,7 @@ export enum Errors {
   INVALID_ROLE = 'invalid-role',
 
   INVALID_EMAIL = 'invalid-email',
-  USERNAME_TOO_SHORT = 'username-too-short',
   USERNAME_LOWER_CASE = 'username-lower-case',
-  USERNAME_INVALID_CHARS = 'username-invalid-chars',
-  PASSWORD_TOO_SHORT = 'password-too-short',
   INCORRECT_PASSWORD = 'incorrect-password',
   INVALID_TOKEN = 'invalid-token',
   INVALID_PHOTO = 'invalid-photo',

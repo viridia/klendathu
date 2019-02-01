@@ -16,6 +16,10 @@ export const themeDefault: ThemeInterface = {
 
   // Page
   pageBgColor: dye(0.9, primary),
+  scrollbarThumbColor: dye(0.8, diluted),
+  scrollbarInactiveThumbColor: dye(0.9, diluted),
+
+  // Header
   headerTitleColor: dye(0.95, primary),
   headerSubTitleColor: dye(0.85, primary),
   headerBgColor: dye(0.5, primary),

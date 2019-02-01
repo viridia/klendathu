@@ -25,6 +25,8 @@ export interface ThemeInterface {
 
   // Page
   pageBgColor: string;
+  scrollbarThumbColor: string;
+  scrollbarInactiveThumbColor: string;
 
   // Header
   headerBgColor: string;
