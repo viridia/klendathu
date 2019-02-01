@@ -76,6 +76,9 @@ export const themeDefault: ThemeInterface = {
   menuFocusTextColor: dye(0.9, primary),
   menuHoverBgColor: dye(0.95, primary),
   menuHoverTextColor: '#222',
+  menuActiveBgColor: dye(0.9, primary),
+  menuActiveTextColor: '#000',
+  menuDividerColor: dye(0.9, desaturate(0.5, primary)),
 
   // Cards
   cardBgColor: dye(0.94, primary),

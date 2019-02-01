@@ -49,7 +49,7 @@ export const Button = styled(ButtonImpl)`
     background-color: ${props => darken(0.05, props.theme.buttonColors[props.kind].bg)};
   }
 
-  &:active:not([disabled]) {
+  &:active:not([disabled]), &.active:not([disabled]) {
     background-color: ${props => darken(0.15, props.theme.buttonColors[props.kind].bg)};
   }
 

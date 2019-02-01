@@ -3,7 +3,7 @@ import {
   Dropdown as OverlayDropdown,
   DropdownMenu as OverlayDropdownMenu,
 } from 'react-overlays';
-import { Button } from './Button';
+import { Button, ButtonStyle } from './Button';
 import { styled } from '../style';
 import { observable, action } from 'mobx';
 import { observer } from 'mobx-react';
@@ -71,6 +71,8 @@ export interface DropDownProps {
 export interface DropdownButtonProps {
   alignEnd?: boolean;
   drop?: 'up' | 'left' | 'right' | 'down';
+  id?: string;
+  kind?: ButtonStyle;
   children: React.ReactNode;
   title: React.ReactNode;
 }
@@ -85,6 +87,7 @@ export class DropdownButton extends React.Component<DropdownButtonProps> {
       alignEnd = false,
       children,
       title,
+      kind,
     } = this.props;
     return (
       <OverlayDropdown
@@ -98,7 +101,7 @@ export class DropdownButton extends React.Component<DropdownButtonProps> {
           <DropdownContainer {...props}>
             <OverlayDropdown.Toggle>
               {({ toggle, show, props: buttonProps }) => (
-                <Button {...buttonProps as any} onClick={toggle}>
+                <Button kind={kind} {...buttonProps as any} onClick={toggle}>
                   {title}&nbsp;&#9662;
                 </Button>
               )}

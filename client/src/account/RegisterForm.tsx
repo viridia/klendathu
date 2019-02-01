@@ -7,7 +7,7 @@ import { createUserAccount } from '../network/requests';
 import { RequestError } from '../network';
 import { observer } from 'mobx-react';
 import { styled } from '../style';
-import { Card, Form, TextInput, FormLabel, Button, NavButton, NavLink } from '../controls';
+import { Card, Form, TextInput, FormLabel, Button, NavLink, NavContainer } from '../controls';
 
 const RegisterCard = styled(Card)`
   align-items: stretch;
@@ -93,7 +93,9 @@ export class RegisterForm extends React.Component<RouteComponentProps<{}>> {
             />
           <ButtonRow>
             <NavLink to={{ ...this.props.location, pathname: '/account/login' }}>Sign In</NavLink>
-            <NavButton kind="secondary" to={next || { pathname: '/' }}>Cancel</NavButton>
+            <NavContainer to={next || { pathname: '/' }}>
+              <Button kind="secondary">Cancel</Button>
+            </NavContainer>
             <Button kind="action" type="submit" disabled={!canSubmit}>
               Create Account
             </Button>
@@ -123,7 +125,7 @@ export class RegisterForm extends React.Component<RouteComponentProps<{}>> {
           this.emailError = 'Invalid email address.';
           break;
 
-        case Errors.PASSWORD_TOO_SHORT:
+        case Errors.TEXT_TOO_SHORT:
           this.passwordError = 'The password should be at least 6 characters.';
           break;
 

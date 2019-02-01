@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { styled } from '../../style';
 import { register } from '../registry';
-import { Button, ButtonGroup, LinkButton, NavButton, NavLink } from '../../controls';
+import { Button, ButtonGroup, LinkButton, NavLink, NavContainer } from '../../controls';
 import IconAddBox from '../../svg-compiled/icons/IcAddBox';
 
 const DisplayGroup = styled.section`
@@ -71,17 +71,22 @@ function Buttons() {
           Medium
         </LinkButton>
       </DisplayGroup>
-      <header>NavButton</header>
-      <DisplayGroup className="row">
-        <NavButton to="/cards">Cards</NavButton>
-        <NavButton to="/chips" kind="primary">Chips</NavButton>
-        <NavButton to="/tabs" kind="action">Tabs</NavButton>
-        <NavButton to="/toggle" kind="secondary" disabled={true}>Toggle</NavButton>
-      </DisplayGroup>
       <header>NavLink</header>
       <DisplayGroup className="row">
         <NavLink to="/cards">Cards</NavLink>
         <NavLink to="/toggle" disabled={true}>Toggle</NavLink>
+      </DisplayGroup>
+      <header>NavLinkContainer</header>
+      <DisplayGroup className="row">
+        <NavContainer to="/buttons">
+          <Button kind="primary">Buttons</Button>
+        </NavContainer>
+        <NavContainer to="/cards">
+          <Button kind="primary">Cards</Button>
+        </NavContainer>
+        <NavContainer to="/toggle" disabled={true}>
+          <Button kind="primary">Toggle</Button>
+        </NavContainer>
       </DisplayGroup>
     </React.Fragment>
   );

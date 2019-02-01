@@ -69,6 +69,9 @@ export interface ThemeInterface {
   menuFocusTextColor: string;
   menuHoverBgColor: string;
   menuHoverTextColor: string;
+  menuActiveBgColor: string;
+  menuActiveTextColor: string;
+  menuDividerColor: string;
 
   // Forms
   inputBorderColor: string;
