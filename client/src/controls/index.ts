@@ -11,5 +11,6 @@ export { LinkButton } from './LinkButton';
 export { Menu, MenuItem, MenuDivider } from './Menu';
 export { NavContainer } from './NavContainer';
 export { NavLink } from './NavLink';
+export { PhotoSelect } from './PhotoSelect';
 export { Tab, TabBar } from './Tabs';
 export { CheckBox, RadioButton } from './Toggle';

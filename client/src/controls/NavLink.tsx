@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { styled } from '../style';
 import { darken } from 'polished';
-import { NavLink as RouterNavLink, NavLinkProps, Route } from 'react-router-dom';
+import { NavLink as RouterNavLink, NavLinkProps } from 'react-router-dom';
 
 function NavLinkImpl({ children, className, ...attrs }: NavLinkProps & { disabled?: boolean; }) {
   return (

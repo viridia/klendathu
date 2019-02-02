@@ -9,6 +9,7 @@ import { styled } from '../style';
 import { ProjectListView } from '../projects/ProjectListView';
 import { session } from '../models';
 import { SetupAccountDialog } from '../settings/SetupAccountDialog';
+import { SettingsView } from '../settings/SettingsView';
 
 const MainPageLayout = styled(Page)`
   display: grid;
@@ -67,7 +68,7 @@ export class MainPage extends React.Component<RouteComponentProps<{}>> {
         <LeftNav />
         <ContentPaneLayout>
           <Switch>
-            {/* <Route path="/settings" component={SettingsView} /> */}
+            <Route path="/settings" component={SettingsView} />
             <Route
                 path="/projects"
                 component={ProjectListView}
