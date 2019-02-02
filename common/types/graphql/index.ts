@@ -1,5 +1,6 @@
 export type Maybe<T> = T | null;
 
+/** Data type for creating or updating an account. */
 export interface AccountInput {
   /** Unique, user-visible account name of the account being changed. */
   accountName: string;
@@ -10,7 +11,18 @@ export interface AccountInput {
   /** User email address. */
   email?: Maybe<string>;
 }
-
+/** Data type for creating or updating a project. */
+export interface ProjectInput {
+  /** Short description of the project. */
+  title: string;
+  /** A more detailed description of the project. */
+  description: string;
+  /** Issue template for this project. */
+  template?: Maybe<string>;
+  /** If true, indicates that this project is visible to the public. */
+  isPublic: boolean;
+}
+/** Type of account: user account or organizational account. */
 export enum AccountType {
   User = "USER",
   Organization = "ORGANIZATION"
@@ -43,7 +55,7 @@ export interface Query {
   me?: Maybe<Account>;
   /** Return a list of all organization members. */
   organizationMembers: Membership[];
-  /** Access a project either by the project name or by the database id. */
+  /** Access a project by account/project name or by id. */
   project?: Maybe<Project>;
   /** Return a lists of all projects that the user belongs to. */
   projects: Project[];
@@ -101,15 +113,18 @@ export interface Membership {
   updatedAt: DateTime;
 }
 
+/** Project record. */
 export interface Project {
-  /** Unique ID of this project [account/projectId]. */
+  /** Unique ID of this project. */
   id: string;
+  /** Account that owns this project. */
+  owner: string;
+  /** Unique name of this project within an account. */
+  name: string;
   /** Short description of the project. */
   title: string;
   /** A more detailed description of the project. */
   description: string;
-  /** Account that owns this project. */
-  owner: string;
   /** When this project was created. */
   createdAt: DateTime;
   /** When this project was last updated. */
@@ -118,6 +133,8 @@ export interface Project {
   template?: Maybe<string>;
   /** If true, indicates that this project is visible to the public. */
   isPublic: boolean;
+  /** Role of current user with respect to this project. */
+  role?: Maybe<number>;
 }
 
 export interface Mutation {
@@ -127,6 +144,10 @@ export interface Mutation {
   createOrganizationAccount?: Maybe<Account>;
   /** Update an account */
   updateAccount?: Maybe<Account>;
+  /** Create a project */
+  createProject?: Maybe<Project>;
+  /** Update a project */
+  updateProject?: Maybe<Project>;
 }
 
 // ====================================================
@@ -147,7 +168,9 @@ export interface OrganizationMembersQueryArgs {
   accountName: string;
 }
 export interface ProjectQueryArgs {
-  projectName?: Maybe<string>;
+  owner?: Maybe<string>;
+
+  name?: Maybe<string>;
 
   id?: Maybe<string>;
 }
@@ -162,4 +185,16 @@ export interface CreateOrganizationAccountMutationArgs {
 }
 export interface UpdateAccountMutationArgs {
   input?: Maybe<AccountInput>;
+}
+export interface CreateProjectMutationArgs {
+  owner: string;
+
+  name: string;
+
+  input?: Maybe<ProjectInput>;
+}
+export interface UpdateProjectMutationArgs {
+  id: string;
+
+  input?: Maybe<ProjectInput>;
 }

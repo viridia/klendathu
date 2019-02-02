@@ -19,8 +19,8 @@ type Query {
   "Return a list of all organization members."
   organizationMembers(accountName: String!): [Membership!]!
 
-  "Access a project either by the project name or by the database id."
-  project(projectName: String, id: ID): Project
+  "Access a project by account/project name or by id."
+  project(owner: String, name: String, id: ID): Project
 
   "Return a lists of all projects that the user belongs to."
   projects: [Project!]!
@@ -38,6 +38,12 @@ type Mutation {
 
   "Update an account"
   updateAccount(input: AccountInput): Account
+
+  "Create a project"
+  createProject(owner: ID!, name: String!, input: ProjectInput): Project
+
+  "Update a project"
+  updateProject(id: ID!, input: ProjectInput): Project
 }
 `;
 

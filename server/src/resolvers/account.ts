@@ -6,7 +6,7 @@ import {
   CreateUserAccountMutationArgs,
   UpdateAccountMutationArgs,
 } from '../../../common/types/graphql';
-import { externalize, escapeRegExp } from '../db/helpers';
+import { escapeRegExp } from '../db/helpers';
 import { ObjectID } from 'bson';
 import { AuthenticationError, UserInputError } from 'apollo-server-core';
 import { Errors } from '../../../common/types/json';
@@ -14,22 +14,16 @@ import { Errors } from '../../../common/types/json';
 // User profile query
 export const queries = {
   account(_: any, args: AccountQueryArgs, context: Context): Promise<AccountRecord> {
-    // console.log(args);
     const accounts = context.db.collection('accounts');
     if (args.accountName) {
-      return accounts.findOne({ accountName: args.accountName }).then(externalize);
+      return accounts.findOne({ accountName: args.accountName });
     } else if (args.id) {
-      return accounts.findOne({ _id: new ObjectID(args.id) }).then(externalize);
+      return accounts.findOne({ _id: new ObjectID(args.id) });
     }
   },
 
   async accounts(_: any, args: AccountsQueryArgs, context: Context): Promise<AccountRecord[]> {
     // TODO: get project role?
-    // Can you list members of a non-public project that you are not a member of?
-    // Probably not I guess...
-    // if (!context.user) {
-    //   return [];
-    // }
     const accounts = context.db.collection('accounts');
     const query: any = {};
     if (args.token) {
@@ -84,6 +78,8 @@ export const mutations = {
     } else if (input.display.length < 4) {
       throw new UserInputError(Errors.TEXT_TOO_SHORT, { field: 'display' });
     }
+
+    // TODO: Uhhhh...permissions?
 
     const accounts = context.db.collection('accounts');
     const account =

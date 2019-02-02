@@ -32,6 +32,11 @@ export class UserAccountForm extends React.Component<{}> {
   @observable private displayName: string;
   @observable private displayNameError: string;
 
+  constructor(props: any) {
+    super(props);
+    this.displayName = session.account.display;
+  }
+
   public render() {
     return (
       <SettingsPane>

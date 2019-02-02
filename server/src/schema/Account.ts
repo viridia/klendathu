@@ -1,6 +1,7 @@
 import { gql } from 'apollo-server-express';
 
 export const Account = gql`
+"Type of account: user account or organizational account."
 enum AccountType {
   USER,
   ORGANIZATION,
@@ -48,6 +49,7 @@ type Account {
   verified: Boolean!
 }
 
+"Data type for creating or updating an account."
 input AccountInput {
   "Unique, user-visible account name of the account being changed."
   accountName: String!

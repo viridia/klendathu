@@ -4,9 +4,9 @@ export enum Errors {
   UNAUTHORIZED = 'unauthorized',
   FORBIDDEN = 'forbidden',
   NOT_FOUND = 'not-found',
+  NOT_IMPLEMENTED = 'not-implemented',
   CONFLICT = 'conflict',
   EXISTS = 'exists',
-  SCHEMA = 'schema-validation',
 
   TEXT_MISSING = 'text-missing',
   TEXT_TOO_SHORT = 'text-too-short',
@@ -17,6 +17,7 @@ export enum Errors {
   MISSING_COLOR = 'missing-color',
   MISSING_LABEL = 'missing-label',
   INVALID_ROLE = 'invalid-role',
+  INVALID_ACCOUNT = 'invalid-account',
 
   INVALID_EMAIL = 'invalid-email',
   USERNAME_LOWER_CASE = 'username-lower-case',

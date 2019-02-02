@@ -6,13 +6,13 @@ export interface MembershipRecord {
   _id?: ObjectID;
 
   /** User id of project member. */
-  user: string;
+  user: ObjectID;
 
   /** If this is a project membership, id of project. */
-  project?: string;
+  project?: ObjectID;
 
   /** If this is an organization membership, id of organization. */
-  organization?: string;
+  organization?: ObjectID;
 
   /** Access level for the this user (direct as project member). */
   role: number;

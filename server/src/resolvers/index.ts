@@ -1,12 +1,16 @@
 export { Context } from './Context';
-import * as account from './account';
+import * as accounts from './account';
+import * as projects from './projects';
 
 export const resolverMap = {
   Query: {
-    ...account.queries,
+    ...accounts.queries,
+    ...projects.queries,
   },
   Mutation: {
-    ...account.mutations,
+    ...accounts.mutations,
+    ...projects.mutations,
   },
-  ...account.types,
+  ...accounts.types,
+  ...projects.types,
 };

@@ -1,4 +1,4 @@
-import { Db, ObjectID } from 'mongodb';
+import { Db } from 'mongodb';
 import { logger } from '../logger';
 
 export async function ensureCollections(db: Db, names: string[]) {
@@ -37,12 +37,12 @@ export function escapeRegExp(str: string) {
   return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
 }
 
-export interface BaseRecord {
-  _id: ObjectID;
-}
+// export interface BaseRecord {
+//   _id: ObjectID;
+// }
 
-/** Convert the '_id' field to 'id', and leave all other fields alone. */
-export function externalize<T extends BaseRecord>(record: T):
-    T & { id: string, __typename: any } {
-  return record ? { id: record._id.toHexString(), ...record } as any : null;
-}
+// /** Convert the '_id' field to 'id', and leave all other fields alone. */
+// export function externalize<T extends BaseRecord>(record: T):
+//     T & { id: string, __typename: any } {
+//   return record ? { id: record._id.toHexString(), ...record } as any : null;
+// }

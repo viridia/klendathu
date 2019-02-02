@@ -4,14 +4,17 @@ export interface ProjectRecord {
   /** Database id of the project. */
   _id?: ObjectID;
 
+  /** Database id of owner of this project, either user or organization. */
+  owner: string;
+
+  /** Unique name of this project within an account. */
+  name: string;
+
   /** Short description of the project. */
   title: string;
 
   /** A more detailed description of the project. */
   description: string;
-
-  /** Database id of owner of this project, either user or organization. */
-  owner: string;
 
   /** Issue template for this project. */
   template?: string;
@@ -33,4 +36,8 @@ export interface ProjectRecord {
 
   /** Next label id. */
   labelIdCounter: number;
+}
+
+export interface ProjectRecordAndRole extends ProjectRecord {
+  role: number;
 }

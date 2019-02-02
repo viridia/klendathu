@@ -5,8 +5,10 @@ import { Normalize } from 'styled-normalize';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { AccountPage } from './account/AccountPage';
 import { MainPage } from './main/MainPage';
-import { ApolloProvider, Query } from 'react-apollo';
+import { ApolloProvider } from 'react-apollo';
 import { client } from './graphql/client';
+
+import 'react-toastify/dist/ReactToastify.css'; // tslint:disable-line
 
 class App extends React.Component<{}> {
   public render() {

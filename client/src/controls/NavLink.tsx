@@ -11,7 +11,7 @@ function NavLinkImpl({ children, className, ...attrs }: NavLinkProps & { disable
   );
 }
 
-/** Looks like a button, but is actually an anchor tag. */
+/** Navigation link. */
 export const NavLink = styled(NavLinkImpl)`
   color: ${props => props.theme.primaryColor};
 

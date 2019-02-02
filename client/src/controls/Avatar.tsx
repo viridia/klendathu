@@ -19,6 +19,7 @@ interface Props {
   small?: boolean;
 }
 
+/** Compute initials from user name. */
 function initials(name: string): string {
   return name ? (name.match(/\b\w/g) || []).join('').slice(0, 3) : null;
 }
@@ -28,6 +29,7 @@ const AvatarImg = styled.div`
   background-size: cover;
   border-radius: 50%;
   display: inline-flex;
+  font-size: .9rem;
   height: 32px;
   justify-content: center;
   overflow: hidden;
@@ -71,7 +73,7 @@ export function Avatar({ id, accountName, small }: Props) {
           } else if (account.id && account.display) {
             // Compute a background tint
             const hue = parseInt(account.id, 16) % 32 * 630 / 32;
-            const backgroundColor = hsl(hue, 1, 0.4);
+            const backgroundColor = hsl(hue, 1, 0.7);
             const color = readableColor(backgroundColor);
             // Display initials
             return (

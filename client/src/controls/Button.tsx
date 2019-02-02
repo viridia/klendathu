@@ -32,6 +32,7 @@ export const Button = styled(ButtonImpl)`
   background-color: ${props => props.theme.buttonColors[props.kind].bg};
   color: ${props => props.theme.buttonColors[props.kind].text};
   display: inline-flex;
+  font-size: 1rem;
   padding: 0 12px;
   height: 32px;
   outline: none;

@@ -1,13 +1,122 @@
 import * as React from 'react';
-import { Avatar } from '../controls/Avatar';
+import { CreateProjectDialog } from './CreateProjectDialog';
+import { action, observable } from 'mobx';
+import { observer } from 'mobx-react';
+import { Button, Card, NavLink } from '../controls';
+import { Query } from 'react-apollo';
+import { ErrorDisplay } from '../graphql/ErrorDisplay';
+import { Project } from '../../../common/types/graphql';
+import { EmptyList } from '../layout';
+import styled from 'styled-components';
+import gql from 'graphql-tag';
 
+import AddBoxIcon from '../svg-compiled/icons/IcAddBox';
+
+const projectsQuery = gql`
+  query ProjectsQuery {
+    projects { id, owner, name, title, description, createdAt, updatedAt, role, isPublic }
+  }
+`;
+
+const ProjectListEl = styled.section`
+  flex: 1;
+`;
+
+const ProjectCard = styled(Card)`
+  display: grid;
+  grid-template-rows: 1.2rem 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-areas:
+    "title a b"
+    "description d e"
+    "description f g";
+  padding: .5rem 1rem;
+  align-items: start;
+  justify-content: start;
+
+  > .id {
+    display: none;
+  }
+
+  > .title {
+    grid-area: title;
+  }
+
+  > .description {
+    grid-area: description;
+  }
+`;
+
+const ProjectTitle = styled.span`
+  font-weight: bold;
+  margin-right: .5rem;
+`;
+
+const ProjectName = styled.span`
+  color: ${props => props.theme.dilutedColor};
+`;
+
+@observer
 export class ProjectListView extends React.Component<{}> {
+  @observable private openCreate = false;
+
   public render() {
     return (
       <>
-        <header>Project List</header>
-        <Avatar id="5c4e9830c58fc93708cc1e9e" />
+        <header>
+          Project List
+          <Button kind="primary" onClick={this.onClickAddProject}>
+            <AddBoxIcon />
+            <span>New Project&hellip;</span>
+          </Button>
+        </header>
+        <Query query={projectsQuery} >
+          {({ loading, error, data }) => {
+            if (loading) {
+              return <div>loading&hellip;</div>;
+            } else if (error) {
+              return <ErrorDisplay error={error} />;
+            } else {
+              const projects: Project[] = data.projects;
+              if (!projects) {
+                return <EmptyList>No projects found.</EmptyList>;
+              }
+              return (
+                <ProjectListEl>
+                  {projects.map(prj => (
+                    <ProjectCard key={prj.id}>
+                      <div className="id">{prj.id}</div>
+                      <div className="owner">{prj.owner}</div>
+                      <div className="title">
+                        <ProjectTitle>
+                          <NavLink to={`${prj.name}`}>{prj.title}</NavLink>
+                        </ProjectTitle>
+                        <ProjectName>[{prj.name}]</ProjectName>
+                      </div>
+                      <div className="description">{prj.description}</div>
+                      <div className="created">{prj.createdAt}</div>
+                      <div className="updated">{prj.updatedAt}</div>
+                      <div className="role">{prj.role}</div>
+                      <div className="public">{prj.isPublic ? 'true' : 'false'}</div>
+                    </ProjectCard>
+                  ))}
+                </ProjectListEl>
+              );
+            }
+          }}
+        </Query>
+        <CreateProjectDialog show={this.openCreate} onHide={this.onCloseCreate} />
       </>
     );
+  }
+
+  @action.bound
+  private onClickAddProject(e: any) {
+    this.openCreate = true;
+  }
+
+  @action.bound
+  private onCloseCreate() {
+    this.openCreate = false;
   }
 }

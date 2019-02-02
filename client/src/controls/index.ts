@@ -6,7 +6,7 @@ export { Card } from './Card';
 export { Chip } from './Chip';
 export { Dialog } from './Dialog';
 export { Dropdown, DropdownButton } from './Dropdown';
-export { Form, FormLabel, TextArea, TextInput, ValidationState } from './Form';
+export { Form, FormControlGroup, FormLabel, TextArea, TextInput, ValidationState } from './Form';
 export { LinkButton } from './LinkButton';
 export { Menu, MenuItem, MenuDivider } from './Menu';
 export { NavContainer } from './NavContainer';

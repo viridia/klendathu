@@ -50,6 +50,7 @@ function TextInputImpl({
   );
 }
 
+/** Text input form control. */
 export const TextInput = styled(TextInputImpl)`
   background-color: ${(props: ThemeProps) => props.theme.inputBgColor};
   border: 1px solid ${(props: ThemeProps) => props.theme.inputBorderColor};
@@ -95,6 +96,7 @@ function TextAreaImpl({
   );
 }
 
+/** Textarea input form control. */
 export const TextArea = styled(TextAreaImpl)`
   background-color: ${(props: ThemeProps) => props.theme.inputBgColor};
   border: 1px solid ${(props: ThemeProps) => props.theme.inputBorderColor};

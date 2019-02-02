@@ -1,4 +1,3 @@
-// export { Account } from './Account';
 // export { Attachment } from './Attachment';
 // export {
 //   Change,
@@ -15,10 +14,9 @@ export { Errors } from './Errors';
 // export { Membership } from './Membership';
 // export { Milestone, MilestoneInput, MilestoneStatus } from './Milestone';
 // export { Predicate } from './Predicate';
-// export { Project } from './Project';
 // export { ProjectPrefs, ProjectPrefsInput, Filter } from './ProjectPrefs';
 // export { Relation, inverseRelations } from './Relation';
-// export { Role } from './Role';
+export { Role } from './Role';
 // export {
 //   DataType,
 //   FieldType,
