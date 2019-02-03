@@ -2,7 +2,7 @@ import * as React from 'react';
 import { hot } from 'react-hot-loader';
 import { NavLink, BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { Normalize } from 'styled-normalize';
-import { themeDefault, styled, ThemeProvider, ThemeProps, GlobalStyle } from '../style';
+import { themeDefault, styled, ThemeProvider, GlobalStyle } from '../style';
 import { registry } from './registry';
 import { lighten } from 'polished';
 
@@ -105,7 +105,7 @@ class Gallery extends React.Component<{}> {
               </aside>
               <section className="preview">
                 <Switch>
-                  {keys.map(key => (<Route key={key} path={`/${key}`} render={registry[key]} />)}
+                  {keys.map(key => (<Route key={key} path={`/${key}`} render={registry[key]} />))}
                 </Switch>
               </section>
             </GalleryPage>

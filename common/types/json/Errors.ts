@@ -22,6 +22,7 @@ export enum Errors {
   INVALID_EMAIL = 'invalid-email',
   USERNAME_LOWER_CASE = 'username-lower-case',
   INCORRECT_PASSWORD = 'incorrect-password',
+  PASSWORD_TOO_SHORT = 'password-too-short',
   INVALID_TOKEN = 'invalid-token',
   INVALID_PHOTO = 'invalid-photo',
 }

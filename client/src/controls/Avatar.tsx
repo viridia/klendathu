@@ -54,16 +54,16 @@ export function Avatar({ id, accountName, small }: Props) {
     <Query query={avatarQuery} variables={{ id, accountName }} >
       {({ loading, error, data }) => {
         if (loading) {
-          return <AvatarImg className={classNames('loading', { small })} />;
+          return <AvatarImg className={classNames('avatar', 'loading', { small })} />;
         } else if (error) {
-          return <AvatarImg className={classNames('error', { small })} />;
+          return <AvatarImg className={classNames('avatar', 'error', { small })} />;
         } else {
           const account: PublicAccount = data.account;
           if (account.photo) {
             // Use the account photo
             return (
               <AvatarImg
-                  className={classNames({ small })}
+                  className={classNames('avatar', { small })}
                   style={{ backgroundImage: `url(${account.photo})` }}
                   title={data.display}
                   data-name={account.accountName}
@@ -78,7 +78,7 @@ export function Avatar({ id, accountName, small }: Props) {
             // Display initials
             return (
               <AvatarImg
-                  className={classNames({ small })}
+                  className={classNames('avatar', { small })}
                   title={data.display}
                   data-name={account.accountName}
                   data-id={account.id}
@@ -91,7 +91,7 @@ export function Avatar({ id, accountName, small }: Props) {
             // Display default avatar image
             return (
               <AvatarImg
-                  className={classNames({ small })}
+                  className={classNames('avatar', { small })}
                   style={{ backgroundImage: `url(${DefaultAvatar})` }}
                   title={data.display}
                   data-name={account.accountName}

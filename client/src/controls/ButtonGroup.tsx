@@ -19,7 +19,7 @@ function ButtonGroupImpl({ children, className, vertical, ...attrs }: ButtonGrou
 export const ButtonGroup = styled(ButtonGroupImpl)`
   align-items: center;
   border: none;
-  background-color: ${(props: ThemeProps) => props.theme.buttonDefaultBgColor};
+  background-color: ${(props: ThemeProps) => props.theme.buttonColors.default.bg};
   display: inline-flex;
   flex-direction: row;
 

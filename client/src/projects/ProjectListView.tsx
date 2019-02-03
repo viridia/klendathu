@@ -2,7 +2,7 @@ import * as React from 'react';
 import { CreateProjectDialog } from './CreateProjectDialog';
 import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
-import { Button, Card, NavLink } from '../controls';
+import { Button, Card, NavLink, RelativeDate, AccountName, Avatar, RoleName } from '../controls';
 import { Query } from 'react-apollo';
 import { ErrorDisplay } from '../graphql/ErrorDisplay';
 import { Project } from '../../../common/types/graphql';
@@ -25,11 +25,11 @@ const ProjectListEl = styled.section`
 const ProjectCard = styled(Card)`
   display: grid;
   grid-template-rows: 1.2rem 1fr 1fr;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
   grid-template-areas:
-    "title a b"
-    "description d e"
-    "description f g";
+    "title owner role visibility"
+    "description owner role created"
+    "description owner role updated";
   padding: .5rem 1rem;
   align-items: start;
   justify-content: start;
@@ -44,6 +44,33 @@ const ProjectCard = styled(Card)`
 
   > .description {
     grid-area: description;
+  }
+
+  > .owner {
+    align-self: center;
+    justify-self: center;
+    grid-area: owner;
+    > .avatar {
+      margin-right: .3rem;
+    }
+  }
+
+  > .role {
+    align-self: center;
+    justify-self: center;
+    grid-area: role;
+  }
+
+  > .visibility {
+    grid-area: visibility;
+  }
+
+  > .created {
+    grid-area: created;
+  }
+
+  > .updated {
+    grid-area: updated;
   }
 `;
 
@@ -86,7 +113,10 @@ export class ProjectListView extends React.Component<{}> {
                   {projects.map(prj => (
                     <ProjectCard key={prj.id}>
                       <div className="id">{prj.id}</div>
-                      <div className="owner">{prj.owner}</div>
+                      <div className="owner">
+                        <b>Owned By:</b> <Avatar id={prj.owner} />
+                        <AccountName id={prj.owner} />
+                      </div>
                       <div className="title">
                         <ProjectTitle>
                           <NavLink to={`${prj.name}`}>{prj.title}</NavLink>
@@ -94,10 +124,18 @@ export class ProjectListView extends React.Component<{}> {
                         <ProjectName>[{prj.name}]</ProjectName>
                       </div>
                       <div className="description">{prj.description}</div>
-                      <div className="created">{prj.createdAt}</div>
-                      <div className="updated">{prj.updatedAt}</div>
-                      <div className="role">{prj.role}</div>
-                      <div className="public">{prj.isPublic ? 'true' : 'false'}</div>
+                      <div className="created">
+                        <b>Created:</b> <RelativeDate date={prj.createdAt} />
+                      </div>
+                      <div className="updated">
+                        <b>Updated:</b> <RelativeDate date={prj.updatedAt} />
+                      </div>
+                      <div className="role">
+                        <b>Role:</b> <RoleName role={prj.role} />
+                      </div>
+                      <div className="visibility">
+                        <b>Visibility:</b> {prj.isPublic ? 'PUBLIC' : 'PRIVATE'}
+                      </div>
                     </ProjectCard>
                   ))}
                 </ProjectListEl>

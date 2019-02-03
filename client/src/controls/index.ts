@@ -1,3 +1,4 @@
+export { AccountName } from './AccountName';
 export { AutoNavigate } from './AutoNavigate';
 export { Avatar } from './Avatar';
 export { Button, ButtonStyle } from './Button';
@@ -12,5 +13,7 @@ export { Menu, MenuItem, MenuDivider } from './Menu';
 export { NavContainer } from './NavContainer';
 export { NavLink } from './NavLink';
 export { PhotoSelect } from './PhotoSelect';
+export { RoleName } from './RoleName';
+export { humanAge, RelativeDate } from './RelativeDate';
 export { Tab, TabBar } from './Tabs';
 export { CheckBox, RadioButton } from './Toggle';
