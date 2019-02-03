@@ -14,7 +14,7 @@ interface Props {
   id?: string;
 }
 
-export function AccountName({ id }: Props) {
+export function AccountNameLink({ id }: Props) {
   return (
     <Query query={accountQuery} variables={{ id }} >
       {({ loading, error, data }) => {

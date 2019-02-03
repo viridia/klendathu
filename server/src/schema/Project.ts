@@ -8,7 +8,10 @@ type Project {
   id: ID!
 
   "Account that owns this project."
-  owner: String!
+  owner: ID!
+
+  "Denormalized owner name."
+  ownerName: String!
 
   "Unique name of this project within an account."
   name: String!

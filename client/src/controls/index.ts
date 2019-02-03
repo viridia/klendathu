@@ -1,4 +1,4 @@
-export { AccountName } from './AccountName';
+export { AccountNameLink } from './AccountNameLink';
 export { AutoNavigate } from './AutoNavigate';
 export { Avatar } from './Avatar';
 export { Button, ButtonStyle } from './Button';

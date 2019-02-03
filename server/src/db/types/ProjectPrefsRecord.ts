@@ -1,4 +1,4 @@
-import { ObjectID } from 'bson';
+import { ObjectID } from 'mongodb';
 
 /** One of the user's saved filters. */
 export interface Filter {

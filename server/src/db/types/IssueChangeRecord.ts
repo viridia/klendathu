@@ -1,5 +1,5 @@
 import { CustomFieldChange, ListChange, LinkChange, ScalarChange } from 'klendathu-json-types';
-import { ObjectID } from 'bson';
+import { ObjectID } from 'mongodb';
 
 export interface IssueChangeRecord {
   _id?: ObjectID;

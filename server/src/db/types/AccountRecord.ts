@@ -1,4 +1,4 @@
-import { ObjectID } from 'bson';
+import { ObjectID } from 'mongodb';
 
 /** Information about a user or organization. */
 export interface AccountRecord {

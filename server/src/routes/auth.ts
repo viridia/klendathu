@@ -16,7 +16,7 @@ import { URL } from 'url';
 import { server } from '../Server';
 import { sendEmailVerify } from '../mail';
 import { handleAsyncErrors } from './errors';
-import { ObjectID } from 'bson';
+import { ObjectID } from 'mongodb';
 
 const jwtOpts = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),

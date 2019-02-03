@@ -1,11 +1,14 @@
-import { ObjectID } from 'bson';
+import { ObjectID } from 'mongodb';
 
 export interface ProjectRecord {
   /** Database id of the project. */
   _id?: ObjectID;
 
   /** Database id of owner of this project, either user or organization. */
-  owner: string;
+  owner: ObjectID;
+
+  /** Denormalized owner name. */
+  ownerName: string;
 
   /** Unique name of this project within an account. */
   name: string;
@@ -38,6 +41,7 @@ export interface ProjectRecord {
   labelIdCounter: number;
 }
 
-export interface ProjectRecordAndRole extends ProjectRecord {
+export interface AugmentedProjectRecord extends ProjectRecord {
   role: number;
+  ownerName: string;
 }

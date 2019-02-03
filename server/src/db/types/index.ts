@@ -8,5 +8,5 @@ export { LabelRecord } from './LabelRecord';
 export { MembershipRecord } from './MembershipRecord';
 // export { MilestoneRecord } from './MilestoneRecord';
 export { ProjectPrefsRecord } from './ProjectPrefsRecord';
-export { ProjectRecord, ProjectRecordAndRole } from './ProjectRecord';
+export { ProjectRecord, AugmentedProjectRecord } from './ProjectRecord';
 export { TemplateRecord } from './TemplateRecord';

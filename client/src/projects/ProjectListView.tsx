@@ -2,19 +2,21 @@ import * as React from 'react';
 import { CreateProjectDialog } from './CreateProjectDialog';
 import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
-import { Button, Card, NavLink, RelativeDate, AccountName, Avatar, RoleName } from '../controls';
+import { Button, Card, RelativeDate, AccountNameLink, Avatar, RoleName, NavLink } from '../controls';
 import { Query } from 'react-apollo';
 import { ErrorDisplay } from '../graphql/ErrorDisplay';
 import { Project } from '../../../common/types/graphql';
 import { EmptyList } from '../layout';
+import { session } from '../models';
 import styled from 'styled-components';
 import gql from 'graphql-tag';
-
 import AddBoxIcon from '../svg-compiled/icons/IcAddBox';
 
 const projectsQuery = gql`
   query ProjectsQuery {
-    projects { id, owner, name, title, description, createdAt, updatedAt, role, isPublic }
+    projects {
+      id, owner, ownerName, name, title, description, createdAt, updatedAt, role, isPublic
+    }
   }
 `;
 
@@ -92,10 +94,12 @@ export class ProjectListView extends React.Component<{}> {
       <>
         <header>
           Project List
-          <Button kind="primary" onClick={this.onClickAddProject}>
-            <AddBoxIcon />
-            <span>New Project&hellip;</span>
-          </Button>
+          {session.isLoggedIn && session.accountName &&
+            <Button kind="primary" onClick={this.onClickAddProject}>
+              <AddBoxIcon />
+              <span>New Project&hellip;</span>
+            </Button>
+          }
         </header>
         <Query query={projectsQuery} >
           {({ loading, error, data }) => {
@@ -105,7 +109,7 @@ export class ProjectListView extends React.Component<{}> {
               return <ErrorDisplay error={error} />;
             } else {
               const projects: Project[] = data.projects;
-              if (!projects) {
+              if (projects.length === 0) {
                 return <EmptyList>No projects found.</EmptyList>;
               }
               return (
@@ -115,13 +119,18 @@ export class ProjectListView extends React.Component<{}> {
                       <div className="id">{prj.id}</div>
                       <div className="owner">
                         <b>Owned By:</b> <Avatar id={prj.owner} />
-                        <AccountName id={prj.owner} />
+                        <AccountNameLink id={prj.owner} />
                       </div>
                       <div className="title">
                         <ProjectTitle>
-                          <NavLink to={`${prj.name}`}>{prj.title}</NavLink>
+                          <NavLink
+                              className="project-link"
+                              to={`${prj.ownerName}/${prj.name}`}
+                          >
+                            {prj.title}
+                          </NavLink>
                         </ProjectTitle>
-                        <ProjectName>[{prj.name}]</ProjectName>
+                        <ProjectName>[{prj.ownerName}/{prj.name}]</ProjectName>
                       </div>
                       <div className="description">{prj.description}</div>
                       <div className="created">

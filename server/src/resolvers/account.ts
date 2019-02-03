@@ -7,7 +7,7 @@ import {
   UpdateAccountMutationArgs,
 } from '../../../common/types/graphql';
 import { escapeRegExp } from '../db/helpers';
-import { ObjectID } from 'bson';
+import { ObjectID } from 'mongodb';
 import { AuthenticationError, UserInputError } from 'apollo-server-core';
 import { Errors } from '../../../common/types/json';
 
@@ -77,6 +77,8 @@ export const mutations = {
       throw new UserInputError(Errors.TEXT_MISSING, { field: 'display' });
     } else if (input.display.length < 4) {
       throw new UserInputError(Errors.TEXT_TOO_SHORT, { field: 'display' });
+    } else if (['account', 'settings'].indexOf(input.accountName) >= 0) {
+      throw new UserInputError(Errors.CONFLICT, { field: 'accountName' });
     }
 
     // TODO: Uhhhh...permissions?

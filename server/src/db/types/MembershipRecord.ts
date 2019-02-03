@@ -1,4 +1,4 @@
-import { ObjectID } from 'bson';
+import { ObjectID } from 'mongodb';
 
 /** Stores the project-specific settings for a user: role, prefs, etc. */
 export interface MembershipRecord {

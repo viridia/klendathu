@@ -1,4 +1,9 @@
-import { ProjectRecord, MembershipRecord, AccountRecord, ProjectRecordAndRole } from '../db/types';
+import {
+  ProjectRecord,
+  MembershipRecord,
+  AccountRecord,
+  AugmentedProjectRecord,
+} from '../db/types';
 import { Context } from './Context';
 import {
   CreateProjectMutationArgs,
@@ -8,43 +13,49 @@ import {
 import { UserInputError, AuthenticationError } from 'apollo-server-core';
 import { Errors, Role } from '../../../common/types/json';
 import { logger } from '../logger';
-import { ObjectID } from 'bson';
+import { ObjectID } from 'mongodb';
 
 interface ProjectJoinResult extends MembershipRecord {
   projectRecord: ProjectRecord[];
 }
 
-// User profile query
 export const queries = {
-  async project(_: any, args: ProjectQueryArgs, context: Context): Promise<ProjectRecord> {
+  async project(_: any, args: ProjectQueryArgs, context: Context): Promise<AugmentedProjectRecord> {
+    const user = context.user ? context.user.accountName : null;
     const projects = context.db.collection('projects');
-    const query: any = {};
-    if (args.id) {
-      query._id = args.id;
-    } else {
-      query.owner = args.owner;
-      query.name = args.name;
-    }
-    const project = await projects.findOne<ProjectRecord>(query);
+    const query = args.id
+        ? { _id: new ObjectID(args.id) }
+        : { owner: args.owner, name: args.name };
+
+    // Look up project
+    const results = await projects.find<ProjectRecord>(query).toArray();
+    const project = results.length > 0 ? results[0] : null;
+    console.log(query, project._id, results.length);
     if (!project) {
-      logger.error(
-          'Attempt to fetch non-existent project:', { user: context.user.accountName, ...args });
+      logger.error('Attempt to fetch non-existent project:', { user, ...args });
       throw new UserInputError(Errors.NOT_FOUND);
     }
-    // If project is not public, then ensure that user is a member.
-    if (!project.isPublic) {
-      const membership = await context.db.collection('memberships')
-          .findOne<MembershipRecord>({ user: context.user._id, project: project._id });
-      if (!membership) {
-        logger.error(
-          'Attempt to access private project:', { user: context.user.accountName, ...args });
-        throw new UserInputError(Errors.NOT_FOUND);
-      }
+
+    // Look up user membership
+    const membership = context.user ? await context.db.collection('memberships')
+        .findOne<MembershipRecord>({ user: context.user._id, project: project._id }) : null;
+    let role = Role.NONE;
+    if (membership) {
+      // Set role.
+      role = membership.role;
+    } else if (!project.isPublic) {
+      // If project is not public, then ensure that user is a member.
+      logger.error('Attempt to access private project:', { user, ...args });
+      throw new UserInputError(Errors.NOT_FOUND);
     }
-    return project;
+
+    return { ...project, role };
   },
 
-  async projects(_: any, args: {}, context: Context): Promise<ProjectRecord[]> {
+  async projects(_: any, args: {}, context: Context): Promise<AugmentedProjectRecord[]> {
+    if (!context.user) {
+      return [];
+    }
     const memberships = context.db.collection('memberships');
     // TODO: include organization matches
     const projectMemberships = await memberships.aggregate<ProjectJoinResult>([
@@ -56,9 +67,9 @@ export const queries = {
           foreignField: '_id',
           as: 'projectRecord',
         }
-      }
+      },
     ]).toArray();
-    const result: ProjectRecordAndRole[] = [];
+    const result: AugmentedProjectRecord[] = [];
     for (const m of projectMemberships) {
       for (const pr of m.projectRecord) {
         result.push({ ...pr, role: m.role });
@@ -74,7 +85,7 @@ export const mutations = {
   async createProject(
       _: any,
       { owner, name, input }: CreateProjectMutationArgs,
-      context: Context): Promise<ProjectRecordAndRole> {
+      context: Context): Promise<AugmentedProjectRecord> {
     if (!context.user) {
       throw new AuthenticationError(Errors.UNAUTHORIZED);
     }
@@ -128,7 +139,8 @@ export const mutations = {
 
     const now = new Date();
     const record: ProjectRecord = {
-      owner,
+      owner: accountRecord._id,
+      ownerName: accountRecord.accountName,
       name,
       title: input.title,
       description: input.description,
@@ -141,7 +153,7 @@ export const mutations = {
     };
 
     const result = await projects.insertOne(record);
-    const projectId = result.insertedId;
+    const projectId: ObjectID = result.insertedId;
 
     const memberships = context.db.collection('memberships');
     const membershipRecord: MembershipRecord = {
@@ -153,7 +165,11 @@ export const mutations = {
     };
 
     await memberships.insertOne(membershipRecord);
-    return { _id: result.insertedId, role: membershipRecord.role, ...record };
+    return {
+      _id: result.insertedId,
+      role: membershipRecord.role,
+      ownerName: accountRecord.accountName,
+      ...record };
   },
 
   async updateProject(
@@ -170,7 +186,8 @@ export const mutations = {
 
 export const types = {
   Project: {
-    id: (pr: ProjectRecord) => pr._id,
+    id: (pr: ProjectRecord) => pr._id.toHexString(),
+    owner: (pr: ProjectRecord) => pr.owner.toHexString(),
     createdAt: (pr: ProjectRecord) => pr.created,
     updatedAt: (pr: ProjectRecord) => pr.updated,
   },

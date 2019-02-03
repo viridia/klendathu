@@ -119,6 +119,8 @@ export interface Project {
   id: string;
   /** Account that owns this project. */
   owner: string;
+  /** Denormalized owner name. */
+  ownerName: string;
   /** Unique name of this project within an account. */
   name: string;
   /** Short description of the project. */
