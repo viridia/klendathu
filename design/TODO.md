@@ -1,5 +1,8 @@
 # TODO
 
+* GraphQL subscriptions
+* Make user links local to the view
+
 # Components
 
 * AutoComplete
@@ -8,14 +11,7 @@
   * SortOrder
   * Checkbox Column
 * DiscloseButton
-* RelativeDate
 * Dropdown (non-button)
 * NavContainer (query)
-
-# Form controls
-
-* placeholder text
-
-# Future
-
+* Spinner
 * Switch

@@ -2,7 +2,15 @@ import * as React from 'react';
 import { CreateProjectDialog } from './CreateProjectDialog';
 import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
-import { Button, Card, RelativeDate, AccountNameLink, Avatar, RoleName, NavLink } from '../controls';
+import {
+  Button,
+  Card,
+  RelativeDate,
+  AccountNameLink,
+  Avatar,
+  RoleName,
+  NavLink,
+} from '../controls';
 import { Query } from 'react-apollo';
 import { ErrorDisplay } from '../graphql/ErrorDisplay';
 import { Project } from '../../../common/types/graphql';
@@ -26,7 +34,7 @@ const ProjectListEl = styled.section`
 
 const ProjectCard = styled(Card)`
   display: grid;
-  grid-template-rows: 1.2rem 1fr 1fr;
+  grid-template-rows: auto 1fr 1fr;
   grid-template-columns: 1.5fr 1fr 1fr 1fr;
   grid-template-areas:
     "title owner role visibility"
@@ -42,6 +50,7 @@ const ProjectCard = styled(Card)`
 
   > .title {
     grid-area: title;
+    font-weight: bold;
   }
 
   > .description {
@@ -53,7 +62,8 @@ const ProjectCard = styled(Card)`
     justify-self: center;
     grid-area: owner;
     > .avatar {
-      margin-right: .3rem;
+      margin-right: .4rem;
+      margin-left: .4rem;
     }
   }
 
@@ -122,15 +132,13 @@ export class ProjectListView extends React.Component<{}> {
                         <AccountNameLink id={prj.owner} />
                       </div>
                       <div className="title">
-                        <ProjectTitle>
-                          <NavLink
-                              className="project-link"
-                              to={`${prj.ownerName}/${prj.name}`}
-                          >
-                            {prj.title}
-                          </NavLink>
-                        </ProjectTitle>
-                        <ProjectName>[{prj.ownerName}/{prj.name}]</ProjectName>
+                        <ProjectTitle>{prj.title}</ProjectTitle>[
+                        <NavLink
+                            className="project-link"
+                            to={`/${prj.ownerName}/${prj.name}`}
+                        >
+                          {prj.ownerName}/{prj.name}
+                        </NavLink>]
                       </div>
                       <div className="description">{prj.description}</div>
                       <div className="created">

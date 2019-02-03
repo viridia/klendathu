@@ -28,9 +28,7 @@ export const queries = {
         : { owner: args.owner, name: args.name };
 
     // Look up project
-    const results = await projects.find<ProjectRecord>(query).toArray();
-    const project = results.length > 0 ? results[0] : null;
-    console.log(query, project._id, results.length);
+    const project = await projects.findOne<ProjectRecord>(query);
     if (!project) {
       logger.error('Attempt to fetch non-existent project:', { user, ...args });
       throw new UserInputError(Errors.NOT_FOUND);

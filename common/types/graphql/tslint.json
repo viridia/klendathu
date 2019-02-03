@@ -2,7 +2,7 @@
   "extends": ["../../tslint"],
   "rules": {
     "max-line-length": [false],
-    "quotemark": [true, "double", "jsx-double"],
+    "quotemark": [true, "double", "jsx-double"]
   },
 
   "defaultSeverity": "error"
