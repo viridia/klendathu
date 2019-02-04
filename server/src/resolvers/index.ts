@@ -11,6 +11,9 @@ export const resolverMap = {
     ...accounts.mutations,
     ...projects.mutations,
   },
+  Subscription: {
+    ...projects.subscriptions,
+  },
   ...accounts.types,
   ...projects.types,
 };

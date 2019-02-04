@@ -41,7 +41,8 @@ export interface ProjectRecord {
   labelIdCounter: number;
 }
 
+/** Project record with additional user-specific context added by resolver. */
 export interface AugmentedProjectRecord extends ProjectRecord {
+  /** Role for the current user. */
   role: number;
-  ownerName: string;
 }

@@ -28,8 +28,17 @@ const projectsQuery = gql`
   }
 `;
 
+const projectsSubscription = gql`
+  subscription ProjectsSubscription($owners: [ID!]!) {
+    projectAdded(owners: $owners) {
+      id, owner, ownerName, name, title, description, createdAt, updatedAt, role, isPublic
+    }
+  }
+`;
+
 const ProjectListEl = styled.section`
-  flex: 1;
+  flex: 1 1 0;
+  overflow-y: auto;
 `;
 
 const ProjectCard = styled(Card)`
@@ -91,10 +100,6 @@ const ProjectTitle = styled.span`
   margin-right: .5rem;
 `;
 
-const ProjectName = styled.span`
-  color: ${props => props.theme.dilutedColor};
-`;
-
 @observer
 export class ProjectListView extends React.Component<{}> {
   @observable private openCreate = false;
@@ -112,7 +117,7 @@ export class ProjectListView extends React.Component<{}> {
           }
         </header>
         <Query query={projectsQuery} >
-          {({ loading, error, data }) => {
+          {({ loading, error, data, refetch, subscribeToMore }) => {
             if (loading) {
               return <div>loading&hellip;</div>;
             } else if (error) {
@@ -122,6 +127,17 @@ export class ProjectListView extends React.Component<{}> {
               if (projects.length === 0) {
                 return <EmptyList>No projects found.</EmptyList>;
               }
+              subscribeToMore({
+                document: projectsSubscription,
+                variables: {
+                  owners: [session.account.id],
+                },
+                updateQuery: (prev, { subscriptionData }) => {
+                  // For the moment we're just going to refresh.
+                  // console.log('subscriptionData', subscriptionData);
+                  refetch();
+                },
+              });
               return (
                 <ProjectListEl>
                   {projects.map(prj => (

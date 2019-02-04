@@ -125,8 +125,7 @@ export class CreateProjectDialog extends React.Component<Props> {
         input,
       },
     }).then(result => {
-      console.log(result);
-      // session.reload();
+      // console.log(result);
       this.busy = false;
       this.clearForm();
       this.props.onHide();
@@ -144,7 +143,7 @@ export class CreateProjectDialog extends React.Component<Props> {
           toast.error('Function not implemented.');
           break;
         case Errors.CONFLICT:
-          toast.error('A project with that name already exists.');
+          this.projectNameError = 'A project with that name already exists.';
           break;
         case Errors.TEXT_MISSING:
           if (field === 'name') {

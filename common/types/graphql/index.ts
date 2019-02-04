@@ -152,6 +152,17 @@ export interface Mutation {
   updateProject?: Maybe<Project>;
 }
 
+export interface Subscription {
+  /** Signal account details have changed. Not restricted; all users can see public account details. */
+  accountChanged: PublicAccount;
+  /** Notify when a project has been added. Only listens for projects belonging to specified owners. */
+  projectAdded: Project;
+  /** Signal a project changed. */
+  projectChanged: Project;
+  /** Signal a project changed. */
+  projectRemoved: string;
+}
+
 // ====================================================
 // Arguments
 // ====================================================
@@ -199,4 +210,13 @@ export interface UpdateProjectMutationArgs {
   id: string;
 
   input?: Maybe<ProjectInput>;
+}
+export interface ProjectAddedSubscriptionArgs {
+  owners: string[];
+}
+export interface ProjectChangedSubscriptionArgs {
+  project: string;
+}
+export interface ProjectRemovedSubscriptionArgs {
+  owner: string;
 }

@@ -87,9 +87,8 @@ server.app.use(
 
 // Set up JWT strategy
 passport.use(new JwtStrategy(jwtOpts, async (payload: SessionState, done) => {
-  const account =
-      await server.db.collection('accounts')
-          .findOne<AccountRecord>({ _id: new ObjectID(payload.uid) });
+  const account = await server.db.collection('accounts')
+      .findOne<AccountRecord>({ _id: new ObjectID(payload.uid) });
   done(null, account ? { ...account, password: undefined } : null);
 }));
 

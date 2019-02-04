@@ -4,16 +4,22 @@ import {
   AccountRecord,
   AugmentedProjectRecord,
 } from '../db/types';
-import { Context } from './Context';
 import {
   CreateProjectMutationArgs,
   ProjectQueryArgs,
   UpdateProjectMutationArgs,
+  ProjectAddedSubscriptionArgs,
 } from '../../../common/types/graphql';
+import { Context } from './Context';
 import { UserInputError, AuthenticationError } from 'apollo-server-core';
 import { Errors, Role } from '../../../common/types/json';
 import { logger } from '../logger';
 import { ObjectID } from 'mongodb';
+import { pubsub } from './pubsub';
+import { withFilter } from 'graphql-subscriptions';
+import { getProjectRole } from '../db/role';
+
+const PROJECT_ADDED = 'project-added';
 
 interface ProjectJoinResult extends MembershipRecord {
   projectRecord: ProjectRecord[];
@@ -121,13 +127,13 @@ export const mutations = {
       throw new UserInputError(Errors.TEXT_MISSING, { field: 'name' });
     } else if (!name.match(/^[a-z][\w\-\.]*$/)) {
       logger.error(
-          'Project name is required.',
+          'Invalid project name.',
           { user: context.user.accountName, owner, name });
       throw new UserInputError(Errors.TEXT_INVALID_CHARS, { field: 'name' });
     }
 
     const projects = await context.db.collection('projects');
-    const existing = await projects.findOne<ProjectRecord>({ owner, name });
+    const existing = await projects.findOne<ProjectRecord>({ owner: accountRecord._id, name });
     if (existing) {
       logger.error(
           'A project with that name already exists.',
@@ -163,11 +169,18 @@ export const mutations = {
     };
 
     await memberships.insertOne(membershipRecord);
+    pubsub.publish(PROJECT_ADDED, {
+      projectAdded: {
+        _id: result.insertedId,
+        ...record,
+      },
+    });
+
     return {
       _id: result.insertedId,
       role: membershipRecord.role,
-      ownerName: accountRecord.accountName,
-      ...record };
+      ...record,
+    };
   },
 
   async updateProject(
@@ -179,6 +192,32 @@ export const mutations = {
     }
     console.log('update project', id, input);
     return null;
+  },
+};
+
+export const subscriptions = {
+  projectAdded: {
+    subscribe: withFilter(
+      () => pubsub.asyncIterator([PROJECT_ADDED]),
+      (
+        { projectAdded }: { projectAdded: ProjectRecord },
+        { owners }: ProjectAddedSubscriptionArgs,
+        context: Context) => {
+        // Anonymous users cannot subscribe to project additions.
+        if (!context.user) {
+          return false;
+        }
+
+        // Only listen to projects from specific owners.
+        if (owners.findIndex(o => projectAdded.owner.equals(o)) < 0) {
+          return false;
+        }
+
+        // Lookup membership
+        return getProjectRole(context.db, context.user, projectAdded)
+            .then(role => role !== Role.NONE);
+      }
+    ),
   },
 };
 

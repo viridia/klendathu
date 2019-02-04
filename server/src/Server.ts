@@ -8,6 +8,7 @@ import { logger } from './logger';
 import { Context, resolverMap } from './resolvers';
 import { ensureCollections } from './db/helpers';
 import * as Bundler from 'parcel-bundler';
+import { decodeAuthToken } from './db/user';
 
 // Connection URL
 const dbUrl = 'mongodb://localhost:27017';
@@ -21,6 +22,27 @@ export class Server {
     typeDefs,
     context: this.getContext.bind(this),
     resolvers: resolverMap,
+    subscriptions: {
+      // Authentication for websocket
+      onConnect: async (connectionParams: any, webSocket) => {
+        if (connectionParams.Authorization) {
+          const m = connectionParams.Authorization.match(/Bearer\s+(.*)/);
+          if (m) {
+            const user = await decodeAuthToken(this.db, m[1]);
+            return {
+              db: this.db,
+              client: this.client,
+              user,
+            };
+          }
+        }
+        return {
+          db: this.db,
+          client: this.client,
+          user: null,
+        };
+      },
+    },
     introspection: true,
     playground: process.env.NODE_ENV !== 'production',
   });
@@ -68,6 +90,8 @@ export class Server {
     this.httpServer = this.app.listen({ port: 4000 }, () => {
       logger.info(`Started listening on localhost:4000`);
     });
+
+    this.apollo.installSubscriptionHandlers(this.httpServer);
   }
 
   public stop() {
@@ -76,7 +100,11 @@ export class Server {
     this.client.close();
   }
 
-  private getContext({ req }: { req: express.Request }): Context {
+  private getContext(
+      { req, connection }: { req: express.Request, connection: any }): Context {
+    if (connection) {
+      return connection.context;
+    }
     return {
       db: this.db,
       client: this.client,

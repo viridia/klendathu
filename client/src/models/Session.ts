@@ -16,7 +16,7 @@ const meQuery = gql`
 export class Session {
   @observable.ref public account: Account = null;
   public request = axios.create();
-  private token: string;
+  public token: string;
 
   constructor() {
     this.request.interceptors.request.use(config => {
