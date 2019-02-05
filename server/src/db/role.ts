@@ -1,6 +1,6 @@
 import { AccountRecord, ProjectRecord, MembershipRecord } from './types';
 import { Role } from '../../../common/types/json';
-import { Db } from 'mongodb';
+import { Db, ObjectID } from 'mongodb';
 import { logger } from '../logger';
 
 export async function getProjectRole(
@@ -31,4 +31,17 @@ export async function getProjectRole(
     logger.error('Error looking up project role', { user: user.accountName, project: project._id });
     return 0;
   }
+}
+
+export async function getProjectAndRole(
+    db: Db,
+    user: AccountRecord,
+    projectId: ObjectID): Promise<{ project?: ProjectRecord, role: Role }> {
+  const projects = db.collection('projects');
+  const project = await projects.findOne<ProjectRecord>({ _id: projectId });
+  if (project) {
+    const role = await getProjectRole(db, user, project);
+    return { project, role };
+  }
+  return { role: Role.NONE };
 }

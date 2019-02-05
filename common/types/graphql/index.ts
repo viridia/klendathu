@@ -28,6 +28,12 @@ export enum AccountType {
   Organization = "ORGANIZATION"
 }
 
+export enum ChangeAction {
+  Added = "ADDED",
+  Changed = "CHANGED",
+  Removed = "REMOVED"
+}
+
 export enum CacheControlScope {
   Public = "PUBLIC",
   Private = "PRIVATE"
@@ -57,6 +63,8 @@ export interface Query {
   organizationMembers: Membership[];
   /** Access a project by account/project name or by id. */
   project?: Maybe<Project>;
+  /** Access a project by owner name and project. Returns project, account and members. */
+  projectComponents?: Maybe<ProjectComponents>;
   /** Return a lists of all projects that the user belongs to. */
   projects: Project[];
   /** Return a list of all project members. */
@@ -139,6 +147,13 @@ export interface Project {
   role?: Maybe<number>;
 }
 
+/** Query result that returns project, owner account and memberships in a single operation. */
+export interface ProjectComponents {
+  project: Project;
+
+  account: PublicAccount;
+}
+
 export interface Mutation {
   /** Create a user account */
   createUserAccount?: Maybe<Account>;
@@ -150,17 +165,27 @@ export interface Mutation {
   createProject?: Maybe<Project>;
   /** Update a project */
   updateProject?: Maybe<Project>;
+  /** Remove a project */
+  removeProject: DeletionResult;
+}
+
+export interface DeletionResult {
+  id: string;
 }
 
 export interface Subscription {
   /** Signal account details have changed. Not restricted; all users can see public account details. */
   accountChanged: PublicAccount;
-  /** Notify when a project has been added. Only listens for projects belonging to specified owners. */
-  projectAdded: Project;
-  /** Signal a project changed. */
-  projectChanged: Project;
-  /** Signal a project changed. */
-  projectRemoved: string;
+  /** Notify when any project within a group of project owners has been added, changed, or removed. */
+  projectsChanged: ProjectChange;
+  /** Watch a single project for changes. */
+  projectChanged: ProjectChange;
+}
+
+export interface ProjectChange {
+  project: Project;
+
+  action: ChangeAction;
 }
 
 // ====================================================
@@ -187,6 +212,11 @@ export interface ProjectQueryArgs {
 
   id?: Maybe<string>;
 }
+export interface ProjectComponentsQueryArgs {
+  owner: string;
+
+  name: string;
+}
 export interface ProjectMembersQueryArgs {
   projectName: string;
 }
@@ -211,12 +241,12 @@ export interface UpdateProjectMutationArgs {
 
   input?: Maybe<ProjectInput>;
 }
-export interface ProjectAddedSubscriptionArgs {
+export interface RemoveProjectMutationArgs {
+  id: string;
+}
+export interface ProjectsChangedSubscriptionArgs {
   owners: string[];
 }
 export interface ProjectChangedSubscriptionArgs {
   project: string;
-}
-export interface ProjectRemovedSubscriptionArgs {
-  owner: string;
 }

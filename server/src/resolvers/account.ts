@@ -77,7 +77,7 @@ export const mutations = {
       throw new UserInputError(Errors.TEXT_MISSING, { field: 'display' });
     } else if (input.display.length < 4) {
       throw new UserInputError(Errors.TEXT_TOO_SHORT, { field: 'display' });
-    } else if (['account', 'settings'].indexOf(input.accountName) >= 0) {
+    } else if (['account', 'settings', 'projects'].indexOf(input.accountName) >= 0) {
       throw new UserInputError(Errors.CONFLICT, { field: 'accountName' });
     }
 

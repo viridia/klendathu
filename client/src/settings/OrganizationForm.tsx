@@ -3,7 +3,7 @@ import { session } from '../models';
 import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { Form, FormLabel, TextInput } from '../controls';
-import { SettingsPane, SettingsPaneContent } from './SettingsPane';
+import { SettingsPane, SettingsPaneContent } from '../layout/SettingsPane';
 
 @observer
 export class OrganizationForm extends React.Component<{}> {

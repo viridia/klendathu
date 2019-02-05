@@ -30,8 +30,11 @@ const projectsQuery = gql`
 
 const projectsSubscription = gql`
   subscription ProjectsSubscription($owners: [ID!]!) {
-    projectAdded(owners: $owners) {
-      id, owner, ownerName, name, title, description, createdAt, updatedAt, role, isPublic
+    projectsChanged(owners: $owners) {
+      action
+      project {
+        id, owner, ownerName, name, title, description, createdAt, updatedAt, role, isPublic
+      }
     }
   }
 `;
@@ -116,9 +119,10 @@ export class ProjectListView extends React.Component<{}> {
             </Button>
           }
         </header>
-        <Query query={projectsQuery} >
+        <Query query={projectsQuery} fetchPolicy="cache-and-network">
           {({ loading, error, data, refetch, subscribeToMore }) => {
-            if (loading) {
+            if (loading && !(data && data.projects)) {
+              // Only display loading indicator if nothing in cache.
               return <div>loading&hellip;</div>;
             } else if (error) {
               return <ErrorDisplay error={error} />;

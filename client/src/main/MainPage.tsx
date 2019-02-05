@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import { RouteComponentProps, Switch, Route } from 'react-router';
+import { RouteComponentProps, Switch, Route, Redirect } from 'react-router';
 import { ToastContainer } from 'react-toastify';
 import { Page } from '../layout';
 import { Header } from '../header/Header';
@@ -10,11 +10,13 @@ import { ProjectListView } from '../projects/ProjectListView';
 import { session } from '../models';
 import { SetupAccountDialog } from '../settings/SetupAccountDialog';
 import { SettingsView } from '../settings/SettingsView';
+import { ProjectComponentsProvider } from '../graphql/ProjectComponentsProvider';
+import { ProjectSettings } from '../projects/settings/ProjectSettings';
 
 const MainPageLayout = styled(Page)`
   display: grid;
   grid-template-rows: 2.6rem 1fr;
-  grid-template-columns: 12em 1fr;
+  grid-template-columns: 14em 1fr;
   grid-template-areas:
     "header header"
     "nav main";
@@ -63,10 +65,10 @@ export class MainPage extends React.Component<RouteComponentProps<{}>> {
     return (
       <MainPageLayout>
         <ToastContainer
-            position="bottom-right"
-            autoClose={10000}
-            hideProgressBar={true}
-            newestOnTop={false}
+          position="bottom-right"
+          autoClose={10000}
+          hideProgressBar={true}
+          newestOnTop={false}
         />
         <Header />
         <LeftNav />
@@ -74,7 +76,69 @@ export class MainPage extends React.Component<RouteComponentProps<{}>> {
           <Switch>
             <Route path="/settings" component={SettingsView} />
             <Route path="/projects" component={ProjectListView} />
-            <Route path="/" component={ProjectListView} />
+            <Route
+              path="/:owner/:name"
+              render={({ match }) => (
+                <ProjectComponentsProvider owner={match.params.owner} name={match.params.name} >
+                  {({ loading, ...components }) => (
+                    loading
+                    ? <span>Loading</span>
+                    : (
+                      <Switch>
+                        {/* <Route
+                          path="/:owner/:name/new"
+                          render={props => <IssueCreateView {...props} {...models} />}
+                        />
+                        <Route
+                          path="/:owner/:name/edit/:id"
+                          render={props => <IssueEditView {...props} {...models} />}
+                        />
+                        <Route
+                          path="/:owner/:name/:id(\d+)"
+                          render={props => (<IssueDetailsView {...props} {...models} />)}
+                        />
+                        <Route
+                          path="/:owner/:name/issues"
+                          exact={true}
+                          render={props => (<IssueListView {...props} {...models}/>)}
+                        />
+                        <Route
+                          path="/:owner/:name/labels"
+                          exact={true}
+                          render={() => (<LabelListView {...models} />)}
+                        />
+                        <Route
+                          path="/:owner/:name/filters"
+                          exact={true}
+                          render={props => (<SavedFiltersView {...props} {...models}/>)}
+                        />
+                        <Route
+                          path="/:owner/:name/history"
+                          exact={true}
+                          render={props => (<HistoryListView {...props} {...models}/>)}
+                        />
+                        <Route
+                          path="/:owner/:name/progress"
+                          exact={true}
+                          render={props => (<ProgressView {...props} {...models}/>)}
+                        />
+                        <Route
+                          path="/:owner/:name/dependencies"
+                          exact={true}
+                          render={props => (<DependenciesView {...props} {...models}/>)}
+                        /> */}
+                        <Route
+                            path="/:owner/:name/settings/:tab?"
+                            exact={true}
+                            render={props => (<ProjectSettings {...props} {...components} />)}
+                        />
+                      </Switch>
+                      )
+                  )}
+                </ProjectComponentsProvider>
+              )}
+            />
+            <Redirect path="/" exact={true} to="/projects" />
           </Switch>
         </ContentPaneLayout>
         {/* {showEmailVerification && <EmailVerificationDialog />} */}

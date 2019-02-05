@@ -16,5 +16,8 @@ type Mutation {
 
   "Update a project"
   updateProject(id: ID!, input: ProjectInput): Project
+
+  "Remove a project"
+  removeProject(id: ID!): DeletionResult!
 }
 `;

@@ -8,7 +8,11 @@ import {
   CreateProjectMutationArgs,
   ProjectQueryArgs,
   UpdateProjectMutationArgs,
-  ProjectAddedSubscriptionArgs,
+  ProjectComponentsQueryArgs,
+  ProjectChangedSubscriptionArgs,
+  RemoveProjectMutationArgs,
+  ProjectsChangedSubscriptionArgs,
+  ChangeAction,
 } from '../../../common/types/graphql';
 import { Context } from './Context';
 import { UserInputError, AuthenticationError } from 'apollo-server-core';
@@ -17,12 +21,17 @@ import { logger } from '../logger';
 import { ObjectID } from 'mongodb';
 import { pubsub } from './pubsub';
 import { withFilter } from 'graphql-subscriptions';
-import { getProjectRole } from '../db/role';
+import { getProjectRole, getProjectAndRole } from '../db/role';
 
-const PROJECT_ADDED = 'project-added';
+const PROJECT_CHANGE = 'project-change';
 
 interface ProjectJoinResult extends MembershipRecord {
   projectRecord: ProjectRecord[];
+}
+
+interface ProjectRecordChange {
+  project: ProjectRecord;
+  action: ChangeAction;
 }
 
 export const queries = {
@@ -83,6 +92,44 @@ export const queries = {
     // TODO: Eliminate dups.
     return result;
   },
+
+  // "Access a project by owner name and project. Returns project, account and members."
+  async projectComponents(
+      _: any,
+      { owner, name }: ProjectComponentsQueryArgs,
+      context: Context): Promise<any> {
+    const user = context.user ? context.user.accountName : null;
+    const account = await context.db.collection('accounts')
+        .findOne<AccountRecord>({ accountName: owner });
+    if (!account) {
+      logger.error('Attempt to fetch non-existent account:', { user, owner });
+      throw new UserInputError(Errors.NOT_FOUND);
+    }
+
+    // Look up project
+    const projects = context.db.collection('projects');
+    const project = await projects.findOne<ProjectRecord>({ owner: account._id, name });
+    if (!project) {
+      logger.error('Attempt to fetch non-existent project:', { user, owner, name });
+      throw new UserInputError(Errors.NOT_FOUND);
+    }
+
+    const role = await getProjectRole(context.db, context.user, project);
+    if (role === Role.NONE) {
+      logger.error('Attempt to access private project:', { user, owner, name });
+      return null;
+    }
+
+    // const members = await context.db.collection('memberships').find<MembershipRecord>({
+    //   project: project._id,
+    // }).toArray();
+
+    return {
+      project: { ...project, role },
+      account,
+      // members,
+    };
+  },
 };
 
 export const mutations = {
@@ -132,7 +179,7 @@ export const mutations = {
       throw new UserInputError(Errors.TEXT_INVALID_CHARS, { field: 'name' });
     }
 
-    const projects = await context.db.collection('projects');
+    const projects = context.db.collection('projects');
     const existing = await projects.findOne<ProjectRecord>({ owner: accountRecord._id, name });
     if (existing) {
       logger.error(
@@ -158,7 +205,6 @@ export const mutations = {
 
     const result = await projects.insertOne(record);
     const projectId: ObjectID = result.insertedId;
-
     const memberships = context.db.collection('memberships');
     const membershipRecord: MembershipRecord = {
       user: context.user._id,
@@ -169,8 +215,9 @@ export const mutations = {
     };
 
     await memberships.insertOne(membershipRecord);
-    pubsub.publish(PROJECT_ADDED, {
-      projectAdded: {
+    pubsub.publish(PROJECT_CHANGE, {
+      action: ChangeAction.Added,
+      project: {
         _id: result.insertedId,
         ...record,
       },
@@ -190,18 +237,94 @@ export const mutations = {
     if (!context.user) {
       throw new AuthenticationError(Errors.UNAUTHORIZED);
     }
-    console.log('update project', id, input);
-    return null;
+
+    const user = context.user.accountName;
+    const { project, role } = await getProjectAndRole(context.db, context.user, new ObjectID(id));
+    if (!project) {
+      logger.error('Attempt to update non-existent project:', { user, id });
+      throw new UserInputError(Errors.NOT_FOUND);
+    }
+
+    if (role < Role.MANAGER) {
+      logger.error('Insufficient permissions to update project:', { user, id });
+      throw new UserInputError(Errors.FORBIDDEN);
+    }
+
+    const update: Partial<ProjectRecord> = {};
+    if ('title' in input) {
+      update.title = input.title;
+    }
+
+    if ('description' in input) {
+      update.description = input.description;
+    }
+
+    if ('isPublic' in input) {
+      update.isPublic = input.isPublic;
+    }
+
+    const result = await context.db.collection('projects')
+        .updateOne({ _id: project._id }, { $set: update });
+
+    if (result.modifiedCount === 1) {
+      const updatedProject = { ...project, ...update };
+      pubsub.publish(PROJECT_CHANGE, {
+        action: ChangeAction.Changed,
+        project: updatedProject,
+      });
+      return updatedProject;
+    }
+
+    logger.error('Internal error updating project:', { user, id, update });
+    throw new UserInputError(Errors.INTERNAL);
+  },
+
+  async removeProject(
+      _: any,
+      { id }: RemoveProjectMutationArgs,
+      context: Context): Promise<{ id: ObjectID }> {
+    if (!context.user) {
+      throw new AuthenticationError(Errors.UNAUTHORIZED);
+    }
+
+    const user = context.user.accountName;
+    const { project, role } = await getProjectAndRole(context.db, context.user, new ObjectID(id));
+    if (!project) {
+      logger.error('Attempt to delete non-existent project:', { user, id });
+      throw new UserInputError(Errors.NOT_FOUND);
+    }
+
+    if (role < Role.MANAGER) {
+      logger.error('Insufficient permissions to delete project:', { user, id });
+      throw new UserInputError(Errors.FORBIDDEN);
+    }
+
+    const result = await context.db.collection('projects').deleteOne({ _id: project._id });
+    if (result.deletedCount === 1) {
+      await Promise.all([
+        context.db.collection('issues').deleteMany({ project: project._id }),
+        context.db.collection('labels').deleteMany({ project: project._id }),
+        context.db.collection('issueLinks').deleteMany({ project: project._id }),
+        context.db.collection('issueChanges').deleteMany({ project: project._id }),
+        context.db.collection('memberships').deleteMany({ project: project._id }),
+        context.db.collection('projectPrefs').deleteMany({ project: project._id }),
+      ]);
+      pubsub.publish(PROJECT_CHANGE, { action: ChangeAction.Removed, project });
+      return { id: project._id };
+    }
+
+    logger.error('Internal error deleting project:', { user, id });
+    throw new UserInputError(Errors.INTERNAL);
   },
 };
 
 export const subscriptions = {
-  projectAdded: {
+  projectsChanged: {
     subscribe: withFilter(
-      () => pubsub.asyncIterator([PROJECT_ADDED]),
+      () => pubsub.asyncIterator([PROJECT_CHANGE]),
       (
-        { projectAdded }: { projectAdded: ProjectRecord },
-        { owners }: ProjectAddedSubscriptionArgs,
+        { project }: ProjectRecordChange,
+        { owners }: ProjectsChangedSubscriptionArgs,
         context: Context) => {
         // Anonymous users cannot subscribe to project additions.
         if (!context.user) {
@@ -209,15 +332,39 @@ export const subscriptions = {
         }
 
         // Only listen to projects from specific owners.
-        if (owners.findIndex(o => projectAdded.owner.equals(o)) < 0) {
+        if (owners.findIndex(o => project.owner.equals(o)) < 0) {
           return false;
         }
 
         // Lookup membership
-        return getProjectRole(context.db, context.user, projectAdded)
+        return getProjectRole(context.db, context.user, project)
             .then(role => role !== Role.NONE);
       }
     ),
+    resolve: (payload: ProjectRecordChange, args: any, context: Context) => {
+      return payload;
+    },
+  },
+  projectChanged: {
+    subscribe: withFilter(
+      () => pubsub.asyncIterator([PROJECT_CHANGE]),
+      (
+        { project }: ProjectRecordChange,
+        { project: id }: ProjectChangedSubscriptionArgs,
+        context: Context) => {
+
+        if (!project._id.equals(id)) {
+          return false;
+        }
+
+        // Project must be visible
+        return getProjectRole(context.db, context.user, project)
+            .then(role => role !== Role.NONE);
+      }
+    ),
+    resolve: (payload: ProjectRecordChange, args: any, context: Context) => {
+      return payload;
+    },
   },
 };
 

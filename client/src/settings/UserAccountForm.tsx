@@ -4,7 +4,7 @@ import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { toast } from 'react-toastify';
 import { Form, FormLabel, TextInput, Button, PhotoSelect } from '../controls';
-import { SettingsPane, SettingsPaneContent } from './SettingsPane';
+import { SettingsPane, SettingsPaneContent } from '../layout/SettingsPane';
 import { styled } from '../style';
 
 import DefaultAvatar from '../icons/default-avatar.png';

@@ -1,5 +1,6 @@
 export { Context } from './Context';
 import * as accounts from './account';
+import * as memberships from './memberships';
 import * as projects from './projects';
 
 export const resolverMap = {
@@ -15,5 +16,6 @@ export const resolverMap = {
     ...projects.subscriptions,
   },
   ...accounts.types,
+  ...memberships.types,
   ...projects.types,
 };

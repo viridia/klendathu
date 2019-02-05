@@ -3,6 +3,7 @@
 * GraphQL subscriptions
 * GraphQL fragments
 * Make user links local to the view
+* Redis
 
 # Components
 

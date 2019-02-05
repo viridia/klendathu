@@ -8,6 +8,10 @@ import { Subscription } from './Subscription';
 
 export const Root = gql`
 scalar DateTime
+
+type DeletionResult {
+  id: ID!
+}
 `;
 
 export const typeDefs = [

@@ -69,6 +69,10 @@ const Body = styled.section`
   display: flex;
   flex-direction: column;
   padding: 12px;
+
+  > p {
+    margin-top: 0;
+  }
 `;
 
 // Footer component
@@ -140,6 +144,7 @@ interface Props {
   frameClassName?: string;
   keyboard?: boolean;
   open?: boolean;
+  style?: any;
 
   /** Indicates that the dialog wants to close. */
   onClose: () => void;
@@ -161,6 +166,7 @@ export class Dialog extends React.Component<Props> {
       onExited,
       keyboard = true,
       className,
+      style,
       frameClassName,
       children,
     } = this.props;
@@ -179,7 +185,7 @@ export class Dialog extends React.Component<Props> {
       >
         <ModalFrameEl className={frameClassName}>
           <div style={{ flex: 2 }} />
-          <DialogEl className={className}>
+          <DialogEl className={className} style={style}>
             <CloseContext.Provider value={onClose}>
               {children}
             </CloseContext.Provider>
