@@ -26,7 +26,7 @@ export const themeDefault: ThemeInterface = {
 
   // Left Nav
   leftNavBgColor: dye(0.8, desaturate(0.35, primary)),
-  leftNavTextColor: dye(0.1, diluted),
+  leftNavTextColor: dye(0.2, diluted),
 
   // Button styles
   buttonColors: {

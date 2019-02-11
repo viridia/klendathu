@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
-// import { QueryLink } from './QueryLink';
 // import { AccountProvider } from '../common/AccountProvider';
 // import { LabelLinks } from './LabelLinks';
-import { NavLink, RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps } from 'react-router-dom';
+import { LeftNavLink } from './LeftNavLink';
 
-// import LabelIcon from '../svg-compiled/icons/IcLabel';
-// import ListIcon from '../svg-compiled/icons/IcList';
-// import PersonIcon from '../svg-compiled/icons/IcPerson';
+import LabelIcon from '../svg-compiled/icons/IcLabel';
+import ListIcon from '../svg-compiled/icons/IcList';
+import PersonIcon from '../svg-compiled/icons/IcPerson';
 // import BookmarkIcon from '../svg-compiled/icons/IcBookmark';
 import SettingsIcon from '../svg-compiled/icons/IcSettings';
 import DependenciesIcon from '../svg-compiled/icons/IcGantt';
@@ -22,19 +22,19 @@ export class ProjectNavLinks extends React.Component<Props> {
     const { account, project } = this.props.match.params;
     return (
       <>
-        {/* <QueryLink
+        <LeftNavLink
             to={`/${account}/${project}/issues`}
             query={{ owner: undefined, label: undefined, type: undefined, state: undefined }}
         >
           <ListIcon /> All Issues
-        </QueryLink>
-        <QueryLink to={`/${account}/${project}/issues`} query={{ owner: 'me', state: 'open' }}>
+        </LeftNavLink>
+        <LeftNavLink to={`/${account}/${project}/issues`} query={{ owner: 'me', state: 'open' }}>
           <PersonIcon /> My Issues
-        </QueryLink>
-        <NavLink to={{ pathname: `/${account}/${project}/labels` }}>
+        </LeftNavLink>
+        <LeftNavLink to={`/${account}/${project}/labels`}>
           <LabelIcon /> Labels
-        </NavLink>
-        <AccountProvider account={account}>
+        </LeftNavLink>
+        {/* <AccountProvider account={account}>
           {acc => <>
             <LabelLinks {...this.props} account={acc} project={project} />
             <NavLink to={{ pathname: `/${account}/${project}/filters` }}>
@@ -42,18 +42,18 @@ export class ProjectNavLinks extends React.Component<Props> {
             </NavLink>
           </>}
         </AccountProvider> */}
-        <NavLink to={{ pathname: `/${account}/${project}/progress` }}>
+        <LeftNavLink to={`/${account}/${project}/progress`}>
           <ProgressIcon /> Progress
-        </NavLink>
-        <NavLink to={{ pathname: `/${account}/${project}/dependencies` }}>
+        </LeftNavLink>
+        <LeftNavLink to={`/${account}/${project}/dependencies`}>
           <DependenciesIcon /> Dependencies
-        </NavLink>
-        <NavLink to={{ pathname: `/${account}/${project}/history` }}>
+        </LeftNavLink>
+        <LeftNavLink to={`/${account}/${project}/history`}>
           <HistoryIcon /> Changes
-        </NavLink>
-        <NavLink to={{ pathname: `/${account}/${project}/settings` }}>
+        </LeftNavLink>
+        <LeftNavLink to={`/${account}/${project}/settings`}>
           <SettingsIcon /> Settings
-        </NavLink>
+        </LeftNavLink>
       </>
     );
   }

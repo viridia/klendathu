@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as qs from 'qs';
+// import * as qs from 'qs';
 import classNames from 'classnames';
 import { Route } from 'react-router-dom';
 import { History } from 'history';
@@ -13,16 +13,21 @@ export interface NavContainerProps {
   to: History.LocationDescriptor<any>;
 }
 
-interface QueryParams { [name: string]: string | string[]; }
+interface ChildProps {
+  className?: string;
+  onClick: (e: any) => any;
+}
+
+// interface QueryParams { [name: string]: string | string[]; }
 
 /** Wrapper that turns a button or menu into a react-router NavLink. */
 export class NavContainer extends React.Component<NavContainerProps> {
   public render() {
     const { activeClassName = 'active', children, to, exact, ...props } = this.props;
-    const child = React.Children.only(children);
+    const child = React.Children.only(children) as React.ReactElement<ChildProps>;
     const path = typeof to === 'string' ? to : to.pathname;
-    const query: QueryParams =
-        typeof to === 'string' ? {} : qs.parse(to.search, { ignoreQueryPrefix: true });
+    // const query: QueryParams =
+    //     typeof to === 'string' ? {} : qs.parse(to.search, { ignoreQueryPrefix: true });
     return (
       <Route
           path={path}
@@ -41,7 +46,7 @@ export class NavContainer extends React.Component<NavContainerProps> {
 
   private onClick(history: History<any>, e: any) {
     const { children, replace, to } = this.props;
-    const child = React.Children.only(children);
+    const child = React.Children.only(children) as React.ReactElement<any>;
     if (child.props.onClick) {
       child.props.onClick(e);
     }

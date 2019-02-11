@@ -1,9 +1,11 @@
+import { ObjectID } from 'mongodb';
+
 export interface LabelRecord {
-  _id: string; // account/project/index
-  project: string; // account/project
+  _id: string; // <project.index>
+  project: ObjectID; // project id
   name: string;
   color: string;
-  creator: string;
+  creator: ObjectID;
   created: Date;
   updated: Date;
 }

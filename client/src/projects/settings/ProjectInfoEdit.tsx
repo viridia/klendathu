@@ -67,7 +67,7 @@ export class ProjectInfoEdit extends React.Component<Props> {
   }
 
   public render() {
-    const { account, project } = this.props;
+    const { project } = this.props;
     const modified =
         project.title !== this.title ||
         project.description !== this.description ||
@@ -76,7 +76,7 @@ export class ProjectInfoEdit extends React.Component<Props> {
       <SettingsPane>
         <header>
           <ProjectLabel>Project:</ProjectLabel>
-          <ProjectTitle>{project.title} [{account.accountName}/{project.name}]</ProjectTitle>
+          <ProjectTitle>{project.title} [{project.ownerName}/{project.name}]</ProjectTitle>
           <Spacer />
           <Button
               kind="action"
@@ -133,7 +133,7 @@ export class ProjectInfoEdit extends React.Component<Props> {
           <Dialog.Header>Delete Project</Dialog.Header>
           <Dialog.Body style={{ textAlign: 'center' }}>
             <p>Are you absolutely sure you want to delete
-            project &quot;{account.accountName}/{project.name}&quot;? <b>This change
+            project &quot;{project.ownerName}/{project.name}&quot;? <b>This change
             cannot be undone.</b></p>
             <p>Type the name of the project to confirm:</p>
             <TextInput
@@ -146,7 +146,7 @@ export class ProjectInfoEdit extends React.Component<Props> {
             <Button
                 kind="action"
                 onClick={this.onConfirmDelete}
-                disabled={this.confirmName != `${account.accountName}/${project.name}`}
+                disabled={this.confirmName !== `${project.ownerName}/${project.name}`}
             >
               Delete
             </Button>
@@ -180,7 +180,7 @@ export class ProjectInfoEdit extends React.Component<Props> {
 
   @action.bound
   private onSave(e: any) {
-    const { account, project } = this.props;
+    const { project } = this.props;
     e.preventDefault();
     e.stopPropagation();
 
@@ -197,7 +197,7 @@ export class ProjectInfoEdit extends React.Component<Props> {
         input,
       },
     }).then(result => {
-      toast.success(`Project ${account.accountName}/${project.name} updated successfully.`);
+      toast.success(`Project ${project.ownerName}/${project.name} updated successfully.`);
     }, error => {
       const [code] = decodeError(error);
       switch (code) {
@@ -228,7 +228,7 @@ export class ProjectInfoEdit extends React.Component<Props> {
 
   @action.bound
   private onConfirmDelete(e: any) {
-    const { account, project, history } = this.props;
+    const { project, history } = this.props;
     e.preventDefault();
     e.stopPropagation();
 
@@ -239,7 +239,7 @@ export class ProjectInfoEdit extends React.Component<Props> {
         id: this.props.project.id,
       },
     }).then(result => {
-      toast.success(`Project ${account.accountName}/${project.name} deleted.`);
+      toast.success(`Project ${project.ownerName}/${project.name} deleted.`);
       history.push('/');
     }, error => {
       const [code] = decodeError(error);

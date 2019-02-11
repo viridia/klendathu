@@ -1,18 +1,14 @@
 import * as express from 'express';
 import * as http from 'http';
 import * as path from 'path';
+import * as Bundler from 'parcel-bundler';
 import { MongoClient, Db } from 'mongodb';
 import { ApolloServer } from 'apollo-server-express';
 import { typeDefs } from './schema';
 import { logger } from './logger';
 import { Context, resolverMap } from './resolvers';
-import { ensureCollections } from './db/helpers';
-import * as Bundler from 'parcel-bundler';
 import { decodeAuthToken } from './db/user';
-
-// Connection URL
-const dbUrl = 'mongodb://localhost:27017';
-const dbName = 'klendathu';
+import { createClient } from './db/client';
 
 export class Server {
   public app = express();
@@ -53,25 +49,8 @@ export class Server {
     logger.debug('=== Klendathu Server ===');
 
     // Connect to the database
-    this.client = await MongoClient.connect(dbUrl, {
-      useNewUrlParser: true,
-      auth: { user: 'root', password: 'example' }
-    });
-    this.db = this.client.db(dbName);
-    logger.debug(`Connected to ${dbUrl}`);
-    await ensureCollections(this.db, [
-      'accounts',
-      'comments',
-      'issues',
-      'issueChanges',
-      'issueLinks',
-      'labels',
-      'memberships',
-      'milestones',
-      'projects',
-      'projectPrefs',
-      'templates',
-    ]);
+    this.client = await createClient();
+    this.db = this.client.db(process.env.DB_NAME);
 
     // Add Apollo middleware
     this.apollo.applyMiddleware({ app: this.app });

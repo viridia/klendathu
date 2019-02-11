@@ -1,24 +1,38 @@
-import { CustomValues } from 'klendathu-json-types';
+// import { CustomValues } from 'klendathu-json-types';
+import { ObjectID } from 'mongodb';
+
+/** Data for a custom field. */
+export interface CustomValues {
+  [name: string]: string | number | boolean;
+}
+
+/** Information about a file attachment to an issue. */
+export interface Attachment {
+  filename: string;
+  url: string;
+  thumbnail?: string;
+  type: string;
+}
 
 // Database representation of an issue
 export interface IssueRecord {
-  _id: string; // account/project/index
-  project: string;
+  _id: string; // <owner.index>
+  project: ObjectID;
   type: string;
   state: string;
   summary: string;
   description: string;
-  reporter: string;
+  reporter: ObjectID;
   reporterSort: string;
-  owner: string;
+  owner?: ObjectID;
   ownerSort: string;
-  cc: string[];
+  cc: ObjectID[];
   created: Date;
   updated: Date;
-  labels: string[];
+  labels: ObjectID[];
   custom: CustomValues;
   // comments: CommentEntry[];
-  attachments: string[];
+  attachments: Attachment[];
   isPublic?: boolean;
   position?: [number, number];
   milestone?: string;

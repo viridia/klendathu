@@ -1,3 +1,5 @@
+import { ObjectID } from 'mongodb';
+
 /** Field data type. */
 export enum DataType {
   TEXT = 'text',
@@ -105,11 +107,14 @@ export interface Workflow { // tslint:disable:export-name
 
 /** Defines the set of issue types. */
 export interface TemplateRecord {
-  /** Name of this template. */
-  name: string;
+  /** ID of this template. */
+  _id: ObjectID;
 
   /** Project where this template is defined. */
-  // project: string;
+  owner: ObjectID;
+
+  /** Name of this template. */
+  name: string;
 
   /** List of issue types for this template. */
   types: IssueType[];

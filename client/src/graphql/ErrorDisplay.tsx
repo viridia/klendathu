@@ -80,7 +80,7 @@ export function ErrorDisplay({ error }: { error: ApolloError }) {
               <React.Fragment>
                 <ErrorRowDataPre>
                   {gqlError.extensions.exception.stacktrace.map(
-                    (line: string, index: number) => <div key={index}>{line}</div>)}
+                    (line: string, i: number) => <div key={i}>{line}</div>)}
                 </ErrorRowDataPre>
               </React.Fragment>
             )}

@@ -10,8 +10,10 @@ import { ProjectListView } from '../projects/ProjectListView';
 import { session } from '../models';
 import { SetupAccountDialog } from '../settings/SetupAccountDialog';
 import { SettingsView } from '../settings/SettingsView';
-import { ProjectComponentsProvider } from '../graphql/ProjectComponentsProvider';
+import { ProjectContextProvider } from '../graphql/ProjectContextProvider';
 import { ProjectSettings } from '../projects/settings/ProjectSettings';
+import { IssueListView } from '../issues/IssueListView';
+import { IssueCreateView } from '../issues/IssueCreateView';
 
 const MainPageLayout = styled(Page)`
   display: grid;
@@ -79,30 +81,30 @@ export class MainPage extends React.Component<RouteComponentProps<{}>> {
             <Route
               path="/:owner/:name"
               render={({ match }) => (
-                <ProjectComponentsProvider owner={match.params.owner} name={match.params.name} >
-                  {({ loading, ...components }) => (
+                <ProjectContextProvider owner={match.params.owner} name={match.params.name} >
+                  {({ loading, ...context }) => (
                     loading
                     ? <span>Loading</span>
                     : (
                       <Switch>
-                        {/* <Route
-                          path="/:owner/:name/new"
-                          render={props => <IssueCreateView {...props} {...models} />}
-                        />
                         <Route
+                          path="/:owner/:name/new"
+                          render={props => <IssueCreateView {...props} context={context} />}
+                        />
+                        {/* <Route
                           path="/:owner/:name/edit/:id"
                           render={props => <IssueEditView {...props} {...models} />}
                         />
                         <Route
                           path="/:owner/:name/:id(\d+)"
                           render={props => (<IssueDetailsView {...props} {...models} />)}
-                        />
+                        /> */}
                         <Route
                           path="/:owner/:name/issues"
                           exact={true}
-                          render={props => (<IssueListView {...props} {...models}/>)}
+                          render={props => (<IssueListView {...props} context={context}/>)}
                         />
-                        <Route
+                        {/* <Route
                           path="/:owner/:name/labels"
                           exact={true}
                           render={() => (<LabelListView {...models} />)}
@@ -130,12 +132,12 @@ export class MainPage extends React.Component<RouteComponentProps<{}>> {
                         <Route
                             path="/:owner/:name/settings/:tab?"
                             exact={true}
-                            render={props => (<ProjectSettings {...props} {...components} />)}
+                            render={props => (<ProjectSettings {...props} {...context} />)}
                         />
                       </Switch>
                       )
                   )}
-                </ProjectComponentsProvider>
+                </ProjectContextProvider>
               )}
             />
             <Redirect path="/" exact={true} to="/projects" />

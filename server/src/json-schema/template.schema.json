@@ -1,0 +1,290 @@
+{
+  "$id": "http://viridia.org/schemas/klendathu/template.schema.json",
+  "type": "object",
+  "title": "Template",
+  "description": "Issue template.",
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "description": "Name of the template.",
+      "type": "string"
+    },
+    "project": {
+      "description": "Project that this template belongs to.",
+      "type": "string"
+    },
+    "types": {
+      "description": "Array of possible issue types.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "title": "IssueType",
+        "description": "List of possible issue types.",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "description": "Name of the issue type.",
+            "type": "string"
+          },
+          "caption": {
+            "description": "Human-readable name of this field.",
+            "type": "string"
+          },
+          "abstract": {
+            "description": "If true, issues of this type can not be instantiated.",
+            "type": "boolean"
+          },
+          "extends": {
+            "description": "Indicates that this type is an extension of another type.",
+            "type": ["string", "null"]
+          },
+          "contains": {
+            "description": "List of issue types that this issue can contain.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "bg": {
+            "description": "Background color used when displaying type badge.",
+            "type": "string",
+            "pattern": "#[0-9A-Fa-f]{6}"
+          },
+          "workflow": {
+            "description": "Workflow to use for this issue type.",
+            "type": "string"
+          },
+          "fields": {
+            "description": "List of custom fields for this type.",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "title": "CustomField",
+              "description": "Defines a custom field for an issue.",
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "description": "ID of of this field.",
+                  "type": "string",
+                  "pattern": "^[A-Za-z\\_][A-Za-z0-9\\-\\_]*$"
+                },
+                "caption": {
+                  "description": "Human-readable name of this field.",
+                  "type": "string"
+                },
+                "type": {
+                  "description": "Data type of the field.",
+                  "type": "string",
+                  "enum": ["text", "enum", "issue", "user"]
+                },
+                "default": {
+                  "description": "Default value for field.",
+                  "type": "string"
+                },
+                "values": {
+                  "description": "If field is enum type, list of enum values.",
+                  "type": "array",
+                  "item": "string"
+                },
+                "position": {
+                  "description": "How field should be positioned vertically.",
+                  "type": "string",
+                  "enum": ["top", "bottom"]
+                },
+                "align": {
+                  "description": "Horizontally alignment of field value in issue list column.",
+                  "type": "string",
+                  "enum": ["left", "right", "center"]
+                },
+                "max_length": {
+                  "description": "Maximum length of field in characters.",
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "suggest": {
+                  "description": "Whether the input control should show suggestions.",
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "id",
+                "caption",
+                "type"
+              ]
+            }
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    "states": {
+      "description": "List of workflow states.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "title": "State",
+        "description": "Workflow State.",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "description": "ID of this state.",
+            "type": "string"
+          },
+          "caption": {
+            "description": "Display name of this state.",
+            "type": "string"
+          },
+          "closed": {
+            "description": "Whether the issue should be considered closed when in this state.",
+            "type": "boolean"
+          },
+          "transitions": {
+            "description": "List of states that can follow this state.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "caption"
+        ]
+      }
+    },
+    "actions": {
+      "description": "List of workflow actions.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "title": "Action",
+        "description": "Workflow Actiion.",
+        "additionalProperties": false,
+        "properties": {
+          "caption": {
+            "description": "Text name of the action.",
+            "type": "string"
+          },
+          "target": {
+            "description": "Whether to operate on this issue, a new issue, or a copy.",
+            "type": "string",
+            "enum": ["self", "copy", "new"]
+          },
+          "state": {
+            "description": "State to transition to.",
+            "type": "string"
+          },
+          "owner": {
+            "description": "Owner to assign to (expression).",
+            "type": ["string", "null"]
+          },
+          "linked": {
+            "description": "Link to set.",
+            "type": "object",
+            "properties": {
+              "to": {
+                "description": "Issue to link to (expression).",
+                "type": "string"
+              },
+              "relation": {
+                "description": "Type of relation to create.",
+                "type": "string"
+              }
+            }
+          },
+          "require": {
+            "description": "Prerequisites for this action.",
+            "type": "object",
+            "properties": {
+              "state": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "ask": {
+            "description": "List of variables which must be suppled by the user.",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "title": "ActionInput",
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "description": "Name of variable to store the input value.",
+                  "type": "string"
+                },
+                "caption": {
+                  "description": "Label for the input field.",
+                  "type": "string"
+                },
+                "type": {
+                  "description": "Data type for the input field.",
+                  "type": "string",
+                  "enum": [
+                    "string",
+                    "issue",
+                    "user"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "caption"
+        ]
+      }
+    },
+    "workflows": {
+      "description": "List of workflows.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "title": "Workflow",
+        "description": "Issue workflow.",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "description": "Name of the workflow.",
+            "type": "string"
+          },
+          "project": {
+            "description": "Scope of this workflow (project).",
+            "type": "string"
+          },
+          "extends": {
+            "description": "Indicates that this is an extension of another workflow.",
+            "type": ["string", "null"]
+          },
+          "start": {
+            "description": "List of starting states.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "states": {
+            "description": "List of workflow states.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "states"
+        ]
+      }
+    }
+  },
+  "required": [
+    "name",
+    "types"
+  ]
+}

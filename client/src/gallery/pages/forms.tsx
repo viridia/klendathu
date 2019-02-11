@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { register } from '../registry';
-import { Card, Form, FormLabel, TextInput, TextArea } from '../../controls';
+import { Card, Form, FormLabel, TextInput, TextArea, AutoNavigate } from '../../controls';
 
 function Forms() {
   return (
@@ -9,6 +9,7 @@ function Forms() {
       <Card>
         <div style={{ padding: '12px'}}>
           <Form>
+            <AutoNavigate />
             <FormLabel>First Name:</FormLabel>
             <TextInput name="first-name" validationStatus="success" validationMsg="Good to go!" />
             <FormLabel>Last Name:</FormLabel>

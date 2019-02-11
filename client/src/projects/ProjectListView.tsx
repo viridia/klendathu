@@ -127,10 +127,6 @@ export class ProjectListView extends React.Component<{}> {
             } else if (error) {
               return <ErrorDisplay error={error} />;
             } else {
-              const projects: Project[] = data.projects;
-              if (projects.length === 0) {
-                return <EmptyList>No projects found.</EmptyList>;
-              }
               subscribeToMore({
                 document: projectsSubscription,
                 variables: {
@@ -142,6 +138,10 @@ export class ProjectListView extends React.Component<{}> {
                   refetch();
                 },
               });
+              const projects: Project[] = data.projects;
+              if (projects.length === 0) {
+                return <EmptyList>No projects found.</EmptyList>;
+              }
               return (
                 <ProjectListEl>
                   {projects.map(prj => (

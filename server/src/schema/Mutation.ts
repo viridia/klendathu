@@ -19,5 +19,17 @@ type Mutation {
 
   "Remove a project"
   removeProject(id: ID!): DeletionResult!
+
+  "Store a template definition by name."
+  setTemplate(owner: ID!, name: String!, template: JSONObject!): JSONObject!
+
+  "Create a new issue record."
+  newIssue(project: ID!, input: IssueInput!): Issue!
+
+  "Update an existing issue record."
+  updateIssue(id: ID!, input: IssueInput!): Issue!
+
+  "Delete an issue record."
+  deleteIssue(id: ID!): Issue!
 }
 `;

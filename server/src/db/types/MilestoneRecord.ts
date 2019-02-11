@@ -1,4 +1,4 @@
-import { MilestoneStatus } from 'klendathu-json-types';
+import { MilestoneStatus } from '../../../../common/types/graphql';
 
 export interface MilestoneRecord {
   _id: string;

@@ -8,11 +8,11 @@ import {
   CreateProjectMutationArgs,
   ProjectQueryArgs,
   UpdateProjectMutationArgs,
-  ProjectComponentsQueryArgs,
   ProjectChangedSubscriptionArgs,
   RemoveProjectMutationArgs,
   ProjectsChangedSubscriptionArgs,
   ChangeAction,
+  ProjectContextQueryArgs,
 } from '../../../common/types/graphql';
 import { Context } from './Context';
 import { UserInputError, AuthenticationError } from 'apollo-server-core';
@@ -23,6 +23,8 @@ import { pubsub } from './pubsub';
 import { withFilter } from 'graphql-subscriptions';
 import { getProjectRole, getProjectAndRole } from '../db/role';
 
+const software = require('../templates/software.json'); // tslint:disable-line
+
 const PROJECT_CHANGE = 'project-change';
 
 interface ProjectJoinResult extends MembershipRecord {
@@ -32,6 +34,11 @@ interface ProjectJoinResult extends MembershipRecord {
 interface ProjectRecordChange {
   project: ProjectRecord;
   action: ChangeAction;
+}
+
+interface ProjectAndAccount {
+  project: AugmentedProjectRecord;
+  account: AccountRecord;
 }
 
 export const queries = {
@@ -93,11 +100,10 @@ export const queries = {
     return result;
   },
 
-  // "Access a project by owner name and project. Returns project, account and members."
-  async projectComponents(
+  async projectContext(
       _: any,
-      { owner, name }: ProjectComponentsQueryArgs,
-      context: Context): Promise<any> {
+      { owner, name }: ProjectContextQueryArgs,
+      context: Context): Promise<ProjectAndAccount> {
     const user = context.user ? context.user.accountName : null;
     const account = await context.db.collection('accounts')
         .findOne<AccountRecord>({ accountName: owner });
@@ -199,8 +205,8 @@ export const mutations = {
       created: now,
       updated: now,
       template: null,
-      issueIdCounter: 0,
-      labelIdCounter: 0,
+      issueIdCounter: 1,
+      labelIdCounter: 1,
     };
 
     const result = await projects.insertOne(record);
@@ -375,4 +381,12 @@ export const types = {
     createdAt: (pr: ProjectRecord) => pr.created,
     updatedAt: (pr: ProjectRecord) => pr.updated,
   },
+  ProjectContext: {
+    template: async (pc: ProjectAndAccount) => {
+      if (pc.project.template) {
+        throw new UserInputError(Errors.NOT_IMPLEMENTED);
+      }
+      return software;
+    }
+  }
 };

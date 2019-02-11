@@ -1,0 +1,329 @@
+{
+  "name": "software",
+  "types": [
+    {
+      "id": "issue",
+      "abstract": true,
+      "workflow": "default",
+      "fields": [
+        {
+          "id": "priority",
+          "caption": "Priority",
+          "type": "enum",
+          "default": "P2",
+          "values": [ "P0", "P1", "P2", "P3", "P4" ],
+          "position": "top",
+          "align": "center"
+        }
+      ]
+    },
+    {
+      "id": "bug",
+      "caption": "Bug",
+      "extends": "issue",
+      "bg": "#ffccf3",
+      "fields": [
+        {
+          "id": "severity",
+          "caption": "Severity",
+          "type": "enum",
+          "default": "S2",
+          "values": [ "S0", "S1", "S2", "S3", "S4" ],
+          "position": "top",
+          "align": "center"
+        },
+        {
+          "id": "hardware_os",
+          "caption": "Hardware/OS",
+          "type": "text",
+          "max_length": 128,
+          "position": "top",
+          "suggest": true
+        },
+        {
+          "id": "version",
+          "caption": "Product Version",
+          "type": "text",
+          "max_length": 64,
+          "position": "top",
+          "suggest": true
+        }
+      ]
+    },
+    {
+      "id": "feature",
+      "caption": "Feature",
+      "extends": "issue",
+      "bg": "#e8d1ff"
+    },
+    {
+      "id": "task",
+      "caption": "Task",
+      "contains": [ "task" ],
+      "extends": "issue",
+      "bg": "#ffd3c2"
+    },
+    {
+      "id": "documentation",
+      "caption": "Docs",
+      "extends": "issue",
+      "workflow": "doc",
+      "bg": "#addcff"
+    },
+    {
+      "id": "internal_cleanup",
+      "caption": "Internal Cleanup",
+      "extends": "issue",
+      "bg": "#c9e79c"
+    }
+  ],
+  "states": [
+    {
+      "id": "new",
+      "caption": "New",
+      "closed": false,
+      "transitions": [
+        "assigned",
+        "in_progress",
+        "duplicate",
+        "working_as_intended"
+      ]
+    },
+    {
+      "id": "assigned",
+      "caption": "Assigned",
+      "closed": false,
+      "transitions": [
+        "new",
+        "in_progress",
+        "needs_more_info",
+        "review",
+        "qa",
+        "verified",
+        "duplicate",
+        "working_as_intended",
+        "deferred"
+      ]
+    },
+    {
+      "id": "in_progress",
+      "caption": "In Progress",
+      "closed": false,
+      "transitions": [
+        "new",
+        "assigned",
+        "needs_more_info",
+        "review",
+        "qa",
+        "verified",
+        "duplicate",
+        "working_as_intended",
+        "deferred",
+        "cannot_reproduce"
+      ]
+    },
+    {
+      "id": "needs_more_info",
+      "caption": "Needs More Information",
+      "closed": false,
+      "transitions": [
+        "assigned",
+        "verified",
+        "duplicate",
+        "working_as_intended",
+        "deferred",
+        "cannot_reproduce"
+      ]
+    },
+    {
+      "id": "qa",
+      "caption": "In QA",
+      "closed": false,
+      "transitions": [
+        "assigned",
+        "in_progress",
+        "verified"
+      ]
+    },
+    {
+      "id": "verified",
+      "caption": "Verified",
+      "closed": true,
+      "transitions": [
+        "assigned",
+        "in_progress"
+      ]
+    },
+    {
+      "id": "duplicate",
+      "caption": "Duplicate",
+      "closed": true,
+      "transitions": [
+        "assigned",
+        "in_progress"
+      ]
+    },
+    {
+      "id": "working_as_intended",
+      "caption": "Working As Intended",
+      "closed": true,
+      "transitions": [
+        "assigned",
+        "in_progress"
+      ]
+    },
+    {
+      "id": "deferred",
+      "caption": "Deferred",
+      "closed": true,
+      "transitions": [
+        "assigned",
+        "in_progress"
+      ]
+    },
+    {
+      "id": "cannot_reproduce",
+      "caption": "Cannot Reproduce",
+      "closed": true,
+      "transitions": [
+        "assigned",
+        "in_progress"
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "caption": "Assign to me",
+      "owner": "{me}"
+    },
+    {
+      "caption": "Begin Work",
+      "state": "in_progress",
+      "owner": "{me}"
+    },
+    {
+      "require": {
+        "state": [
+          "new",
+          "assigned",
+          "in_progress",
+          "qa"
+        ]
+      },
+      "caption": "Close: Working As Intended",
+      "state": "working_as_intended",
+      "owner": "{reporter}"
+    },
+    {
+      "require": {
+        "state": [
+          "new",
+          "assigned",
+          "in_progress",
+          "qa"
+        ]
+      },
+      "caption": "Close: Cannot Reproduce",
+      "state": "cannot_reproduce",
+      "owner": "{reporter}"
+    },
+    {
+      "require": {
+        "state": [
+          "new",
+          "assigned",
+          "in_progress",
+          "qa"
+        ]
+      },
+      "caption": "Close: Duplicate",
+      "state": "duplicate",
+      "owner": "{reporter}",
+      "ask": [
+        {
+          "id": "dup_of",
+          "caption": "Duplicates:",
+          "type": "issue"
+        }
+      ],
+      "linked": { "relation": "DUPLICATE", "to": "{dup_of}" }
+    },
+    {
+      "caption": "Finish: QA",
+      "state": "qa",
+      "owner": "{reporter}"
+    },
+    {
+      "caption": "Not Fixed",
+      "state": "assigned",
+      "owner": "{previous}",
+      "require": {
+        "state": [
+          "qa",
+          "review",
+          "working_as_intended"
+        ]
+      }
+    },
+    {
+      "caption": "Verify",
+      "state": "verified",
+      "owner": "{none}"
+    },
+    {
+      "caption": "Unassign",
+      "owner": "{none}"
+    },
+    {
+      "caption": "Clone",
+      "target": "copy",
+      "state": "new"
+    },
+    {
+      "caption": "Create linked",
+      "target": "new",
+      "linked": { "relation": "BLOCKED_BY", "to": "{self}" }
+    }
+  ],
+  "workflows": [
+    {
+      "name": "default",
+      "start": [
+        "new",
+        "assigned",
+        "in_progress"
+      ],
+      "states": [
+        "new",
+        "assigned",
+        "in_progress",
+        "needs_more_info",
+        "review",
+        "qa",
+        "verified",
+        "duplicate",
+        "working_as_intended",
+        "deferred",
+        "cannot_reproduce"
+      ]
+    },
+    {
+      "name": "doc",
+      "start": [
+        "new",
+        "assigned",
+        "in_progress"
+      ],
+      "states": [
+        "new",
+        "assigned",
+        "in_progress",
+        "needs_more_info",
+        "qa",
+        "verified",
+        "duplicate",
+        "deferred"
+      ]
+    }
+  ]
+}

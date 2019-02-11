@@ -3,6 +3,9 @@ import { styled } from '../style';
 import { darken } from 'polished';
 import { Switch, Route } from 'react-router';
 import { ProjectNavLinks } from './ProjectNavLinks';
+import { LeftNavLink } from './LeftNavLink';
+
+import AppsIcon from '../svg-compiled/icons/IcApps';
 
 const NavLayout = styled.nav`
   background-color: ${props => props.theme.leftNavBgColor};
@@ -22,7 +25,9 @@ export class LeftNav extends React.Component<{}> {
           <Route path="/settings" />
           <Route path="/:account/:project" component={ProjectNavLinks} />
         </Switch>
-        Nav
+        <LeftNavLink to={'/projects'}>
+          <AppsIcon /> Projects
+        </LeftNavLink>
       </NavLayout>
     );
   }

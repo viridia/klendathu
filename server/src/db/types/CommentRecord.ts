@@ -5,13 +5,13 @@ export interface CommentRecord {
   _id?: ObjectID;
 
   /** Project owning this comment. */
-  project: string;
+  project: ObjectID;
 
   /** Issue this comment is attached to. */
   issue: string;
 
   /** User that created this comment. */
-  author?: string;
+  author?: ObjectID;
 
   /** Body of the comment. */
   body: string;

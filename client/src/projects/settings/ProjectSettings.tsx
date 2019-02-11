@@ -20,11 +20,11 @@ interface Props extends RouteComponentProps<{ tab?: string }> {
 // TODO: finish
 export class ProjectSettings extends React.Component<Props> {
   public render() {
-    const { project, account } = this.props;
+    const { project } = this.props;
     if (!project) {
       return <section />;
     }
-    const locationPrefix = `/${account.accountName}/${project.name}/settings`;
+    const locationPrefix = `/${project.ownerName}/${project.name}/settings`;
     return (
       <React.Fragment>
         <header>Project settings for: {project.title}</header>

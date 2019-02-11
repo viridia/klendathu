@@ -21,7 +21,7 @@
     "no-empty": [true, "allow-empty-catch"],
     "no-empty-interface": {"severity": "warning"},
     "no-floating-promises": false,
-    "no-implicit-dependencies": true,
+    "no-implicit-dependencies": [true, "dev"],
     "no-import-side-effect": false,
     "no-invalid-this": true,
     "no-namespace": true,

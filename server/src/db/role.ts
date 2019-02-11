@@ -45,3 +45,25 @@ export async function getProjectAndRole(
   }
   return { role: Role.NONE };
 }
+
+export async function getOrganizationRole(
+    db: Db, user: AccountRecord, orgId: ObjectID): Promise<number> {
+  if (!user) {
+    return Role.NONE;
+  }
+
+  if (user._id.equals(orgId)) {
+    return Role.ADMINISTRATOR;
+  }
+
+  try {
+    const membership = await db.collection('memberships').findOne<MembershipRecord>({
+      user: user._id,
+      organization: orgId,
+    });
+    return membership ? membership.role : Role.NONE;
+  } catch (e) {
+    logger.error('Error looking up organization role', { user: user.accountName, orgId });
+    return Role.NONE;
+  }
+}

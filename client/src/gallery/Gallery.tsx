@@ -6,6 +6,7 @@ import { themeDefault, styled, ThemeProvider, GlobalStyle } from '../style';
 import { registry } from './registry';
 import { lighten } from 'polished';
 
+import './pages/autocomplete';
 import './pages/buttons';
 import './pages/cards';
 import './pages/chips';
@@ -86,34 +87,32 @@ const GalleryPage = styled.section`
   }
 `;
 
-class Gallery extends React.Component<{}> {
-  public render() {
-    const keys = Object.getOwnPropertyNames(registry);
-    keys.sort((a, b) => ('' + a).localeCompare(b));
-    return (
-      <ThemeProvider theme={themeDefault}>
-        <Router>
-          <React.Fragment>
-            <Normalize />
-            <GlobalStyle />
-            <GalleryPage>
-              <header>Klendathu Component Gallery</header>
-              <aside>
-                {keys.map(key => (
-                  <NavLink to={`/${key}`} key={key} activeClassName="selected">{key}</NavLink>
-                ))}
-              </aside>
-              <section className="preview">
-                <Switch>
-                  {keys.map(key => (<Route key={key} path={`/${key}`} render={registry[key]} />))}
-                </Switch>
-              </section>
-            </GalleryPage>
-          </React.Fragment>
-        </Router>
-      </ThemeProvider>
-    );
-  }
+function Gallery() {
+  const keys = Object.getOwnPropertyNames(registry);
+  keys.sort((a, b) => ('' + a).localeCompare(b));
+  return (
+    <ThemeProvider theme={themeDefault}>
+      <Router>
+        <React.Fragment>
+          <Normalize />
+          <GlobalStyle />
+          <GalleryPage>
+            <header>Klendathu Component Gallery</header>
+            <aside>
+              {keys.map(key => (
+                <NavLink to={`/${key}`} key={key} activeClassName="selected">{key}</NavLink>
+              ))}
+            </aside>
+            <section className="preview">
+              <Switch>
+                {keys.map(key => (<Route key={key} path={`/${key}`} render={registry[key]} />))}
+              </Switch>
+            </section>
+          </GalleryPage>
+        </React.Fragment>
+      </Router>
+    </ThemeProvider>
+  );
 }
 
 export default hot(module)(Gallery);

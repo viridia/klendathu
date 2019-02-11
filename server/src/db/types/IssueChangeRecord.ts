@@ -4,8 +4,8 @@ import { ObjectID } from 'mongodb';
 export interface IssueChangeRecord {
   _id?: ObjectID;
   issue: string;
-  project: string;
-  by: string;
+  project: ObjectID;
+  by: ObjectID;
   at: Date;
   type?: ScalarChange;
   state?: ScalarChange;

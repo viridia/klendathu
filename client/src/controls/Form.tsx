@@ -28,27 +28,35 @@ const InputContainer = styled.div`
 export type ValidationState = 'error' | 'warning' | 'success';
 
 interface InputProps {
+  containerClassName?: string;
   validationMsg?: string;
   validationStatus?: ValidationState;
 }
 
-function TextInputImpl({
+const TextInputImpl = React.forwardRef((
+  {
     children,
     className,
+    containerClassName,
     validationStatus,
     validationMsg,
     ...attrs
-  }: InputProps & React.InputHTMLAttributes<HTMLInputElement>) {
-  return (
-    <InputContainer>
-      <input className={classNames(className, validationStatus)} {...attrs}>{children}</input>
-      {validationStatus &&
-        <ValidationMsg className={classNames(validationStatus)}>
-          {validationMsg}
-        </ValidationMsg>}
-    </InputContainer>
-  );
-}
+  }: InputProps & React.InputHTMLAttributes<HTMLInputElement>,
+  ref: any) => (
+  <InputContainer className={containerClassName}>
+    <input
+        ref={ref}
+        className={classNames(className, validationStatus)}
+        {...attrs}
+    >
+      {children}
+    </input>
+    {validationStatus &&
+      <ValidationMsg className={classNames(validationStatus)}>
+        {validationMsg}
+      </ValidationMsg>}
+  </InputContainer>
+));
 
 /** Text input form control. */
 export const TextInput = styled(TextInputImpl)`
@@ -76,15 +84,17 @@ export const TextInput = styled(TextInputImpl)`
   }
 `;
 
-function TextAreaImpl({
+const TextAreaImpl = ({
     children,
     className,
+    containerClassName,
     validationStatus,
     validationMsg,
     ...attrs
-  }: InputProps & React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
+  }: InputProps
+    & React.TextareaHTMLAttributes<HTMLTextAreaElement>) => {
   return (
-    <InputContainer>
+    <InputContainer className={containerClassName}>
       <textarea className={classNames(className, validationStatus)} {...attrs}>
         {children}
       </textarea>
@@ -94,7 +104,7 @@ function TextAreaImpl({
         </ValidationMsg>}
     </InputContainer>
   );
-}
+};
 
 /** Textarea input form control. */
 export const TextArea = styled(TextAreaImpl)`
@@ -123,7 +133,7 @@ export const TextArea = styled(TextAreaImpl)`
   }
 `;
 
-type FormLayout = 'stacked' | 'inline' | 'ledger';
+type FormLayout = 'stacked' | 'inline' | 'ledger' | 'row';
 
 export interface FormProps extends React.FormHTMLAttributes<HTMLFormElement> {
   layout?: FormLayout;
@@ -159,6 +169,12 @@ export const Form = styled(FormImpl)`
     flex-flow: wrap;
     align-items: center;
   }
+
+  &.row {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+  }
 `;
 
 export const FormLabel = styled.span`
@@ -167,11 +183,11 @@ export const FormLabel = styled.span`
   justify-self: end;
   white-space: nowrap;
 
-  form.ledger & {
+  .ledger & {
     margin-top: 6px;
   }
 
-  form.stacked & {
+  .stacked & {
     margin-top: 8px;
     margin-bottom: 6px;
     &:first-child {
@@ -179,7 +195,7 @@ export const FormLabel = styled.span`
     }
   }
 
-  form.inline & {
+  .inline & {
     margin: 0 8px;
     &:first-child {
       margin-left: 0;

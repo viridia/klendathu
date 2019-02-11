@@ -3,7 +3,9 @@ import { styled } from '../style';
 import bind from 'bind-decorator';
 
 /** Drop-down menu class. */
-export const Menu = styled.div`
+export const Menu = styled.div.attrs(() => ({
+  role: 'menu'
+}))`
   background-color: ${props => props.theme.menuBgColor};
   border: 1px solid ${props => props.theme.menuBorderColor};
   border-radius: 3px;
@@ -23,12 +25,19 @@ export interface MenuItemProps extends React.ButtonHTMLAttributes<HTMLButtonElem
 export class MenuItemImpl extends React.Component<MenuItemProps> {
   public render() {
     const { onClick, ...props } = this.props;
-    return <button {...props} onClick={this.onClick} onKeyDown={this.onKeyDown} />;
+    return (
+      <button
+        role="menuitem"
+        {...props}
+        onClick={this.onClick}
+        onKeyDown={this.onKeyDown}
+      />
+    );
   }
 
   @bind
-  public onKeyDown(e: any) {
-    if (e.keyCode === 13 || e.keyCode === 32) {
+  public onKeyDown(e: React.KeyboardEvent<HTMLButtonElement>) {
+    if (e.key === 'Enter' || e.key === ' ') {
       if (this.props.onClick) {
         this.props.onClick(e);
       }
@@ -44,7 +53,7 @@ export class MenuItemImpl extends React.Component<MenuItemProps> {
 }
 
 /** Menu item. */
-export const MenuItem = styled(MenuItemImpl).attrs((props: MenuItemProps) => ({
+export const MenuItem = styled(MenuItemImpl).attrs(() => ({
   tabIndex: -1,
 }))`
   background-color: transparent;

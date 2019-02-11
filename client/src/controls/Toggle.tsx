@@ -2,7 +2,9 @@ import * as React from 'react';
 import classNames from 'classnames';
 import { styled } from '../style';
 
-interface Props extends React.InputHTMLAttributes<HTMLInputElement> {}
+interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
+  ref?: (el: HTMLInputElement) => void;
+}
 
 function CheckBoxImpl({ children, className, ...props }: Props) {
   const disabled = props.disabled;
