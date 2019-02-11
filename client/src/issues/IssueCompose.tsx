@@ -53,6 +53,7 @@ import {
   IssueInput,
   Issue,
   Attachment,
+  PublicAccount,
 } from '../../../common/types/graphql';
 import { RouteComponentProps } from 'react-router';
 import {
@@ -66,6 +67,8 @@ import {
   TextInput,
   TextArea,
   FormControlGroup,
+  UserAutocomplete,
+  ActionLink,
 } from '../controls';
 import { ViewContext } from '../graphql/ProjectContextProvider';
 import styled from 'styled-components';
@@ -124,6 +127,18 @@ const ReporterName = styled.div`
   margin-top: 6px;
 `;
 
+const OwnerEditGroup = styled.span`
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  grid-column: controls;
+
+  > .assignee {
+    width: 20rem;
+    margin-right: .5rem;
+  }
+`;
+
 // const RELATIONS: Relation[] = [
 //   Relation.Blocks,
 //   Relation.BlockedBy,
@@ -150,7 +165,7 @@ export class IssueCompose extends React.Component<Props> {
   @observable private description: string = '';
   @observable private public: boolean = false;
   @observable private another: boolean = false;
-  // @observable private owner: Account = null;
+  @observable private owner: PublicAccount = null;
   // @observable.shallow private cc = [] as IObservableArray<Account>;
   // @observable.shallow private labels = [] as IObservableArray<string>;
   // @observable private milestone: string = '';
@@ -195,7 +210,7 @@ export class IssueCompose extends React.Component<Props> {
             onSubmit={this.onSubmit}
         >
           <AutoNavigate />
-          <LeftPanel className="ledger">
+          <LeftPanel className="layout-ledger">
             <FormLabel>Issue Type:</FormLabel>
             <TypeSelector
                 value={this.type}
@@ -225,21 +240,24 @@ export class IssueCompose extends React.Component<Props> {
             </FormControlGroup>
 
             <FormLabel>Owner:</FormLabel>
+            <OwnerEditGroup>
+              <UserAutocomplete
+                  className="assignee"
+                  placeholder="(unassigned)"
+                  selection={this.owner}
+                  onSelectionChange={this.onChangeOwner}
+              />
+              <ActionLink onClick={this.onAssignToMe}>
+                Assign to me
+              </ActionLink>
+            </OwnerEditGroup>
+
             <FormLabel>CC:</FormLabel>
             <FormLabel>Labels:</FormLabel>
                   {/* </td>
                 <tr>
                   <th className="header"><ControlLabel>Owner:</ControlLabel></th>
                   <td className="owner">
-                    <UserAutocomplete
-                        className="assignee ac-single"
-                        placeholder="(unassigned)"
-                        selection={this.owner}
-                        onSelectionChange={this.onChangeOwner}
-                    />
-                    <a className="assign-to-me action-link" onClick={this.onAssignToMe}>
-                      Assign to me
-                    </a>
                   </td>
                 </tr>
                 <tr>
@@ -454,15 +472,15 @@ export class IssueCompose extends React.Component<Props> {
     this.description = e.target.value;
   }
 
-  // @action.bound
-  // private onChangeOwner(owner: Account) {
-  //   this.owner = owner;
-  // }
+  @action.bound
+  private onChangeOwner(owner: PublicAccount) {
+    this.owner = owner;
+  }
 
-  // @action.bound
-  // private onAssignToMe(e: any) {
-  //   this.owner = session.account;
-  // }
+  @action.bound
+  private onAssignToMe(e: any) {
+    this.owner = session.account;
+  }
 
   // @action.bound
   // private onChangeCC(cc: Account[]) {

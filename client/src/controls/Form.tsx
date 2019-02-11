@@ -141,14 +141,14 @@ export interface FormProps extends React.FormHTMLAttributes<HTMLFormElement> {
 
 function FormImpl({ children, className, layout = 'ledger', ...attrs }: FormProps) {
   return (
-    <form className={classNames(className, layout)} {...attrs}>
+    <form className={classNames(className, `layout-${layout}`)} {...attrs}>
       {children}
     </form>
   );
 }
 
 export const Form = styled(FormImpl)`
-  &.ledger {
+  &.layout-ledger {
     display: grid;
     grid-auto-flow: row;
     grid-template-columns: [labels] auto [controls] 1fr;
@@ -157,20 +157,20 @@ export const Form = styled(FormImpl)`
     justify-items: flex-start;
   }
 
-  &.stacked {
+  &.layout-stacked {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
   }
 
-  &.inline {
+  &.layout-inline {
     display: flex;
     flex-direction: row;
     flex-flow: wrap;
     align-items: center;
   }
 
-  &.row {
+  &.layout-row {
     display: flex;
     flex-direction: row;
     align-items: flex-start;
@@ -183,11 +183,11 @@ export const FormLabel = styled.span`
   justify-self: end;
   white-space: nowrap;
 
-  .ledger & {
+  .layout-ledger & {
     margin-top: 6px;
   }
 
-  .stacked & {
+  .layout-stacked & {
     margin-top: 8px;
     margin-bottom: 6px;
     &:first-child {
@@ -195,7 +195,7 @@ export const FormLabel = styled.span`
     }
   }
 
-  .inline & {
+  .layout-inline & {
     margin: 0 8px;
     &:first-child {
       margin-left: 0;

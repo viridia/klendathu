@@ -1,9 +1,18 @@
 import bind from 'bind-decorator';
 import * as React from 'react';
-// import { searchAccounts } from '../../network/requests';
 import { Autocomplete } from './Autocomplete';
-import { PublicAccount } from '../../../common/types/graphql';
+import { PublicAccount, AccountType } from '../../../common/types/graphql';
 import { Chip } from './Chip';
+import { client } from '../graphql/client';
+import gql from 'graphql-tag';
+
+const AccountsQuery = gql`
+  query AccountsQuery($token: String!, $type: AccountType) {
+    accounts(token: $token, type: $type) {
+      id accountName display photo type
+    }
+  }
+`;
 
 interface Props {
   className?: string;
@@ -36,9 +45,16 @@ export class UserAutocomplete extends React.Component<Props> {
     if (token.length < 1) {
       callback([]);
     } else {
-      searchAccounts(this.token, { type: 'user', limit: 5 }, accounts => {
-        if (token === this.token) {
-          callback(accounts);
+      client.query({
+        query: AccountsQuery,
+        fetchPolicy: 'network-only',
+        variables: {
+          token,
+          type: AccountType.User,
+        }
+      }).then(({ data, loading, errors }) => {
+        if (!loading && !errors && token === this.token) {
+          callback((data as any).accounts);
         }
       });
     }
@@ -57,7 +73,7 @@ export class UserAutocomplete extends React.Component<Props> {
   @bind
   private onRenderSelection(user: PublicAccount): JSX.Element {
     return (
-      <Chip key={user.id}>
+      <Chip key={user.id} color="#ccc">
         <span className="name">{user.display}</span>
         &nbsp;- <span className="username">{user.accountName}</span>
       </Chip>
