@@ -11,7 +11,7 @@ import { ColumnRenderer } from './columns';
 import { Checkbox } from 'react-bootstrap';
 import { action } from 'mobx';
 import { observer } from 'mobx-react';
-import * as classNames from 'classnames';
+import classNames from 'classnames';
 
 interface Props extends RouteComponentProps<{}> {
   account: Account;

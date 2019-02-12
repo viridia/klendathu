@@ -1,5 +1,4 @@
 import * as React from 'react';
-import * as classNames from 'classnames';
 import { Issue } from 'klendathu-json-types';
 import {
   ObservableProjectPrefs,
@@ -10,6 +9,7 @@ import { AccountName } from '../common/AccountName';
 import { Avatar } from '../common/Avatar';
 import { RouteComponentProps } from 'react-router-dom';
 import { observer } from 'mobx-react';
+import classNames from 'classnames';
 import bind from 'bind-decorator';
 
 interface Props extends RouteComponentProps<{}> {

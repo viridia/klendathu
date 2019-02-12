@@ -25,20 +25,6 @@ const Container = styled.div`
     box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba($inputBorderFocus, .6);
   }
 
-  /* > .ac-chip-wrapper {
-    width: 100%;
-    &.last {
-      width: auto;
-    }
-  }
-
-  .chip {
-    background: #ddd;
-  }
-
-  .ac-input-container {
-  } */
-
   > input.ac-input {
     flex: 1 1;
     display: block;
@@ -154,6 +140,13 @@ export class Autocomplete<S> extends React.Component<Props<S>> {
       return 0;
     });
     this.updateSelection(selection);
+  }
+
+  public removeFromSelection(pred: (item: S) => boolean) {
+    const selection = this.selection().filter(item => !pred(item));
+    if (selection.length !== this.selection().length) {
+      this.updateSelection(selection);
+    }
   }
 
   public render() {
@@ -309,10 +302,10 @@ export class Autocomplete<S> extends React.Component<Props<S>> {
     const alreadySelected = new Set(this.selection().map(s => this.props.onGetValue(s)));
     const uniqueSuggestions =
       suggestions.filter(s => !alreadySelected.has(this.props.onGetValue(s)));
-    const suggestionCount = uniqueSuggestions.length + suffixActions.length;
+    // const suggestionCount = uniqueSuggestions.length + suffixActions.length;
     this.suggestions.replace(uniqueSuggestions);
     this.suffixActions = suffixActions;
-    this.open = suggestionCount > 0;
+    this.open = uniqueSuggestions.length > 0;
     this.suggestionIndex = uniqueSuggestions.length > 0 ? 0 : -1;
     if (this.textValue !== this.searchValue) {
       this.searchValue = this.textValue;

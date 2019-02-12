@@ -69,3 +69,8 @@ export function decodeError(error: any): [string, string] {
     return [undefined, undefined];
   }
 }
+
+export function decodeErrorAsException(error: any): [string, string] {
+  const [code] = decodeError(error);
+  throw new Error(code);
+}

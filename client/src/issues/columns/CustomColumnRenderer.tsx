@@ -1,9 +1,9 @@
-import * as classNames from 'classnames';
 import * as React from 'react';
 import { ColumnRenderer } from './ColumnRenderer';
 import { Issue } from '../../../../common/types/graphql';
 import { FieldType } from '../../../../common/types/json';
 import { ColumnSort } from '../../controls';
+import classNames from 'classnames';
 
 export class CustomColumnRenderer implements ColumnRenderer {
   protected title: string;

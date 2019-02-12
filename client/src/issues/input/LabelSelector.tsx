@@ -1,13 +1,21 @@
-// tslint:disable:max-classes-per-file
 import bind from 'bind-decorator';
-import { Project } from '../../../models';
 import * as React from 'react';
 import { Autocomplete, SearchCallback } from '../../controls/Autocomplete';
-import { LabelName } from '../../common/LabelName';
 import { LabelDialog  } from '../../labels/LabelDialog';
 import { action, observable } from 'mobx';
-import { searchLabels } from '../../../network/requests';
 import { observer } from 'mobx-react';
+import { LabelName } from '../../controls/LabelName';
+import { Project, Label } from '../../../../common/types/graphql';
+import { client } from '../../graphql/client';
+import gql from 'graphql-tag';
+
+const LabelsQuery = gql`
+  query LabelsQuery($project: ID!, $search: String) {
+    labels(project: $project, search: $search) {
+      id name color
+    }
+  }
+`;
 
 interface Props {
   className?: string;
@@ -21,23 +29,24 @@ interface LabelOption {
   id: string;
 }
 
+// tslint:disable:max-classes-per-file
 class AutocompleteLabels extends Autocomplete<string> {}
 
 @observer
 export class LabelSelector extends React.Component<Props> {
-  @observable private showModal = false;
+  @observable private open = false;
   private ac: AutocompleteLabels;
   private token: string;
 
   public render() {
     return (
       <div className="label-selector">
-        {this.showModal && (
-          <LabelDialog
-              project={this.props.project}
-              onHide={this.onCloseModal}
-              onInsertLabel={this.onInsertLabel}
-          />)}
+        <LabelDialog
+            open={this.open}
+            project={this.props.project}
+            onClose={this.onCloseModal}
+            onInsertLabel={this.onInsertLabel}
+        />
         <AutocompleteLabels
             {...this.props}
             multiple={true}
@@ -63,8 +72,17 @@ export class LabelSelector extends React.Component<Props> {
     } else {
       const { project } = this.props;
       this.token = token;
-      searchLabels(project.account, project.uname, token, labels => {
-        if (this.token === token) {
+      client.query<{ labels: Label[] }>({
+        query: LabelsQuery,
+        fetchPolicy: 'network-only',
+        variables: {
+          project: project.id,
+          search: token,
+        }
+      }).then(({ data, loading, errors }) => {
+        console.log(errors);
+        if (!loading && !errors && token === this.token) {
+          const labels = data.labels;
           callback(labels.slice(0, 5).map(l => l.id), [newLabelOption]);
         }
       });
@@ -78,7 +96,7 @@ export class LabelSelector extends React.Component<Props> {
     }
     const option = label as LabelOption;
     if (option.id === '*new*') {
-      this.showModal = true;
+      this.open = true;
       return true;
     }
     return false;
@@ -95,7 +113,7 @@ export class LabelSelector extends React.Component<Props> {
   @bind
   private onRenderSuggestion(label: string) {
     if (typeof label === 'string') {
-      return <LabelName key={label} label={label} textOnly={true} />;
+      return <LabelName key={label} id={label} textOnly={true} />;
     } else {
       const option = label as LabelOption;
       return <span key={option.id}>{option.name}</span>;
@@ -105,7 +123,11 @@ export class LabelSelector extends React.Component<Props> {
   @bind
   private onRenderSelection(label: string) {
     return (
-      <LabelName key={label} label={label} className="chip" />
+      <LabelName
+          key={label}
+          id={label}
+          onClose={() => this.removeLabel(label)}
+      />
     );
   }
 
@@ -121,6 +143,11 @@ export class LabelSelector extends React.Component<Props> {
 
   @action.bound
   private onCloseModal() {
-    this.showModal = false;
+    this.open = false;
+  }
+
+  @bind
+  private removeLabel(label: string) {
+    this.ac.removeFromSelection(item => item === label);
   }
 }

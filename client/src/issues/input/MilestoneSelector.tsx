@@ -1,12 +1,12 @@
 // tslint:disable:max-classes-per-file
 import * as React from 'react';
-import * as classNames from 'classnames';
 import { Project, MilestoneListQuery } from '../../../models';
 import { Autocomplete, SearchCallback } from '../../controls/Autocomplete';
 import { Button, Modal } from 'react-bootstrap';
 import { observer } from 'mobx-react';
 import { Milestone } from 'klendathu-json-types';
 import { observable, action } from 'mobx';
+import classNames from 'classnames';
 import bind from 'bind-decorator';
 
 interface Props {

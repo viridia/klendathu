@@ -23,5 +23,10 @@ type Subscription {
 
   "Watch a single project for changes."
   projectChanged(project: ID!): ProjectChange!
+
+  # Issue changed
+  # Issues changed
+  # Label changed
+  # Labels changed
 }
 `;

@@ -14,8 +14,11 @@ export interface Filter {
 
 /** Stores the project-specific settings for a user: role, prefs, etc. */
 export interface ProjectPrefsRecord {
-  /** Database id of this prefs record: account/project/user */
-  _id?: ObjectID;
+  /** The user for these prefs */
+  user: ObjectID;
+
+  /** Prefs project applies to */
+  project: ObjectID;
 
   /** List of columns to display in the issue list. */
   columns?: string[];
@@ -24,5 +27,5 @@ export interface ProjectPrefsRecord {
   labels?: string[];
 
   /** List of saved queries. */
-  filters: Filter[];
+  filters?: Filter[];
 }

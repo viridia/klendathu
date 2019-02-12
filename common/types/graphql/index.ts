@@ -76,6 +76,13 @@ export interface ProjectInput {
   /** If true, indicates that this project is visible to the public. */
   isPublic: boolean;
 }
+/** A label which can be attached to an issue. */
+export interface LabelInput {
+  /** Text of the label. */
+  name: string;
+  /** CSS color of the label. */
+  color: string;
+}
 /** Type for posting a new issue. */
 export interface IssueInput {
   /** Issue type (defined by template). */
@@ -135,6 +142,15 @@ export interface IssueLinkInput {
   to: string;
   /** Type of the relation. */
   relation: Relation;
+}
+/** Used for setting filters. */
+export interface FilterInput {
+  /** Name of this filter. */
+  name: string;
+  /** JSON-encoded filter expression. */
+  value: string;
+  /** Which view this was (issues, progress, etc.). */
+  view?: Maybe<string>;
 }
 /** Used for adding / removing labels, cc users, attachments. */
 export interface IssueEdit {
@@ -254,6 +270,10 @@ export interface Query {
   projectMembers: Membership[];
   /** Look up a template by name. */
   template?: Maybe<JsonObject>;
+  /** Retrieve a label by id. */
+  label?: Maybe<Label>;
+  /** Retrieve labels from a project, with optional search token. */
+  labels: Label[];
   /** Retrieve an issue by id. */
   issue?: Maybe<Issue>;
   /** Retrieve issues which meet a set of filter criteria. */
@@ -262,6 +282,8 @@ export interface Query {
   issueSearch: Issue[];
   /** Search custom field text, used for auto completion. */
   searchCustomFields: string[];
+  /** Current user's preferences for a project. */
+  projectPrefs: ProjectPrefs;
 }
 
 /** Public information about a user or organization. */
@@ -342,11 +364,56 @@ export interface Project {
 
 /** Query result that returns project, owner account and memberships in a single operation. */
 export interface ProjectContext {
+  /** Project record */
   project: Project;
-
+  /** Account that owns the project */
   account: PublicAccount;
-
+  /** Current user's project preferences */
+  prefs: ProjectPrefs;
+  /** Templates for this project */
   template: JsonObject;
+}
+
+/** Stores the project-specific settings for a user: role, prefs, etc. */
+export interface ProjectPrefs {
+  /** Database id of user */
+  user: string;
+  /** Database id of project */
+  project: string;
+  /** List of columns to display in the issue list. */
+  columns: string[];
+  /** List of label names to display in the issue summary list. */
+  labels: string[];
+  /** List of saved filters. */
+  filters: Filter[];
+}
+
+/** One of the user's saved filters. */
+export interface Filter {
+  /** Name of this filter. */
+  name: string;
+  /** JSON-encoded filter expression. */
+  value: string;
+  /** Which view this was (issues, progress, etc.). */
+  view?: Maybe<string>;
+}
+
+/** A label which can be attached to an issue. */
+export interface Label {
+  /** Database id for this label [account/project/id]. */
+  id: string;
+  /** Text of the label. */
+  name: string;
+  /** CSS color of the label. */
+  color: string;
+  /** Project in which this label is defined. */
+  project: string;
+  /** User that created this label. */
+  creator: string;
+  /** When the label was created. */
+  created: DateTime;
+  /** When the label was last updated. */
+  updated: DateTime;
 }
 
 /** An issue. */
@@ -451,12 +518,28 @@ export interface Mutation {
   removeProject: DeletionResult;
   /** Store a template definition by name. */
   setTemplate: JsonObject;
+  /** Create a new label. */
+  newLabel: Label;
+  /** Update an existing label. */
+  updateLabel: Label;
+  /** Delete a label. */
+  deleteLabel: Label;
   /** Create a new issue record. */
   newIssue: Issue;
   /** Update an existing issue record. */
   updateIssue: Issue;
   /** Delete an issue record. */
   deleteIssue: Issue;
+  /** Set current user's preferences for visible columns. */
+  setPrefColumns: ProjectPrefs;
+  /** Add a label to the set of visible labels. */
+  addPrefsLabel: ProjectPrefs;
+  /** Reove a label to the set of visible labels. */
+  removePrefsLabel: ProjectPrefs;
+  /** Add a prefs filter. */
+  addPrefsFilter: ProjectPrefs;
+  /** Remove a prefs filter. */
+  removePrefsFilter: ProjectPrefs;
 }
 
 export interface DeletionResult {
@@ -543,6 +626,14 @@ export interface TemplateQueryArgs {
 
   name: string;
 }
+export interface LabelQueryArgs {
+  id: string;
+}
+export interface LabelsQueryArgs {
+  project: string;
+
+  search?: Maybe<string>;
+}
 export interface IssueQueryArgs {
   id: string;
 }
@@ -562,6 +653,9 @@ export interface SearchCustomFieldsQueryArgs {
   field: string;
 
   search: string;
+}
+export interface ProjectPrefsQueryArgs {
+  project: string;
 }
 export interface CreateUserAccountMutationArgs {
   input?: Maybe<AccountInput>;
@@ -594,6 +688,19 @@ export interface SetTemplateMutationArgs {
 
   template: JsonObject;
 }
+export interface NewLabelMutationArgs {
+  project: string;
+
+  input: LabelInput;
+}
+export interface UpdateLabelMutationArgs {
+  id: string;
+
+  input: LabelInput;
+}
+export interface DeleteLabelMutationArgs {
+  id: string;
+}
 export interface NewIssueMutationArgs {
   project: string;
 
@@ -606,6 +713,31 @@ export interface UpdateIssueMutationArgs {
 }
 export interface DeleteIssueMutationArgs {
   id: string;
+}
+export interface SetPrefColumnsMutationArgs {
+  project: string;
+
+  columns: string[];
+}
+export interface AddPrefsLabelMutationArgs {
+  project: string;
+
+  label: string;
+}
+export interface RemovePrefsLabelMutationArgs {
+  project: string;
+
+  label: string;
+}
+export interface AddPrefsFilterMutationArgs {
+  project: string;
+
+  input: FilterInput;
+}
+export interface RemovePrefsFilterMutationArgs {
+  project: string;
+
+  name: string;
 }
 export interface ProjectsChangedSubscriptionArgs {
   owners: string[];

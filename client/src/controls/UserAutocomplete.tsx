@@ -45,7 +45,7 @@ export class UserAutocomplete extends React.Component<Props> {
     if (token.length < 1) {
       callback([]);
     } else {
-      client.query({
+      client.query<{ accounts: PublicAccount[] }>({
         query: AccountsQuery,
         fetchPolicy: 'network-only',
         variables: {
@@ -54,7 +54,7 @@ export class UserAutocomplete extends React.Component<Props> {
         }
       }).then(({ data, loading, errors }) => {
         if (!loading && !errors && token === this.token) {
-          callback((data as any).accounts);
+          callback(data.accounts.slice(0, 5));
         }
       });
     }

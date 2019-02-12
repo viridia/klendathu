@@ -288,7 +288,7 @@ export const mutations = {
       throw new UserInputError(Errors.FORBIDDEN);
     }
 
-    // TODO: Compute next issue id.
+    // Compute next issue id.
     const p = await context.db.collection('projects').findOneAndUpdate(
       { _id: pr._id },
       { $inc: { issueIdCounter: 1 } });

@@ -49,6 +49,12 @@ type Query {
   "Look up a template by name."
   template(owner: ID!, name: String!): JSONObject
 
+  "Retrieve a label by id."
+  label(id: ID!): Label
+
+  "Retrieve labels from a project, with optional search token."
+  labels(project: ID!, search: String): [Label!]!
+
   "Retrieve an issue by id."
   issue(id: ID!): Issue
 
@@ -60,5 +66,8 @@ type Query {
 
   "Search custom field text, used for auto completion."
   searchCustomFields(project: ID!, field: String!, search: String!): [String!]!
+
+  "Current user's preferences for a project."
+  projectPrefs(project: ID!): ProjectPrefs!
 }
 `;

@@ -1,11 +1,9 @@
 import * as React from 'react';
 // import {
-//   Account,
 //   Attachment,
 //   CustomValues,
 //   DataType,
 //   Errors,
-//   Issue,
 //   IssueInput,
 //   IssueLink,
 //   IssueType,
@@ -31,10 +29,8 @@ import * as React from 'react';
 //   IssueSelector,
 //   LabelSelector,
 //   MilestoneSelector,
-//   TypeSelector,
 //   StateSelector,
 // } from './input';
-// import { UserAutocomplete } from '../common/UserAutocomplete';
 // import { IssueLinks } from './IssueLinks';
 // import { relationNames } from '../common/relationNames';
 // import { displayErrorToast } from '../common/displayErrorToast';
@@ -72,7 +68,7 @@ import {
 } from '../controls';
 import { ViewContext } from '../graphql/ProjectContextProvider';
 import styled from 'styled-components';
-import { TypeSelector, CommentEdit } from './input';
+import { TypeSelector, CommentEdit, LabelSelector } from './input';
 import { Role } from '../../../common/types/json';
 import { session } from '../models';
 
@@ -139,6 +135,22 @@ const OwnerEditGroup = styled.span`
   }
 `;
 
+const CcEditGroup = styled.span`
+  grid-column: controls;
+
+  > .assignee {
+    width: 20rem;
+  }
+`;
+
+const LabelEditGroup = styled.span`
+  grid-column: controls;
+
+  > .label-selector {
+    width: 30rem;
+  }
+`;
+
 // const RELATIONS: Relation[] = [
 //   Relation.Blocks,
 //   Relation.BlockedBy,
@@ -166,8 +178,8 @@ export class IssueCompose extends React.Component<Props> {
   @observable private public: boolean = false;
   @observable private another: boolean = false;
   @observable private owner: PublicAccount = null;
-  // @observable.shallow private cc = [] as IObservableArray<Account>;
-  // @observable.shallow private labels = [] as IObservableArray<string>;
+  @observable.shallow private cc = [] as IObservableArray<PublicAccount>;
+  @observable.shallow private labels = [] as IObservableArray<string>;
   // @observable private milestone: string = '';
   // @observable private relation: Relation = Relation.BlockedBy;
   // @observable private issueToLink: Issue = null;
@@ -253,36 +265,31 @@ export class IssueCompose extends React.Component<Props> {
             </OwnerEditGroup>
 
             <FormLabel>CC:</FormLabel>
+            <CcEditGroup>
+              <UserAutocomplete
+                  className="assignee"
+                  multiple={true}
+                  selection={this.cc.slice()}
+                  onSelectionChange={this.onChangeCC}
+              />
+            </CcEditGroup>
+
             <FormLabel>Labels:</FormLabel>
-                  {/* </td>
-                <tr>
-                  <th className="header"><ControlLabel>Owner:</ControlLabel></th>
-                  <td className="owner">
-                  </td>
-                </tr>
-                <tr>
-                  <th className="header"><ControlLabel>CC:</ControlLabel></th>
-                  <td>
-                    <div className="ac-multi-group">
-                      <UserAutocomplete
-                          className="assignee ac-multi"
-                          multiple={true}
-                          selection={this.cc.slice()}
-                          onSelectionChange={this.onChangeCC}
-                      />
-                    </div>
-                  </td>
-                </tr>
+            <LabelEditGroup>
+              <LabelSelector
+                  className="labels"
+                  project={project}
+                  selection={this.labels.slice()}
+                  onSelectionChange={this.onChangeLabels}
+              />
+            </LabelEditGroup>
+
+            <FormLabel>Milestone:</FormLabel>
+            {/*
                 <tr>
                   <th className="header"><ControlLabel>Labels:</ControlLabel></th>
                   <td>
                     <div className="ac-multi-group">
-                      <LabelSelector
-                          className="labels ac-multi"
-                          project={this.props.project}
-                          selection={this.labels.slice()}
-                          onSelectionChange={this.onChangeLabels}
-                      />
                     </div>
                   </td>
                 </tr>
@@ -361,6 +368,7 @@ export class IssueCompose extends React.Component<Props> {
                   <th className="header"><ControlLabel>Comments:</ControlLabel></th>
                   <td>
                     /> */}
+            <FormLabel>Attach Files:</FormLabel>
             <FormLabel>Comments:</FormLabel>
             <CommentEdit
                 disabled={project.role < Role.REPORTER}
@@ -482,15 +490,15 @@ export class IssueCompose extends React.Component<Props> {
     this.owner = session.account;
   }
 
-  // @action.bound
-  // private onChangeCC(cc: Account[]) {
-  //   this.cc.replace(cc);
-  // }
+  @action.bound
+  private onChangeCC(cc: PublicAccount[]) {
+    this.cc.replace(cc);
+  }
 
-  // @action.bound
-  // private onChangeLabels(labels: string[]) {
-  //   this.labels.replace(labels);
-  // }
+  @action.bound
+  private onChangeLabels(labels: string[]) {
+    this.labels.replace(labels);
+  }
 
   // @action.bound
   // private onChangeMilestone(milestone: Milestone) {
@@ -622,10 +630,10 @@ export class IssueCompose extends React.Component<Props> {
     } else {
     //   this.resetType();
       this.summary = '';
-    //   this.description = '';
-    //   this.owner = null;
-    //   this.cc.replace([]);
-    //   this.labels.replace([]);
+      this.description = '';
+      this.owner = null;
+      this.cc.replace([]);
+      this.labels.replace([]);
     //   this.milestone = '';
     //   this.custom.clear();
     //   this.issueLinkMap.clear();

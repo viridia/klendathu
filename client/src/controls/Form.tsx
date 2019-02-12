@@ -188,7 +188,7 @@ export const FormLabel = styled.span`
   }
 
   .layout-stacked & {
-    margin-top: 8px;
+    margin-top: 1rem;
     margin-bottom: 6px;
     &:first-child {
       margin-top: 0;
