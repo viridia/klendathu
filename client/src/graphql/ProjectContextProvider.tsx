@@ -1,23 +1,38 @@
 import * as React from 'react';
 import { Query } from 'react-apollo';
-import { ProjectContext } from '../../../common/types/graphql';
+import { ProjectContext, ProjectPrefs } from '../../../common/types/graphql';
 import gql from 'graphql-tag';
 import { ErrorDisplay } from './ErrorDisplay';
-import { Template } from '../../../common/types/json';
+import { fragments } from './fragments';
+// import { Template } from '../../../common/types/json';
 
 const ProjectContextQuery = gql`
   query ProjectContextQuery($owner: String!, $name: String!) {
     projectContext(owner: $owner, name: $name) {
-      project { id name title description owner isPublic }
-      account { id accountName type display photo }
+      project { ...ProjectFields }
+      account { ...AccountFields }
+      prefs { columns labels filters { name } }
       template
     }
   }
+  ${fragments.project}
+  ${fragments.account}
+`;
+
+const PrefsChangeSubscription = gql`
+  subscription PrefsChangeSubscription($project: ID!) {
+    prefsChanged(project: $project) {
+      action
+      prefs { ...ProjectPrefsFields }
+    }
+  }
+  ${fragments.projectPrefs}
 `;
 
 export interface ViewContext extends ProjectContext {
   loading?: boolean;
-  template: Template;
+  visibleLabels: Set<string>;
+  // template: Template;
 }
 
 interface Props {
@@ -30,13 +45,36 @@ interface Props {
 export function ProjectContextProvider({ owner, name, children }: Props) {
   return (
     <Query query={ProjectContextQuery} variables={{ owner, name }} >
-      {({ loading, error, data }) => {
+      {({ loading, error, data, subscribeToMore, refetch }) => {
         if (loading) {
-          return children({ loading, account: null, project: null, template: null });
+          return children({
+            loading,
+            account: null,
+            project: null,
+            prefs: null,
+            template: null,
+            visibleLabels: null,
+          });
         } else if (error) {
           return <ErrorDisplay error={error} />;
         } else {
-          return children({ ...data.projectContext });
+          if (data.projectContext.project) {
+            // TODO: Prefs changes shouldn't have to refresh the whole project.
+            subscribeToMore({
+              document: PrefsChangeSubscription,
+              variables: {
+                project: data.projectContext.project.id,
+              } as any,
+              updateQuery: (prev, { subscriptionData }) => {
+                // TODO: For the moment we're just going to refresh.
+                // console.log('subscriptionData', subscriptionData);
+                refetch();
+              },
+            });
+          }
+          const prefs: ProjectPrefs = data.projectContext.prefs;
+          const visibleLabels = new Set<string>(prefs ? prefs.labels : []);
+          return children({ ...data.projectContext, visibleLabels });
         }
       }}
     </Query>

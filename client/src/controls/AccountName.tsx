@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Query } from 'react-apollo';
 import { PublicAccount } from '../../../common/types/graphql';
 import { NavLink } from './NavLink';
+import { History as H } from 'history';
 import gql from 'graphql-tag';
 
 const accountQuery = gql`
@@ -12,9 +13,10 @@ const accountQuery = gql`
 
 interface Props {
   id?: string;
+  to?: H.LocationDescriptor;
 }
 
-export function AccountNameLink({ id }: Props) {
+export function AccountName({ id, to }: Props) {
   return (
     <Query query={accountQuery} variables={{ id }} >
       {({ loading, error, data }) => {
@@ -24,18 +26,16 @@ export function AccountNameLink({ id }: Props) {
           return <div className="account-name error">[Account Load Error]</div>;
         } else {
           const account: PublicAccount = data.account;
-          if (account.accountName) {
-            if (account.display) {
+          if (account && account.accountName) {
+            const text = account.display || account.accountName;
+            if (to) {
               return (
-                <NavLink className="account-name" to={`/${account.accountName}`}>
-                  {account.display}
-                </NavLink>
+                <NavLink className="account-name" to={to}>{text}</NavLink>
               );
             } else {
               return (
-                <NavLink className="account-name" to={`/${account.accountName}`}>
-                  {account.accountName}
-                </NavLink>);
+                <span className="account-name">{text}</span>
+              );
             }
           } else {
             return <div>[Anonymous user]</div>;

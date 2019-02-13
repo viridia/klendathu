@@ -77,16 +77,14 @@ export interface ThemeInterface {
   inputBorderColor: string;
   inputBgColor: string;
 
-// contentBgColor: string;
-
   // Cards
   cardBgColor: string;
   cardBorderColor: string;
   cardShadowColor: string;
 
   cardHeaderBgColor: string;
+  cardBgColorAltRow: string;
   cardHeaderDividerColor: string;
-// cardBgAlt: string;
 
 // accentedCardHeaderBgColor: bg2;
 
@@ -95,21 +93,6 @@ export interface ThemeInterface {
 
 // // Mass edit
 // massEditBgColor: string;
-
-// // Menus
-// dropdownLinkActiveBgColor: bg1;
-
-// // Scrollbars
-// scrollbarThumbColor: rgba(bg7, .5);
-// scrollbarInactiveThumbColor: rgba(bg7, .3);
-
-// // Social login buttons
-// buttonLoginGoogleBgColor: string;
-// buttonLoginGitHubBgColor: string;
-// buttonLoginFacebookBgColor: string;
-
-// // Labels
-// labelText: string;
 }
 
 export interface ThemeProps {

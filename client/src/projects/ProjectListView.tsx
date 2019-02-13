@@ -6,7 +6,7 @@ import {
   Button,
   Card,
   RelativeDate,
-  AccountNameLink,
+  AccountName,
   Avatar,
   RoleName,
   NavLink,
@@ -19,24 +19,25 @@ import { session } from '../models';
 import styled from 'styled-components';
 import gql from 'graphql-tag';
 import AddBoxIcon from '../svg-compiled/icons/IcAddBox';
+import { fragments } from '../graphql';
 
 const projectsQuery = gql`
   query ProjectsQuery {
     projects {
-      id, owner, ownerName, name, title, description, createdAt, updatedAt, role, isPublic
+      project { ...ProjectFields }
     }
   }
+  ${fragments.project}
 `;
 
 const projectsSubscription = gql`
   subscription ProjectsSubscription($owners: [ID!]!) {
     projectsChanged(owners: $owners) {
       action
-      project {
-        id, owner, ownerName, name, title, description, createdAt, updatedAt, role, isPublic
-      }
+      project { ...ProjectFields }
     }
   }
+  ${fragments.project}
 `;
 
 const ProjectListEl = styled.section`
@@ -149,7 +150,7 @@ export class ProjectListView extends React.Component<{}> {
                       <div className="id">{prj.id}</div>
                       <div className="owner">
                         <b>Owned By:</b> <Avatar id={prj.owner} />
-                        <AccountNameLink id={prj.owner} />
+                        <AccountName id={prj.owner} />
                       </div>
                       <div className="title">
                         <ProjectTitle>{prj.title}</ProjectTitle>[

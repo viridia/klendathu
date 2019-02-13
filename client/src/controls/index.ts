@@ -1,4 +1,4 @@
-export { AccountNameLink } from './AccountNameLink';
+export { AccountName } from './AccountName';
 export { ActionLink } from './ActionLink';
 export { Autocomplete, SearchCallback } from './Autocomplete';
 export { AutoNavigate } from './AutoNavigate';

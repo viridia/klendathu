@@ -16,21 +16,20 @@ import classNames from 'classnames';
 import LABEL_COLORS from './LabelColors';
 import styled from 'styled-components';
 import gql from 'graphql-tag';
+import { fragments } from '../graphql';
 
 const NewLabelMutation = gql`
   mutation NewLabelMutation($project: ID!, $input: LabelInput!) {
-    newLabel(project: $project, input: $input) {
-      id name color
-    }
+    newLabel(project: $project, input: $input) { ...LabelFields }
   }
+  ${fragments.label}
 `;
 
 const UpdateLabelMutation = gql`
   mutation UpdateLabelMutation($id: ID!, $input: LabelInput!) {
-    updateLabel(id: $id, input: $input) {
-      id name color
-    }
+    updateLabel(id: $id, input: $input) { ...LabelFields }
   }
+  ${fragments.label}
 `;
 
 const AddPrefsLabelMutation = gql`
@@ -99,7 +98,7 @@ export class LabelDialog extends React.Component<Props> {
 
   public componentWillMount() {
     const { label } = this.props;
-    if (this.props.label) {
+    if (label) {
       this.labelName = label.name;
       this.color = label.color;
       this.visible = this.props.visible;

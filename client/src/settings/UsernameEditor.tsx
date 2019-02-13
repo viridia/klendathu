@@ -7,7 +7,7 @@ import gql from 'graphql-tag';
 import { Account } from '../../../common/types/graphql';
 
 const accountNameQuery = gql`
-  query AccountNameLinkQuery($accountName: String) {
+  query AccountNameQuery($accountName: String) {
     account(accountName: $accountName, id: null) { accountName }
   }
 `;

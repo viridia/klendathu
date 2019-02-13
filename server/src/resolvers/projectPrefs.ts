@@ -7,12 +7,30 @@ import {
   RemovePrefsFilterMutationArgs,
   AddPrefsLabelMutationArgs,
   RemovePrefsLabelMutationArgs,
+  PrefsChangedSubscriptionArgs,
+  ChangeAction,
 } from '../../../common/types/graphql';
 import { ObjectID } from 'mongodb';
 import { AuthenticationError } from 'apollo-server-core';
 import { Errors } from '../../../common/types/json';
+import { withFilter } from 'graphql-subscriptions';
+import { pubsub } from './pubsub';
 
 const DefaultColumns: string[] = [];
+
+const PREFS_CHANGE = 'prefs-change';
+
+interface PrefsRecordChange {
+  prefs: ProjectPrefsRecord;
+  action: ChangeAction;
+}
+
+function signalPrefsChanged(prefs: ProjectPrefsRecord) {
+  pubsub.publish(PREFS_CHANGE, {
+    action: ChangeAction.Changed,
+    prefs,
+  });
+}
 
 export const queries = {
   async projectPrefs(
@@ -48,7 +66,7 @@ export const mutations = {
     }
 
     const pid = new ObjectID(project);
-    return context.db.collection('projectPrefs')
+    const result = await context.db.collection('projectPrefs')
       .findOneAndUpdate(
         { user: context.user._id, project: pid },
         {
@@ -59,6 +77,8 @@ export const mutations = {
           upsert: true,
           // returnNewDocument: true,
         }) as any;
+    signalPrefsChanged(result.value);
+    return result.value;
   },
 
   async addPrefsLabel(
@@ -70,7 +90,7 @@ export const mutations = {
     }
 
     const pid = new ObjectID(project);
-    const result = await context.db.collection('projectPrefs')
+    const result = await context.db.collection<ProjectPrefsRecord>('projectPrefs')
       .findOneAndUpdate(
         { user: context.user._id, project: pid },
         {
@@ -81,6 +101,7 @@ export const mutations = {
           upsert: true,
           returnOriginal: false,
         }) as any;
+    signalPrefsChanged(result.value);
     return result.value;
   },
 
@@ -104,6 +125,7 @@ export const mutations = {
           upsert: true,
           returnOriginal: false,
         }) as any;
+    signalPrefsChanged(result.value);
     return result.value;
   },
 
@@ -127,6 +149,7 @@ export const mutations = {
           upsert: true,
           returnOriginal: false,
         }) as any;
+    signalPrefsChanged(result.value);
     return result.value;
   },
 
@@ -150,7 +173,25 @@ export const mutations = {
           upsert: true,
           returnOriginal: false,
         }) as any;
+    signalPrefsChanged(result.value);
     return result.value;
+  },
+};
+
+export const subscriptions = {
+  prefsChanged: {
+    subscribe: withFilter(
+      () => pubsub.asyncIterator([PREFS_CHANGE]),
+      (
+        { prefs }: PrefsRecordChange,
+        { project: id }: PrefsChangedSubscriptionArgs,
+        context: Context) => {
+        return context.user && prefs.project.equals(id) && prefs.user.equals(context.user._id);
+      }
+    ),
+    resolve: (payload: PrefsRecordChange, args: any, context: Context) => {
+      return payload;
+    },
   },
 };
 

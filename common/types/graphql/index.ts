@@ -553,12 +553,28 @@ export interface Subscription {
   projectsChanged: ProjectChange;
   /** Watch a single project for changes. */
   projectChanged: ProjectChange;
+  /** Watch the list of labels defined for a project. */
+  labelChanged: LabelChange;
+  /** Watch for changes to project prefs (current user). */
+  prefsChanged: ProjectPrefsChange;
 }
 
 export interface ProjectChange {
-  project: Project;
-
   action: ChangeAction;
+
+  project: Project;
+}
+
+export interface LabelChange {
+  action: ChangeAction;
+
+  label: Label;
+}
+
+export interface ProjectPrefsChange {
+  action: ChangeAction;
+
+  prefs: ProjectPrefs;
 }
 
 /** Defines a relationship between one issue and another, includes both ends of the link. */
@@ -743,5 +759,11 @@ export interface ProjectsChangedSubscriptionArgs {
   owners: string[];
 }
 export interface ProjectChangedSubscriptionArgs {
+  project: string;
+}
+export interface LabelChangedSubscriptionArgs {
+  project: string;
+}
+export interface PrefsChangedSubscriptionArgs {
   project: string;
 }

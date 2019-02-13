@@ -14,6 +14,7 @@ import { ProjectContextProvider } from '../graphql/ProjectContextProvider';
 import { ProjectSettings } from '../projects/settings/ProjectSettings';
 import { IssueListView } from '../issues/IssueListView';
 import { IssueCreateView } from '../issues/IssueCreateView';
+import { LabelListView } from '../labels/LabelListView';
 
 const MainPageLayout = styled(Page)`
   display: grid;
@@ -104,12 +105,12 @@ export class MainPage extends React.Component<RouteComponentProps<{}>> {
                           exact={true}
                           render={props => (<IssueListView {...props} context={context}/>)}
                         />
-                        {/* <Route
+                        <Route
                           path="/:owner/:name/labels"
                           exact={true}
-                          render={() => (<LabelListView {...models} />)}
+                          render={() => (<LabelListView context={context} />)}
                         />
-                        <Route
+                        {/* <Route
                           path="/:owner/:name/filters"
                           exact={true}
                           render={props => (<SavedFiltersView {...props} {...models}/>)}

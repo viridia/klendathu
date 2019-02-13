@@ -6,6 +6,8 @@ import {
   UpdateLabelMutationArgs,
   DeleteLabelMutationArgs,
   LabelsQueryArgs,
+  ChangeAction,
+  LabelChangedSubscriptionArgs,
 } from '../../../common/types/graphql';
 import { escapeRegExp } from '../db/helpers';
 import { ObjectID } from 'mongodb';
@@ -13,8 +15,16 @@ import { AuthenticationError, UserInputError } from 'apollo-server-core';
 import { Errors, Role } from '../../../common/types/json';
 import { logger } from '../logger';
 import { getProjectAndRole } from '../db/role';
+import { pubsub } from './pubsub';
+import { withFilter } from 'graphql-subscriptions';
 
-// User profile query
+const LABEL_CHANGE = 'label-change';
+
+interface LabelRecordChange {
+  label: LabelRecord;
+  action: ChangeAction;
+}
+
 export const queries = {
   label(_: any, { id }: LabelQueryArgs, context: Context): Promise<LabelRecord> {
     const labels = context.db.collection('labels');
@@ -26,8 +36,8 @@ export const queries = {
       { project, search }: LabelsQueryArgs,
       context: Context): Promise<LabelRecord[]> {
     const query: any = { project: new ObjectID(project) };
-    const pattern = `(?i)\\b${escapeRegExp(search)}`;
     if (search) {
+      const pattern = `(?i)\\b${escapeRegExp(search)}`;
       query.name = { $regex: pattern };
     }
     return context.db.collection('labels').find<LabelRecord>(query).toArray();
@@ -73,6 +83,10 @@ export const mutations = {
     };
 
     const result = await context.db.collection('labels').insertOne(record);
+    pubsub.publish(LABEL_CHANGE, {
+      action: ChangeAction.Added,
+      label: result.ops[0],
+    });
     return result.ops[0];
   },
 
@@ -110,7 +124,11 @@ export const mutations = {
     };
 
     const result = await context.db.collection('labels')
-        .findOneAndUpdate({ _id: new ObjectID(id) }, record);
+        .findOneAndUpdate({ _id: id }, { $set: record });
+    pubsub.publish(LABEL_CHANGE, {
+      action: ChangeAction.Changed,
+      label: result.value,
+    });
     return result.value;
   },
 
@@ -142,6 +160,23 @@ export const mutations = {
     // TODO: Implement
     // We need to remove this label from all issues in the project.
     return null;
+  },
+};
+
+export const subscriptions = {
+  labelChanged: {
+    subscribe: withFilter(
+      () => pubsub.asyncIterator([LABEL_CHANGE]),
+      (
+        { label }: LabelRecordChange,
+        { project: id }: LabelChangedSubscriptionArgs,
+        context: Context) => {
+        return context.user && label.project.equals(id);
+      }
+    ),
+    resolve: (payload: LabelRecordChange, args: any, context: Context) => {
+      return payload;
+    },
   },
 };
 

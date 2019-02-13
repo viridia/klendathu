@@ -10,8 +10,18 @@ enum ChangeAction {
 }
 
 type ProjectChange {
-  project: Project!
   action: ChangeAction!
+  project: Project!
+}
+
+type LabelChange {
+  action: ChangeAction!
+  label: Label!
+}
+
+type ProjectPrefsChange {
+  action: ChangeAction!
+  prefs: ProjectPrefs!
 }
 
 type Subscription {
@@ -24,9 +34,13 @@ type Subscription {
   "Watch a single project for changes."
   projectChanged(project: ID!): ProjectChange!
 
+  "Watch the list of labels defined for a project."
+  labelChanged(project: ID!): LabelChange!
+
   # Issue changed
   # Issues changed
-  # Label changed
-  # Labels changed
+
+  "Watch for changes to project prefs (current user)."
+  prefsChanged(project: ID!): ProjectPrefsChange!
 }
 `;

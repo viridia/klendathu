@@ -3,6 +3,7 @@ import {
   MembershipRecord,
   AccountRecord,
   AugmentedProjectRecord,
+  ProjectPrefsRecord,
 } from '../db/types';
 import {
   CreateProjectMutationArgs,
@@ -387,6 +388,24 @@ export const types = {
         throw new UserInputError(Errors.NOT_IMPLEMENTED);
       }
       return software;
-    }
+    },
+    prefs: async (pc: ProjectAndAccount, args: any, context: Context) => {
+      const project = pc.project._id;
+      if (!context.user) {
+        return {
+          user: null,
+          project,
+        };
+      }
+      const prefs = await context.db.collection('projectPrefs')
+        .findOne<ProjectPrefsRecord>({ user: context.user._id, project });
+      if (!prefs) {
+        return {
+          user: context.user._id,
+          project,
+        };
+      }
+      return prefs;
+    },
   }
 };

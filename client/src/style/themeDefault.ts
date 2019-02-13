@@ -82,6 +82,7 @@ export const themeDefault: ThemeInterface = {
 
   // Cards
   cardBgColor: dye(0.94, primary),
+  cardBgColorAltRow: dye(0.92, primary),
   cardBorderColor: dye(0.7, diluted),
   cardShadowColor: transparentize(0.86, dye(0.4, primary)),
   cardHeaderBgColor: dye(0.88, primary),
