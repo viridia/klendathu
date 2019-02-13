@@ -106,6 +106,11 @@ export class LabelDialog extends React.Component<Props> {
   }
 
   public componentWillReceiveProps(nextProps: Props) {
+    if (nextProps.open && !this.props.open) {
+      this.labelName = '';
+      this.color = LABEL_COLORS[0][0];
+      this.visible = true;
+    }
     if (nextProps.label && !this.props.label) {
       const { label } = nextProps;
       this.labelName = label.name;
