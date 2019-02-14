@@ -1,18 +1,23 @@
 import * as React from 'react';
-// import { IssueListQuery, Project, MilestoneListQuery } from '../../models';
 import { RouteComponentProps } from 'react-router-dom';
-// import { createIssue } from '../../network/requests';
 import { IssueCompose } from './IssueCompose';
-// import { toast } from 'react-toastify';
-import bind from 'bind-decorator';
-import { IssueInput } from '../../../common/types/graphql';
+import { toast } from 'react-toastify';
+import { IssueInput, Issue } from '../../../common/types/graphql';
 import { ViewContext } from '../models';
-// import { Account, IssueInput } from 'klendathu-json-types';
+import { fragments } from '../graphql';
+import { client, decodeErrorAsException } from '../graphql/client';
+import bind from 'bind-decorator';
+import gql from 'graphql-tag';
+
+const NewIssueMutation = gql`
+  mutation NewIssueMutation($project: ID!, $input: IssueInput!) {
+    newIssue(project: $project, input: $input) { ...IssueFields }
+  }
+  ${fragments.issue}
+`;
 
 interface Props extends RouteComponentProps<{}> {
   context: ViewContext;
-  // issues: IssueListQuery;
-  // milestones: MilestoneListQuery;
 }
 
 export class IssueCreateView extends React.Component<Props> {
@@ -21,11 +26,21 @@ export class IssueCreateView extends React.Component<Props> {
   }
 
   @bind
-  private onSave(input: IssueInput): Promise<any> {
-    // const { project } = this.props;
-    // return createIssue(project.owner, project.name, input).then(resp => {
-    //   toast.success(`Issue #${resp.id.split('/')[2]} created.`);
-    // });
-    return null;
+  private onSave(input: IssueInput): Promise<Issue> {
+    const { project } = this.props.context;
+    return client.mutate<{ newIssue: Issue }>({
+      mutation: NewIssueMutation,
+      variables: { project: project.id, input }
+    }).then(({ data, errors }) => {
+      if (errors) {
+        // TODO: more information
+        toast.error('Issue creation failed.');
+        // TODO: An error UI.
+        decodeErrorAsException(errors);
+      } else {
+        toast.success(`Issue #${data.newIssue.id.split('.')[1]} created.`);
+        return data.newIssue;
+      }
+    });
   }
 }

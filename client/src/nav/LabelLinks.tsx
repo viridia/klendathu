@@ -1,8 +1,5 @@
 import * as React from 'react';
-import { Project, ProjectPrefs, ProjectPrefsChange } from '../../../common/types/graphql';
-import { Query } from 'react-apollo';
-import { fragments } from '../graphql';
-import gql from 'graphql-tag';
+import { ProjectPrefs } from '../../../common/types/graphql';
 import { LabelName } from '../controls/LabelName';
 import styled from 'styled-components';
 

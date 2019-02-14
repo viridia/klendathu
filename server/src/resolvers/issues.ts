@@ -365,8 +365,8 @@ export const mutations = {
             linked: [{ to: row._id, after: inv }],
           });
         }
-        await context.db.collection('issueLinks').insertOne(linksToInsert);
-        await context.db.collection('issueChanges').insertOne(changesToInsert);
+        await context.db.collection('issueLinks').insertMany(linksToInsert);
+        await context.db.collection('issueChanges').insertMany(changesToInsert);
       }
     }
 
@@ -437,13 +437,37 @@ export const mutations = {
 
 export const types = {
   Issue: {
-    id(record: IssueRecord) { return record._id; },
-    custom(record: IssueRecord) {
-      return Object.getOwnPropertyNames(record.custom).map(key => ({
+    id(row: IssueRecord) { return row._id; },
+    owner: (row: IssueRecord) => row.owner ? row.owner.toHexString() : null,
+    createdAt: (row: IssueRecord) => row.created,
+    updatedAt: (row: IssueRecord) => row.updated,
+    custom(row: IssueRecord) {
+      return Object.getOwnPropertyNames(row.custom).map(key => ({
         key,
-        value: record.custom[key]
+        value: row.custom[key]
       }));
-      return record._id;
     },
+    async links(row: IssueRecord, _: any, context: Context) {
+      const links = await context.db.collection<IssueLinkRecord>('issueLinks').find({
+        $or: [
+          { from: row._id },
+          { to: row._id },
+        ]
+      }).toArray();
+      return links.map(link => {
+        if (link.from === row._id) {
+          return link;
+        }
+        return {
+          to: link.from,
+          from: link.to,
+          relation: inverseRelations[link.relation],
+        };
+      });
+    },
+  },
+  CustomValue: {
+    serialize: (value: any) => value,
+    parseValue: (value: any) => value,
   },
 };

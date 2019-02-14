@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
-import { PublicAccount, Project, ProjectInput } from '../../../../common/types/graphql';
+import { ProjectInput } from '../../../../common/types/graphql';
 import {
   Button,
   FormLabel,

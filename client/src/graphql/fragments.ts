@@ -17,4 +17,15 @@ export const fragments = {
   fragment ProjectPrefsFields on ProjectPrefs {
     columns labels filters { name value view }
   }`,
+  issue: gql`
+  fragment IssueFields on Issue {
+    id createdAt updatedAt type state project summary description
+    reporter reporterSort owner ownerSort cc labels
+    custom { key value }
+    attachments { filename url thumbnail type }
+    links { to relation }
+    isPublic
+    position { x y }
+    milestone
+  }`,
 };

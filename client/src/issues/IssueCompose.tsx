@@ -2,7 +2,6 @@ import * as React from 'react';
 // import {
 //   Attachment,
 //   Errors,
-//   IssueLink,
 //   IssueType,
 //   Relation,
 //   Role,
@@ -26,8 +25,6 @@ import * as React from 'react';
 // import { RequestError } from '../../network';
 // import { getFileInfoList } from '../../network/requests';
 // import { UploadAttachments } from '../files/UploadAttachments';
-import { action, computed, IObservableArray, observable, toJS, when } from 'mobx';
-import { observer } from 'mobx-react';
 // import { toast } from 'react-toastify';
 
 import {
@@ -37,6 +34,7 @@ import {
   Attachment,
   PublicAccount,
   CustomFieldInput,
+  IssueLink,
 } from '../../../common/types/graphql';
 import { RouteComponentProps } from 'react-router';
 import {
@@ -55,11 +53,13 @@ import {
 } from '../controls';
 import styled from 'styled-components';
 import { TypeSelector, CommentEdit, LabelSelector } from './input';
-import { Role, Workflow, IssueType, DataType } from '../../../common/types/json';
+import { Role, Workflow, IssueType, DataType, FieldType } from '../../../common/types/json';
 import { session, ViewContext } from '../models';
 import { StateSelector } from './input/StateSelector';
 import { CustomSuggestField } from './input/CustomSuggestField';
 import { CustomEnumField } from './input/CustomEnumField';
+import { action, computed, IObservableArray, observable, toJS, when } from 'mobx';
+import { observer } from 'mobx-react';
 
 const IssueComposeLayout = styled(Card)`
   flex: 1;
@@ -73,18 +73,23 @@ const IssueComposeFooter = styled.footer`
 `;
 
 const IssueComposeBody = styled(Form)`
-  flex: 1;
+  flex: 1 0 0;
+  align-items: flex-start;
+  overflow: hidden;
 `;
 
 const LeftPanel = styled.div`
   align-items: flex-start;
+  align-self: stretch;
   display: grid;
   flex: 1;
   gap: 8px;
   grid-auto-flow: row;
   grid-template-columns: [labels] auto [controls] 1fr;
-  margin: .5rem 0 1em 1em;
   justify-items: flex-start;
+  margin: 1rem 0 0 1rem;
+  padding-right: 0.5rem;
+  overflow-y: auto;
 
   > .fill {
     justify-self: stretch;
@@ -96,7 +101,7 @@ const RightPanel = styled.div`
   border: 1px solid ${props => props.theme.cardHeaderDividerColor};
   display: flex;
   flex-direction: column;
-  margin: 1rem;
+  margin: 1rem 1rem 1rem 0.5rem;
   padding: .6rem;
   width: 16em;
 `;
@@ -173,11 +178,11 @@ export class IssueCompose extends React.Component<Props> {
   // @observable private milestone: string = '';
   // @observable private relation: Relation = Relation.BlockedBy;
   // @observable private issueToLink: Issue = null;
-  // @observable.shallow private issueLinkMap = new Map<string, Relation>();
+  @observable.shallow private issueLinkMap = new Map<string, Relation>();
   @observable private custom = new Map<string, string | number | boolean>();
   @observable private comments = [] as IObservableArray<string>;
   @observable private busy = false;
-  // @observable private attachments = [] as IObservableArray<Attachment>;
+  @observable private attachments = [] as IObservableArray<Attachment>;
   private prevState: string = '';
 
   public componentWillMount() {
@@ -539,11 +544,10 @@ export class IssueCompose extends React.Component<Props> {
       key: field.id,
       value: this.custom.has(field.id) ? this.custom.get(field.id) : field.default,
     }));
-    // const linked: IssueLink[] = [];
+    const linked: IssueLink[] = [];
     // this.issueLinkMap.forEach((value, key) => {
     //   linked.push({ to: key, relation: value });
     // });
-    // const attachments: string[] = this.attachments.map(a => a.id);
     const input: IssueInput = {
       type: this.type,
       state: this.issueState,
@@ -554,17 +558,17 @@ export class IssueCompose extends React.Component<Props> {
       cc: this.cc.map(cc => cc.id),
       labels: this.labels,
     //   milestone: this.milestone,
-    //   linked,
+      linked,
       custom,
       comments: toJS(this.comments),
-    //   attachments,
+      attachments: this.attachments.slice(),
     };
-    this.props.onSave(input).then(() => {
-    //   const { history } = this.props;
+    this.props.onSave(input).then(issue => {
+      const { history } = this.props;
       this.busy = false;
       this.reset();
       if (!this.another) {
-        // history.push(this.backLink);
+        history.push(this.backLink, { highlight: issue.id });
       }
     }, error => {
       console.error(error);
