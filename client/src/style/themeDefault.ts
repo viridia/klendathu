@@ -72,12 +72,12 @@ export const themeDefault: ThemeInterface = {
   menuBgColor: dye(1.0, primary),
   menuTextColor: '#222',
   menuBorderColor: dye(0.7, diluted),
-  menuFocusBgColor: dye(0.5, primary),
-  menuFocusTextColor: dye(0.9, primary),
+  menuActiveBgColor: dye(0.5, primary),
+  menuActiveTextColor: dye(0.9, primary),
   menuHoverBgColor: dye(0.95, primary),
   menuHoverTextColor: '#222',
-  menuActiveBgColor: dye(0.9, primary),
-  menuActiveTextColor: '#000',
+  menuFocusBgColor: dye(0.9, primary),
+  menuFocusTextColor: '#000',
   menuDividerColor: dye(0.9, desaturate(0.5, primary)),
 
   // Cards

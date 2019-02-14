@@ -16,6 +16,7 @@ export const Menu = styled.div.attrs(() => ({
   min-width: 150px;
   position: absolute;
   padding: 4px;
+  z-index: 2;
 `;
 
 export interface MenuItemProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {

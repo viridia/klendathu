@@ -1,9 +1,8 @@
 import bind from 'bind-decorator';
-import { FieldType } from 'klendathu-json-types';
-import { Project } from '../../../models';
 import * as React from 'react';
-import { StringAutocomplete } from '../../common/StringAutocomplete';
-import { SearchCallback } from '../../ac/Autocomplete';
+import { Project } from '../../../../common/types/graphql';
+import { FieldType } from '../../../../common/types/json';
+import { Autocomplete, SearchCallback } from '../../controls';
 
 function escapeRegExp(str: string) {
   return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
@@ -15,6 +14,9 @@ interface Props {
   value: string;
   onChange: (id: string, value: string) => void;
 }
+
+// tslint:disable:max-classes-per-file
+class StringAutocomplete extends Autocomplete<string> {}
 
 export class CustomSuggestField extends React.Component<Props> {
   private reList: RegExp[];
@@ -48,6 +50,7 @@ export class CustomSuggestField extends React.Component<Props> {
     } else {
       const terms = search.split(/\s+/);
       this.reList = terms.map(term => new RegExp(`(^|\\s)${escapeRegExp(term)}`, 'i'));
+      // TODO: search for suggestions on the server.
       // this.props.client.query<{ searchCustomFields: string[] }>({
       //   query: SearchCustomFieldsQuery,
       //   variables: {

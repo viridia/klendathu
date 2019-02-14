@@ -7,9 +7,11 @@ import { AccountPage } from './account/AccountPage';
 import { MainPage } from './main/MainPage';
 import { ApolloProvider } from 'react-apollo';
 import { client } from './graphql/client';
+import { observer } from 'mobx-react';
 
 import 'react-toastify/dist/ReactToastify.css'; // tslint:disable-line
 
+@observer
 class App extends React.Component<{}> {
   public render() {
     return (

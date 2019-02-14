@@ -1,10 +1,7 @@
 import * as React from 'react';
 // import {
 //   Attachment,
-//   CustomValues,
-//   DataType,
 //   Errors,
-//   IssueInput,
 //   IssueLink,
 //   IssueType,
 //   Relation,
@@ -20,11 +17,7 @@ import * as React from 'react';
 //   MilestoneListQuery,
 // } from '../../models';
 // import {
-//   CommentEdit,
-//   CustomEnumField,
-//   CustomSuggestField,
 //   IssueSelector,
-//   LabelSelector,
 //   MilestoneSelector,
 // } from './input';
 // import { IssueLinks } from './IssueLinks';
@@ -32,8 +25,6 @@ import * as React from 'react';
 // import { displayErrorToast } from '../common/displayErrorToast';
 // import { RequestError } from '../../network';
 // import { getFileInfoList } from '../../network/requests';
-// import { RouteComponentProps } from 'react-router-dom';
-// import { LinkContainer } from 'react-router-bootstrap';
 // import { UploadAttachments } from '../files/UploadAttachments';
 import { action, computed, IObservableArray, observable, toJS, when } from 'mobx';
 import { observer } from 'mobx-react';
@@ -45,6 +36,7 @@ import {
   Issue,
   Attachment,
   PublicAccount,
+  CustomFieldInput,
 } from '../../../common/types/graphql';
 import { RouteComponentProps } from 'react-router';
 import {
@@ -63,9 +55,11 @@ import {
 } from '../controls';
 import styled from 'styled-components';
 import { TypeSelector, CommentEdit, LabelSelector } from './input';
-import { Role, Workflow, IssueType } from '../../../common/types/json';
+import { Role, Workflow, IssueType, DataType } from '../../../common/types/json';
 import { session, ViewContext } from '../models';
 import { StateSelector } from './input/StateSelector';
+import { CustomSuggestField } from './input/CustomSuggestField';
+import { CustomEnumField } from './input/CustomEnumField';
 
 const IssueComposeLayout = styled(Card)`
   flex: 1;
@@ -180,7 +174,7 @@ export class IssueCompose extends React.Component<Props> {
   // @observable private relation: Relation = Relation.BlockedBy;
   // @observable private issueToLink: Issue = null;
   // @observable.shallow private issueLinkMap = new Map<string, Relation>();
-  // @observable private custom = new Map<string, string | number | boolean>();
+  @observable private custom = new Map<string, string | number | boolean>();
   @observable private comments = [] as IObservableArray<string>;
   @observable private busy = false;
   // @observable private attachments = [] as IObservableArray<Attachment>;
@@ -281,15 +275,8 @@ export class IssueCompose extends React.Component<Props> {
             </LabelEditGroup>
 
             <FormLabel>Milestone:</FormLabel>
-            {/*
-                <tr>
-                  <th className="header"><ControlLabel>Labels:</ControlLabel></th>
-                  <td>
-                    <div className="ac-multi-group">
-                    </div>
-                  </td>
-                </tr>
-                {milestones && (<tr>
+
+                {/* {milestones && (<tr>
                   <th className="header"><ControlLabel>Milestone:</ControlLabel></th>
                   <td>
                     <div className="ac-multi-group">
@@ -302,10 +289,10 @@ export class IssueCompose extends React.Component<Props> {
                       />
                     </div>
                   </td>
-                </tr>)}
+                </tr>)} */}
                 {this.renderTemplateFields()}
-                <tr>
-                  <th className="header"><ControlLabel>Linked Issues:</ControlLabel></th>
+                <FormLabel>Linked Issues:</FormLabel>
+                {/* <tr>
                   <td>
                     <IssueLinks
                         project={this.props.project}
@@ -360,9 +347,6 @@ export class IssueCompose extends React.Component<Props> {
                     />
                   </td>
                 </tr>
-                <tr>
-                  <th className="header"><ControlLabel>Comments:</ControlLabel></th>
-                  <td>
                     /> */}
             <FormLabel>Attach Files:</FormLabel>
             <FormLabel>Comments:</FormLabel>
@@ -408,53 +392,52 @@ export class IssueCompose extends React.Component<Props> {
     );
   }
 
-  // private renderTemplateFields(): JSX.Element[] {
-  //   const result: JSX.Element[] = [];
-  //   if (this.issueType) {
-  //     return this.renderCustomFields(this.issueType, result);
-  //   }
-  //   return result;
-  // }
+  private renderTemplateFields(): JSX.Element[] {
+    if (this.issueType) {
+      return this.renderCustomFields(this.issueType);
+    }
+    return [];
+  }
 
-  // private renderCustomFields(issueType: IssueType, result: JSX.Element[]) {
-  //   const { project } = this.props;
-  //   for (const field of this.issueType.fields) {
-  //     let component = null;
-  //     const value = this.custom.get(field.id) || field.default || '';
-  //     switch (field.type) {
-  //       case DataType.TEXT:
-  //         component = (
-  //           <CustomSuggestField
-  //               value={String(value)}
-  //               field={field}
-  //               project={project}
-  //               onChange={this.onChangeCustomField}
-  //           />
-  //         );
-  //         break;
-  //       case DataType.ENUM:
-  //         component = (
-  //           <CustomEnumField
-  //               value={String(value)}
-  //               field={field}
-  //               onChange={this.onChangeCustomField}
-  //           />
-  //         );
-  //         break;
-  //       default:
-  //         console.error('invalid field type:', field.type);
-  //         break;
-  //     }
-  //     if (component) {
-  //       result.push(
-  //         <tr key={field.id}>
-  //           <th>{field.caption}:</th>
-  //           <td>{component}</td>
-  //         </tr>);
-  //     }
-  //   }
-  //   return result;
-  // }
+  private renderCustomFields(issueType: IssueType) {
+    const result: JSX.Element[] = [];
+    const { project } = this.props.context;
+    for (const field of this.issueType.fields) {
+      let component = null;
+      const value = this.custom.get(field.id) || field.default || '';
+      switch (field.type) {
+        case DataType.TEXT:
+          component = (
+            <CustomSuggestField
+                key={field.id}
+                value={String(value)}
+                field={field}
+                project={project}
+                onChange={this.onChangeCustomField}
+            />
+          );
+          break;
+        case DataType.ENUM:
+          component = (
+            <CustomEnumField
+                key={field.id}
+                value={String(value)}
+                field={field}
+                onChange={this.onChangeCustomField}
+            />
+          );
+          break;
+        default:
+          console.error('invalid field type:', field.type);
+          break;
+      }
+      if (component) {
+        result.push(<FormLabel key={`label-${field.id}`}>{field.caption}:</FormLabel>);
+        result.push(component);
+      }
+    }
+    return result;
+  }
 
   @action.bound
   private onChangeType(type: string) {
@@ -511,10 +494,10 @@ export class IssueCompose extends React.Component<Props> {
   //   this.relation = selection;
   // }
 
-  // @action.bound
-  // private onChangeCustomField(id: string, value: any) {
-  //   this.custom.set(id, value);
-  // }
+  @action.bound
+  private onChangeCustomField(id: string, value: any) {
+    this.custom.set(id, value);
+  }
 
   @action.bound
   private onChangePublic(e: any) {
@@ -551,39 +534,40 @@ export class IssueCompose extends React.Component<Props> {
   @action.bound
   private onSubmit(e: any) {
     e.preventDefault();
-    // this.busy = true;
-    // const custom: CustomValues = {};
-    // for (const field of this.issueType.fields) {
-    //   custom[field.id] = this.custom.has(field.id) ? this.custom.get(field.id) : field.default;
-    // }
+    this.busy = true;
+    const custom: CustomFieldInput[] = this.issueType.fields.map(field => ({
+      key: field.id,
+      value: this.custom.has(field.id) ? this.custom.get(field.id) : field.default,
+    }));
     // const linked: IssueLink[] = [];
     // this.issueLinkMap.forEach((value, key) => {
     //   linked.push({ to: key, relation: value });
     // });
     // const attachments: string[] = this.attachments.map(a => a.id);
-    // const input: IssueInput = {
-    //   type: this.type,
-    //   state: this.issueState,
-    //   summary: this.summary,
-    //   description: this.description,
-    //   owner: this.owner ? this.owner.uid : undefined,
-    //   ownerSort: this.owner ? this.owner.uname : undefined,
-    //   cc: this.cc.map(cc => cc.uid),
-    //   labels: this.labels,
+    const input: IssueInput = {
+      type: this.type,
+      state: this.issueState,
+      summary: this.summary,
+      description: this.description,
+      owner: this.owner ? this.owner.id : undefined,
+      // ownerSort: this.owner ? this.owner.uname : undefined,
+      cc: this.cc.map(cc => cc.id),
+      labels: this.labels,
     //   milestone: this.milestone,
     //   linked,
-    //   custom,
-    //   comments: toJS(this.comments),
+      custom,
+      comments: toJS(this.comments),
     //   attachments,
-    // };
-    // this.props.onSave(input).then(() => {
+    };
+    this.props.onSave(input).then(() => {
     //   const { history } = this.props;
-    //   this.busy = false;
-    //   this.reset();
-    //   if (!this.another) {
-    //     history.push(this.backLink);
-    //   }
-    // }, (error: RequestError) => {
+      this.busy = false;
+      this.reset();
+      if (!this.another) {
+        // history.push(this.backLink);
+      }
+    }, error => {
+      console.error(error);
     //   switch (error.code) {
     //     case Errors.SCHEMA:
     //       toast.error('Schema validation failure');
@@ -592,33 +576,31 @@ export class IssueCompose extends React.Component<Props> {
     //       displayErrorToast(error);
     //       break;
     //   }
-    //   this.busy = false;
-    // });
+      this.busy = false;
+    });
   }
 
   @action.bound
   private reset() {
     const { issue } = this.props;
     if (issue) {
-    //   when('issue loaded', () => issue.loaded, () => {
-        this.type = issue.type;
-        this.issueState = issue.state;
-        this.summary = issue.summary;
-        this.description = issue.description;
+      this.type = issue.type;
+      this.issueState = issue.state;
+      this.summary = issue.summary;
+      this.description = issue.description;
     //     this.owner = issue.owner ? accounts.byId(issue.owner) : null;
     //     this.cc.replace((issue.cc || []).map(cc => accounts.byId(cc)));
-    //     this.labels.replace(issue.labels);
+      this.labels.replace(issue.labels);
     //     this.milestone = issue.milestone;
-    //     this.custom.clear();
-    //     for (const key of Object.getOwnPropertyNames(issue.custom)) {
-    //       this.custom.set(key, issue.custom[key]);
-    //     }
-    //     if (issue.attachments) {
-    //       getFileInfoList(issue.attachments.slice(), files => {
-    //         this.attachments.replace(files);
-    //       });
-    //     }
-    //   });
+      this.custom.clear();
+      for (const { key, value } of issue.custom) {
+        this.custom.set(key, value);
+      }
+      if (issue.attachments) {
+        // getFileInfoList(issue.attachments.slice(), files => {
+        //   this.attachments.replace(files);
+        // });
+      }
     //   const links = new ObservableIssueLinks(issue.id);
     //   when('links loaded', () => links.loaded, () => {
     //     (this.issueLinkMap as any).replace(links.linkMap);
@@ -631,7 +613,7 @@ export class IssueCompose extends React.Component<Props> {
       this.cc.replace([]);
       this.labels.replace([]);
     //   this.milestone = '';
-    //   this.custom.clear();
+      this.custom.clear();
     //   this.issueLinkMap.clear();
       this.comments.clear();
     //   this.attachments.clear();
@@ -681,10 +663,10 @@ export class IssueCompose extends React.Component<Props> {
   }
 
   private get backLink(): string {
-    return '';
-    // const { account, location, issue, project } = this.props;
-    // return (location.state && location.state.back)
-    //     || (issue && `/${account.uname}/${project.uname}/${issue.index}`)
-    //     || `/${account.uname}/${project.uname}/issues`;
+    const { account, project } = this.props.context;
+    const { location, issue } = this.props;
+    return (location.state && location.state.back)
+        || (issue && `/${account.accountName}/${project.name}/${issue.id.split('.', 2)[1]}`)
+        || `/${account.accountName}/${project.name}/issues`;
   }
 }

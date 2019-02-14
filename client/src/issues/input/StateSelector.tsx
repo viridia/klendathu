@@ -28,13 +28,12 @@ const StateSelectorLayout = styled.section`
   display: flex;
   flex-direction: column;
 
-  > .form-label {
-    font-weight: bold;
-    margin-bottom: .5rem;
-  }
-
   > * {
     margin-bottom: .3rem;
+  }
+
+  > .form-label {
+    margin-bottom: .7rem;
   }
 `;
 
@@ -80,7 +79,7 @@ function StateSelectorRender(props: Props) {
   }
   return (
     <StateSelectorLayout>
-      <FormLabel>State</FormLabel>
+      <FormLabel className="form-label">State</FormLabel>
       {prevState && <RadioButton
           checked={prevState === nextState}
           data-state={prevState}
