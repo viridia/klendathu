@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { styled } from '../style';
 import { darken } from 'polished';
-import { Switch, Route } from 'react-router';
 import { ProjectNavLinks } from './ProjectNavLinks';
 import { LeftNavLink } from './LeftNavLink';
 
 import AppsIcon from '../svg-compiled/icons/IcApps';
+import { ViewContext } from '../models';
+import { observer } from 'mobx-react';
 
 const NavLayout = styled.nav`
   background-color: ${props => props.theme.leftNavBgColor};
@@ -17,18 +18,19 @@ const NavLayout = styled.nav`
   padding: 16px 8px;
 `;
 
-export class LeftNav extends React.Component<{}> {
-  public render() {
-    return (
-      <NavLayout>
-        <Switch>
-          <Route path="/settings" />
-          <Route path="/:account/:project" component={ProjectNavLinks} />
-        </Switch>
-        <LeftNavLink to={'/projects'}>
-          <AppsIcon /> Projects
-        </LeftNavLink>
-      </NavLayout>
-    );
-  }
+interface Props {
+  context: ViewContext;
 }
+
+function LeftNavImpl({ context }: Props) {
+  return (
+    <NavLayout>
+      <ProjectNavLinks context={context} />
+      <LeftNavLink to={'/projects'}>
+        <AppsIcon /> Projects
+      </LeftNavLink>
+    </NavLayout>
+  );
+}
+
+export const LeftNav = observer(LeftNavImpl);

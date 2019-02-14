@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { AbstractColumnRenderer } from './AbstractColumnRenderer';
-import { AccountName } from '../../common/AccountName';
 import { Issue } from '../../../../common/types/graphql';
+import { AccountName } from '../../controls';
 
 export class UserColumnRenderer extends AbstractColumnRenderer {
   public render(issue: Issue) {

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import styled from 'styled-components';
 import { ApolloError } from 'apollo-client';
+import { GraphQLError } from 'graphql';
 
 const ErrorList = styled.section`
   background-color: #000;
@@ -57,11 +58,10 @@ const ErrorRowDataPre = styled(ErrorRowData)`
   font-size: 1.1rem;
 `;
 
-export function ErrorDisplay({ error }: { error: ApolloError }) {
-  // TODO: networkError
+export function ErrorListDisplay({ errors }: { errors: ReadonlyArray<GraphQLError> }) {
   return (
     <ErrorList>
-      {(error.graphQLErrors || []).map((gqlError, index) => (
+      {(errors || []).map((gqlError, index) => (
         <ErrorItem key={index}>
           <header>
             <div className="title">GraphQL Error:</div>
@@ -88,5 +88,12 @@ export function ErrorDisplay({ error }: { error: ApolloError }) {
         </ErrorItem>
       ))}
     </ErrorList>
+  );
+}
+
+export function ErrorDisplay({ error }: { error: ApolloError }) {
+  // TODO: networkError
+  return (
+    <ErrorListDisplay errors={error.graphQLErrors} />
   );
 }

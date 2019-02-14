@@ -66,11 +66,10 @@ import {
   UserAutocomplete,
   ActionLink,
 } from '../controls';
-import { ViewContext } from '../graphql/ProjectContextProvider';
 import styled from 'styled-components';
 import { TypeSelector, CommentEdit, LabelSelector } from './input';
 import { Role } from '../../../common/types/json';
-import { session } from '../models';
+import { session, ViewContext } from '../models';
 
 const IssueComposeLayout = styled(Card)`
   flex: 1;

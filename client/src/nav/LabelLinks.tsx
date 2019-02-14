@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Project, ProjectPrefs } from '../../../common/types/graphql';
+import { Project, ProjectPrefs, ProjectPrefsChange } from '../../../common/types/graphql';
 import { Query } from 'react-apollo';
 import { fragments } from '../graphql';
 import gql from 'graphql-tag';
@@ -22,6 +22,10 @@ const PrefsChangeSubscription = gql`
   ${fragments.projectPrefs}
 `;
 
+interface PrefsChangeResult {
+  prefsChanged: ProjectPrefsChange;
+}
+
 const LabelList = styled.ul`
   margin: 4px 0;
   padding-left: 30px;
@@ -43,21 +47,21 @@ export function LabelLinks({ project }: Props) {
         }}
         fetchPolicy="cache-and-network"
     >
-      {({ loading, error, data, refetch, subscribeToMore }) => {
+      {({ loading, error, data, subscribeToMore }) => {
         if (loading && !(data && data.projectPrefs)) {
           return null;
         } else if (error) {
           return null;
         } else {
-          subscribeToMore({
+          subscribeToMore<PrefsChangeResult>({
             document: PrefsChangeSubscription,
             variables: {
               project: project.id,
             },
             updateQuery: (prev, { subscriptionData }) => {
-              // For the moment we're just going to refresh.
-              // console.log('subscriptionData', subscriptionData);
-              refetch();
+              return {
+                projectPrefs: subscriptionData.data.prefsChanged.prefs,
+              };
             },
           });
           // TODO: This would be done better as a join so that we can sort.

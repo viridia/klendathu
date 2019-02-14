@@ -12,6 +12,7 @@ export { Dialog } from './Dialog';
 export { Dropdown, DropdownButton } from './Dropdown';
 export { Form, FormControlGroup, FormLabel, TextArea, TextInput, ValidationState } from './Form';
 export { LinkButton } from './LinkButton';
+export { LoadingIndicator } from './LoadingIndicator';
 export { Menu, MenuItem, MenuDivider } from './Menu';
 export { NavContainer } from './NavContainer';
 export { NavLink } from './NavLink';

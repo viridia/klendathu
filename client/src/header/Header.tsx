@@ -3,6 +3,8 @@ import { styled } from '../style';
 import { Switch, Route } from 'react-router';
 import { SignInLink } from './SignInLink';
 import { UserMenuButton } from './UserMenuButton';
+import { ViewContext } from '../models';
+import { NewIssueButton } from './NewIssueButton';
 
 const HeaderLayout = styled.header`
   align-items: center;
@@ -11,6 +13,10 @@ const HeaderLayout = styled.header`
   display: flex;
   grid-area: header;
   padding: 5px 5px 5px 8px;
+
+  > button {
+    margin-right: 4px;
+  }
 `;
 
 const HeaderTitle = styled.span`
@@ -24,7 +30,11 @@ const HeaderSubTitle = styled.span`
   flex: 1;
 `;
 
-export function Header() {
+interface Props {
+  context: ViewContext;
+}
+
+export function Header({ context }: Props) {
   return (
     <HeaderLayout>
       <HeaderTitle className="title">Klendathu</HeaderTitle>
@@ -32,6 +42,7 @@ export function Header() {
         <span> - </span>
         &ldquo;in order to <em>fight</em> the bug, we must <em>understand</em> the bug.&rdquo;
       </HeaderSubTitle>
+      <Route path="/" render={props => <NewIssueButton context={context} {...props} />} />
       <Switch>
         <Route path="/account" />
         <Route path="/" component={UserMenuButton} />

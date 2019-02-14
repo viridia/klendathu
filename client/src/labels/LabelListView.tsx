@@ -19,9 +19,9 @@ import {
   ActionButtonCell,
 } from '../layout';
 import { styled } from '../style';
-import { ViewContext } from '../graphql/ProjectContextProvider';
 import { client } from '../graphql/client';
 import { fragments } from '../graphql';
+import { ViewContext } from '../models';
 
 const LabelListQuery = gql`
   query LabelListQuery($project: ID!) {
@@ -71,6 +71,9 @@ export class LabelListView extends React.Component<Props> {
 
   public render() {
     const { project, visibleLabels } = this.props.context;
+    if (!project) {
+      return null;
+    }
     return (
       <ModeContent>
         <LabelDialog

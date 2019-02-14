@@ -10,6 +10,7 @@ export const ModeContent = styled.section`
 `;
 
 export const ModeContentHeader = styled.header`
+  align-items: center;
   display: flex;
   margin-bottom: .7rem;
 `;

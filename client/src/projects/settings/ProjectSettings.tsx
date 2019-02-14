@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { Project, PublicAccount } from '../../../../common/types/graphql';
 import { RouteComponentProps, Switch, Route, Redirect } from 'react-router-dom';
 import { Tab, TabBar } from '../../controls';
 import { Role } from '../../../../common/types/json';
 import { ProjectInfoEdit } from './ProjectInfoEdit';
+import { ViewContext } from '../../models';
 // import { ColumnSettings } from './columns/ColumnSettings';
 // import { ProjectMemberList } from './members/ProjectMemberList';
 // import { ProjectMilestonesEdit } from './milestones/ProjectMilestonesEdit';
@@ -11,8 +11,7 @@ import { ProjectInfoEdit } from './ProjectInfoEdit';
 // import { WorkflowEdit } from './workflow/WorkflowEdit';
 
 interface Props extends RouteComponentProps<{ tab?: string }> {
-  account: PublicAccount;
-  project: Project;
+  context: ViewContext;
   // prefs: ObservableProjectPrefs;
   // milestones: MilestoneListQuery;
 }
@@ -20,7 +19,7 @@ interface Props extends RouteComponentProps<{ tab?: string }> {
 // TODO: finish
 export class ProjectSettings extends React.Component<Props> {
   public render() {
-    const { project } = this.props;
+    const { project } = this.props.context;
     if (!project) {
       return <section />;
     }

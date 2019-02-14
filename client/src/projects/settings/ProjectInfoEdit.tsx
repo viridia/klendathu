@@ -20,6 +20,7 @@ import { toast } from 'react-toastify';
 import { RouteComponentProps } from 'react-router';
 import styled from 'styled-components';
 import { Spacer } from '../../layout';
+import { ViewContext } from '../../models';
 
 const updateProjectMutation = gql`
   mutation UpdateProjectMutation($id: ID!, $input: ProjectInput!) {
@@ -44,8 +45,7 @@ const ProjectTitle = styled.span`
 `;
 
 interface Props extends RouteComponentProps<{}> {
-  account: PublicAccount;
-  project: Project;
+  context: ViewContext;
 }
 
 @observer
@@ -61,13 +61,13 @@ export class ProjectInfoEdit extends React.Component<Props> {
   }
 
   public componentWillReceiveProps(nextProps: Props) {
-    if (nextProps.project !== this.props.project) {
+    if (nextProps.context.project !== this.props.context.project) {
       this.reset(nextProps);
     }
   }
 
   public render() {
-    const { project } = this.props;
+    const { project } = this.props.context;
     const modified =
         project.title !== this.title ||
         project.description !== this.description ||
@@ -180,7 +180,7 @@ export class ProjectInfoEdit extends React.Component<Props> {
 
   @action.bound
   private onSave(e: any) {
-    const { project } = this.props;
+    const { project } = this.props.context;
     e.preventDefault();
     e.stopPropagation();
 
@@ -228,7 +228,8 @@ export class ProjectInfoEdit extends React.Component<Props> {
 
   @action.bound
   private onConfirmDelete(e: any) {
-    const { project, history } = this.props;
+    const { history } = this.props;
+    const { project } = this.props.context;
     e.preventDefault();
     e.stopPropagation();
 
@@ -236,7 +237,7 @@ export class ProjectInfoEdit extends React.Component<Props> {
     client.mutate({
       mutation: removeProjectMutation,
       variables: {
-        id: this.props.project.id,
+        id: project.id,
       },
     }).then(result => {
       toast.success(`Project ${project.ownerName}/${project.name} deleted.`);
@@ -259,7 +260,7 @@ export class ProjectInfoEdit extends React.Component<Props> {
   }
 
   private reset(props: Props) {
-    const { project } = props;
+    const { project } = props.context;
     this.title = project.title;
     this.description = project.description;
     this.isPublic = project.isPublic;

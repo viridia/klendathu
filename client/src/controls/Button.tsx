@@ -1,7 +1,7 @@
 import * as React from 'react';
 import classNames from 'classnames';
 import { styled } from '../style';
-import { darken } from 'polished';
+import { darken, saturate } from 'polished';
 
 export type ButtonStyle = 'action' | 'primary' | 'secondary' | 'default';
 
@@ -51,7 +51,8 @@ export const Button = styled(ButtonImpl)`
   }
 
   &:active:not([disabled]), &.active:not([disabled]) {
-    background-color: ${props => darken(0.15, props.theme.buttonColors[props.kind].bg)};
+    background-color: ${props =>
+        saturate(0.1, darken(0.15, props.theme.buttonColors[props.kind].bg))};
   }
 
   &.small {

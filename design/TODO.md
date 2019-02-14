@@ -1,18 +1,16 @@
 # TODO
 
-* GraphQL fragments
+* compiled template stuff.
+* Create shared models which are more efficient than Query component.
 * Make user links local to the view
 * Redis
 
 # Components
 
-* AutoComplete
 * DiscloseButton
 * HelpBlocks for forms (CreateProject dialog)
 * Table
-  * Header
   * SortOrder
-  * Checkbox Column
 * Dropdown (non-button)
 * NavContainer (query param support)
 * Spinner

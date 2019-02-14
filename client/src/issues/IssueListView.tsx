@@ -30,6 +30,9 @@ interface Props extends RouteComponentProps<{}> {
 export class IssueListView extends React.Component<Props> {
   public render() {
     const { project } = this.props.context;
+    if (!project) {
+      return null;
+    }
     return (
       <Query
           query={IssueListQuery}

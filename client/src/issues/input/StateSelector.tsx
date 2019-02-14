@@ -56,7 +56,7 @@ export class StateSelector extends React.Component<Props> {
       }
     }
     return (
-      <FormControlGroup controlId="state">
+      <FormControlGroup>
         <FormLabel>State</FormLabel>
         {currState && <RadioButton
             checked={currState === nextState}

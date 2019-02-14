@@ -6,7 +6,7 @@ import { IssueCompose } from './IssueCompose';
 // import { toast } from 'react-toastify';
 import bind from 'bind-decorator';
 import { IssueInput } from '../../../common/types/graphql';
-import { ViewContext } from '../graphql/ProjectContextProvider';
+import { ViewContext } from '../models';
 // import { Account, IssueInput } from 'klendathu-json-types';
 
 interface Props extends RouteComponentProps<{}> {

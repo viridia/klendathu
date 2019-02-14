@@ -23,9 +23,7 @@ import { fragments } from '../graphql';
 
 const projectsQuery = gql`
   query ProjectsQuery {
-    projects {
-      project { ...ProjectFields }
-    }
+    projects { ...ProjectFields }
   }
   ${fragments.project}
 `;
