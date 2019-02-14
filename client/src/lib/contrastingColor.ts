@@ -4,6 +4,5 @@ import { parseToRgb } from 'polished';
 export function contrastingColor(color: string) {
   const rgb = parseToRgb(color);
   const luminance = (rgb.red * 0.3 + rgb.green * 0.5 + rgb.blue * 0.2) / 255.0;
-  console.log(luminance);
   return luminance > 0.53 ? 'black' : 'white';
 }
