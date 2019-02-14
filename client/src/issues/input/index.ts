@@ -4,5 +4,5 @@ export { CommentEdit } from './CommentEdit';
 // export { IssueSelector } from './IssueSelector';
 export { LabelSelector } from './LabelSelector';
 // export { MilestoneSelector } from './MilestoneSelector';
-// export { StateSelector } from './StateSelector';
+export { StateSelector } from './StateSelector';
 export { TypeSelector } from './TypeSelector';

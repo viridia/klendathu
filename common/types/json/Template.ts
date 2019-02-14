@@ -39,8 +39,8 @@ export interface IssueType {
   /** If false, means you cannot create issues of this type. */
   abstract?: boolean;
 
-  /** Issue types that this inherits from. */
-  extends: string[];
+  /** Issue type that this inherits from. */
+  extends: string;
 
   /** Which workflow type to use with this issue type. */
   workflow?: string;

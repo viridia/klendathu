@@ -5,7 +5,7 @@ import {
   ProjectContext,
   ProjectPrefsChange,
 } from '../../../common/types/graphql';
-import { Template } from '../../../common/types/json';
+import { Template, WorkflowState, Workflow, IssueType, FieldType } from '../../../common/types/json';
 import { observable, ObservableSet, computed, action, autorun, IReactionDisposer } from 'mobx';
 import gql from 'graphql-tag';
 import { fragments } from '../graphql';
@@ -60,6 +60,7 @@ export class ViewContext {
 
   private disposer: IReactionDisposer;
   private subscription: any;
+  private unsubscribeHandle: () => any;
 
   constructor() {
     this.disposer = autorun(this.runQuery);
@@ -70,6 +71,10 @@ export class ViewContext {
     this.disposer();
     if (this.subscription) {
       this.subscription.unsubscribe();
+    }
+    if (this.unsubscribeHandle) {
+      this.unsubscribeHandle();
+      this.unsubscribeHandle = null;
     }
   }
 
@@ -94,11 +99,64 @@ export class ViewContext {
     }
   }
 
+  @computed
+  public get states(): Map<string, WorkflowState> {
+    if (this.template) {
+      return new Map(this.template.states.map(st => [st.id, st] as [string, WorkflowState]));
+    } else {
+      return new Map();
+    }
+  }
+
+  public getWorkflow(id: string): Workflow {
+    return this.template.workflows.find(wf => wf.name === id);
+  }
+
+  public getWorkflowForType(typeId: string): Workflow {
+    let type = this.template.types.find(ty => ty.id === typeId);
+    while (type) {
+      if (type.workflow) {
+        return this.getWorkflow(type.workflow);
+      }
+      type = this.template.types.find(ty => ty.id === type.extends);
+    }
+    return null;
+  }
+
+  public getInheritedIssueType(id: string): IssueType {
+    let iType: IssueType = this.template.types.find(ty => ty.id === id);
+    if (iType) {
+      if (iType.extends) {
+        const base = this.getInheritedIssueType(iType.extends);
+        if (base) {
+          const fieldList: FieldType[] = Array.from(base.fields || []);
+          if (iType.fields) {
+            for (const field of iType.fields) {
+              const index = fieldList.findIndex(f => f.id === field.id);
+              if (index < 0) {
+                fieldList.push(field);
+              }
+            }
+          }
+          iType = {
+            ...base, ...iType, fields: fieldList,
+          };
+        }
+      }
+    }
+    return iType;
+  }
+
   @bind
   private runQuery() {
     if (this.subscription) {
       this.subscription.unsubscribe();
       this.subscription = null;
+    }
+
+    if (this.unsubscribeHandle) {
+      this.unsubscribeHandle();
+      this.unsubscribeHandle = null;
     }
 
     if (!this.projectName || !this.accountName) {
@@ -122,7 +180,12 @@ export class ViewContext {
       this.loading = loading;
       this.errors = errors;
       if (!this.loading && !this.errors) {
-        queryResult.subscribeToMore<PrefsChangeResult>({
+        if (this.unsubscribeHandle) {
+          this.unsubscribeHandle();
+          this.unsubscribeHandle = null;
+        }
+
+        this.unsubscribeHandle = queryResult.subscribeToMore<PrefsChangeResult>({
           document: PrefsChangeSubscription,
           variables: {
             project: data.projectContext.project.id,

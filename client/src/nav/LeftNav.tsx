@@ -6,7 +6,7 @@ import { LeftNavLink } from './LeftNavLink';
 
 import AppsIcon from '../svg-compiled/icons/IcApps';
 import { ViewContext } from '../models';
-import { observer } from 'mobx-react';
+import { Route } from 'react-router';
 
 const NavLayout = styled.nav`
   background-color: ${props => props.theme.leftNavBgColor};
@@ -22,15 +22,14 @@ interface Props {
   context: ViewContext;
 }
 
-function LeftNavImpl({ context }: Props) {
+export function LeftNav({ context }: Props) {
   return (
     <NavLayout>
-      <ProjectNavLinks context={context} />
+      {/* Inject location to force MobX to update on location change. */}
+      <Route render={props => <ProjectNavLinks context={context} {...props} />}/>
       <LeftNavLink to={'/projects'}>
         <AppsIcon /> Projects
       </LeftNavLink>
     </NavLayout>
   );
 }
-
-export const LeftNav = observer(LeftNavImpl);

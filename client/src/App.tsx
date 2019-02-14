@@ -18,7 +18,6 @@ class App extends React.Component<{}> {
           <Normalize />
           <GlobalStyle />
           <ApolloProvider client={client}>
-            {/* <Accounts /> */}
             <Router>
               <Switch>
                 <Route path="/account" component={AccountPage} />

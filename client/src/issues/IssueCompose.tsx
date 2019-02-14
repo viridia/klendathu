@@ -17,9 +17,6 @@ import * as React from 'react';
 //   IssueListQuery,
 //   ObservableIssue,
 //   ObservableIssueLinks,
-//   Project,
-//   session,
-//   Template,
 //   MilestoneListQuery,
 // } from '../../models';
 // import {
@@ -29,7 +26,6 @@ import * as React from 'react';
 //   IssueSelector,
 //   LabelSelector,
 //   MilestoneSelector,
-//   StateSelector,
 // } from './input';
 // import { IssueLinks } from './IssueLinks';
 // import { relationNames } from '../common/relationNames';
@@ -43,7 +39,6 @@ import { action, computed, IObservableArray, observable, toJS, when } from 'mobx
 import { observer } from 'mobx-react';
 // import { toast } from 'react-toastify';
 
-// import './IssueCompose.scss';
 import {
   Relation,
   IssueInput,
@@ -68,8 +63,9 @@ import {
 } from '../controls';
 import styled from 'styled-components';
 import { TypeSelector, CommentEdit, LabelSelector } from './input';
-import { Role } from '../../../common/types/json';
+import { Role, Workflow, IssueType } from '../../../common/types/json';
 import { session, ViewContext } from '../models';
+import { StateSelector } from './input/StateSelector';
 
 const IssueComposeLayout = styled(Card)`
   flex: 1;
@@ -106,7 +102,8 @@ const RightPanel = styled.div`
   border: 1px solid ${props => props.theme.cardHeaderDividerColor};
   display: flex;
   flex-direction: column;
-  margin: 1em;
+  margin: 1rem;
+  padding: .6rem;
   width: 16em;
 `;
 
@@ -187,7 +184,7 @@ export class IssueCompose extends React.Component<Props> {
   @observable private comments = [] as IObservableArray<string>;
   @observable private busy = false;
   // @observable private attachments = [] as IObservableArray<Attachment>;
-  // private prevState: string = '';
+  private prevState: string = '';
 
   public componentWillMount() {
     if (this.props.issue) {
@@ -375,14 +372,14 @@ export class IssueCompose extends React.Component<Props> {
             />
           </LeftPanel>
           <RightPanel>
-            {/* <StateSelector
-                template={template}
+            <StateSelector
+                context={this.props.context}
                 workflow={this.workflow}
                 state={this.issueState}
                 prevState={this.prevState}
                 onStateChanged={this.onChangeState}
             />
-            {this.props.project.isPublic && <ControlLabel>Visbility</ControlLabel>} */}
+            {project.isPublic && <FormLabel>Visbility</FormLabel>}
             {project.isPublic &&
               (<CheckBox checked={this.public} onChange={this.onChangePublic}>
                 Public
@@ -464,10 +461,10 @@ export class IssueCompose extends React.Component<Props> {
     this.type = type;
   }
 
-  // @action.bound
-  // private onChangeState(state: string) {
-  //   this.issueState = state;
-  // }
+  @action.bound
+  private onChangeState(state: string) {
+    this.issueState = state;
+  }
 
   @action.bound
   private onChangeSummary(e: any) {
@@ -605,7 +602,7 @@ export class IssueCompose extends React.Component<Props> {
     if (issue) {
     //   when('issue loaded', () => issue.loaded, () => {
         this.type = issue.type;
-    //     this.issueState = issue.state;
+        this.issueState = issue.state;
         this.summary = issue.summary;
         this.description = issue.description;
     //     this.owner = issue.owner ? accounts.byId(issue.owner) : null;
@@ -627,7 +624,7 @@ export class IssueCompose extends React.Component<Props> {
     //     (this.issueLinkMap as any).replace(links.linkMap);
     //   });
     } else {
-    //   this.resetType();
+      this.resetType();
       this.summary = '';
       this.description = '';
       this.owner = null;
@@ -644,49 +641,44 @@ export class IssueCompose extends React.Component<Props> {
 
   @action.bound
   private resetType() {
-    // // If no type selected, choose the first available.
-    // when('template loaded', () => this.template && this.template.loaded, () => {
-    //   if (!this.type) {
-    //     const defaultType = this.template.types.find(t => !t.abstract);
-    //     if (defaultType) {
-    //       this.type = defaultType.id;
-    //     } else {
-    //       this.type = '';
-    //       this.issueState = '';
-    //     }
-    //   }
-    //   if (this.type && !this.issueState) {
-    //     const workflow = this.workflow;
-    //     if (workflow) {
-    //       this.issueState =
-    //         (workflow.start && workflow.start[0]) ||
-    //         (workflow.states && workflow.states[0]) || '';
-    //     } else {
-    //       this.issueState = '';
-    //     }
-    //   }
-    // });
+    // If no type selected, choose the first available.
+    const { template } = this.props.context;
+    if (template && !this.type) {
+      const defaultType = (template.types || []).find(t => !t.abstract);
+      if (defaultType) {
+        this.type = defaultType.id;
+      } else {
+        this.type = '';
+        this.issueState = '';
+      }
+    }
+    if (this.type && !this.issueState) {
+      const workflow = this.workflow;
+      if (workflow) {
+        this.issueState =
+          (workflow.start && workflow.start[0]) ||
+          (workflow.states && workflow.states[0]) || '';
+      } else {
+        this.issueState = '';
+      }
+    }
   }
 
-  // get template(): Template {
-  //   return this.props.project.template;
-  // }
+  @computed
+  get issueType(): IssueType {
+    const { context } = this.props;
+    return context.getInheritedIssueType(this.type);
+  }
 
-  // @computed
-  // get issueType(): IssueType {
-  //   const { project } = this.props;
-  //   return project.template && project.template.getInheritedIssueType(this.type);
-  // }
-
-  // @computed
-  // get workflow(): Workflow {
-  //   const { project } = this.props;
-  //   const iType = this.issueType;
-  //   if (project.template && iType && iType.workflow) {
-  //     return project.template.getWorkflow(iType.workflow);
-  //   }
-  //   return null;
-  // }
+  @computed
+  get workflow(): Workflow {
+    const { template } = this.props.context;
+    const issueType = this.issueType;
+    if (template && issueType && issueType.workflow) {
+      return this.props.context.getWorkflow(issueType.workflow);
+    }
+    return null;
+  }
 
   private get backLink(): string {
     return '';

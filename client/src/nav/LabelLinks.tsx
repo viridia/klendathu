@@ -6,26 +6,6 @@ import gql from 'graphql-tag';
 import { LabelName } from '../controls/LabelName';
 import styled from 'styled-components';
 
-const ProjectPrefsQuery = gql`
-  query ProjectPrefsQuery($project: ID!) {
-    projectPrefs(project: $project) { labels }
-  }
-`;
-
-const PrefsChangeSubscription = gql`
-  subscription PrefsChangeSubscription($project: ID!) {
-    prefsChanged(project: $project) {
-      action
-      prefs { ...ProjectPrefsFields }
-    }
-  }
-  ${fragments.projectPrefs}
-`;
-
-interface PrefsChangeResult {
-  prefsChanged: ProjectPrefsChange;
-}
-
 const LabelList = styled.ul`
   margin: 4px 0;
   padding-left: 30px;
@@ -35,46 +15,15 @@ const LabelList = styled.ul`
 `;
 
 interface Props {
-  project: Project;
+  prefs: ProjectPrefs;
 }
 
-export function LabelLinks({ project }: Props) {
+export function LabelLinks({ prefs }: Props) {
   return (
-    <Query
-        query={ProjectPrefsQuery}
-        variables={{
-          project: project.id,
-        }}
-        fetchPolicy="cache-and-network"
-    >
-      {({ loading, error, data, subscribeToMore }) => {
-        if (loading && !(data && data.projectPrefs)) {
-          return null;
-        } else if (error) {
-          return null;
-        } else {
-          subscribeToMore<PrefsChangeResult>({
-            document: PrefsChangeSubscription,
-            variables: {
-              project: project.id,
-            },
-            updateQuery: (prev, { subscriptionData }) => {
-              return {
-                projectPrefs: subscriptionData.data.prefsChanged.prefs,
-              };
-            },
-          });
-          // TODO: This would be done better as a join so that we can sort.
-          const prefs: ProjectPrefs = data.projectPrefs;
-          return (
-            <LabelList>
-              {prefs.labels.map(labelId => (
-                <li key={labelId}><LabelName id={labelId} small={true} /></li>
-              ))}
-            </LabelList>
-          );
-        }
-      }}
-    </Query>
+    <LabelList>
+      {prefs.labels.map(labelId => (
+        <li key={labelId}><LabelName id={labelId} small={true} /></li>
+      ))}
+    </LabelList>
   );
 }

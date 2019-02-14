@@ -18,7 +18,7 @@ interface Props {
 }
 
 function ProjectNavLinksImpl(props: Props) {
-  const { project, account } = props.context;
+  const { project, account, prefs } = props.context;
   if (!project) {
     return null;
   }
@@ -37,10 +37,10 @@ function ProjectNavLinksImpl(props: Props) {
       >
         <PersonIcon /> My Issues
       </LeftNavLink>
-      <LeftNavLink to={`${prefix}/labels`}>
+      {prefs && <LeftNavLink to={`${prefix}/labels`}>
         <LabelIcon /> Labels
-      </LeftNavLink>
-      <LabelLinks project={project} />
+      </LeftNavLink>}
+      {prefs && <LabelLinks prefs={prefs} />}
       <LeftNavLink to={`${prefix}/progress`}>
         <ProgressIcon /> Progress
       </LeftNavLink>

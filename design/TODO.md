@@ -15,6 +15,7 @@
 * NavContainer (query param support)
 * Spinner
 * Switch
+* Loading indicator
 
 # Issue Models
 
