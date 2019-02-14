@@ -1,7 +1,8 @@
 import * as React from 'react';
 import classNames from 'classnames';
 import { styled } from '../style';
-import { readableColor, transparentize } from 'polished';
+import { transparentize } from 'polished';
+import { contrastingColor } from '../lib/contrastingColor';
 
 interface Props {
   children: React.ReactNode;
@@ -21,8 +22,8 @@ function ChipImpl({ children, className, onClose }: Props) {
 }
 
 export const Chip = styled(ChipImpl).attrs(props => ({
-  titleColor: readableColor(props.color),
-  hoverColor: transparentize(0.4, readableColor(props.color)),
+  titleColor: contrastingColor(props.color),
+  hoverColor: transparentize(0.4, contrastingColor(props.color)),
   height: props.small ? '20px' : '24px',
   borderRadius: props.small ? '10px' : '12px',
   fontSize: props.small ? '75%' : '85%',

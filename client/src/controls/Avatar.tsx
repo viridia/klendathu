@@ -1,11 +1,12 @@
 import * as React from 'react';
 import classNames from 'classnames';
 import { Query } from 'react-apollo';
-import { hsl, readableColor } from 'polished';
+import { hsl } from 'polished';
 import { PublicAccount } from '../../../common/types/graphql';
 import { styled } from '../style';
 import gql from 'graphql-tag';
 import DefaultAvatar from '../icons/default-avatar.png';
+import { contrastingColor } from '../lib/contrastingColor';
 
 const avatarQuery = gql`
   query AvatarQuery($accountName: String, $id: ID) {
@@ -74,7 +75,7 @@ export function Avatar({ id, accountName, small }: Props) {
             // Compute a background tint
             const hue = parseInt(account.id, 16) % 32 * 630 / 32;
             const backgroundColor = hsl(hue, 1, 0.7);
-            const color = readableColor(backgroundColor);
+            const color = contrastingColor(backgroundColor);
             // Display initials
             return (
               <AvatarImg

@@ -17,6 +17,7 @@ import LABEL_COLORS from './LabelColors';
 import styled from 'styled-components';
 import gql from 'graphql-tag';
 import { fragments } from '../graphql';
+import { contrastingColor } from '../lib/contrastingColor';
 
 const NewLabelMutation = gql`
   mutation NewLabelMutation($project: ID!, $input: LabelInput!) {
@@ -96,34 +97,12 @@ export class LabelDialog extends React.Component<Props> {
   @observable private visible: boolean = true;
   @observable private busy: boolean = false;
 
-  public componentWillMount() {
-    const { label } = this.props;
-    if (label) {
-      this.labelName = label.name;
-      this.color = label.color;
-      this.visible = this.props.visible;
-    }
-  }
-
-  public componentWillReceiveProps(nextProps: Props) {
-    if (nextProps.open && !this.props.open) {
-      this.labelName = '';
-      this.color = LABEL_COLORS[0][0];
-      this.visible = true;
-    }
-    if (nextProps.label && !this.props.label) {
-      const { label } = nextProps;
-      this.labelName = label.name;
-      this.color = label.color;
-      this.visible = this.props.visible;
-    }
-  }
-
   public render() {
     const { label, open, onClose } = this.props;
     return (
       <Dialog
           open={open}
+          onShow={this.onShow}
           onClose={onClose}
       >
         <Dialog.Header hasClose={true}>
@@ -149,7 +128,7 @@ export class LabelDialog extends React.Component<Props> {
                           { selected: color === this.color })}
                         key={color}
                         data-color={color}
-                        style={{ backgroundColor: color }}
+                        style={{ backgroundColor: color, color: contrastingColor(color) }}
                         onClick={this.onChangeLabelColor}
                     >
                       A
@@ -176,6 +155,20 @@ export class LabelDialog extends React.Component<Props> {
           </Button>
         </Dialog.Footer>
       </Dialog>);
+  }
+
+  @action.bound
+  private onShow() {
+    const { label, visible } = this.props;
+    if (label) {
+      this.labelName = label.name;
+      this.color = label.color;
+      this.visible = visible;
+    } else {
+      this.labelName = '';
+      this.color = LABEL_COLORS[0][0];
+      this.visible = true;
+    }
   }
 
   @action.bound

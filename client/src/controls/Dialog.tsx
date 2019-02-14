@@ -146,6 +146,9 @@ interface Props {
   open?: boolean;
   style?: any;
 
+  /** Called when the dialog first opens. */
+  onShow?: () => void;
+
   /** Indicates that the dialog wants to close. */
   onClose: () => void;
 
@@ -162,6 +165,7 @@ export class Dialog extends React.Component<Props> {
   public render() {
     const {
       open,
+      onShow,
       onClose,
       onExited,
       keyboard = true,
@@ -177,6 +181,7 @@ export class Dialog extends React.Component<Props> {
         backdrop={true}
         transition={DialogTransition}
         backdropTransition={DialogTransition}
+        onShow={onShow}
         onHide={onClose}
         onExited={onExited}
         onEscapeKeyDown={onClose}
