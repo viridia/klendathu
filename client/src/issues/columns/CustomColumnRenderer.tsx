@@ -40,8 +40,11 @@ export class CustomColumnRenderer implements ColumnRenderer {
   }
 
   public render(issue: Issue) {
-    if (issue.custom && this.field.id in issue.custom) {
-      return <td key={this.field.id} className={this.className}>{issue.custom[this.field.id]}</td>;
+    if (issue.custom) {
+      const cv = issue.custom.find(cf => cf.key === this.field.id);
+      if (cv) {
+        return <td key={this.field.id} className={this.className}>{cv.value}</td>;
+      }
     }
     return <td className="custom" key={this.field.id} />;
   }

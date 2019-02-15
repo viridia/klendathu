@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { FieldType } from 'klendathu-json-types';
 import { action, ObservableSet } from 'mobx';
 import { observer } from 'mobx-react';
 import { CheckBox } from '../../controls';
+import { FieldType } from '../../../../common/types/json';
 
 interface Props {
   field: FieldType;

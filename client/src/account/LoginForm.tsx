@@ -104,7 +104,6 @@ export class LoginForm extends React.Component<RouteComponentProps<{}>> {
       return null;
     }
     const { location } = this.props;
-    // console.log('location', location);
     let nextUrl = '';
     if (location.state && location.state.next) {
       const loc = this.props.history.createHref(location.state.next);

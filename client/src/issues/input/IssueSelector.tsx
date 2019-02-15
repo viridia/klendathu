@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { Issue as IssueData } from 'klendathu-json-types';
-import { IssueListQuery, Project } from '../../../models';
-import { Autocomplete, SearchCallback } from '../../ac/Autocomplete';
+import { IssueListQuery } from '../../../models';
 import { searchIssues } from '../../../network/requests';
 import bind from 'bind-decorator';
+import { Issue, Project } from '../../../../common/types/graphql';
+import { Autocomplete, SearchCallback } from '../../controls';
 
 interface Props {
   className?: string;
@@ -11,8 +11,8 @@ interface Props {
   project: Project;
   issues: IssueListQuery;
   exclude?: string;
-  selection: IssueData | IssueData[];
-  onSelectionChange: (selection: IssueData | IssueData[] | null) => void;
+  selection: Issue | Issue[];
+  onSelectionChange: (selection: Issue | Issue[] | null) => void;
 }
 
 export class IssueSelector extends React.Component<Props> {
@@ -32,13 +32,13 @@ export class IssueSelector extends React.Component<Props> {
   }
 
   @bind
-  private onSearch(token: string, callback: SearchCallback<IssueData>) {
+  private onSearch(token: string, callback: SearchCallback<Issue>) {
     if (token.length < 1) {
       callback([]);
     } else {
       const { project } = this.props;
       this.token = token;
-      searchIssues(project.account, project.uname, token, issues => {
+      searchIssues(project.account, project.name, token, issues => {
         if (this.token === token) {
           callback(issues.filter(issue => issue.id !== this.props.exclude));
         }
@@ -47,7 +47,7 @@ export class IssueSelector extends React.Component<Props> {
   }
 
   @bind
-  private onRenderSuggestion(issue: IssueData) {
+  private onRenderSuggestion(issue: Issue) {
     return (
       <span className="issue-ref">
         <span className="id">#{issue.id.split('/')[2]}: </span>
@@ -57,17 +57,17 @@ export class IssueSelector extends React.Component<Props> {
   }
 
   @bind
-  private onRenderSelection(issue: IssueData) {
+  private onRenderSelection(issue: Issue) {
     return this.onRenderSuggestion(issue);
   }
 
   @bind
-  private onGetValue(issue: IssueData) {
+  private onGetValue(issue: Issue) {
     return issue.id;
   }
 
   @bind
-  private onGetSortKey(issue: IssueData) {
+  private onGetSortKey(issue: Issue) {
     return issue.summary;
     // return -issue.score;
   }

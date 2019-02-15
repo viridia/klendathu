@@ -1,8 +1,7 @@
 // tslint:disable:max-classes-per-file
 import * as React from 'react';
 import { Project, MilestoneListQuery } from '../../../models';
-import { Autocomplete, SearchCallback } from '../../controls/Autocomplete';
-import { Button, Modal } from 'react-bootstrap';
+import { Button, Dialog, Autocomplete, SearchCallback } from '../../controls';
 import { observer } from 'mobx-react';
 import { Milestone } from 'klendathu-json-types';
 import { observable, action } from 'mobx';
@@ -39,15 +38,13 @@ export class MilestoneSelector extends React.Component<Props> {
             onRenderSelection={this.onRenderSelection}
         />
         <Button onClick={this.onShowDialog}>&hellip;</Button>
-        <Modal
-            show={this.showDialog}
-            onHide={this.onHideDialog}
-            dialogClassName="choose-milestone-dialog"
+        <Dialog
+            open={this.showDialog}
+            onClose={this.onHideDialog}
+            className="choose-milestone-dialog"
         >
-          <Modal.Header closeButton={true}>
-            <Modal.Title>Select Milestone</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
+          <Dialog.Header hasClose={true}>Select Milestone</Dialog.Header>
+          <Dialog.Body>
             <table className="milestone-list">
                 <thead>
                   <tr className="heading">
@@ -70,12 +67,12 @@ export class MilestoneSelector extends React.Component<Props> {
                   ))}
                 </tbody>
               </table>
-          </Modal.Body>
-          <Modal.Footer>
+          </Dialog.Body>
+          <Dialog.Footer>
             <Button onClick={this.onHideDialog}>Cancel</Button>
-            <Button bsStyle="primary" onClick={this.onSelectMilestone}>Select</Button>
-          </Modal.Footer>
-        </Modal>
+            <Button kind="primary" onClick={this.onSelectMilestone}>Select</Button>
+          </Dialog.Footer>
+        </Dialog>
       </div>);
   }
 

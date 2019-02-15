@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { RelativeDate } from '../../controls/RelativeDate';
 import { AbstractColumnRenderer } from './AbstractColumnRenderer';
 import { Issue } from '../../../../common/types/graphql';
+import { RelativeDate } from '../../controls';
 
 export class DateColumnRenderer extends AbstractColumnRenderer {
   public render(issue: Issue) {

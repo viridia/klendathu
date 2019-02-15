@@ -15,6 +15,7 @@ import { IssueListView } from '../issues/IssueListView';
 import { IssueCreateView } from '../issues/IssueCreateView';
 import { LabelListView } from '../labels/LabelListView';
 import { ViewContextProvider } from './ViewContextProvider';
+import { IssueEditView } from '../issues/IssueEditView';
 
 const MainPageLayout = styled(Page)`
   display: grid;
@@ -90,11 +91,11 @@ export class MainPage extends React.Component<RouteComponentProps<{}>> {
                         path="/:owner/:name/new"
                         render={props => <IssueCreateView {...props} context={this.viewContext} />}
                       />
-                      {/* <Route
-                        path="/:owner/:name/edit/:id"
-                        render={props => <IssueEditView {...props} {...models} />}
-                      />
                       <Route
+                        path="/:owner/:name/edit/:id"
+                        render={props => <IssueEditView {...props} context={this.viewContext} />}
+                      />
+                      {/* <Route
                         path="/:owner/:name/:id(\d+)"
                         render={props => (<IssueDetailsView {...props} {...models} />)}
                       /> */}

@@ -1,13 +1,12 @@
 import bind from 'bind-decorator';
 import * as React from 'react';
-import { Autocomplete, SearchCallback } from '../../controls/Autocomplete';
 import { LabelDialog  } from '../../labels/LabelDialog';
 import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
-import { LabelName } from '../../controls/LabelName';
 import { Project, Label } from '../../../../common/types/graphql';
 import { client } from '../../graphql/client';
 import gql from 'graphql-tag';
+import { Autocomplete, SearchCallback, LabelName } from '../../controls';
 
 const LabelsQuery = gql`
   query LabelsQuery($project: ID!, $search: String) {
@@ -80,7 +79,7 @@ export class LabelSelector extends React.Component<Props> {
           search: token,
         }
       }).then(({ data, loading, errors }) => {
-        console.log(errors);
+        console.error(errors);
         if (!loading && !errors && token === this.token) {
           const labels = data.labels;
           callback(labels.slice(0, 5).map(l => l.id), [newLabelOption]);

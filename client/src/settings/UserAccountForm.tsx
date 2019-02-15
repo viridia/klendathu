@@ -3,12 +3,11 @@ import { request, session } from '../models';
 import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { toast } from 'react-toastify';
-import { Form, FormLabel, TextInput, Button, PhotoSelect } from '../controls';
+import { Form, FormLabel, TextInput, Button, PhotoSelect, FormControlGroup } from '../controls';
 import { SettingsPane, SettingsPaneContent } from '../layout/SettingsPane';
 import { styled } from '../style';
 
 import DefaultAvatar from '../icons/default-avatar.png';
-import { FormControlGroup } from '../controls/Form';
 
 const LayoutEl = styled.section`
   align-self: flex-start;

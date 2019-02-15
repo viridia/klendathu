@@ -2,7 +2,6 @@ import { Workflow, WorkflowAction } from 'klendathu-json-types';
 import { ObservableChanges, ObservableIssue, session, Template } from '../../../models';
 import { AccountName } from '../../common/AccountName';
 import * as React from 'react';
-import { Button } from 'react-bootstrap';
 import { computed } from 'mobx';
 
 // import './WorkflowActions.scss';

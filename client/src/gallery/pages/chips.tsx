@@ -3,7 +3,7 @@ import { register } from '../registry';
 import { Chip } from '../../controls';
 
 function onClose() {
-  console.log('close clicked');
+  console.info('close clicked');
 }
 
 function Chips() {

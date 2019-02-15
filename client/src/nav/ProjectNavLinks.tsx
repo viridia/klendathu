@@ -19,7 +19,7 @@ interface Props {
 
 function ProjectNavLinksImpl(props: Props) {
   const { project, account, prefs } = props.context;
-  if (!project) {
+  if (!project || !account) {
     return null;
   }
   const prefix = `/${account.accountName}/${project.name}`;
@@ -40,7 +40,7 @@ function ProjectNavLinksImpl(props: Props) {
       {prefs && <LeftNavLink to={`${prefix}/labels`}>
         <LabelIcon /> Labels
       </LeftNavLink>}
-      {prefs && <LabelLinks prefs={prefs} />}
+      {prefs && <LabelLinks prefs={prefs} project={project} account={account} />}
       <LeftNavLink to={`${prefix}/progress`}>
         <ProgressIcon /> Progress
       </LeftNavLink>

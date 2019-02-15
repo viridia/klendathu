@@ -25,9 +25,9 @@ export interface IssueQueryParams {
   /** Search predicate for the description field. */
   descriptionPred?: Maybe<Predicate>;
   /** Query term that restricts the issue search to a set of label ids. */
-  labels?: Maybe<number[]>;
+  labels?: Maybe<string[]>;
   /** Specifies a list of linked issues to search for. */
-  linked?: Maybe<number[]>;
+  linked?: Maybe<string[]>;
   /** Query term that searches the issue comments. */
   comment?: Maybe<string>;
   /** 'Search predicate for the comments */
@@ -118,7 +118,7 @@ export interface IssueInput {
 export interface CustomFieldInput {
   key: string;
 
-  value: CustomValue;
+  value?: Maybe<CustomValue>;
 }
 /** File attachment input. */
 export interface AttachmentInput {
@@ -464,7 +464,7 @@ export interface Issue {
 export interface CustomField {
   key: string;
 
-  value: CustomValue;
+  value?: Maybe<CustomValue>;
 }
 
 /** File attachment. */

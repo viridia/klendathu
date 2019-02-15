@@ -1,7 +1,8 @@
 import bind from 'bind-decorator';
 import * as React from 'react';
-import { ObservableSet, Template } from '../../../models';
 import { CheckBox } from '../../controls';
+import { Template } from '../../../../common/types/json';
+import { ObservableSet } from 'mobx';
 
 interface Props {
   template: Template;

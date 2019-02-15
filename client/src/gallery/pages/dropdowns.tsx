@@ -31,15 +31,15 @@ function Dropdowns() {
         </Menu>
       </MenuPreview>
       <DropdownButton title="Click me">
-        <MenuItem onClick={() => { console.log('Choose First'); }}>First</MenuItem>
-        <MenuItem onClick={() => { console.log('Choose Middle'); }}>Middle</MenuItem>
-        <MenuItem onClick={() => { console.log('Choose Last'); }}>Last</MenuItem>
+        <MenuItem onClick={() => { console.info('Choose First'); }}>First</MenuItem>
+        <MenuItem onClick={() => { console.info('Choose Middle'); }}>Middle</MenuItem>
+        <MenuItem onClick={() => { console.info('Choose Last'); }}>Last</MenuItem>
       </DropdownButton>
       <ScrollingRegion>
         <DropdownButton title="Click me">
-          <MenuItem onClick={() => { console.log('Choose First'); }}>First</MenuItem>
-          <MenuItem onClick={() => { console.log('Choose Middle'); }}>Middle</MenuItem>
-          <MenuItem onClick={() => { console.log('Choose Last'); }}>Last</MenuItem>
+          <MenuItem onClick={() => { console.info('Choose First'); }}>First</MenuItem>
+          <MenuItem onClick={() => { console.info('Choose Middle'); }}>Middle</MenuItem>
+          <MenuItem onClick={() => { console.info('Choose Last'); }}>Last</MenuItem>
         </DropdownButton>
       </ScrollingRegion>
     </React.Fragment>

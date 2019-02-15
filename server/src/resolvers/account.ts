@@ -55,7 +55,7 @@ export const mutations = {
       _: any,
       { input }: CreateUserAccountMutationArgs,
       context: Context): Promise<AccountRecord> {
-    console.log('create account', input);
+    console.debug('create account', input);
     return null;
   },
 

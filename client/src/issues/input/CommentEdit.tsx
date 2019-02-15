@@ -2,8 +2,7 @@ import bind from 'bind-decorator';
 import * as React from 'react';
 import { observable } from 'mobx';
 import { observer } from 'mobx-react';
-import { TextArea } from '../../controls';
-import { Button } from 'react-bootstrap';
+import { TextArea, Button } from '../../controls';
 import styled from 'styled-components';
 
 interface Props {

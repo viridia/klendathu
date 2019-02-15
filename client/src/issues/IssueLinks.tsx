@@ -2,7 +2,6 @@ import * as React from 'react';
 import bind from 'bind-decorator';
 import { Account, Relation } from 'klendathu-json-types';
 import { IssueListQuery, Project } from '../../models';
-import { Button } from 'react-bootstrap';
 import { IssueSummary } from './IssueSummary';
 import { relationNames } from '../common/relationNames';
 import { observer } from 'mobx-react';

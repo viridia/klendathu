@@ -53,12 +53,12 @@ import {
 } from '../controls';
 import styled from 'styled-components';
 import { TypeSelector, CommentEdit, LabelSelector } from './input';
-import { Role, Workflow, IssueType, DataType, FieldType } from '../../../common/types/json';
+import { Role, Workflow, IssueType, DataType } from '../../../common/types/json';
 import { session, ViewContext } from '../models';
 import { StateSelector } from './input/StateSelector';
 import { CustomSuggestField } from './input/CustomSuggestField';
 import { CustomEnumField } from './input/CustomEnumField';
-import { action, computed, IObservableArray, observable, toJS, when } from 'mobx';
+import { action, computed, IObservableArray, observable, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 
 const IssueComposeLayout = styled(Card)`

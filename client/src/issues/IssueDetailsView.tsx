@@ -1,37 +1,10 @@
 import * as React from 'react';
-import {
-  Account,
-  CustomValues,
-  DataType,
-  Issue,
-  IssueInput,
-  IssueType,
-  Role,
-  WorkflowAction,
-} from 'klendathu-json-types';
-import {
-  IssueListQuery,
-  ObservableChanges,
-  ObservableComments,
-  ObservableIssue,
-  ObservableIssueLinks,
-  Project,
-} from '../../models';
 import { IssueProvider } from './IssueProvider';
 import { IssueLinks } from './IssueLinks';
 import { IssueChanges } from './IssueChanges';
 import { CommentEdit } from './input/CommentEdit';
 import { WorkflowActions } from './workflow/WorkflowActions';
 import { RouteComponentProps } from 'react-router-dom';
-import { Button, ButtonGroup, Modal } from 'react-bootstrap';
-import { LinkContainer } from 'react-router-bootstrap';
-import { AccountName } from '../common/AccountName';
-import { ShowAttachments } from '../files/ShowAttachments';
-import { LabelName } from '../common/LabelName';
-import { RelativeDate } from '../common/RelativeDate';
-import { CopyLink } from '../common/CopyLink';
-import { displayErrorToast } from '../common/displayErrorToast';
-import { deleteIssue, updateIssue } from '../../network/requests';
 import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import bind from 'bind-decorator';
@@ -42,6 +15,19 @@ import * as marked from 'marked';
 import ArrowBackIcon from '../../../icons/ic_arrow_back.svg';
 import ArrowForwardIcon from '../../../icons/ic_arrow_forward.svg';
 import ArrowUpIcon from '../../../icons/ic_arrow_upward.svg';
+import { Project, Issue, IssueInput, PublicAccount } from '../../../common/types/graphql';
+import {
+  Dialog,
+  Button,
+  NavContainer,
+  ButtonGroup,
+  AccountName,
+  RelativeDate,
+  CopyLink,
+  LabelName,
+} from '../controls';
+import { Role, IssueType, DataType, WorkflowAction } from '../../../common/types/json';
+import { IssueQueryModel } from '../models';
 
 // Global options for marked.
 marked.setOptions({
@@ -56,44 +42,44 @@ marked.setOptions({
 });
 
 interface Props extends RouteComponentProps<{ project: string; id: string }> {
-  account: Account;
+  account: PublicAccount;
   project: Project;
-  issues: IssueListQuery;
-  issue: ObservableIssue;
+  issues: IssueQueryModel;
+  issue: Issue;
 }
 
 @observer
 export class IssueDetails extends React.Component<Props> {
   @observable private showDelete = false;
   @observable private busy = false;
-  private issueLinks: ObservableIssueLinks;
-  private comments: ObservableComments;
-  private changes: ObservableChanges;
+  // private issueLinks: ObservableIssueLinks;
+  // private comments: ObservableComments;
+  // private changes: ObservableChanges;
   private issueId: string;
 
   public componentWillMount() {
     this.issueId = this.props.issue.id;
-    this.issueLinks = new ObservableIssueLinks(this.issueId);
-    this.comments = new ObservableComments(this.issueId);
-    this.changes = new ObservableChanges(this.issueId);
+    // this.issueLinks = new ObservableIssueLinks(this.issueId);
+    // this.comments = new ObservableComments(this.issueId);
+    // this.changes = new ObservableChanges(this.issueId);
   }
 
   public componentWillReceiveProps(nextProps: Props) {
     if (nextProps.issue.id !== this.issueId) {
-      this.issueLinks.release();
-      this.comments.release();
-      this.changes.release();
+      // this.issueLinks.release();
+      // this.comments.release();
+      // this.changes.release();
       this.issueId = nextProps.issue.id;
-      this.issueLinks = new ObservableIssueLinks(this.issueId);
-      this.comments = new ObservableComments(this.issueId);
-      this.changes = new ObservableChanges(this.issueId);
+      // this.issueLinks = new ObservableIssueLinks(this.issueId);
+      // this.comments = new ObservableComments(this.issueId);
+      // this.changes = new ObservableChanges(this.issueId);
     }
   }
 
   public componentWillUnmount() {
-    this.issueLinks.release();
-    this.comments.release();
-    this.changes.release();
+    // this.issueLinks.release();
+    // this.comments.release();
+    // this.changes.release();
   }
 
   public render() {
@@ -103,22 +89,20 @@ export class IssueDetails extends React.Component<Props> {
           {this.renderHeader()}
           {this.renderContent()}
           {this.showDelete && (
-            <Modal show={true} onHide={this.onCancelDelete} dialogClassName="confirm-dialog">
-              <Modal.Header closeButton={true}>
-                <Modal.Title>
+            <Dialog open={true} onClose={this.onCancelDelete} className="confirm-dialog">
+              <Dialog.Header hasClose={true}>
                   Are you sure you want to delete issue #{this.props.issue.index}?
-                </Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
+              </Dialog.Header>
+              <Dialog.Body>
                 This action cannot be undone.
-              </Modal.Body>
-              <Modal.Footer>
+              </Dialog.Body>
+              <Dialog.Footer>
                 <Button onClick={this.onCancelDelete}>Cancel</Button>
-                <Button onClick={this.onConfirmDelete} disabled={this.busy} bsStyle="primary">
+                <Button onClick={this.onConfirmDelete} disabled={this.busy} kind="primary">
                   Delete
                 </Button>
-              </Modal.Footer>
-            </Modal>
+              </Dialog.Footer>
+            </Dialog>
           )}
         </section>
       </section>
@@ -133,11 +117,11 @@ export class IssueDetails extends React.Component<Props> {
     const [prevIssue, nextIssue] = this.adjacentIssueIds(issue.id);
     return (
       <header>
-        <LinkContainer to={backLink} exact={true}>
+        <NavContainer to={backLink} exact={true}>
           <Button title="Back to issue list" className="issue-up">
             <ArrowUpIcon />
           </Button>
-        </LinkContainer>
+        </NavContainer>
         <div className="issue-id">Issue #{issue.index}: </div>
         <div className="summary">{issue.summary}</div>
         <div className="stretch">
@@ -148,17 +132,17 @@ export class IssueDetails extends React.Component<Props> {
         </div>
         <CopyLink url={window.location.toString()} title="Copy issue link to clipboard" />
         <ButtonGroup className="issue-actions">
-          <LinkContainer
+          <NavContainer
               to={{
-                pathname: `/${account.uname}/${project.uname}/edit/${issue.index}`,
+                pathname: `/${account.accountName}/${project.name}/edit/${issue.index}`,
                 state: { ...location.state, back: this.props.location },
               }}
           >
             <Button title="Edit issue" disabled={project.role < Role.UPDATER}>Edit</Button>
-          </LinkContainer>
+          </NavContainer>
           <Button
               title="Delete issue"
-              bsStyle="default"
+              kind="default"
               disabled={project.role < Role.MANAGER}
               onClick={this.onDeleteIssue}
           >
@@ -166,24 +150,24 @@ export class IssueDetails extends React.Component<Props> {
           </Button>
         </ButtonGroup>
         <ButtonGroup className="issue-nav">
-          <LinkContainer
+          <NavContainer
               to={{
                 ...location,
-                pathname: `/${account.uname}/${project.uname}/${prevIssue}` }}
+                pathname: `/${account.accountName}/${project.name}/${prevIssue}` }}
           >
             <Button title="Previous issue" disabled={prevIssue === null}>
               <ArrowBackIcon />
             </Button>
-          </LinkContainer>
-          <LinkContainer
+          </NavContainer>
+          <NavContainer
               to={{
                 ...location,
-                pathname: `/${account.uname}/${project.uname}/${nextIssue}` }}
+                pathname: `/${account.accountName}/${project.uname}/${nextIssue}` }}
           >
             <Button title="Next issue" disabled={nextIssue === null}>
               <ArrowForwardIcon />
             </Button>
-          </LinkContainer>
+          </NavContainer>
         </ButtonGroup>
       </header>
     );
@@ -217,13 +201,15 @@ export class IssueDetails extends React.Component<Props> {
               )}
               <tr>
                 <th className="header">Created:</th>
-                <td className="changes"><RelativeDate date={issue.created} withPrefix={true} /></td>
+                <td className="changes">
+                  <RelativeDate date={issue.createdAt} withPrefix={true} />
+                </td>
               </tr>
               <tr>
                 <th className="header">Reporter:</th>
                 <td className="reporter">
                   {issue.reporter
-                    ? <AccountName id={issue.reporter} full={true} />
+                    ? <AccountName id={issue.reporter} />
                     : <span className="unassigned">unassigned</span>}
                 </td>
               </tr>
@@ -231,14 +217,14 @@ export class IssueDetails extends React.Component<Props> {
                 <th className="header">Owner:</th>
                 <td>
                   {issue.owner
-                    ? <AccountName id={issue.owner} full={true} />
+                    ? <AccountName id={issue.owner} />
                     : <span className="unassigned">unassigned</span>}
                 </td>
               </tr>
               {issue.cc.length > 0 && (
                 <tr>
                   <th className="header">CC:</th>
-                  <td>{issue.cc.map(cc => <AccountName id={cc} key={cc} full={true} />)}
+                  <td>{issue.cc.map(cc => <AccountName id={cc} key={cc} />)}
                   </td>
                 </tr>
               )}
@@ -248,7 +234,7 @@ export class IssueDetails extends React.Component<Props> {
                   <th className="header labels">Labels:</th>
                   <td>
                     {issue.labels.map(label =>
-                      <LabelName label={label} key={label} />)}
+                      <LabelName id={label} key={label} />)}
                   </td>
                 </tr>
               )}
@@ -291,12 +277,12 @@ export class IssueDetails extends React.Component<Props> {
           </table>)}
         </div>
         {project.role >= Role.UPDATER && (<aside className="right">
-          <WorkflowActions
+          {/* <WorkflowActions
               template={template}
               changes={this.changes}
               issue={issue}
               onExecAction={this.onExecAction}
-          />
+          /> */}
         </aside>)}
       </section>
     );
@@ -378,19 +364,19 @@ export class IssueDetails extends React.Component<Props> {
       if (prevIssue) {
         history.replace({
           ...location,
-          pathname: `/${account.uname}/${project.uname}/${prevIssue}`,
+          pathname: `/${account.accountName}/${project.name}/${prevIssue}`,
         });
       } else if (nextIssue) {
         history.replace({
           ...location,
-          pathname: `/${account.uname}/${project.uname}/${nextIssue}`,
+          pathname: `/${account.accountName}/${project.name}/${nextIssue}`,
         });
       } else if (location.state && location.state.back) {
         history.replace(location.state.back);
       } else {
         history.replace({
           ...location,
-          pathname: `/${account.uname}/${project.uname}/issues`,
+          pathname: `/${account.accountName}/${project.name}/issues`,
         });
       }
     }, displayErrorToast);

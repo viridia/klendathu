@@ -17,13 +17,13 @@ function connect(uri: URL) {
       onError(({ graphQLErrors, networkError }) => {
         if (graphQLErrors) {
           graphQLErrors.map(({ message, locations, path }) =>
-            console.log(
+            console.error(
               `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`,
             ),
           );
         }
         if (networkError) {
-          console.log(`[Network error]: ${networkError}`);
+          console.error(`[Network error]: ${networkError}`);
         }
       }),
       setContext((_, { headers }) => ({
@@ -55,22 +55,22 @@ const argv = yargs
   })
   .command('init', 'create the default account', {}, ((args: any) => {
     if (!args.host) {
-      console.log('Host name is required.');
+      console.error('Host name is required.');
       process.exit(-1);
     }
     if (!args.token) {
-      console.log('Authentication token is required.');
+      console.error('Authentication token is required.');
       process.exit(-1);
     }
     authHeaders.Authorization = `Bearer ${args.token}`;
     const uri = new URL(args.host);
     uri.pathname = '/graphql';
     const client = connect(uri);
-    console.log('Initializating default database account.');
+    console.info('Initializating default database account.');
     client.query({
       query: ProjectsQuery,
     }).then(({ data }) => {
-      console.log(data);
+      console.info(data);
     });
   }) as any)
   .parse();

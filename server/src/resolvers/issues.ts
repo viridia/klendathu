@@ -87,6 +87,7 @@ export const queries = {
       _: any,
       { query, pagination }: IssuesQueryArgs,
       context: Context): Promise<PaginatedIssueRecords> {
+
     const user = context.user ? context.user.accountName : null;
     const { project, role } = await getProjectAndRole(
         context.db, context.user, new ObjectID(query.project));
@@ -163,17 +164,8 @@ export const queries = {
     }
 
     // Match any label
-    if (query.labels) {
-    //   const labels = toArray(args.labels).map(l => `${account}/${project}/${l}`);
-    //   if (labels) {
-    //     const e = labels.reduce((expr: r.Expression<boolean>, label) => {
-    //       const term = r.row('labels').contains(label);
-    //       return expr ? expr.or(term) : term;
-    //     }, null);
-    //     if (e) {
-    //       filters.push(e);
-    //     }
-    //   }
+    if (query.labels && query.labels.length > 0) {
+      filter.labels = { $in: query.labels };
     }
 
     // Match any cc

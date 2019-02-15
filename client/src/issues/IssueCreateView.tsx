@@ -6,7 +6,6 @@ import { IssueInput, Issue } from '../../../common/types/graphql';
 import { ViewContext } from '../models';
 import { fragments } from '../graphql';
 import { client, decodeErrorAsException } from '../graphql/client';
-import bind from 'bind-decorator';
 import gql from 'graphql-tag';
 
 const NewIssueMutation = gql`
@@ -20,14 +19,9 @@ interface Props extends RouteComponentProps<{}> {
   context: ViewContext;
 }
 
-export class IssueCreateView extends React.Component<Props> {
-  public render() {
-    return <IssueCompose {...this.props} onSave={this.onSave} />;
-  }
-
-  @bind
-  private onSave(input: IssueInput): Promise<Issue> {
-    const { project } = this.props.context;
+export function IssueCreateView(props: Props) {
+  const onSave = (input: IssueInput): Promise<Issue> => {
+    const { project } = props.context;
     return client.mutate<{ newIssue: Issue }>({
       mutation: NewIssueMutation,
       variables: { project: project.id, input }
@@ -42,5 +36,7 @@ export class IssueCreateView extends React.Component<Props> {
         return data.newIssue;
       }
     });
-  }
+  };
+
+  return <IssueCompose {...props} onSave={onSave} />;
 }

@@ -23,12 +23,16 @@ export async function createTestUserAccount(
     db: Db,
     accountName: string,
     display: string): Promise<AccountRecord> {
-  const result = await db.collection('accounts').insertOne({
+  const account: AccountRecord = {
     accountName,
     display,
     type: 'USER',
+  };
+  const result =
+      await db.collection('accounts').findOneAndUpdate({ accountName }, { $setOnInsert: account }, {
+    upsert: true,
   });
-  return result.ops[0];
+  return result.value;
 }
 
 export async function constructTestServer(): Promise<TestServer> {

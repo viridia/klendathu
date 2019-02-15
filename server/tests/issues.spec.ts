@@ -15,7 +15,9 @@ import { AccountRecord } from '../src/db/types';
 const IssuesQuery = gql`query IssuesQuery($query: IssueQueryParams!) {
   issues(query: $query) {
     issues {
-      id summary description state type reporter reporterSort owner ownerSort custom { key value }
+      id summary description state type reporter reporterSort owner ownerSort
+      labels
+      custom { key value }
     }
   }
 }`;
@@ -33,10 +35,6 @@ describe('issues', () => {
   beforeAll(async () => {
     server = await constructTestServer();
     project = await createTestProject(server);
-  });
-
-  afterEach(async () => {
-    await server.db.collection('issues').deleteMany({});
   });
 
   afterAll(async () => {
@@ -60,6 +58,10 @@ describe('issues', () => {
   });
 
   describe('create issue', () => {
+    afterEach(async () => {
+      await server.db.collection('issues').deleteMany({});
+    });
+
     test('basic', async () => {
       const { query, mutate } = createTestClient(server.apollo);
       const res = await mutate({
@@ -221,6 +223,7 @@ describe('issues', () => {
             summary: 'second',
             description: 'issue the second',
             isPublic: false,
+            labels: [`${project}.1`, `${project}.2`],
           }
         },
       });
@@ -239,6 +242,10 @@ describe('issues', () => {
       });
     });
 
+    afterAll(async () => {
+      await server.db.collection('issues').deleteMany({});
+    });
+
     test('all', async () => {
       const { query } = createTestClient(server.apollo);
       const qResult = await query({
@@ -251,6 +258,21 @@ describe('issues', () => {
       });
       expect(qResult.errors).toBeUndefined();
       expect(qResult.data.issues.issues).toBeArrayOfSize(3);
+    });
+
+    test('by label', async () => {
+      const { query } = createTestClient(server.apollo);
+      const qResult = await query({
+        query: IssuesQuery,
+        variables: {
+          query: {
+            project,
+            labels: [`${project}.1`]
+          }
+        }
+      });
+      expect(qResult.errors).toBeUndefined();
+      expect(qResult.data.issues.issues).toBeArrayOfSize(1);
     });
   });
 });

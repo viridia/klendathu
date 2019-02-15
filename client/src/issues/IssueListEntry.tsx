@@ -3,13 +3,12 @@ import { NavLink, RouteComponentProps } from 'react-router-dom';
 import { ColumnRenderer } from './columns';
 import { action, ObservableSet } from 'mobx';
 import { observer } from 'mobx-react';
-import classNames from 'classnames';
 import { ViewContext } from '../models';
 import { Issue } from '../../../common/types/graphql';
 import { Role } from '../../../common/types/json';
-import { CheckBox } from '../controls';
-import { LabelName } from '../controls/LabelName';
+import { CheckBox, LabelName } from '../controls';
 import { styled } from '../style';
+import classNames from 'classnames';
 
 const SelectedCell = styled.td`
   width: 2rem;

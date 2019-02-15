@@ -3,7 +3,7 @@ import { register } from '../registry';
 import { CheckBox, RadioButton } from '../../controls';
 
 function onClick() {
-  console.log('clicked');
+  console.info('clicked');
 }
 
 function Toggles() {
