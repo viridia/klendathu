@@ -2,6 +2,16 @@ import * as React from 'react';
 import { AbstractColumnRenderer } from './AbstractColumnRenderer';
 import { Issue } from '../../../../common/types/graphql';
 import { Template } from '../../../../common/types/json';
+import styled from 'styled-components';
+
+const TypeCell = styled.td`
+  text-align: center;
+  > .badge {
+    border-radius: 4px;
+    display: inline-block;
+    padding: 4px 12px;
+  }
+`;
 
 export class TypeColumnRenderer extends AbstractColumnRenderer {
   private template: Template;
@@ -14,12 +24,12 @@ export class TypeColumnRenderer extends AbstractColumnRenderer {
   public render(issue: Issue) {
     const typeInfo = this.template.types.find(t => t.id === issue.type);
     if (!typeInfo) {
-      return <td className="type" key="type">{issue.type}</td>;
+      return <TypeCell key="type">{issue.type}</TypeCell>;
     }
     return (
-      <td className="type" key="type">
-        <span style={{ backgroundColor: typeInfo.bg }}>{typeInfo.caption}</span>
-      </td>
+      <TypeCell key="type">
+        <div className="badge" style={{ backgroundColor: typeInfo.bg }}>{typeInfo.caption}</div>
+      </TypeCell>
     );
   }
 }

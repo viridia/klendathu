@@ -35,6 +35,8 @@ export class ViewContextProvider extends React.Component<Props> {
       return <LoadingIndicator>Loading&hellip;</LoadingIndicator>;
     } else if (viewContext.errors) {
       return <ErrorListDisplay errors={viewContext.errors} />;
+    } else if (!viewContext.project) {
+      return null;
     }
     const { children } = this.props;
     return children();

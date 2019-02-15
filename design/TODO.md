@@ -1,9 +1,10 @@
 # TODO
 
 * compiled template stuff.
-* Create shared models which are more efficient than Query component.
 * Make user links local to the view
 * Redis
+* Batching
+* Hot reloading with MobX?
 
 # Components
 

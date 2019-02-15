@@ -24,7 +24,7 @@ function ChipImpl({ children, className, onClose }: Props) {
 export const Chip = styled(ChipImpl).attrs(props => ({
   titleColor: contrastingColor(props.color),
   hoverColor: transparentize(0.4, contrastingColor(props.color)),
-  height: props.small ? '20px' : '24px',
+  height: props.small ? '21px' : '24px',
   borderRadius: props.small ? '10px' : '12px',
   fontSize: props.small ? '75%' : '85%',
 }))`

@@ -1,8 +1,9 @@
 import * as React from 'react';
 import bind from 'bind-decorator';
-import { ObservableSet, Template } from '../../../models';
-import { Checkbox } from 'react-bootstrap';
 import { observer } from 'mobx-react';
+import { ObservableSet } from 'mobx';
+import { CheckBox } from '../../controls';
+import { Template } from '../../../../common/types/json';
 
 interface Props {
   template: Template;
@@ -16,9 +17,9 @@ export class StateSetEditor extends React.Component<Props> {
     return (
       <div className="select-states">
         {template.states.map(st => (
-          <Checkbox key={st.id} data-id={st.id} checked={value.has(st.id)} onChange={this.onChange}>
+          <CheckBox key={st.id} data-id={st.id} checked={value.has(st.id)} onChange={this.onChange}>
             {st.caption}
-          </Checkbox>))}
+          </CheckBox>))}
       </div>
     );
   }

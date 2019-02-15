@@ -571,7 +571,8 @@ export class IssueCompose extends React.Component<Props> {
         history.push(this.backLink, { highlight: issue.id });
       }
     }, error => {
-      console.error(error);
+      // TODO: Do a better job
+      console.error(JSON.stringify(error, null, 2));
     //   switch (error.code) {
     //     case Errors.SCHEMA:
     //       toast.error('Schema validation failure');

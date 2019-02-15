@@ -16,7 +16,11 @@ import { Errors } from '../../../common/types/json';
 import { withFilter } from 'graphql-subscriptions';
 import { pubsub } from './pubsub';
 
-const DefaultColumns: string[] = [];
+const DefaultColumns: string[] = [
+  'type',
+  'owner',
+  'state',
+];
 
 const PREFS_CHANGE = 'prefs-change';
 

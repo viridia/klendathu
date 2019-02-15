@@ -5,13 +5,20 @@ import {
   ProjectContext,
   ProjectPrefsChange,
 } from '../../../common/types/graphql';
-import { Template, WorkflowState, Workflow, IssueType, FieldType } from '../../../common/types/json';
+import {
+  Template,
+  WorkflowState,
+  Workflow,
+  IssueType,
+  FieldType,
+} from '../../../common/types/json';
 import { observable, ObservableSet, computed, action, autorun, IReactionDisposer } from 'mobx';
 import gql from 'graphql-tag';
 import { fragments } from '../graphql';
 import { client } from '../graphql/client';
 import bind from 'bind-decorator';
 import { GraphQLError } from 'graphql';
+import { IssueQueryModel } from './IssueQueryModel';
 
 const ProjectContextQuery = gql`
   query ProjectContextQuery($owner: String!, $name: String!) {
@@ -57,6 +64,7 @@ export class ViewContext {
   @observable public account: PublicAccount = null;
   @observable public template: Template = null;
   @observable public prefs: ProjectPrefs = null;
+  public issues = new IssueQueryModel();
 
   private disposer: IReactionDisposer;
   private subscription: any;

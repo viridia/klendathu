@@ -6,7 +6,6 @@ export const ModeContent = styled.section`
   display: flex;
   flex-direction: column;
   flex: 1;
-  overflow-y: auto;
 `;
 
 export const ModeContentHeader = styled.header`

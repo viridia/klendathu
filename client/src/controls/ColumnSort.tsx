@@ -1,5 +1,25 @@
 import bind from 'bind-decorator';
 import * as React from 'react';
+import styled from 'styled-components';
+
+const ColumnSortEl = styled.button`
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  cursor: pointer;
+  font-weight: bold;
+  outline: none;
+  width: 100%;
+  > .content {
+    padding-left: 1rem;
+  }
+  > .sort {
+    display: inline-block;
+    width: 12px;
+    color: ${props => props.theme.buttonColors.primary.bg};
+    margin-right: 4px;
+  }
+`;
 
 interface Props {
   className?: string;
@@ -16,14 +36,14 @@ export class ColumnSort extends React.Component<Props> {
   public render() {
     const { className, column, children, sortKey, descending } = this.props;
     return (
-      <button className={className} onClick={this.onClick}>
-        {children}
+      <ColumnSortEl className={className} onClick={this.onClick}>
+        <span className="content">{children}</span>
         {sortKey === column ?
           (descending
             ? <span className="sort descend">&#x25bc;</span>
             : <span className="sort ascend">&#x25b2;</span>)
           : <span className="sort">&nbsp;</span>}
-      </button>
+      </ColumnSortEl>
     );
   }
 

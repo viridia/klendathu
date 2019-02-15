@@ -2,19 +2,17 @@ import * as React from 'react';
 import classNames from 'classnames';
 import { styled } from '../style';
 
-interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
-  ref?: (el: HTMLInputElement) => void;
-}
+type Props = React.InputHTMLAttributes<HTMLInputElement>;
 
-function CheckBoxImpl({ children, className, ...props }: Props) {
+const CheckBoxImpl = React.forwardRef(({ children, className, ...props }: Props, ref: any) => {
   const disabled = props.disabled;
   return (
     <label className={classNames(className, { disabled })}>
-      <input type="checkbox" {...props} />
-      <span className="caption">{children}</span>
+      <input type="checkbox" ref={ref} {...props} />
+      {children && <span className="caption">{children}</span>}
     </label>
   );
-}
+});
 
 export const CheckBox = styled(CheckBoxImpl)`
   align-items: center;
@@ -23,6 +21,9 @@ export const CheckBox = styled(CheckBoxImpl)`
 
   > input {
     margin-right: 6px;
+    &:last-child {
+      margin-right: 0;
+    }
   }
 
   &.disabled {
@@ -33,15 +34,15 @@ export const CheckBox = styled(CheckBoxImpl)`
   }
 `;
 
-function RadioButtonImpl({ children, className, ...props }: Props) {
+const RadioButtonImpl = React.forwardRef(({ children, className, ...props }: Props, ref: any) => {
   const disabled = props.disabled;
   return (
     <label className={classNames(className, { disabled })}>
-      <input type="radio" {...props} />
+      <input type="radio" ref={ref} {...props} />
       <span className="caption">{children}</span>
     </label>
   );
-}
+});
 
 export const RadioButton = styled(RadioButtonImpl)`
   align-items: center;

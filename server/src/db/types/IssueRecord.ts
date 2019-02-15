@@ -29,7 +29,7 @@ export interface IssueRecord {
   cc: ObjectID[];
   created: Date;
   updated: Date;
-  labels: ObjectID[];
+  labels: string[];
   custom: CustomValues;
   // comments: CommentEntry[];
   attachments: Attachment[];

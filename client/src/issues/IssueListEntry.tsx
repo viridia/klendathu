@@ -1,22 +1,50 @@
 import * as React from 'react';
-import { Account, Issue, Role } from 'klendathu-json-types';
-import {
-  ObservableProjectPrefs,
-  ObservableSet,
-  Project
-} from '../../models';
 import { NavLink, RouteComponentProps } from 'react-router-dom';
-import { LabelName } from '../common/LabelName';
 import { ColumnRenderer } from './columns';
-import { Checkbox } from 'react-bootstrap';
-import { action } from 'mobx';
+import { action, ObservableSet } from 'mobx';
 import { observer } from 'mobx-react';
 import classNames from 'classnames';
+import { ViewContext } from '../models';
+import { Issue } from '../../../common/types/graphql';
+import { Role } from '../../../common/types/json';
+import { CheckBox } from '../controls';
+import { LabelName } from '../controls/LabelName';
+import { styled } from '../style';
+
+const SelectedCell = styled.td`
+  width: 2rem;
+`;
+
+const IdCell = styled.td`
+  text-align: center;
+  width: 2rem;
+  > a {
+    display: block;
+    text-decoration: none;
+    color: ${props => props.theme.textDark};
+  }
+`;
+
+const TitleCell = styled.td`
+  padding: 0 4px;
+  > a {
+    color: ${props => props.theme.textDark};
+    line-height: 1.8rem; /* Needed to make chips line up with summary. */
+    text-decoration: none;
+  }
+  .summary {
+    padding-top: 4px;
+    font-weight: bold;
+    margin-right: .4rem;
+  }
+  .chip {
+    position: relative;
+    top: -2px;
+  }
+`;
 
 interface Props extends RouteComponentProps<{}> {
-  account: Account;
-  project: Project;
-  prefs: ObservableProjectPrefs;
+  context: ViewContext;
   issue: Issue;
   columnRenderers: Map<string, ColumnRenderer>;
   selection: ObservableSet;
@@ -25,10 +53,11 @@ interface Props extends RouteComponentProps<{}> {
 @observer
 export class IssueListEntry extends React.Component<Props> {
   public render() {
-    const { account, issue, project, prefs, columnRenderers, selection } = this.props;
-    const index = issue.id.split('/', 4)[2];
+    const { context, issue, columnRenderers, selection } = this.props;
+    const { account, project, prefs } = context;
+    const index = issue.id.split('.', 2)[1];
     const linkTarget = {
-      pathname: `/${account.uname}/${project.uname}/${index}`,
+      pathname: `/${account.accountName}/${project.name}/${index}`,
       state: { back: this.props.location },
     };
     const issueId = `issue-${issue.id}`;
@@ -39,20 +68,18 @@ export class IssueListEntry extends React.Component<Props> {
     }
     return (
       <tr>
-        {project.role >= Role.UPDATER && (<td className="selected">
-          <label htmlFor={issueId}>
-            <Checkbox
+        {project.role >= Role.UPDATER && (
+          <SelectedCell className="selected">
+            <CheckBox
                 id={issueId}
-                bsClass="cbox"
                 data-id={issue.id}
                 checked={selection.has(issue.id)}
                 onChange={this.onChangeSelection}
             />
-          </label>
-        </td>)}
-        <td className="id">
+          </SelectedCell>)}
+        <IdCell>
           <NavLink to={linkTarget}>{index}</NavLink>
-        </td>
+        </IdCell>
         {prefs.columns.map(cname => {
           const cr = columnRenderers.get(cname);
           if (cr) {
@@ -60,14 +87,14 @@ export class IssueListEntry extends React.Component<Props> {
           }
           return <td className="custom" key={cname} />;
         })}
-        <td className="title">
+        <TitleCell>
           <NavLink to={linkTarget} className={classNames({ child: level > 0 })} style={style}>
             <span className="summary">{issue.summary}</span>
             {issue.labels
-              .filter(l => prefs.showLabel(l))
-              .map(l => <LabelName label={l} key={l} />)}
+              .filter(l => context.visibleLabels.has(l))
+              .map(l => <LabelName small={true} id={l} key={l} />)}
           </NavLink>
-        </td>
+        </TitleCell>
       </tr>
     );
   }

@@ -308,20 +308,25 @@ export const mutations = {
       created: now,
       updated: now,
       cc: (input.cc || []).map(id => new ObjectID(id)),
-      labels: (input.labels || []).map(id => new ObjectID(id)),
+      labels: (input.labels || []),
       custom: input.custom ? customArrayToMap(input.custom) : {},
       attachments: input.attachments || [],
       isPublic: !!input.isPublic,
     };
 
-    if (input.owner && !context.user._id.equals(input.owner)) {
-      const owner = await context.db.collection('issues')
-        .findOne<AccountRecord>({ _id: new ObjectID(input.owner) });
-      if (!owner) {
-        throw new UserInputError(Errors.NOT_FOUND, { field: 'owner' });
+    if (input.owner) {
+      if (context.user._id.equals(input.owner)) {
+        record.owner = context.user._id;
+        record.ownerSort = context.user.accountName;
+      } else {
+        const owner = await context.db.collection('issues')
+          .findOne<AccountRecord>({ _id: new ObjectID(input.owner) });
+        if (!owner) {
+          throw new UserInputError(Errors.NOT_FOUND, { field: 'owner' });
+        }
+        record.owner = owner._id;
+        record.ownerSort = owner.accountName;
       }
-      record.owner = owner._id;
-      record.ownerSort = owner.accountName;
     }
 
     const commentsToInsert: CommentRecord[] = (input.comments || []).map(comment => ({

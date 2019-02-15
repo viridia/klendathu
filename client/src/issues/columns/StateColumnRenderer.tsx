@@ -2,6 +2,11 @@ import * as React from 'react';
 import { AbstractColumnRenderer } from './AbstractColumnRenderer';
 import { Issue } from '../../../../common/types/graphql';
 import { Template } from '../../../../common/types/json';
+import { styled } from '../../style';
+
+const StateCell = styled.td`
+  text-align: center;
+`;
 
 export class StateColumnRenderer extends AbstractColumnRenderer {
   private template: Template;
@@ -14,10 +19,10 @@ export class StateColumnRenderer extends AbstractColumnRenderer {
   public render(issue: Issue) {
     const stateInfo = this.template.states.find(s => s.id === issue.state);
     if (!stateInfo) {
-      return <td className="state pad" key="state">{issue.state}</td>;
+      return <StateCell key="state">{issue.state}</StateCell>;
     }
     return (
-      <td className="state pad" key="state">{stateInfo.caption}</td>
+      <StateCell key="state">{stateInfo.caption}</StateCell>
     );
   }
 }

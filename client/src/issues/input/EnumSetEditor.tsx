@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { FieldType } from 'klendathu-json-types';
-import { ObservableSet } from '../../../models';
-import { action } from 'mobx';
+import { action, ObservableSet } from 'mobx';
 import { observer } from 'mobx-react';
 import { CheckBox } from '../../controls';
 
