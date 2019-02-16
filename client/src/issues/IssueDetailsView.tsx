@@ -8,7 +8,12 @@ import { action, observable, computed } from 'mobx';
 import { observer } from 'mobx-react';
 import bind from 'bind-decorator';
 import * as marked from 'marked';
-import { Project, Issue, IssueInput, CustomField } from '../../../common/types/graphql';
+import {
+  Issue,
+  IssueInput,
+  CustomField,
+  Relation,
+} from '../../../common/types/graphql';
 import {
   Dialog,
   Button,
@@ -26,16 +31,51 @@ import { Role, IssueType, DataType, WorkflowAction } from '../../../common/types
 import { ViewContext } from '../models';
 import { Query } from 'react-apollo';
 import { fragments, ErrorDisplay } from '../graphql';
-import gql from 'graphql-tag';
-
-// import './IssueDetailsView.scss';
-
 import ArrowUpIcon from '../svg-compiled/icons/IcArrowUpward';
 import { IssueTypeDisplay } from './details';
 import { IssueNavigator } from './details/IssueNavigator';
 import { Spacer } from '../layout';
-import styled from 'styled-components';
 import { idToIndex } from '../lib/idToIndex';
+import gql from 'graphql-tag';
+import styled from 'styled-components';
+
+// import './IssueDetailsView.scss';
+
+const IssueDetailsHeader = styled.header`
+  && {
+    padding-left: 6px;
+  }
+  > * {
+    margin-right: .5rem;
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+`;
+
+const IssueLinkGroup = styled.div`
+  grid-column: controls;
+  justify-self: stretch;
+  margin: 0;
+  min-width: 0;
+
+  > ul {
+    padding: 0 8px;
+    > li {
+      margin-bottom: 6px;
+    }
+  }
+`;
+
+const IssueDescription = styled.div`
+  > p:first-child {
+    margin-top: 0;
+  }
+  > p:last-child {
+    margin-bottom: 0;
+  }
+`;
 
 // Global options for marked.
 marked.setOptions({
@@ -77,32 +117,24 @@ interface Props extends RouteComponentProps<{ project: string; id: string }> {
 export class IssueDetails extends React.Component<Props> {
   @observable private showDelete = false;
   @observable private busy = false;
-  // private issueLinks: ObservableIssueLinks;
   // private comments: ObservableComments;
   // private changes: ObservableChanges;
-  // private issueId: string;
 
   public componentWillMount() {
-    // this.issueId = this.props.issue.id;
-    // this.issueLinks = new ObservableIssueLinks(this.issueId);
     // this.comments = new ObservableComments(this.issueId);
     // this.changes = new ObservableChanges(this.issueId);
   }
 
   public componentWillReceiveProps(nextProps: Props) {
     // if (nextProps.issue.id !== this.issueId) {
-      // this.issueLinks.release();
       // this.comments.release();
       // this.changes.release();
-      // this.issueId = nextProps.issue.id;
-      // this.issueLinks = new ObservableIssueLinks(this.issueId);
       // this.comments = new ObservableComments(this.issueId);
       // this.changes = new ObservableChanges(this.issueId);
     // }
   }
 
   public componentWillUnmount() {
-    // this.issueLinks.release();
     // this.comments.release();
     // this.changes.release();
   }
@@ -135,7 +167,7 @@ export class IssueDetails extends React.Component<Props> {
     const { account, project } = context;
     const backLink = (location.state && location.state.back) || { pathname: './issues' };
     return (
-      <header>
+      <IssueDetailsHeader>
         <NavContainer to={backLink} exact={true}>
           <Button title="Back to issue list" className="issue-up">
             <ArrowUpIcon />
@@ -165,7 +197,7 @@ export class IssueDetails extends React.Component<Props> {
           </Button>
         </ButtonGroup>
         <IssueNavigator issue={issue} />
-      </header>
+      </IssueDetailsHeader>
     );
   }
 
@@ -240,19 +272,16 @@ export class IssueDetails extends React.Component<Props> {
                   <th className="header">Attachments:</th>
                   <td><ShowAttachments attachments={issue.attachments} /></td>
                 </tr>
+              )}*/}
+              {issue.links.length > 0 && (
+                <>
+                  <FormLabel>Linked Issues:</FormLabel>
+                  <IssueLinkGroup>
+                    <IssueLinks links={this.issueLinkMap} />
+                  </IssueLinkGroup>
+                </>
               )}
-              {this.issueLinks.size > 0 && <tr>
-                <th className="header linked">Linked Issues:</th>
-                <td>
-                  <IssueLinks
-                      account={account}
-                      project={project}
-                      issues={this.props.issues}
-                      links={this.issueLinks.linkMap}
-                  />
-                </td>
-              </tr>}
-              {(this.comments.length > 0 || this.changes.length > 0) && <tr>
+              {/*{(this.comments.length > 0 || this.changes.length > 0) && <tr>
                 <th className="header history">Issue History:</th>
                 <td>
                   <IssueChanges
@@ -284,7 +313,12 @@ export class IssueDetails extends React.Component<Props> {
   }
 
   private renderDescription(description: string) {
-    return <td className="descr" dangerouslySetInnerHTML={{ __html: marked(description) }} />;
+    return (
+      <IssueDescription
+          className="descr"
+          dangerouslySetInnerHTML={{ __html: marked.parse(description) }}
+      />
+    );
   }
 
   private renderTemplateFields(issueType: IssueType, custom: CustomField[]) {
@@ -378,6 +412,15 @@ export class IssueDetails extends React.Component<Props> {
     // return updateIssue(issue.id, updates).then(() => {
     //   // this.props.data.refetch();
     // });
+  }
+
+  @computed
+  private get issueLinkMap(): Map<string, Relation> {
+    const issueLinkMap = new Map<string, Relation>();
+    for (const link of this.props.issue.links) {
+      issueLinkMap.set(link.to, link.relation);
+    }
+    return issueLinkMap;
   }
 
   @computed

@@ -170,7 +170,6 @@ const RELATIONS: Relation[] = [
 
 interface Props extends RouteComponentProps<{}> {
   context: ViewContext;
-  // issues: IssueListQuery;
   // milestones: MilestoneListQuery;
   // milestones?: any;
   issue?: Issue;
