@@ -25,6 +25,7 @@ export const resolverMap = {
     ...templates.mutations,
   },
   Subscription: {
+    ...issues.subscriptions,
     ...labels.subscriptions,
     ...projects.subscriptions,
     ...projectPrefs.subscriptions,

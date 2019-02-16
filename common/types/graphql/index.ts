@@ -557,6 +557,8 @@ export interface Subscription {
   labelChanged: LabelChange;
   /** Watch for changes to project prefs (current user). */
   prefsChanged: ProjectPrefsChange;
+  /** Watch issues for a given project. */
+  issuesChanged: IssueChange;
 }
 
 export interface ProjectChange {
@@ -575,6 +577,12 @@ export interface ProjectPrefsChange {
   action: ChangeAction;
 
   prefs: ProjectPrefs;
+}
+
+export interface IssueChange {
+  action: ChangeAction;
+
+  issue: Issue;
 }
 
 /** Defines a relationship between one issue and another, includes both ends of the link. */
@@ -765,5 +773,8 @@ export interface LabelChangedSubscriptionArgs {
   project: string;
 }
 export interface PrefsChangedSubscriptionArgs {
+  project: string;
+}
+export interface IssuesChangedSubscriptionArgs {
   project: string;
 }

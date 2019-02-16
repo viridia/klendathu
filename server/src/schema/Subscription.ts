@@ -24,6 +24,11 @@ type ProjectPrefsChange {
   prefs: ProjectPrefs!
 }
 
+type IssueChange {
+  action: ChangeAction!
+  issue: Issue!
+}
+
 type Subscription {
   "Signal account details have changed. Not restricted; all users can see public account details."
   accountChanged: PublicAccount!
@@ -42,5 +47,8 @@ type Subscription {
 
   "Watch for changes to project prefs (current user)."
   prefsChanged(project: ID!): ProjectPrefsChange!
+
+  "Watch issues for a given project."
+  issuesChanged(project: ID!): IssueChange!
 }
 `;

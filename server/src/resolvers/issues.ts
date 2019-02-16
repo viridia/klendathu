@@ -17,6 +17,8 @@ import {
   DeleteIssueMutationArgs,
   CustomFieldInput,
   Predicate,
+  ChangeAction,
+  IssuesChangedSubscriptionArgs,
 } from '../../../common/types/graphql';
 import { UserInputError, AuthenticationError } from 'apollo-server-core';
 import { Errors, Role, inverseRelations } from '../../../common/types/json';
@@ -24,6 +26,15 @@ import { getProjectAndRole } from '../db/role';
 import { logger } from '../logger';
 import { ObjectID } from 'mongodb';
 import { escapeRegExp } from '../db/helpers';
+import { withFilter } from 'graphql-subscriptions';
+import { pubsub } from './pubsub';
+
+const ISSUE_CHANGE = 'issue-change';
+
+interface IssueRecordChange {
+  issue: IssueRecord;
+  action: ChangeAction;
+}
 
 interface PaginatedIssueRecords {
   count: number;
@@ -367,6 +378,10 @@ export const mutations = {
       }
     }
 
+    pubsub.publish(ISSUE_CHANGE, {
+      action: ChangeAction.Added,
+      issue: row,
+    });
     return row;
   },
 
@@ -429,6 +444,23 @@ export const mutations = {
     }
 
     return null;
+  },
+};
+
+export const subscriptions = {
+  issuesChanged: {
+    subscribe: withFilter(
+      () => pubsub.asyncIterator([ISSUE_CHANGE]),
+      (
+        { issue }: IssueRecordChange,
+        { project }: IssuesChangedSubscriptionArgs,
+        context: Context) => {
+        return context.user && issue.project.equals(project);
+      }
+    ),
+    resolve: (payload: IssueRecordChange, args: any, context: Context) => {
+      return payload;
+    },
   },
 };
 

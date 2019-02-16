@@ -3,7 +3,7 @@ import {
   PublicAccount,
   ProjectPrefs,
   ProjectContext,
-  ProjectPrefsChange,
+  Subscription,
 } from '../../../common/types/graphql';
 import {
   Template,
@@ -48,9 +48,7 @@ const PrefsChangeSubscription = gql`
   ${fragments.projectPrefs}
 `;
 
-interface PrefsChangeResult {
-  prefsChanged: ProjectPrefsChange;
-}
+type PrefsChangeResult = Pick<Subscription, 'prefsChanged'>;
 
 /** A class that maintains references to all of the project-global objects used in the
     UI, including the project, template, prefs, labels and so on.

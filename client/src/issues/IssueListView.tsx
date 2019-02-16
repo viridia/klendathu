@@ -15,8 +15,10 @@ interface Props extends RouteComponentProps<{}> {
  */
 export function IssueListView(props: Props) {
   const { context } = props;
-  context.issues.setQueryArgs(
-    context.project,
-    qs.parse(location.search, { ignoreQueryPrefix: true }));
+  React.useEffect(() => {
+    context.issues.setQueryArgs(
+      context.project,
+      qs.parse(location.search, { ignoreQueryPrefix: true }));
+  });
   return <IssueList {...props} />;
 }

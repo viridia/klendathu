@@ -1,34 +1,20 @@
 import { fragments } from '../graphql';
-import { Issue, Project, IssueQueryParams } from '../../../common/types/graphql';
+import {
+  Issue,
+  Project,
+  IssueQueryParams,
+  Subscription,
+  IssuesChangedSubscriptionArgs,
+  Query,
+  ChangeAction,
+} from '../../../common/types/graphql';
 import { observable, IReactionDisposer, autorun, action, computed } from 'mobx';
 import { client } from '../graphql/client';
 import bind from 'bind-decorator';
 import gql from 'graphql-tag';
 import { GraphQLError } from 'graphql';
-
-function coerceToString(param: string | string[]): string {
-  if (!param) {
-    return undefined;
-  } else if (typeof param === 'string') {
-    return param;
-  } else if (Array.isArray(param)) {
-    return param[0];
-  } else {
-    return undefined;
-  }
-}
-
-function coerceToStringArray(param: string | string[]): string[] {
-  if (!param) {
-    return undefined;
-  } else if (typeof param === 'string') {
-    return [param];
-  } else if (Array.isArray(param)) {
-    return param;
-  } else {
-    return undefined;
-  }
-}
+import { coerceToString, coerceToStringArray } from '../lib/coerce';
+import { ObservableQuery, OperationVariables, ApolloQueryResult } from 'apollo-client';
 
 const IssuesQuery = gql`
   query IssuesQuery($query: IssueQueryParams!, $pagination: Pagination) {
@@ -37,12 +23,18 @@ const IssuesQuery = gql`
   ${fragments.issue}
 `;
 
-interface IssuesQueryResult {
-  issues: {
-    issues: Issue[];
-  };
-}
+const IssuesSubscription = gql`
+  subscription IssuesQuery($project: ID!) {
+    issuesChanged(project: $project) {
+      action
+      issue { ...IssueFields }
+    }
+  }
+  ${fragments.issue}
+`;
 
+type IssuesQueryResult = Pick<Query, 'issues'>;
+type IssueChangeResult = Pick<Subscription, 'issuesChanged'>;
 interface QueryParams { [param: string]: string | string[]; }
 
 /** Reactive model class that represents a query over the issue table. */
@@ -56,17 +48,26 @@ export class IssueQueryModel {
 
   @observable private projectId: string = null;
   private disposer: IReactionDisposer;
+  private sDisposer: IReactionDisposer;
+  private queryResult: ObservableQuery<IssuesQueryResult, OperationVariables>;
+  private querySubscription: any;
   private subscription: any;
 
   constructor() {
     this.disposer = autorun(this.runQuery);
+    this.sDisposer = autorun(this.runSubscription);
   }
 
   @action.bound
   public release() {
     this.disposer();
+    this.sDisposer();
+    if (this.querySubscription) {
+      this.querySubscription.unsubscribe();
+    }
     if (this.subscription) {
-      this.subscription.unsubscribe();
+      this.subscription();
+      this.subscription = null;
     }
     // if (this.unsubscribeHandle) {
     //   this.unsubscribeHandle();
@@ -95,56 +96,65 @@ export class IssueQueryModel {
 
   @bind
   private runQuery() {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-      this.subscription = null;
-    }
-
-    // if (this.unsubscribeHandle) {
-    //   this.unsubscribeHandle();
-    //   this.unsubscribeHandle = null;
-    // }
-
     if (!this.projectId) {
+      if (this.querySubscription) {
+        this.querySubscription.unsubscribe();
+        this.querySubscription = null;
+        this.queryResult = null;
+      }
       this.list = [];
       return;
     }
 
-    const queryResult = client.watchQuery<IssuesQueryResult>({
+    if (this.queryResult) {
+      this.queryResult.refetch({
+        query: this.issueQuery,
+      });
+      return;
+    }
+
+    this.queryResult = client.watchQuery<IssuesQueryResult>({
       query: IssuesQuery,
       variables: {
         query: this.issueQuery,
       }
     });
 
-    this.subscription = queryResult.subscribe(result => {
+    this.querySubscription = this.queryResult.subscribe(result => {
       const { data, loading, errors } = result;
       this.loading = loading;
       this.errors = errors;
       if (!this.loading && !this.errors) {
-        // if (this.unsubscribeHandle) {
-        //   this.unsubscribeHandle();
-        //   this.unsubscribeHandle = null;
-        // }
-
-        // this.unsubscribeHandle = queryResult.subscribeToMore<PrefsChangeResult>({
-        //   document: PrefsChangeSubscription,
-        //   variables: {
-        //     project: data.projectContext.project.id,
-        //   } as any,
-        //   updateQuery: (prev, { subscriptionData }) => {
-        //     return {
-        //       projectContext: {
-        //         ...prev.projectContext,
-        //         prefs: subscriptionData.data.prefsChanged.prefs,
-        //       }
-        //     };
-        //   },
-        // });
-
         this.update(data.issues.issues);
       }
     });
+  }
+
+  @bind
+  private runSubscription() {
+    if (this.subscription) {
+      this.subscription();
+      this.subscription = null;
+    }
+
+    if (this.projectId) {
+      this.subscription = client
+        .subscribe<ApolloQueryResult<IssueChangeResult>, IssuesChangedSubscriptionArgs>({
+          query: IssuesSubscription,
+          variables: {
+            project: this.projectId,
+          },
+      }).subscribe(({ data, errors }) => {
+        if (errors) {
+          this.errors = errors;
+        } else {
+          // console.log(data);
+          if (this.querySubscription) {
+            this.queryResult.refetch();
+          }
+        }
+      });
+    }
   }
 
   @action
