@@ -3,9 +3,10 @@ import { RouteComponentProps } from 'react-router-dom';
 import { IssueCompose } from './IssueCompose';
 import { toast } from 'react-toastify';
 import { IssueInput, Issue } from '../../../common/types/graphql';
-import { ViewContext } from '../models';
+import { ViewContext, ProjectEnv } from '../models';
 import { fragments } from '../graphql';
 import { client, decodeErrorAsException } from '../graphql/client';
+import { idToIndex } from '../lib/idToIndex';
 import gql from 'graphql-tag';
 
 const NewIssueMutation = gql`
@@ -20,8 +21,9 @@ interface Props extends RouteComponentProps<{}> {
 }
 
 export function IssueCreateView(props: Props) {
+  const env = React.useContext(ProjectEnv);
   const onSave = (input: IssueInput): Promise<Issue> => {
-    const { project } = props.context;
+    const { project } = env;
     return client.mutate<{ newIssue: Issue }>({
       mutation: NewIssueMutation,
       variables: { project: project.id, input }
@@ -32,7 +34,7 @@ export function IssueCreateView(props: Props) {
         // TODO: An error UI.
         decodeErrorAsException(errors);
       } else {
-        toast.success(`Issue #${data.newIssue.id.split('.')[1]} created.`);
+        toast.success(`Issue #${idToIndex(data.newIssue.id)} created.`);
         return data.newIssue;
       }
     });

@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { Project, IssueGroup } from '../../models';
+import { IssueGroup } from '../../models';
 import { AccountName } from '../controls';
+import { Project } from '../../../common/types/graphql';
 
 interface Props {
   project: Project;

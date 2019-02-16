@@ -1,10 +1,38 @@
 # TODO
 
+* Error boundaries
+* Get rid of explicit passing of ViewContext where possible.
 * compiled template stuff.
 * Make user links local to the view
 * Redis
 * Batching
 * Hot reloading with MobX?
+
+# Major pieces
+
+* Issue Compose
+  * Linked issues
+  * Attachments
+  * Milestones
+* Issue Details
+* Issue Delete
+* Issue Edit
+* Issue Query
+  * By Owner
+* Label Delete
+* Filters
+* Mass Edit
+* Progress View
+* Changes View
+* Email Verification
+* Projects list in nav
+* Project Settings
+  * Columns
+  * Members
+  * Milestones
+  * Templates
+  * Workflow
+* Client unit tests
 
 # Components
 
@@ -13,7 +41,6 @@
 * Table
   * SortOrder
 * Dropdown (non-button)
-* NavContainer (query param support)
 * Spinner
 * Switch
 * Loading indicator
@@ -27,7 +54,6 @@ Issue List State:
 * Template
 * Sort Order
 * Pagination
-* Selection
 * Whether or not we're fetching sub-issues and displaying a tree.
 
 * I don't want to build the column list every time we do a refresh.

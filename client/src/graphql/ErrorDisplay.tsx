@@ -93,7 +93,11 @@ export function ErrorListDisplay({ errors }: { errors: ReadonlyArray<GraphQLErro
 
 export function ErrorDisplay({ error }: { error: ApolloError }) {
   // TODO: networkError
-  return (
-    <ErrorListDisplay errors={error.graphQLErrors} />
-  );
+  if (error.graphQLErrors) {
+    return (
+      <ErrorListDisplay errors={error.graphQLErrors} />
+    );
+  } else {
+    console.error('not handled by error display:', error);
+  }
 }

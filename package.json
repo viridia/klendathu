@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "build-client": "parcel build client/src/index.html",
-    "build-icons": "cd client/src && npx @svgr/cli --ext tsx --out-dir=svg-compiled icons/*.svg",
     "client": "parcel client/src/index.html",
     "gallery": "parcel client/src/gallery.html",
+    "gen-icons": "cd client/src && npx @svgr/cli --ext tsx --out-dir=svg-compiled icons/*.svg",
     "gen-types": "gql-gen --config codegen.yml",
     "lint-client": "tslint --project client --exclude **/svg-compiled/icons/*.tsx",
     "lint-server": "tslint --project server",
@@ -54,6 +54,7 @@
     "marked": "^0.6.0",
     "mobx": "^5.9.0",
     "mobx-react": "^5.4.3",
+    "mobx-react-lite": "^1.0.1",
     "mongodb": "^3.1.12",
     "node-fetch": "^2.3.0",
     "nodemon": "^1.18.9",

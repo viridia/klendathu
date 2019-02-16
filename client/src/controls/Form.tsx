@@ -82,6 +82,10 @@ export const TextInput = styled(TextInputImpl)`
   &.error {
     box-shadow: inset 0 0 0 2px #ee000033;
   }
+
+  &::placeholder {
+    font-size: 85%;
+  }
 `;
 
 const TextAreaImpl = ({
@@ -130,6 +134,10 @@ export const TextArea = styled(TextAreaImpl)`
 
   &.error {
     box-shadow: inset 0 0 0 2px #ee000033;
+  }
+
+  &::placeholder {
+    font-size: 85%;
   }
 `;
 

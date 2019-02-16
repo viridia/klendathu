@@ -7,6 +7,7 @@ import { FilterTerm } from './FilterTerm';
 import { FieldType, DataType } from '../../../common/types/json';
 import { Project, Predicate, PublicAccount } from '../../../common/types/graphql';
 import { ObservableSet } from '../lib/ObservableSet';
+import { idToIndex } from '../lib/idToIndex';
 
 interface Query {
   [key: string]: string | string[];
@@ -174,7 +175,7 @@ export const descriptors: { [type: string]: FilterTermDescriptor } = {
     buildQuery: (query, term) => {
       if (term.value) {
         const labels: string[] = term.value;
-        query.labels = labels.map(l => l.split('/')[2]);
+        query.labels = labels.map(idToIndex);
       }
     },
     parseQuery(query, term, project) {

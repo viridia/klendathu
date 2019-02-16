@@ -1,3 +1,4 @@
+import * as React from 'react';
 import {
   Project,
   PublicAccount,
@@ -19,6 +20,8 @@ import { client } from '../graphql/client';
 import bind from 'bind-decorator';
 import { GraphQLError } from 'graphql';
 import { IssueQueryModel } from './IssueQueryModel';
+
+export const ProjectEnv = React.createContext<ViewContext>(null);
 
 const ProjectContextQuery = gql`
   query ProjectContextQuery($owner: String!, $name: String!) {

@@ -6,7 +6,6 @@ import {
   Subscription,
   IssuesChangedSubscriptionArgs,
   Query,
-  ChangeAction,
 } from '../../../common/types/graphql';
 import { observable, IReactionDisposer, autorun, action, computed } from 'mobx';
 import { client } from '../graphql/client';
@@ -15,6 +14,7 @@ import gql from 'graphql-tag';
 import { GraphQLError } from 'graphql';
 import { coerceToString, coerceToStringArray } from '../lib/coerce';
 import { ObservableQuery, OperationVariables, ApolloQueryResult } from 'apollo-client';
+import { idToIndex } from '../lib/idToIndex';
 
 const IssuesQuery = gql`
   query IssuesQuery($query: IssueQueryParams!, $pagination: Pagination) {
@@ -94,6 +94,17 @@ export class IssueQueryModel {
     }
   }
 
+  public adjacentIssueIds(id: string): [string, string] {
+    const index = this.list.findIndex(issue => issue.id === id);
+    if (index < 0) {
+      return [null, null];
+    }
+    return [
+      index > 0 ? idToIndex(this.list[index - 1].id) : null,
+      index < this.list.length - 1 ? idToIndex(this.list[index + 1].id) : null,
+    ];
+  }
+
   @bind
   private runQuery() {
     if (!this.projectId) {
@@ -144,7 +155,7 @@ export class IssueQueryModel {
           variables: {
             project: this.projectId,
           },
-      }).subscribe(({ data, errors }) => {
+      }).subscribe(({ errors }) => {
         if (errors) {
           this.errors = errors;
         } else {

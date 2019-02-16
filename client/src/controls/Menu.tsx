@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { styled } from '../style';
 import bind from 'bind-decorator';
+import classNames from 'classnames';
 
 /** Drop-down menu class. */
 export const Menu = styled.div.attrs(() => ({
@@ -14,22 +15,27 @@ export const Menu = styled.div.attrs(() => ({
   flex-direction: column;
   margin: 4px 0;
   min-width: 150px;
+  overflow-x: hidden;
   position: absolute;
   padding: 4px;
   z-index: 2;
 `;
 
 export interface MenuItemProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  active?: boolean;
+  eventKey?: string;
   onClick?: (e: any) => void;
 }
 
 export class MenuItemImpl extends React.Component<MenuItemProps> {
   public render() {
-    const { onClick, ...props } = this.props;
+    const { onClick, active, eventKey, className, ...props } = this.props;
     return (
       <button
-        role="menuitem"
         {...props}
+        role="menuitem"
+        data-event-key={eventKey}
+        className={classNames(className, { active })}
         onClick={this.onClick}
         onKeyDown={this.onKeyDown}
       />

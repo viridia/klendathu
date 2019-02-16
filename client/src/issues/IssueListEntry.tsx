@@ -9,6 +9,7 @@ import { Role } from '../../../common/types/json';
 import { CheckBox, LabelName } from '../controls';
 import { styled } from '../style';
 import classNames from 'classnames';
+import { idToIndex } from '../lib/idToIndex';
 
 const SelectedCell = styled.td`
   width: 2rem;
@@ -54,7 +55,7 @@ export class IssueListEntry extends React.Component<Props> {
   public render() {
     const { context, issue, columnRenderers, selection } = this.props;
     const { account, project, prefs } = context;
-    const index = issue.id.split('.', 2)[1];
+    const index = idToIndex(issue.id);
     const linkTarget = {
       pathname: `/${account.accountName}/${project.name}/${index}`,
       state: { back: this.props.location },

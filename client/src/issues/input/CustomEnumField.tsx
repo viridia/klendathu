@@ -1,5 +1,4 @@
 import * as React from 'react';
-import classNames from 'classnames';
 import { MenuItem, DropdownButton } from '../../controls';
 import { FieldType } from '../../../../common/types/json';
 
@@ -16,7 +15,7 @@ export function CustomEnumField(props: Props) {
       {field.values.map(v =>
         <MenuItem
             key={v}
-            className={classNames({ active: v === value })}
+            active={v === value}
             onClick={() => onChange(field.id, v)}
         >
           {v}

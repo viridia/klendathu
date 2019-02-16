@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import { ViewContext } from '../models';
+import { ViewContext, ProjectEnv } from '../models';
 import { ErrorListDisplay } from '../graphql';
 import { RouteComponentProps } from 'react-router';
 import { LoadingIndicator } from '../controls';
 
 interface Props extends RouteComponentProps<{ owner: string, name: string }> {
-  viewContext: ViewContext;
+  env: ViewContext;
   children: () => JSX.Element;
 }
 
@@ -14,31 +14,33 @@ interface Props extends RouteComponentProps<{ owner: string, name: string }> {
 export class ViewContextProvider extends React.Component<Props> {
   public componentDidMount() {
     const { owner, name } = this.props.match.params;
-    const { viewContext } = this.props;
-    viewContext.setParams(owner, name);
+    const { env } = this.props;
+    env.setParams(owner, name);
   }
 
   public componentDidUpdate() {
     const { owner, name } = this.props.match.params;
-    const { viewContext } = this.props;
-    viewContext.setParams(owner, name);
+    const { env } = this.props;
+    env.setParams(owner, name);
   }
 
   public componentWillUnmount() {
-    const { viewContext } = this.props;
-    viewContext.reset();
+    const { env } = this.props;
+    env.reset();
   }
 
   public render() {
-    const { viewContext } = this.props;
-    if (viewContext.loading) {
+    const { env } = this.props;
+    if (env.loading) {
       return <LoadingIndicator>Loading&hellip;</LoadingIndicator>;
-    } else if (viewContext.errors) {
-      return <ErrorListDisplay errors={viewContext.errors} />;
-    } else if (!viewContext.project) {
+    } else if (env.errors) {
+      return <ErrorListDisplay errors={env.errors} />;
+    } else if (!env.project) {
       return null;
     }
     const { children } = this.props;
-    return children();
+    return (
+      <ProjectEnv.Provider value={env}>{children()}</ProjectEnv.Provider>
+    );
   }
 }

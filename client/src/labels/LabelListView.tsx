@@ -22,6 +22,7 @@ import { styled } from '../style';
 import { client } from '../graphql/client';
 import { fragments } from '../graphql';
 import { ViewContext } from '../models';
+import { idToIndex } from '../lib/idToIndex';
 
 const LabelListQuery = gql`
   query LabelListQuery($project: ID!) {
@@ -196,7 +197,7 @@ export class LabelListView extends React.Component<Props> {
 
   private renderLabel(label: Label) {
     const { project, visibleLabels } = this.props.context;
-    const id = label.id.split('.', 2)[1];
+    const id = idToIndex(label.id);
     return (
       <tr key={label.id}>
         <td className="label-id center">{id}</td>

@@ -75,6 +75,7 @@ export interface DropdownButtonProps {
   kind?: ButtonStyle;
   children: React.ReactNode;
   title: React.ReactNode;
+  onSelect?: (key: string) => any;
 }
 
 @observer
@@ -101,7 +102,11 @@ export class DropdownButton extends React.Component<DropdownButtonProps> {
           <DropdownContainer {...props}>
             <OverlayDropdown.Toggle>
               {({ toggle, show, props: buttonProps }) => (
-                <Button kind={kind} {...buttonProps as any} onClick={toggle}>
+                <Button
+                    kind={kind}
+                    {...buttonProps as any}
+                    onClick={(e: any) => { e.preventDefault(); toggle(e); }}
+                >
                   {title}&nbsp;&#9662;
                 </Button>
               )}
@@ -130,7 +135,24 @@ export class DropdownButton extends React.Component<DropdownButtonProps> {
   }
 
   @action.bound
-  private onMenuClick() {
+  private onMenuClick(e: any) {
+    const { onSelect } = this.props;
     this.show = false;
+    // TODO: Perhaps this logic should go in the Menu component.
+    if (onSelect) {
+      let target: HTMLElement = e.target;
+      while (target) {
+        const role = target.getAttribute('role');
+        if (role === 'menuitem') {
+          const eventKey = target.dataset.eventKey;
+          if (eventKey) {
+            e.preventDefault();
+            onSelect(eventKey);
+          }
+          break;
+        }
+        target = target.parentElement;
+      }
+    }
   }
 }

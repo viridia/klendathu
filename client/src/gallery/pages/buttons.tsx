@@ -42,10 +42,10 @@ function Buttons() {
       </DisplayGroup>
       <header>Small Buttons</header>
       <DisplayGroup className="row">
-        <Button small={true}>Default</Button>
-        <Button kind="primary" small={true}>Primary</Button>
-        <Button kind="action" small={true}>Action</Button>
-        <Button kind="secondary" small={true}>Secondary</Button>
+        <Button size="small">Default</Button>
+        <Button kind="primary" size="small">Primary</Button>
+        <Button kind="action" size="small">Action</Button>
+        <Button kind="secondary" size="small">Secondary</Button>
       </DisplayGroup>
       <header>Buttons With Icons</header>
       <DisplayGroup className="row">

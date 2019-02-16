@@ -16,6 +16,7 @@ import { IssueCreateView } from '../issues/IssueCreateView';
 import { LabelListView } from '../labels/LabelListView';
 import { ViewContextProvider } from './ViewContextProvider';
 import { IssueEditView } from '../issues/IssueEditView';
+import { IssueDetailsView } from '../issues/IssueDetailsView';
 
 const MainPageLayout = styled(Page)`
   display: grid;
@@ -84,7 +85,7 @@ export class MainPage extends React.Component<RouteComponentProps<{}>> {
             <Route
               path="/:owner/:name"
               render={
-                p => <ViewContextProvider {...p} viewContext={this.viewContext}>
+                p => <ViewContextProvider {...p} env={this.viewContext}>
                   {() => (
                     <Switch>
                       <Route
@@ -95,10 +96,10 @@ export class MainPage extends React.Component<RouteComponentProps<{}>> {
                         path="/:owner/:name/edit/:id"
                         render={props => <IssueEditView {...props} context={this.viewContext} />}
                       />
-                      {/* <Route
+                      <Route
                         path="/:owner/:name/:id(\d+)"
-                        render={props => (<IssueDetailsView {...props} {...models} />)}
-                      /> */}
+                        render={props => <IssueDetailsView {...props} context={this.viewContext} />}
+                      />
                       <Route
                         path="/:owner/:name/issues"
                         exact={true}

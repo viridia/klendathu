@@ -4,9 +4,10 @@ import { styled } from '../style';
 import { darken, saturate } from 'polished';
 
 export type ButtonStyle = 'action' | 'primary' | 'secondary' | 'default';
+export type ButtonSize = 'small' | 'mini';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  small?: boolean;
+  size?: ButtonSize;
   kind?: ButtonStyle;
   type?: string;
 }
@@ -14,9 +15,9 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 // This needs to be a class so it can accept refs.
 class ButtonImpl extends React.Component<ButtonProps> {
   public render() {
-    const { children, className, kind, small, ...attrs } = this.props;
+    const { children, className, kind, size, ...attrs } = this.props;
     return (
-      <button className={classNames(className, kind, { small })} {...attrs}>
+      <button className={classNames(className, kind, size)} {...attrs}>
         {children}
       </button>
     );
@@ -34,8 +35,9 @@ export const Button = styled(ButtonImpl)`
   display: inline-flex;
   font-size: 1rem;
   padding: 0 12px;
-  height: 32px;
+  height: 34px;
   outline: none;
+  white-space: nowrap;
 
   &[disabled] {
     opacity: 0.7;
@@ -60,10 +62,19 @@ export const Button = styled(ButtonImpl)`
     font-size: 90%;
   }
 
+  &.mini {
+    height: 20px;
+    font-size: 85%;
+  }
+
   > svg {
     margin-right: 4px;
     margin-left: -5px;
     fill: ${props => props.theme.buttonColors[props.kind].text};
+
+    &:only-child {
+      margin: 0;
+    }
   }
 `;
 

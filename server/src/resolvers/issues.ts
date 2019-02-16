@@ -130,12 +130,13 @@ export const queries = {
 
     // Search by token
     if (query.search) {
-    //   const re = `(?i)\\b${escapeRegExp(toScalar(args.search.toString()))}`;
-    //   filters.push((r as any).or(
-    //     (r.row('summary') as any).match(re),
-    //     (r.row('description') as any).match(re),
-    //     // TODO: other fields - comments, etc.
-    //   ));
+      // TODO: other fields - comments, etc.
+      const words = query.search.split(/\s+/);
+      const matchers = words.map(word => `(?i)\\b${escapeRegExp(word)}`);
+      filter.$and = matchers.map(m => ({ $or: [
+        { summary: { $regex: m } },
+        { description: { $regex: m } },
+      ] }));
     }
 
     // By Type

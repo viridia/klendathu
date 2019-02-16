@@ -19,6 +19,7 @@ export { Menu, MenuItem, MenuDivider } from './Menu';
 export { NavContainer } from './NavContainer';
 export { NavLink } from './NavLink';
 export { PhotoSelect } from './PhotoSelect';
+export { RelationName, RELATION_NAMES } from './RelationName';
 export { QueryLink } from './QueryLink';
 export { RoleName } from './RoleName';
 export { humanAge, RelativeDate } from './RelativeDate';

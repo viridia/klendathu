@@ -1,28 +1,17 @@
 import * as React from 'react';
 // import {
-//   Attachment,
 //   Errors,
 //   IssueType,
-//   Relation,
-//   Role,
 //   Workflow,
 //   Milestone,
 // } from 'klendathu-json-types';
 // import {
-//   accounts,
-//   IssueListQuery,
-//   ObservableIssue,
-//   ObservableIssueLinks,
 //   MilestoneListQuery,
 // } from '../../models';
 // import {
-//   IssueSelector,
 //   MilestoneSelector,
 // } from './input';
-// import { IssueLinks } from './IssueLinks';
-// import { relationNames } from '../common/relationNames';
 // import { displayErrorToast } from '../common/displayErrorToast';
-// import { RequestError } from '../../network';
 // import { getFileInfoList } from '../../network/requests';
 // import { UploadAttachments } from '../files/UploadAttachments';
 // import { toast } from 'react-toastify';
@@ -50,6 +39,10 @@ import {
   FormControlGroup,
   UserAutocomplete,
   ActionLink,
+  RelationName,
+  MenuItem,
+  DropdownButton,
+  RELATION_NAMES,
 } from '../controls';
 import styled from 'styled-components';
 import { TypeSelector, CommentEdit, LabelSelector } from './input';
@@ -60,6 +53,9 @@ import { CustomSuggestField } from './input/CustomSuggestField';
 import { CustomEnumField } from './input/CustomEnumField';
 import { action, computed, IObservableArray, observable, toJS } from 'mobx';
 import { observer } from 'mobx-react';
+import { idToIndex } from '../lib/idToIndex';
+import { IssueLinks } from './input/IssueLinks';
+import { IssueSelector } from './input/IssueSelector';
 
 const IssueComposeLayout = styled(Card)`
   flex: 1;
@@ -146,14 +142,31 @@ const LabelEditGroup = styled.span`
   }
 `;
 
-// const RELATIONS: Relation[] = [
-//   Relation.Blocks,
-//   Relation.BlockedBy,
-//   Relation.Duplicate,
-//   Relation.HasPart,
-//   Relation.PartOf,
-//   Relation.Related,
-// ];
+const IssueLinkGroup = styled.div`
+  grid-column: controls;
+  justify-self: stretch;
+  min-width: 0;
+`;
+
+const IssueAddGroup = styled.div`
+  display: flex;
+  align-items: stretch;
+
+  > .ac-issue {
+    flex: 1;
+    margin: 0 4px;
+    max-width: 30rem;
+  }
+`;
+
+const RELATIONS: Relation[] = [
+  Relation.Blocks,
+  Relation.BlockedBy,
+  Relation.Duplicate,
+  Relation.HasPart,
+  Relation.PartOf,
+  Relation.Related,
+];
 
 interface Props extends RouteComponentProps<{}> {
   context: ViewContext;
@@ -176,8 +189,8 @@ export class IssueCompose extends React.Component<Props> {
   @observable.shallow private cc = [] as IObservableArray<PublicAccount>;
   @observable.shallow private labels = [] as IObservableArray<string>;
   // @observable private milestone: string = '';
-  // @observable private relation: Relation = Relation.BlockedBy;
-  // @observable private issueToLink: Issue = null;
+  @observable private relation: Relation = Relation.BlockedBy;
+  @observable private issueToLink: Issue = null;
   @observable.shallow private issueLinkMap = new Map<string, Relation>();
   @observable private custom = new Map<string, string | number | boolean>();
   @observable private comments = [] as IObservableArray<string>;
@@ -297,49 +310,41 @@ export class IssueCompose extends React.Component<Props> {
                 </tr>)} */}
                 {this.renderTemplateFields()}
                 <FormLabel>Linked Issues:</FormLabel>
-                {/* <tr>
-                  <td>
-                    <IssueLinks
-                        project={this.props.project}
-                        issues={this.props.issues}
-                        links={this.issueLinkMap}
-                        onRemoveLink={this.onRemoveIssueLink}
+                <IssueLinkGroup>
+                  <IssueLinks links={this.issueLinkMap} onRemoveLink={this.onRemoveIssueLink}/>
+                  <IssueAddGroup>
+                    <DropdownButton
+                      id="issue-link-type"
+                      title={RELATION_NAMES[this.relation]}
+                      onSelect={this.onChangeRelation}
+                    >
+                      {RELATIONS.map(r => (
+                        <MenuItem key={r} eventKey={r} active={r === this.relation}>
+                          <RelationName relation={r} />
+                        </MenuItem>))}
+                    </DropdownButton>
+                    <IssueSelector
+                        className="ac-issue"
+                        env={this.props.context}
+                        placeholder="select an issue..."
+                        exclude={issue && issue.id}
+                        selection={this.issueToLink}
+                        onSelectionChange={this.onChangeIssueToLink}
+                        // onEnter={this.onAddIssueLink}
                     />
+                    <Button
+                        // bsSize="small"
+                        onClick={this.onAddIssueLink}
+                        disabled={!this.issueToLink}
+                    >
+                      Add
+                    </Button>
+                  </IssueAddGroup>
+                </IssueLinkGroup>
+                {/* <tr>
                     <div className="linked-group">
-                      <DropdownButton
-                          bsSize="small"
-                          title={relationNames[this.relation]}
-                          id="issue-link-type"
-                          onSelect={this.onChangeRelation}
-                      >
-                        {RELATIONS.map(r => (
-                          <MenuItem
-                              eventKey={r}
-                              key={r}
-                              active={r === this.relation}
-                          >
-                            {relationNames[r]}
-                          </MenuItem>))}
-                      </DropdownButton>
                       <div className="ac-shim">
-                        <IssueSelector
-                            className="ac-issue"
-                            project={this.props.project}
-                            issues={this.props.issues}
-                            placeholder="select an issue..."
-                            exclude={issue && issue.id}
-                            selection={this.issueToLink}
-                            onSelectionChange={this.onChangeIssueToLink}
-                            // onEnter={this.onAddIssueLink}
-                        />
                       </div>
-                      <Button
-                          bsSize="small"
-                          onClick={this.onAddIssueLink}
-                          disabled={!this.issueToLink}
-                      >
-                        Add
-                      </Button>
                     </div>
                   </td>
                 </tr>
@@ -489,15 +494,15 @@ export class IssueCompose extends React.Component<Props> {
   //   this.milestone = milestone ? milestone.id : null;
   // }
 
-  // @action.bound
-  // private onChangeIssueToLink(selection: Issue) {
-  //   this.issueToLink =  selection;
-  // }
+  @action.bound
+  private onChangeIssueToLink(selection: Issue) {
+    this.issueToLink =  selection;
+  }
 
-  // @action.bound
-  // private onChangeRelation(selection: any) {
-  //   this.relation = selection;
-  // }
+  @action.bound
+  private onChangeRelation(selection: any) {
+    this.relation = selection;
+  }
 
   @action.bound
   private onChangeCustomField(id: string, value: any) {
@@ -514,22 +519,22 @@ export class IssueCompose extends React.Component<Props> {
     this.another = e.target.checked;
   }
 
-  // @action.bound
-  // private onAddIssueLink() {
-  //   if (this.relation && this.issueToLink) {
-  //     // Can't link an issue to itself.
-  //     if (this.props.issue && this.issueToLink.id === this.props.issue.id) {
-  //       return;
-  //     }
-  //     this.issueLinkMap.set(this.issueToLink.id, this.relation);
-  //     this.issueToLink = null;
-  //   }
-  // }
+  @action.bound
+  private onAddIssueLink() {
+    if (this.relation && this.issueToLink) {
+      // Can't link an issue to itself.
+      if (this.props.issue && this.issueToLink.id === this.props.issue.id) {
+        return;
+      }
+      this.issueLinkMap.set(this.issueToLink.id, this.relation);
+      this.issueToLink = null;
+    }
+  }
 
-  // @action.bound
-  // private onRemoveIssueLink(id: string) {
-  //   this.issueLinkMap.delete(id);
-  // }
+  @action.bound
+  private onRemoveIssueLink(id: string) {
+    this.issueLinkMap.delete(id);
+  }
 
   @action.bound
   private onAddComment(commentText: string) {
@@ -545,9 +550,9 @@ export class IssueCompose extends React.Component<Props> {
       value: this.custom.has(field.id) ? this.custom.get(field.id) : field.default,
     }));
     const linked: IssueLink[] = [];
-    // this.issueLinkMap.forEach((value, key) => {
-    //   linked.push({ to: key, relation: value });
-    // });
+    this.issueLinkMap.forEach((value, key) => {
+      linked.push({ to: key, relation: value });
+    });
     const input: IssueInput = {
       type: this.type,
       state: this.issueState,
@@ -606,10 +611,10 @@ export class IssueCompose extends React.Component<Props> {
         //   this.attachments.replace(files);
         // });
       }
-    //   const links = new ObservableIssueLinks(issue.id);
-    //   when('links loaded', () => links.loaded, () => {
-    //     (this.issueLinkMap as any).replace(links.linkMap);
-    //   });
+      this.issueLinkMap.clear();
+      for (const link of issue.links) {
+        this.issueLinkMap.set(link.to, link.relation);
+      }
     } else {
       this.resetType();
       this.summary = '';
@@ -619,7 +624,7 @@ export class IssueCompose extends React.Component<Props> {
       this.labels.replace([]);
     //   this.milestone = '';
       this.custom.clear();
-    //   this.issueLinkMap.clear();
+      this.issueLinkMap.clear();
       this.comments.clear();
     //   this.attachments.clear();
       this.public = false;
@@ -671,7 +676,7 @@ export class IssueCompose extends React.Component<Props> {
     const { account, project } = this.props.context;
     const { location, issue } = this.props;
     return (location.state && location.state.back)
-        || (issue && `/${account.accountName}/${project.name}/${issue.id.split('.', 2)[1]}`)
+        || (issue && `/${account.accountName}/${project.name}/${idToIndex(issue.id)}`)
         || `/${account.accountName}/${project.name}/issues`;
   }
 }

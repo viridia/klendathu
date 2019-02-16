@@ -1,15 +1,44 @@
 import * as React from 'react';
-import { IssueListQuery } from '../../../models';
-import { searchIssues } from '../../../network/requests';
-import bind from 'bind-decorator';
-import { Issue, Project } from '../../../../common/types/graphql';
+import { Issue, Query } from '../../../../common/types/graphql';
 import { Autocomplete, SearchCallback } from '../../controls';
+import { ViewContext } from '../../models';
+import { client } from '../../graphql/client';
+import { fragments } from '../../graphql';
+import { styled } from '../../style';
+import { idToIndex } from '../../lib/idToIndex';
+import bind from 'bind-decorator';
+import gql from 'graphql-tag';
+
+type IssuesQueryResult = Pick<Query, 'issues'>;
+
+const IssuesSearchQuery = gql`
+  query IssuesSearchQuery($query: IssueQueryParams!, $pagination: Pagination) {
+    issues(query: $query, pagination: $pagination) { issues { ...IssueFields } }
+  }
+  ${fragments.issue}
+`;
+
+const IssueSuggestion = styled.div`
+  display: inline-block;
+  white-space: nowrap;
+  > .id {
+    font-weight: bold;
+  }
+`;
+
+const IssueAutocomplete = styled(Autocomplete)`
+  min-width: 0;
+
+  > .ac-chip-wrapper {
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+  }
+`;
 
 interface Props {
+  env: ViewContext;
   className?: string;
   placeholder?: string;
-  project: Project;
-  issues: IssueListQuery;
   exclude?: string;
   selection: Issue | Issue[];
   onSelectionChange: (selection: Issue | Issue[] | null) => void;
@@ -20,7 +49,7 @@ export class IssueSelector extends React.Component<Props> {
 
   public render() {
     return (
-      <Autocomplete
+      <IssueAutocomplete
           {...this.props}
           onSearch={this.onSearch}
           onGetValue={this.onGetValue}
@@ -36,11 +65,17 @@ export class IssueSelector extends React.Component<Props> {
     if (token.length < 1) {
       callback([]);
     } else {
-      const { project } = this.props;
+      const { project } = this.props.env;
       this.token = token;
-      searchIssues(project.account, project.name, token, issues => {
-        if (this.token === token) {
-          callback(issues.filter(issue => issue.id !== this.props.exclude));
+      client.query<IssuesQueryResult>({
+        query: IssuesSearchQuery,
+        fetchPolicy: 'network-only',
+        variables: {
+          query: { project: project.id, search: token }
+        }
+      }).then(({ data, loading, errors }) => {
+        if (!loading && data && !errors && token === this.token) {
+          callback(data.issues.issues.slice(0, 5));
         }
       });
     }
@@ -49,10 +84,10 @@ export class IssueSelector extends React.Component<Props> {
   @bind
   private onRenderSuggestion(issue: Issue) {
     return (
-      <span className="issue-ref">
-        <span className="id">#{issue.id.split('/')[2]}: </span>
+      <IssueSuggestion>
+        <span className="id">#{idToIndex(issue.id)}: </span>
         <span className="summary">{issue.summary}</span>
-      </span>
+      </IssueSuggestion>
     );
   }
 
