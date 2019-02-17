@@ -1,17 +1,23 @@
 # TODO
 
-* Error boundaries
-* Get rid of explicit passing of ViewContext where possible.
 * compiled template stuff.
 * Make user links local to the view
 * Redis
 * Batching
-* Hot reloading with MobX?
+* ErrorDisplay
+  * Show network errors
+  * Mini display for errors in menus and chips
+* Better UI for entering linked issues
+* Sort issue searches by relevance
+* Issue Change History
+  * Per Issue
+  * Global
+* Better loading indicator
+* Navbar project list
 
 # Major pieces
 
 * Issue Compose
-  * Linked issues
   * Attachments
   * Milestones
 * Issue Details
@@ -44,6 +50,14 @@
 * Spinner
 * Switch
 * Loading indicator
+
+# Cleanups / Technical Debt
+
+* Error boundaries
+* Get rid of explicit passing of ViewContext where possible.
+* Write Jest tests for all frontend components
+* Hot reloading with MobX?
+* Define Mongo table references in one place.
 
 # Issue Models
 

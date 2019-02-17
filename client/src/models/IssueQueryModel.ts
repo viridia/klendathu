@@ -69,10 +69,6 @@ export class IssueQueryModel {
       this.subscription();
       this.subscription = null;
     }
-    // if (this.unsubscribeHandle) {
-    //   this.unsubscribeHandle();
-    //   this.unsubscribeHandle = null;
-    // }
   }
 
   @action

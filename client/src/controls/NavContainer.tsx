@@ -1,5 +1,4 @@
 import * as React from 'react';
-// import * as qs from 'qs';
 import classNames from 'classnames';
 import { Route } from 'react-router-dom';
 import { History } from 'history';
@@ -18,16 +17,12 @@ interface ChildProps {
   onClick: (e: any) => any;
 }
 
-// interface QueryParams { [name: string]: string | string[]; }
-
 /** Wrapper that turns a button or menu into a react-router NavLink. */
 export class NavContainer extends React.Component<NavContainerProps> {
   public render() {
     const { activeClassName = 'active', children, to, exact, ...props } = this.props;
     const child = React.Children.only(children) as React.ReactElement<ChildProps>;
     const path = typeof to === 'string' ? to : to.pathname;
-    // const query: QueryParams =
-    //     typeof to === 'string' ? {} : qs.parse(to.search, { ignoreQueryPrefix: true });
     return (
       <Route
           path={path}

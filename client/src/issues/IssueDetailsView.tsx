@@ -32,8 +32,7 @@ import { ViewContext } from '../models';
 import { Query } from 'react-apollo';
 import { fragments, ErrorDisplay } from '../graphql';
 import ArrowUpIcon from '../svg-compiled/icons/IcArrowUpward';
-import { IssueTypeDisplay } from './details';
-import { IssueNavigator } from './details/IssueNavigator';
+import { IssueTypeDisplay, IssueNavigator } from './details';
 import { Spacer } from '../layout';
 import { idToIndex } from '../lib/idToIndex';
 import gql from 'graphql-tag';
@@ -97,7 +96,7 @@ const LeftPanel = styled.div`
   grid-template-columns: [labels] auto [controls] 1fr;
   justify-items: flex-start;
   margin: 1rem 0 0 1rem;
-  padding-right: 0.5rem;
+  padding: 0 0.5rem 1rem 0;
   overflow-y: auto;
 
   > .fill {

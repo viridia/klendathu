@@ -39,18 +39,22 @@ import {
   UserAutocomplete,
   ActionLink,
 } from '../controls';
-import styled from 'styled-components';
-import { TypeSelector, CommentEdit, LabelSelector } from './input';
+import {
+  TypeSelector,
+  CommentEdit,
+  LabelSelector,
+  CustomSuggestField,
+  CustomEnumField,
+} from './input';
 import { Role, Workflow, IssueType, DataType } from '../../../common/types/json';
 import { session, ViewContext } from '../models';
 import { StateSelector } from './input/StateSelector';
-import { CustomSuggestField } from './input/CustomSuggestField';
-import { CustomEnumField } from './input/CustomEnumField';
 import { action, computed, IObservableArray, observable, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import { idToIndex } from '../lib/idToIndex';
 import { IssueLinks } from './input/IssueLinks';
 import { IssueLinkEdit } from './input/IssueLinkEdit';
+import styled from 'styled-components';
 
 const IssueComposeLayout = styled(Card)`
   flex: 1;
@@ -79,7 +83,7 @@ const LeftPanel = styled.div`
   grid-template-columns: [labels] auto [controls] 1fr;
   justify-items: flex-start;
   margin: 1rem 0 0 1rem;
-  padding-right: 0.5rem;
+  padding: 0 0.5rem 1rem 0;
   overflow-y: auto;
 
   > .fill {
@@ -193,7 +197,7 @@ export class IssueCompose extends React.Component<Props> {
       <IssueComposeLayout>
         <header>
           {issue
-            ? <span>Edit Issue #{issue.id}</span>
+            ? <span>Edit Issue #{idToIndex(issue.id)}</span>
             : <span>New Issue: {account.accountName}/{project.name}</span>}
         </header>
         <IssueComposeBody
@@ -266,44 +270,37 @@ export class IssueCompose extends React.Component<Props> {
 
             <FormLabel>Milestone:</FormLabel>
 
-                {/* {milestones && (<tr>
-                  <th className="header"><ControlLabel>Milestone:</ControlLabel></th>
-                  <td>
-                    <div className="ac-multi-group">
-                      <MilestoneSelector
-                          className="milestones ac-multi"
-                          project={this.props.project}
-                          milestones={milestones}
-                          selection={this.milestone}
-                          onSelectionChange={this.onChangeMilestone}
-                      />
-                    </div>
-                  </td>
-                </tr>)} */}
-                {this.renderTemplateFields()}
-                <FormLabel>Linked Issues:</FormLabel>
-                <IssueLinkGroup>
-                  <IssueLinks links={this.issueLinkMap} onRemoveLink={this.onRemoveIssueLink}/>
-                  <IssueLinkEdit issue={issue} onLink={this.onAddIssueLink} />
-                </IssueLinkGroup>
-                {/* <tr>
-                    <div className="linked-group">
-                      <div className="ac-shim">
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <th className="header"><ControlLabel>Attach files:</ControlLabel></th>
-                  <td>
-                    <UploadAttachments
-                      attachments={this.attachments}
-                      project={project}
-                    />
-                  </td>
-                </tr>
-                    /> */}
+            {/* {milestones && (<tr>
+              <th className="header"><ControlLabel>Milestone:</ControlLabel></th>
+              <td>
+                <div className="ac-multi-group">
+                  <MilestoneSelector
+                      className="milestones ac-multi"
+                      project={this.props.project}
+                      milestones={milestones}
+                      selection={this.milestone}
+                      onSelectionChange={this.onChangeMilestone}
+                  />
+                </div>
+              </td>
+            </tr>)} */}
+
+            {this.renderTemplateFields()}
+
+            <FormLabel>Linked Issues:</FormLabel>
+            <IssueLinkGroup>
+              <IssueLinks links={this.issueLinkMap} onRemoveLink={this.onRemoveIssueLink}/>
+              <IssueLinkEdit issue={issue} onLink={this.onAddIssueLink} />
+            </IssueLinkGroup>
+
             <FormLabel>Attach Files:</FormLabel>
+            {/*
+                <UploadAttachments
+                  attachments={this.attachments}
+                  project={project}
+                />
+                /> */}
+
             <FormLabel>Comments:</FormLabel>
             <CommentEdit
                 disabled={project.role < Role.REPORTER}
@@ -532,8 +529,8 @@ export class IssueCompose extends React.Component<Props> {
       this.issueState = issue.state;
       this.summary = issue.summary;
       this.description = issue.description;
-    //     this.owner = issue.owner ? accounts.byId(issue.owner) : null;
-    //     this.cc.replace((issue.cc || []).map(cc => accounts.byId(cc)));
+      this.owner = issue.ownerAccount;
+      this.cc.replace(issue.ccAccounts);
       this.labels.replace(issue.labels);
     //     this.milestone = issue.milestone;
       this.custom.clear();

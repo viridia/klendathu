@@ -432,6 +432,8 @@ export interface Issue {
   project: string;
   /** Username of user that originally reported this issue. */
   reporter: string;
+  /** Account of reporter of this issue. */
+  reporterAccount: PublicAccount;
   /** Sort key for sorting by reporters. */
   reporterSort?: Maybe<string>;
   /** One-line summary of the issue. */
@@ -442,8 +444,12 @@ export interface Issue {
   owner?: Maybe<string>;
   /** Sort key for sorting by owners. */
   ownerSort?: Maybe<string>;
+  /** Account of current owner of this issue. */
+  ownerAccount?: Maybe<PublicAccount>;
   /** Users who wish to be informed when this issue is updated. */
   cc: string[];
+  /** Accounts of users who wish to be informed when this issue is updated. */
+  ccAccounts: PublicAccount[];
   /** Labels associated with this issue. */
   labels: string[];
   /** List of custom fields for this issue. */

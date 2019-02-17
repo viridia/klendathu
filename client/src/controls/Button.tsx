@@ -40,7 +40,10 @@ export const Button = styled(ButtonImpl)`
   white-space: nowrap;
 
   &[disabled] {
-    opacity: 0.7;
+    opacity: 0.6;
+    > svg {
+      opacity: 0.3;
+    }
   }
 
   &:focus {

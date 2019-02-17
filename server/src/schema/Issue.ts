@@ -107,6 +107,9 @@ type Issue {
   "Username of user that originally reported this issue."
   reporter: ID!
 
+  "Account of reporter of this issue."
+  reporterAccount: PublicAccount!
+
   "Sort key for sorting by reporters."
   reporterSort: String
 
@@ -122,8 +125,14 @@ type Issue {
   "Sort key for sorting by owners."
   ownerSort: String
 
+  "Account of current owner of this issue."
+  ownerAccount: PublicAccount
+
   "Users who wish to be informed when this issue is updated."
   cc: [ID!]!
+
+  "Accounts of users who wish to be informed when this issue is updated."
+  ccAccounts: [PublicAccount!]!
 
   "Labels associated with this issue."
   labels: [ID!]!

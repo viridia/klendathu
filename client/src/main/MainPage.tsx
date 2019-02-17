@@ -47,17 +47,14 @@ const ContentPaneLayout = styled.section`
 @observer
 export class MainPage extends React.Component<RouteComponentProps<{}>> {
   private viewContext = new ViewContext();
-  // private memberships: Memberships;
 
   public componentWillMount() {
-    // this.memberships = new Memberships();
     if (!session.isLoggedIn) {
       session.resume(this.props.location, this.props.history);
     }
   }
 
   public componentWillUpdate() {
-    // this.memberships.release();
     if (!session.isLoggedIn) {
       session.resume(this.props.location, this.props.history);
     }
