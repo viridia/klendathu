@@ -39,8 +39,6 @@ import { idToIndex } from '../lib/idToIndex';
 import gql from 'graphql-tag';
 import styled from 'styled-components';
 
-// import './IssueDetailsView.scss';
-
 const IssueDetailsHeader = styled.header`
   && {
     padding-left: 6px;
@@ -325,28 +323,22 @@ export class IssueDetails extends React.Component<Props> {
     const result: JSX.Element[] = [];
     if (issueType) {
       for (const field of issueType.fields) {
-      //   const value = custom[field.id];
-      //   if (value) {
-      //     switch (field.type) {
-      //       case DataType.TEXT:
-      //         result.push(
-      //           <tr key={field.id}>
-      //             <th>{field.caption}:</th>
-      //             <td>{value}</td>
-      //           </tr>);
-      //         break;
-      //       case DataType.ENUM:
-      //         result.push(
-      //           <tr key={field.id}>
-      //             <th>{field.caption}:</th>
-      //             <td>{value}</td>
-      //           </tr>);
-      //         break;
-      //       default:
-      //         console.error('invalid field type:', field.type);
-      //         break;
-      //     }
-      //   }
+        const value = this.customFields.get(field.id);
+        if (value) {
+          switch (field.type) {
+            case DataType.TEXT:
+              result.push(<FormLabel key={`label-${field.id}`}>{field.caption}:</FormLabel>);
+              result.push(<div>{value}</div>);
+              break;
+            case DataType.ENUM:
+              result.push(<FormLabel key={`label-${field.id}`}>{field.caption}:</FormLabel>);
+              result.push(<div>{value}</div>);
+              break;
+            default:
+              console.error('invalid field type:', field.type);
+              break;
+          }
+        }
       }
     }
     return result;
@@ -412,6 +404,12 @@ export class IssueDetails extends React.Component<Props> {
     // return updateIssue(issue.id, updates).then(() => {
     //   // this.props.data.refetch();
     // });
+  }
+
+  @computed
+  private get customFields() {
+    return new Map<string, string | number | boolean>(
+      this.props.issue.custom.map(entry => [entry.value, entry.value] as [string, any]));
   }
 
   @computed

@@ -1,7 +1,6 @@
 import * as React from 'react';
 // import {
 //   Errors,
-//   IssueType,
 //   Workflow,
 //   Milestone,
 // } from 'klendathu-json-types';
@@ -39,10 +38,6 @@ import {
   FormControlGroup,
   UserAutocomplete,
   ActionLink,
-  RelationName,
-  MenuItem,
-  DropdownButton,
-  RELATION_NAMES,
 } from '../controls';
 import styled from 'styled-components';
 import { TypeSelector, CommentEdit, LabelSelector } from './input';
@@ -55,7 +50,7 @@ import { action, computed, IObservableArray, observable, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import { idToIndex } from '../lib/idToIndex';
 import { IssueLinks } from './input/IssueLinks';
-import { IssueSelector } from './input/IssueSelector';
+import { IssueLinkEdit } from './input/IssueLinkEdit';
 
 const IssueComposeLayout = styled(Card)`
   flex: 1;
@@ -148,26 +143,6 @@ const IssueLinkGroup = styled.div`
   min-width: 0;
 `;
 
-const IssueAddGroup = styled.div`
-  display: flex;
-  align-items: stretch;
-
-  > .ac-issue {
-    flex: 1;
-    margin: 0 4px;
-    max-width: 30rem;
-  }
-`;
-
-const RELATIONS: Relation[] = [
-  Relation.Blocks,
-  Relation.BlockedBy,
-  Relation.Duplicate,
-  Relation.HasPart,
-  Relation.PartOf,
-  Relation.Related,
-];
-
 interface Props extends RouteComponentProps<{}> {
   context: ViewContext;
   // milestones: MilestoneListQuery;
@@ -188,8 +163,6 @@ export class IssueCompose extends React.Component<Props> {
   @observable.shallow private cc = [] as IObservableArray<PublicAccount>;
   @observable.shallow private labels = [] as IObservableArray<string>;
   // @observable private milestone: string = '';
-  @observable private relation: Relation = Relation.BlockedBy;
-  @observable private issueToLink: Issue = null;
   @observable.shallow private issueLinkMap = new Map<string, Relation>();
   @observable private custom = new Map<string, string | number | boolean>();
   @observable private comments = [] as IObservableArray<string>;
@@ -311,34 +284,7 @@ export class IssueCompose extends React.Component<Props> {
                 <FormLabel>Linked Issues:</FormLabel>
                 <IssueLinkGroup>
                   <IssueLinks links={this.issueLinkMap} onRemoveLink={this.onRemoveIssueLink}/>
-                  <IssueAddGroup>
-                    <DropdownButton
-                      id="issue-link-type"
-                      title={RELATION_NAMES[this.relation]}
-                      onSelect={this.onChangeRelation}
-                    >
-                      {RELATIONS.map(r => (
-                        <MenuItem key={r} eventKey={r} active={r === this.relation}>
-                          <RelationName relation={r} />
-                        </MenuItem>))}
-                    </DropdownButton>
-                    <IssueSelector
-                        className="ac-issue"
-                        env={this.props.context}
-                        placeholder="select an issue..."
-                        exclude={issue && issue.id}
-                        selection={this.issueToLink}
-                        onSelectionChange={this.onChangeIssueToLink}
-                        // onEnter={this.onAddIssueLink}
-                    />
-                    <Button
-                        // bsSize="small"
-                        onClick={this.onAddIssueLink}
-                        disabled={!this.issueToLink}
-                    >
-                      Add
-                    </Button>
-                  </IssueAddGroup>
+                  <IssueLinkEdit issue={issue} onLink={this.onAddIssueLink} />
                 </IssueLinkGroup>
                 {/* <tr>
                     <div className="linked-group">
@@ -494,16 +440,6 @@ export class IssueCompose extends React.Component<Props> {
   // }
 
   @action.bound
-  private onChangeIssueToLink(selection: Issue) {
-    this.issueToLink =  selection;
-  }
-
-  @action.bound
-  private onChangeRelation(selection: any) {
-    this.relation = selection;
-  }
-
-  @action.bound
   private onChangeCustomField(id: string, value: any) {
     this.custom.set(id, value);
   }
@@ -519,14 +455,13 @@ export class IssueCompose extends React.Component<Props> {
   }
 
   @action.bound
-  private onAddIssueLink() {
-    if (this.relation && this.issueToLink) {
+  private onAddIssueLink(relation: Relation, target: Issue) {
+    if (relation && target) {
       // Can't link an issue to itself.
-      if (this.props.issue && this.issueToLink.id === this.props.issue.id) {
+      if (this.props.issue && target.id === this.props.issue.id) {
         return;
       }
-      this.issueLinkMap.set(this.issueToLink.id, this.relation);
-      this.issueToLink = null;
+      this.issueLinkMap.set(target.id, relation);
     }
   }
 
