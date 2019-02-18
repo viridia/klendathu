@@ -1,15 +1,7 @@
 import * as React from 'react';
-// import {
-//   Errors,
-//   Workflow,
-//   Milestone,
-// } from 'klendathu-json-types';
-// import {
-//   MilestoneListQuery,
-// } from '../../models';
-// import {
-//   MilestoneSelector,
-// } from './input';
+// import { Milestone } from 'klendathu-json-types';
+// import { MilestoneListQuery } from '../../models';
+// import { MilestoneSelector } from './input';
 // import { displayErrorToast } from '../common/displayErrorToast';
 // import { getFileInfoList } from '../../network/requests';
 // import { UploadAttachments } from '../files/UploadAttachments';

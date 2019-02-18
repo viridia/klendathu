@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
 import { ViewContext, ProjectEnv } from '../models';
-import { ErrorListDisplay } from '../graphql';
+import { ErrorDisplay } from '../graphql';
 import { RouteComponentProps } from 'react-router';
 import { LoadingIndicator } from '../controls';
 
@@ -31,10 +31,10 @@ export class ViewContextProvider extends React.Component<Props> {
 
   public render() {
     const { env } = this.props;
-    if (env.loading) {
+    if (env.error) {
+      return <ErrorDisplay error={env.error} />;
+    } else if (env.loading) {
       return <LoadingIndicator>Loading&hellip;</LoadingIndicator>;
-    } else if (env.errors) {
-      return <ErrorListDisplay errors={env.errors} />;
     } else if (!env.project) {
       return null;
     }

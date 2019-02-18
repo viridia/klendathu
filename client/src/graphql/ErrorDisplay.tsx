@@ -2,6 +2,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 import { ApolloError } from 'apollo-client';
 import { GraphQLError } from 'graphql';
+import { Errors } from '../../../common/types/json';
 
 const ErrorList = styled.section`
   background-color: #000;
@@ -58,7 +59,24 @@ const ErrorRowDataPre = styled(ErrorRowData)`
   font-size: 1.1rem;
 `;
 
+const UserError = styled.div`
+  font-size: 1.1rem;
+  font-weight: bold;
+`;
+
 export function ErrorListDisplay({ errors }: { errors: ReadonlyArray<GraphQLError> }) {
+  for (const err of errors) {
+    console.error(JSON.stringify(err, null, 2));
+    if (err.message === Errors.NOT_FOUND) {
+      if (err.extensions.exception.object === 'project') {
+        return <UserError>Error: Project not found</UserError>;
+      } else if (err.extensions.exception.object === 'account') {
+        return <UserError>Error: Account not found</UserError>;
+      } else {
+        return <UserError>Error: Resource not found</UserError>;
+      }
+    }
+  }
   return (
     <ErrorList>
       {(errors || []).map((gqlError, index) => (

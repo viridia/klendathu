@@ -126,17 +126,19 @@ export class ProjectListView extends React.Component<{}> {
             } else if (error) {
               return <ErrorDisplay error={error} />;
             } else {
-              subscribeToMore({
-                document: projectsSubscription,
-                variables: {
-                  owners: [session.account.id],
-                },
-                updateQuery: (prev, { subscriptionData }) => {
-                  // For the moment we're just going to refresh.
-                  // console.log('subscriptionData', subscriptionData);
-                  refetch();
-                },
-              });
+              if (session.account) {
+                subscribeToMore({
+                  document: projectsSubscription,
+                  variables: {
+                    owners: [session.account.id],
+                  },
+                  updateQuery: (prev, { subscriptionData }) => {
+                    // For the moment we're just going to refresh.
+                    // console.log('subscriptionData', subscriptionData);
+                    refetch();
+                  },
+                });
+              }
               const projects: Project[] = data.projects;
               if (projects.length === 0) {
                 return <EmptyList>No projects found.</EmptyList>;

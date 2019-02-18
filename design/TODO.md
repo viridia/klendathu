@@ -1,5 +1,6 @@
 # TODO
 
+* Highlight newly-added row.
 * compiled template stuff.
 * Make user links local to the view
 * Redis
@@ -14,6 +15,10 @@
   * Global
 * Better loading indicator
 * Navbar project list
+* Make Markdown a separate component.
+* Comments should be joined to change entries so we can paginate them together.
+* Syntax highlighting for code examples.
+* "Dark mode".
 
 # Major pieces
 
