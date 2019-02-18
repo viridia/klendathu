@@ -2,15 +2,35 @@ import { MongoClient } from 'mongodb';
 import { logger } from '../logger';
 import { ensureCollections } from './helpers';
 
+function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function waitForConnection(): Promise<MongoClient> {
+  let retries = 0;
+  while (retries < 10) {
+    try {
+      const dbUrl = process.env.DB_HOST;
+      return await MongoClient.connect(dbUrl, {
+        useNewUrlParser: true,
+        auth: { user: process.env.DB_USER, password: process.env.DB_PASSWORD }
+      });
+    } catch (e) {
+      retries += 1;
+      logger.warn('Connection to MongoDB failed, retrying.');
+      await sleep(1000);
+    }
+  }
+  logger.warn(`Connection to MongoDB failed after ${retries} attempts, aborting.`);
+  process.exit(-1);
+}
+
 // Connect to the database
 export async function createClient(): Promise<MongoClient> {
   const dbUrl = process.env.DB_HOST;
-  const client = await MongoClient.connect(dbUrl, {
-    useNewUrlParser: true,
-    auth: { user: process.env.DB_USER, password: process.env.DB_PASSWORD }
-  });
+  const client = await waitForConnection();
   const db = client.db(process.env.DB_NAME);
-  logger.debug(`Connected to ${dbUrl}`);
+  logger.info(`Connected to ${dbUrl}`);
   await ensureCollections(db, [
     'accounts',
     'comments',
