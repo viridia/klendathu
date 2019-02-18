@@ -9,8 +9,6 @@ import { logger } from '../src/logger';
 import { AccountRecord } from '../src/db/types';
 import { gql } from 'apollo-server-core';
 
-logger.level = 'warn';
-
 export interface TestServer {
   apollo: ApolloServer;
   client: MongoClient;
@@ -82,10 +80,12 @@ export async function createTestProject(server: TestServer): Promise<string> {
   return res.data.createProject.id;
 }
 
+const savedLogLevel = logger.level;
+
 export function disableErrorLog() {
   logger.level = 'silent';
 }
 
 export function restoreLogLevel() {
-  logger.level = 'warn';
+  logger.level = savedLogLevel;
 }

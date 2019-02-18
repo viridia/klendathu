@@ -7,11 +7,11 @@ function sleep(ms: number) {
 }
 
 async function waitForConnection(): Promise<MongoClient> {
+  logger.debug(`Connection to MongoDB at ${process.env.DB_HOST}.`);
   let retries = 0;
   while (retries < 10) {
     try {
-      const dbUrl = process.env.DB_HOST;
-      return await MongoClient.connect(dbUrl, {
+      return await MongoClient.connect(process.env.DB_HOST, {
         useNewUrlParser: true,
         auth: { user: process.env.DB_USER, password: process.env.DB_PASSWORD }
       });
