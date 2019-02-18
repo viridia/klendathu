@@ -13,7 +13,7 @@
     "lint-server": "tslint --project server",
     "manage": "ts-node bin/src/manage.ts",
     "start": "nodemon -w ./server/src --ext ts --exec ts-node -- -P ./server/tsconfig.json ./server/src/index.ts",
-    "test": "jest --runInBand"
+    "test": "LOG_LEVEL=warn jest --runInBand"
   },
   "keywords": [
     "bug",
