@@ -5,7 +5,7 @@ import { NavLink } from './NavLink';
 import { History as H } from 'history';
 import gql from 'graphql-tag';
 
-const accountQuery = gql`
+export const AccountQuery = gql`
   query AccountQuery($accountName: String, $id: ID) {
     account(accountName: $accountName, id: $id) { id, accountName, type, display, photo }
   }
@@ -18,7 +18,7 @@ interface Props {
 
 export function AccountName({ id, to }: Props) {
   return (
-    <Query query={accountQuery} variables={{ id }} >
+    <Query query={AccountQuery} variables={{ id }} >
       {({ loading, error, data }) => {
         if (loading) {
           return <div className="account-name loading" />;

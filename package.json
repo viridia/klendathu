@@ -13,7 +13,9 @@
     "lint-server": "tslint --project server",
     "manage": "ts-node bin/src/manage.ts",
     "start": "nodemon -w ./server/src --ext ts --exec ts-node -- -P ./server/tsconfig.json ./server/src/index.ts",
-    "test": "LOG_LEVEL=warn jest --runInBand"
+    "test-client": "jest --config client/jest.config.js",
+    "test-server": "LOG_LEVEL=warn jest --runInBand --config server/jest.config.js",
+    "test": "npm run test-server"
   },
   "keywords": [
     "bug",
@@ -91,11 +93,14 @@
     "@types/classnames": "^2.2.7",
     "@types/dateformat": "^3.0.0",
     "@types/dotenv": "^6.1.0",
+    "@types/enzyme": "^3.1.18",
+    "@types/enzyme-adapter-react-16": "^1.0.4",
     "@types/express": "^4.16.0",
     "@types/form-data": "^2.2.1",
     "@types/graphql": "^14.0.5",
     "@types/history": "^4.7.2",
     "@types/jest": "^23.3.14",
+    "@types/jsdom": "^12.2.2",
     "@types/marked": "^0.6.0",
     "@types/mongodb": "^3.1.19",
     "@types/parcel-bundler": "^1.10.1",
@@ -119,40 +124,17 @@
     "@types/yargs": "^12.0.8",
     "apollo-server-testing": "^2.4.0",
     "babel-core": "^6.26.3",
+    "enzyme": "^3.9.0",
+    "enzyme-adapter-react-16": "^1.9.1",
     "expect-more-jest": "^2.4.1",
     "graphql-code-generator": "^0.16.0",
     "graphql-codegen-typescript-common": "0.16.0",
     "graphql-codegen-typescript-server": "0.16.0",
     "jest": "^24.1.0",
+    "jest-enzyme": "^7.0.1",
+    "jsdom": "^13.2.0",
     "ts-jest": "^23.10.5",
     "tslint": "^5.12.1",
     "tslint-react": "^3.6.0"
-  },
-  "jest": {
-    "transform": {
-      "^.+\\.ts$": "ts-jest"
-    },
-    "globals": {
-      "ts-jest": {
-        "tsConfig": "./server/tsconfig.json"
-      }
-    },
-    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(js|ts)$",
-    "testEnvironment": "node",
-    "roots": [
-      "server/src",
-      "server/tests"
-    ],
-    "setupFilesAfterEnv": [
-      "expect-more-jest"
-    ],
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ]
   }
 }
