@@ -27,11 +27,11 @@ export async function createTestUserAccount(
     display,
     type: 'USER',
   };
-  const result =
-      await db.collection('accounts').findOneAndUpdate({ accountName }, { $setOnInsert: account }, {
-    upsert: true,
-  });
-  logger.debug(JSON.stringify(result, null, 2));
+  const result = await db.collection<AccountRecord>('accounts')
+      .findOneAndUpdate({ accountName }, { $setOnInsert: account }, {
+        upsert: true,
+        returnOriginal: false,
+      });
   return result.value;
 }
 
