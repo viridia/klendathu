@@ -3,7 +3,7 @@ export { AttachmentRecord } from './AttachmentRecord';
 export { CommentRecord } from './CommentRecord';
 export { IssueChangeRecord } from './IssueChangeRecord';
 export { IssueLinkRecord } from './IssueLinkRecord';
-export { IssueRecord, CustomValues } from './IssueRecord';
+export { IssueRecord, CustomValues, CustomData } from './IssueRecord';
 export { LabelRecord } from './LabelRecord';
 export { MembershipRecord } from './MembershipRecord';
 export { MilestoneRecord } from './MilestoneRecord';

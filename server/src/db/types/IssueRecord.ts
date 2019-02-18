@@ -1,5 +1,9 @@
 // import { CustomValues } from 'klendathu-json-types';
 import { ObjectID } from 'mongodb';
+import { IssueID, LabelID } from './ids';
+
+/** Data for a custom field. */
+export type CustomData = string | number | boolean;
 
 /** Data for a custom field. */
 export interface CustomValues {
@@ -16,7 +20,7 @@ export interface Attachment {
 
 // Database representation of an issue
 export interface IssueRecord {
-  _id: string; // <owner.index>
+  _id: IssueID; // <owner.index>
   project: ObjectID;
   type: string;
   state: string;
@@ -29,7 +33,7 @@ export interface IssueRecord {
   cc: ObjectID[];
   created: Date;
   updated: Date;
-  labels: string[];
+  labels: LabelID[];
   custom: CustomValues;
   // comments: CommentEntry[];
   attachments: Attachment[];

@@ -6,6 +6,7 @@ import {
   IssueChangeRecord,
   IssueRecord,
   CustomValues,
+  CustomData,
 } from '../db/types';
 import {
   IssueQueryArgs,
@@ -19,6 +20,8 @@ import {
   Predicate,
   ChangeAction,
   IssuesChangedSubscriptionArgs,
+  CustomFieldChange,
+  Relation,
 } from '../../../common/types/graphql';
 import { UserInputError, AuthenticationError } from 'apollo-server-core';
 import { Errors, Role, inverseRelations } from '../../../common/types/json';
@@ -47,6 +50,8 @@ function customArrayToMap(custom: CustomFieldInput[]): CustomValues {
   custom.forEach(({ key, value }) => { result[key] = value; });
   return result;
 }
+
+const strToId = (s: string): ObjectID => new ObjectID(s);
 
 function stringPredicate(pred: Predicate, value: string): any {
   switch (pred) {
@@ -398,6 +403,8 @@ export const mutations = {
     const user = context.user.accountName;
 
     const issues = context.db.collection<IssueRecord>('issues');
+    const issueLinks = context.db.collection<IssueLinkRecord>('issueLinks');
+    const issueChanges = context.db.collection<IssueChangeRecord>('issueChanges');
     const issue = await issues.findOne({ _id: id });
     if (!issue) {
       logger.error('Attempt to update non-existent issue:', { user, id });
@@ -500,13 +507,13 @@ export const mutations = {
         if (!ownerRecord._id.equals(issue.owner)) {
           update.$set.owner = ownerRecord._id;
           update.$set.ownerSort = ownerRecord.accountName;
-          change.owner = { before: issue.owner, after: input.owner };
+          change.owner = { before: issue.owner, after: new ObjectID(input.owner) };
           change.at = now;
         }
       } else if (!issue.owner) {
         update.$set.owner = null;
         update.$set.ownerSort = null;
-        change.owner = { before: issue.owner, after: input.owner };
+        change.owner = { before: issue.owner, after: new ObjectID(input.owner) };
         change.at = now;
       }
     }
@@ -518,405 +525,296 @@ export const mutations = {
       issue.cc.forEach(cc => ccNext.delete(cc.toHexString()));
       update.$set.cc = input.cc;
       if (ccNext.size > 0 || ccPrev.size > 0) {
-        change.cc = { added: Array.from(ccNext), removed: Array.from(ccPrev) };
+        change.cc = {
+          added: Array.from(ccNext.keys()).map(strToId),
+          removed: Array.from(ccPrev).map(strToId),
+        };
         change.at = now;
       }
     }
 
-/*
-    // Compute which cc entries have been added or deleted.
-    if (input.addCC || input.removeCC) {
-      const added: string[] = [];
-      const removed: string[] = [];
-
-      const cc = [...issue.cc];
-      if (input.addCC) {
-        for (const l of input.addCC) {
-          if (cc.indexOf(l) < 0) {
-            added.push(l);
-            cc.push(l);
-          }
-        }
-      }
-
-      if (input.removeCC) {
-        for (const l of input.removeCC) {
-          const index = cc.indexOf(l);
-          if (index >= 0) {
-            removed.push(l);
-            cc.splice(index, 1);
-          }
-        }
-      }
-
-      if (added || removed) {
-        record.cc = cc;
-        change.cc = { added, removed };
-        change.at = record.updated;
-      }
-    } else if ('cc' in input) {
-      const ccPrev = new Set(issue.cc); // Removed items
-      const ccNext = new Set(input.cc);    // Newly-added items
-      input.cc.forEach(cc => ccPrev.delete(cc));
-      issue.cc.forEach(cc => ccNext.delete(cc));
-      record.cc = input.cc;
-      if (ccNext.size > 0 || ccPrev.size > 0) {
-        change.cc = { added: Array.from(ccNext), removed: Array.from(ccPrev) };
-        change.at = record.updated;
-      }
-    }
-
-    // Compute which labels have been added or deleted.
-    if (input.addLabels || input.removeLabels) {
-      const added: string[] = [];
-      const removed: string[] = [];
-
-      const labels = [...issue.labels];
-      if (input.addLabels) {
-        for (const l of input.addLabels) {
-          if (labels.indexOf(l) < 0) {
-            added.push(l);
-            labels.push(l);
-          }
-        }
-      }
-
-      if (input.removeLabels) {
-        for (const l of input.removeLabels) {
-          const index = labels.indexOf(l);
-          if (index >= 0) {
-            removed.push(l);
-            labels.splice(index, 1);
-          }
-        }
-      }
-
-      if (added || removed) {
-        record.labels = labels;
-        change.labels = { added, removed };
-        change.at = record.updated;
-      }
-    } else if ('labels' in input) {
-      const labelsPrev = new Set(issue.labels); // Removed items
+    if ('labels' in input) {
+      const labelsPrev = new Set(issue.labels);     // Removed items
       const labelsNext = new Set(input.labels);    // Newly-added items
       input.labels.forEach(labels => labelsPrev.delete(labels));
       issue.labels.forEach(labels => labelsNext.delete(labels));
-      record.labels = input.labels;
+      update.$set.labels = input.labels;
       if (labelsNext.size > 0 || labelsPrev.size > 0) {
-        change.labels = { added: Array.from(labelsNext), removed: Array.from(labelsPrev) };
-        change.at = record.updated;
+        change.labels = {
+          added: Array.from(labelsNext).map(strToId),
+          removed: Array.from(labelsPrev).map(strToId),
+        };
+        change.at = now;
       }
     }
 
     if ('custom' in input) {
-      record.custom = input.custom;
-      const customPrev = mapFromObject(issue.custom);
-      const customNext = mapFromObject(record.custom);
+      update.$set.custom = customArrayToMap(input.custom);
+      const customPrev = new Map<string, CustomData>();
+      const customNext = new Map<string, CustomData>();
       const customChange: CustomFieldChange[] = [];
-      customNext.forEach((value, name) => {
-        if (customPrev.has(name)) {
-          const before = customPrev.get(name);
+      for (const key of Object.getOwnPropertyNames(issue.custom)) {
+        customPrev.set(key, issue.custom[key]);
+      }
+      for (const entry of input.custom) {
+        customNext.set(entry.key, entry.value);
+      }
+      customNext.forEach((value, key) => {
+        if (customPrev.has(key)) {
+          const before = customPrev.get(key);
           if (value !== before) {
             // A changed value
-            customChange.push({ name, before, after: value });
+            customChange.push({ key, before, after: value });
           }
         } else {
           // A newly-added value
-          customChange.push({ name, after: value });
+          customChange.push({ key, after: value });
         }
       });
-      customPrev.forEach((value, name) => {
-        if (!customNext.has(name)) {
+      customPrev.forEach((value, key) => {
+        if (!customNext.has(key)) {
           // A deleted value
-          customChange.push({ name, before: value });
+          customChange.push({ key, before: value });
         }
       });
       if (customChange.length > 0) {
         change.custom = customChange;
-        change.at = record.updated;
+        change.at = now;
       }
     }
 
-    if ('attachments' in input) {
-      const existingAttachments = issue.attachments || [];
-      record.attachments = input.attachments;
-      const attachmentsPrev = new Set(existingAttachments);
-      const attachmentsNext = new Set(input.attachments);
-      input.attachments.forEach(attachments => attachmentsPrev.delete(attachments));
-      existingAttachments.forEach(attachments => attachmentsNext.delete(attachments));
-      if (attachmentsNext.size > 0 || attachmentsPrev.size > 0) {
-        change.attachments = {
-          added: Array.from(attachmentsNext),
-          removed: Array.from(attachmentsPrev),
-        };
-        change.at = record.updated;
-      }
-    }
+    // if ('attachments' in input) {
+    //   const existingAttachments = issue.attachments || [];
+    //   record.attachments = input.attachments;
+    //   const attachmentsPrev = new Set(existingAttachments);
+    //   const attachmentsNext = new Set(input.attachments);
+    //   input.attachments.forEach(attachments => attachmentsPrev.delete(attachments));
+    //   existingAttachments.forEach(attachments => attachmentsNext.delete(attachments));
+    //   if (attachmentsNext.size > 0 || attachmentsPrev.size > 0) {
+    //     change.attachments = {
+    //       added: Array.from(attachmentsNext),
+    //       removed: Array.from(attachmentsPrev),
+    //     };
+    //     change.at = record.updated;
+    //   }
+    // }
 
-    // Patch comments list.
-    if ('comments' in input) {
-      for (const c of input.comments) {
-        // Insert a new comment from this author.
-        const comment: CommentRecord = {
-          issue: issueId,
-          project: projectId,
-          author: user.id,
-          body: c,
-          created: now,
-          updated: now,
-        };
-        await r.table('comments').insert(comment).run(server.conn);
-        if (!change.comments) {
-          change.comments = { added: 0, updated: 0, removed: 0 };
-          change.at = record.updated;
-        }
-        change.comments.added += 1;
-      }
-    }
+    // // Patch comments list.
+    // if ('comments' in input) {
+    //   for (const c of input.comments) {
+    //     // Insert a new comment from this author.
+    //     const comment: CommentRecord = {
+    //       issue: issueId,
+    //       project: projectId,
+    //       author: user.id,
+    //       body: c,
+    //       created: now,
+    //       updated: now,
+    //     };
+    //     await r.table('comments').insert(comment).run(server.conn);
+    //     if (!change.comments) {
+    //       change.comments = { added: 0, updated: 0, removed: 0 };
+    //       change.at = record.updated;
+    //     }
+    //     change.comments.added += 1;
+    //   }
+    // }
 
-    if (input.linked) {
-      // Find all the link records (in both directions)
-      const [fwdLinks, rvsLinks]: [IssueLinkRecord[], IssueLinkRecord[]] = await Promise.all([
-        r.table('issueLinks').filter({ from: issueId })
-            .run(server.conn)
-            .then(cursor => cursor.toArray()),
-        r.table('issueLinks').filter({ to: issueId })
-            .run(server.conn)
-            .then(cursor => cursor.toArray()),
-      ]);
-      const fwdMap = new Map<string, IssueLinkRecord>(
-        fwdLinks.map(ln => [ln.to, ln] as [string, IssueLinkRecord]));
-      const rvsMap = new Map<string, IssueLinkRecord>(
-        rvsLinks.map(ln => [ln.to, ln] as [string, IssueLinkRecord]));
-      const toInsert: IssueLinkRecord[] = [];
-      const toRemove: IssueLinkRecord[] = [];
-      const toUpdate: IssueLinkRecord[] = [];
+    if ('linked' in input) {
+      // Find all links referencing this issue
+      const links = await issueLinks.find({
+        $or: [
+          { from: issue._id },
+          { to: issue._id },
+        ]
+      }).toArray();
+      const linksToInsert: IssueLinkRecord[] = [];
+      const linksToRemove: IssueLinkRecord[] = [];
+      const linksToUpdate: IssueLinkRecord[] = [];
+
+      // Change records for the other side of the link.
       const changeRecords: IssueChangeRecord[] = [];
+      const addChangeRecord = (iss: string, ch: { before?: Relation, after?: Relation }) => {
+        changeRecords.push({
+          project: project._id,
+          by: context.user._id,
+          issue: iss,
+          at: now,
+          linked: [{ to: issue._id, ...ch }],
+        });
+      };
+
+      // Links from this issue to another issue, indexed by target
+      const fwdMap = new Map<string, IssueLinkRecord>(links
+          .filter(link => link.from === issue._id)
+          .map(link => [link.to, link] as [string, IssueLinkRecord]));
+      // Links to this issue from another issue, indexed by source
+      const rvsMap = new Map<string, IssueLinkRecord>(links
+          .filter(link => link.to === issue._id)
+          .map(link => [link.from, link] as [string, IssueLinkRecord]));
       change.linked = [];
-      for (const lnk of input.linked) {
-        const inv = inverseRelations[lnk.relation];
-        const fwd = fwdMap.get(lnk.to);
-        const rvs = rvsMap.get(lnk.to);
-        // If there's no existing relationship
+
+      for (const link of input.linked) {
+        const inv = inverseRelations[link.relation]; // Inverse relation
+        const fwd = fwdMap.get(link.to); // Pre-existing link from this to another issue.
+        const rvs = rvsMap.get(link.to); // Pre-existing link from another issue to this.
+
         if (!fwd && !rvs) {
-          toInsert.push({
-            from: issueId,
-            to: lnk.to,
-            relation: lnk.relation,
-          });
-          // Add a change entry for existing link
-          change.linked.push({
-            to: lnk.to,
-            after: lnk.relation,
-          });
-          // Create a change record for the 'to' record
-          changeRecords.push({
-            project: projectId,
-            by: user.id,
-            issue: lnk.to,
-            at: record.updated,
-            linked: [{
-              to: issueId,
-              after: inv,
-            }],
-          });
+          // This is a new link (no link between current issue and link.to)
+          linksToInsert.push({ from: issue._id, to: link.to, relation: link.relation });
+          change.linked.push({ to: link.to, after: link.relation });
+          addChangeRecord(link.to, { after: inv });
         } else if (fwd) {
-          // If the relationship changed
-          if (fwd.relation !== lnk.relation) {
-            // Add a change entry
-            change.linked.push({
-              to: lnk.to,
-              before: fwd.relation,
-              after: lnk.relation,
-            });
-            // Update the record
-            fwd.relation = lnk.relation;
-            toUpdate.push(fwd);
+          // Existing forward link, see if the relationship changed
+          if (fwd.relation !== link.relation) {
+            linksToUpdate.push({ ...fwd, relation: link.relation });
+            change.linked.push({ to: link.to, before: fwd.relation, after: link.relation });
+            addChangeRecord(link.to, { before: inverseRelations[fwd.relation], after: inv });
           }
         } else if (rvs) {
+          // Existing reverse link, see if the (inverse) relationship changed.
           if (rvs.relation !== inv) {
-            // Add a change record to the issue referenced in the inverse link
-            changeRecords.push({
-              project: projectId,
-              by: user.id,
-              issue: fwd.to,
-              at: record.updated,
-              linked: [{
-                to: issueId,
-                before: rvs.relation,
-                after: inv,
-              }],
-            });
-
-            // Update the inverse link
-            rvs.relation = inv;
-            toUpdate.push(rvs);
+            linksToUpdate.push({ ...rvs, relation: inv });
+            change.linked.push({ to: link.to, before: inverseRelations[rvs.relation], after: inv });
+            addChangeRecord(rvs.from, { before: rvs.relation, after: link.relation });
           }
         }
-
-        // There's an existing link we need to update
-        // if (fwd) {
-        //   // If the relationship changed
-        //   if (fwd.relation !== lnk.relation) {
-        //     // Add a change entry
-        //     change.linked.push({
-        //       to: lnk.to,
-        //       before: fwd.relation,
-        //       after: lnk.relation,
-        //     });
-        //     // Update the record
-        //     fwd.relation = lnk.relation;
-        //     toUpdate.push(fwd);
-        //   }
-        // } else {
-        //   // There was no existing link
-        //   toInsert.push({
-        //     from: issueId,
-        //     to: lnk.to,
-        //     relation: lnk.relation,
-        //   });
-        //   // Add a change entry for existing link
-        //   change.linked.push({
-        //     to: lnk.to,
-        //     after: lnk.relation,
-        //   });
-        // }
-        //
-        // // There's an existing inverse link
-        // if (rvs) {
-        //   if (rvs.relation !== inv) {
-        //     // Add a change record to the issue referenced in the inverse link
-        //     changeRecords.push({
-        //       project: projectId,
-        //       by: user.id,
-        //       issue: fwd.to,
-        //       at: record.updated,
-        //       linked: [{
-        //         to: issueId,
-        //         before: rvs.relation,
-        //         after: inv,
-        //       }],
-        //     });
-        //
-        //     // Update the inverse link
-        //     rvs.relation = inv;
-        //     toUpdate.push(rvs);
-        //   }
-        // } else {
-        //   // There was no inverse link, so create a new one
-        //   // toInsert.push({
-        //   //   from: lnk.to,
-        //   //   to: issueId,
-        //   //   relation: inv,
-        //   // });
-        //   // Create a change record for the new link
-        //   changeRecords.push({
-        //     project: projectId,
-        //     by: user.id,
-        //     issue: lnk.to,
-        //     at: record.updated,
-        //     linked: [{
-        //       to: issueId,
-        //       after: inv,
-        //     }],
-        //   });
-        // }
       }
 
       // Remove any entries from the maps that were maintained
-      for (const lnk of input.linked) {
-        fwdMap.delete(lnk.to);
-        rvsMap.delete(lnk.to);
+      for (const link of input.linked) {
+        fwdMap.delete(link.to);
+        rvsMap.delete(link.to);
       }
 
       // Delete all forward links that weren't in the list
       for (const fwd of fwdMap.values()) {
         // Queue link for deletion
-        toRemove.push(fwd);
-        // Add a change entry no existing link
-        change.linked.push({
-          to: fwd.to,
-          before: fwd.relation,
-        });
+        linksToRemove.push(fwd);
+        change.linked.push({ to: fwd.to, before: fwd.relation });
+        addChangeRecord(fwd.to, { before: inverseRelations[fwd.relation] });
       }
 
       // Delete all reverse links that weren't in the list
       for (const rvs of rvsMap.values()) {
         // Queue link for deletion
-        toRemove.push(rvs);
-        // Add a change entry no existing link
-        changeRecords.push({
-          project,
-          by: user.id,
-          issue: rvs.from,
-          at: record.updated,
-          linked: [{
-            to: issueId,
-            before: rvs.relation,
-          }],
-        });
+        linksToRemove.push(rvs);
+        change.linked.push({ to: rvs.from, before: inverseRelations[rvs.relation] });
+        addChangeRecord(rvs.from, { before: rvs.relation });
       }
 
       if (change.linked.length > 0) {
-        change.at = record.updated;
+        change.at = now;
       }
 
       const promises: Array<Promise<any>> = [];
-      if (toInsert) {
-        promises.push(r.table('issueLinks').insert(toInsert).run(server.conn));
+      if (linksToInsert.length > 0) {
+        promises.push(issueLinks.insertMany(linksToInsert));
       }
-      if (toRemove) {
-        promises.push(r.table('issueLinks')
-            .getAll(...toRemove.map(lnk => lnk.id))
-            .delete().run(server.conn));
+      if (linksToRemove.length > 0) {
+        promises.push(issueLinks.deleteMany({ _id: { $in: linksToRemove.map(lnk => lnk._id) } }));
       }
-      if (toUpdate) {
-        for (const lnk of toUpdate) {
-          promises.push(r.table('issueLinks')
-              .get(lnk.id)
-              .update(lnk).run(server.conn));
+      if (linksToUpdate.length > 0) {
+        for (const lnk of linksToUpdate) {
+          promises.push(issueLinks.findOneAndReplace({ _id: lnk._id }, lnk));
         }
       }
-      if (changeRecords) {
-        promises.push(r.table('issueChanges').insert(changeRecords).run(server.conn));
 
+      if (changeRecords.length > 0) {
+        promises.push(issueChanges.insertMany(changeRecords));
       }
 
       await Promise.all(promises);
     }
 
     if (change.at) {
-      await r.table('issueChanges').insert(change).run(server.conn);
-    }
-
-    if (change.at || input.comments) {
-      const result = await r.table('issues').update(record, { returnChanges: true })
-          .run(server.conn);
-      res.json((result as any).changes[0].new_val);
-    } else {
-      res.json(existing);
-    }
-  }
-*/
-    if (change.at) {
-      const issueChanges = context.db.collection<IssueChangeRecord>('issueChanges');
       await issueChanges.insertOne(change);
     }
 
     if (change.at || update.comments) {
-      // console.debug(JSON.stringify(update, null, 2));
-      // console.log('x');
-      // console.log('y');
-
       const result = await issues.findOneAndUpdate({ _id: issue._id }, update, {
         returnOriginal: false,
       });
       return result.value;
     }
 
-    console.log('update issue', input);
-    return null;
+    logger.debug('updateIssue made no changes:', { user, id });
+    return issue;
   },
+
+    // // Compute which cc entries have been added or deleted.
+    // if (input.addCC || input.removeCC) {
+    //   const added: string[] = [];
+    //   const removed: string[] = [];
+
+    //   const cc = [...issue.cc];
+    //   if (input.addCC) {
+    //     for (const l of input.addCC) {
+    //       if (cc.indexOf(l) < 0) {
+    //         added.push(l);
+    //         cc.push(l);
+    //       }
+    //     }
+    //   }
+
+    //   if (input.removeCC) {
+    //     for (const l of input.removeCC) {
+    //       const index = cc.indexOf(l);
+    //       if (index >= 0) {
+    //         removed.push(l);
+    //         cc.splice(index, 1);
+    //       }
+    //     }
+    //   }
+
+    //   if (added || removed) {
+    //     record.cc = cc;
+    //     change.cc = { added, removed };
+    //     change.at = record.updated;
+    //   }
+    // } else if ('cc' in input) {
+    //   const ccPrev = new Set(issue.cc); // Removed items
+    //   const ccNext = new Set(input.cc);    // Newly-added items
+    //   input.cc.forEach(cc => ccPrev.delete(cc));
+    //   issue.cc.forEach(cc => ccNext.delete(cc));
+    //   record.cc = input.cc;
+    //   if (ccNext.size > 0 || ccPrev.size > 0) {
+    //     change.cc = { added: Array.from(ccNext), removed: Array.from(ccPrev) };
+    //     change.at = record.updated;
+    //   }
+    // }
+
+    // // Compute which labels have been added or deleted.
+    // if (input.addLabels || input.removeLabels) {
+    //   const added: string[] = [];
+    //   const removed: string[] = [];
+
+    //   const labels = [...issue.labels];
+    //   if (input.addLabels) {
+    //     for (const l of input.addLabels) {
+    //       if (labels.indexOf(l) < 0) {
+    //         added.push(l);
+    //         labels.push(l);
+    //       }
+    //     }
+    //   }
+
+    //   if (input.removeLabels) {
+    //     for (const l of input.removeLabels) {
+    //       const index = labels.indexOf(l);
+    //       if (index >= 0) {
+    //         removed.push(l);
+    //         labels.splice(index, 1);
+    //       }
+    //     }
+    //   }
+
+    //   if (added || removed) {
+    //     record.labels = labels;
+    //     change.labels = { added, removed };
+    //     change.at = record.updated;
+    //   }
+    // }
 
   async deleteIssue(
       _: any,
@@ -1000,13 +898,15 @@ export const types = {
           { to: row._id },
         ]
       }).toArray();
+      // Links that are from the specified issue are returned as-is; links that are
+      // to the issue are returned with the inverse relation.
       return links.map(link => {
         if (link.from === row._id) {
           return link;
         }
         return {
           to: link.from,
-          from: link.to,
+          from: row._id,
           relation: inverseRelations[link.relation],
         };
       });

@@ -280,6 +280,8 @@ export interface Query {
   issues: PaginatedIssues;
   /** Search for issues by text query, sorted by relevance. */
   issueSearch: Issue[];
+  /** Retrieve history of changes to an issue, or all issues within a project. */
+  issueChanges: PaginatedIssueChanges;
   /** Search custom field text, used for auto completion. */
   searchCustomFields: string[];
   /** Current user's preferences for a project. */
@@ -509,6 +511,105 @@ export interface PaginatedIssues {
   issues: Issue[];
 }
 
+/** Issue change query result. */
+export interface PaginatedIssueChanges {
+  /** Total number of results. */
+  count: number;
+  /** Current offset */
+  offset: number;
+  /** List of results. */
+  results: IssueChangeEntry[];
+}
+
+/** A change record for an issue. */
+export interface IssueChangeEntry {
+  id: string;
+  /** Issue this change applies to. */
+  issue: string;
+  /** Project containing the change. */
+  project: string;
+  /** ID of the user making this change. */
+  by: string;
+  /** Date and time when the changes were made. */
+  at: DateTime;
+  /** Change to the issue type. */
+  type?: Maybe<StringChange>;
+  /** Change to the issue state. */
+  state?: Maybe<StringChange>;
+  /** Change to the issue summary. */
+  summary?: Maybe<StringChange>;
+  /** Change to the issue description. */
+  description?: Maybe<StringChange>;
+  /** Change to the issue owner. */
+  owner?: Maybe<IdChange>;
+  /** Changes to the issue cc list. */
+  cc?: Maybe<IdListChange>;
+  /** Changes to the list of issue labels. */
+  labels?: Maybe<IdListChange>;
+  /** Changes to the issue attachment list. */
+  attachments?: Maybe<IdListChange>;
+  /** Changes to comments. */
+  comments?: Maybe<CommentsChange>;
+  /** Changes to the list of custom fields. */
+  custom?: Maybe<CustomFieldChange[]>;
+  /** Changes to the list of linked issues. */
+  linked?: Maybe<LinkChange[]>;
+}
+
+/** A change to a string field. */
+export interface StringChange {
+  /** Value of the field before the change. */
+  before?: Maybe<string>;
+  /** Value of the field after the change. */
+  after?: Maybe<string>;
+}
+
+/** A change to an ID field. */
+export interface IdChange {
+  /** Value of the field before the change. */
+  before?: Maybe<string>;
+  /** Value of the field after the change. */
+  after?: Maybe<string>;
+}
+
+/** A change to a string list field. */
+export interface IdListChange {
+  /** List of entries that were added to the field. */
+  added: string[];
+  /** List of entries that were removed from the field. */
+  removed: string[];
+}
+
+/** Summary of changes to comments. */
+export interface CommentsChange {
+  /** ID of comments that were added. */
+  added: string[];
+  /** Number of comments that were updated. */
+  updated: string[];
+  /** Number of comments that were removed. */
+  removed: string[];
+}
+
+/** A change to a custom field. */
+export interface CustomFieldChange {
+  /** Custom field key. */
+  key: string;
+  /** Value of the field before the change. */
+  before?: Maybe<CustomValue>;
+  /** Value of the field after the change. */
+  after?: Maybe<CustomValue>;
+}
+
+/** A change to a linked issue. */
+export interface LinkChange {
+  /** ID of the issue being linked to. */
+  to: string;
+  /** Relationship before the change. */
+  before?: Maybe<Relation>;
+  /** Relationship after the change. */
+  after?: Maybe<Relation>;
+}
+
 export interface Mutation {
   /** Create a user account */
   createUserAccount?: Maybe<Account>;
@@ -676,6 +777,13 @@ export interface IssueSearchQueryArgs {
   project: string;
 
   search: string;
+}
+export interface IssueChangesQueryArgs {
+  project: string;
+
+  issue?: Maybe<string>;
+
+  pagination?: Maybe<Pagination>;
 }
 export interface SearchCustomFieldsQueryArgs {
   project: string;

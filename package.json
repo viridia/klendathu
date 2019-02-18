@@ -13,7 +13,7 @@
     "lint-server": "tslint --project server",
     "manage": "ts-node bin/src/manage.ts",
     "start": "nodemon -w ./server/src --ext ts --exec ts-node -- -P ./server/tsconfig.json ./server/src/index.ts",
-    "test": "jest --runInBand --verbose"
+    "test": "jest --runInBand"
   },
   "keywords": [
     "bug",
@@ -81,8 +81,7 @@
     "subscriptions-transport-ws": "^0.9.15",
     "ts-node": "^7.0.1",
     "typescript": "^3.2.4",
-    "winston": "^3.1.0",
-    "yargs": "^12.0.5"
+    "winston": "^3.1.0"
   },
   "devDependencies": {
     "@svgr/cli": "^4.1.0",
@@ -96,7 +95,7 @@
     "@types/form-data": "^2.2.1",
     "@types/graphql": "^14.0.5",
     "@types/history": "^4.7.2",
-    "@types/jest": "^23.3.13",
+    "@types/jest": "^23.3.14",
     "@types/marked": "^0.6.0",
     "@types/mongodb": "^3.1.19",
     "@types/parcel-bundler": "^1.10.1",
@@ -124,7 +123,7 @@
     "graphql-code-generator": "^0.16.0",
     "graphql-codegen-typescript-common": "0.16.0",
     "graphql-codegen-typescript-server": "0.16.0",
-    "jest": "^23.6.0",
+    "jest": "^24.1.0",
     "ts-jest": "^23.10.5",
     "tslint": "^5.12.1",
     "tslint-react": "^3.6.0"
@@ -144,7 +143,9 @@
       "server/src",
       "server/tests"
     ],
-    "setupTestFrameworkScriptFile": "expect-more-jest",
+    "setupFilesAfterEnv": [
+      "expect-more-jest"
+    ],
     "moduleFileExtensions": [
       "ts",
       "tsx",

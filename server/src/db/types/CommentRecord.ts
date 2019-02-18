@@ -1,4 +1,5 @@
 import { ObjectID } from 'mongodb';
+import { IssueID } from './ids';
 
 export interface CommentRecord {
   /** Comment ID. */
@@ -8,7 +9,7 @@ export interface CommentRecord {
   project: ObjectID;
 
   /** Issue this comment is attached to. */
-  issue: string;
+  issue: IssueID;
 
   /** User that created this comment. */
   author?: ObjectID;

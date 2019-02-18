@@ -64,6 +64,9 @@ type Query {
   "Search for issues by text query, sorted by relevance."
   issueSearch(project: ID!, search: String!): [Issue!]!
 
+  "Retrieve history of changes to an issue, or all issues within a project."
+  issueChanges(project: ID!, issue: ID, pagination: Pagination): PaginatedIssueChanges!
+
   "Search custom field text, used for auto completion."
   searchCustomFields(project: ID!, field: String!, search: String!): [String!]!
 

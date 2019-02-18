@@ -1,29 +1,40 @@
-import { CustomFieldChange, ListChange, LinkChange, ScalarChange } from 'klendathu-json-types';
 import { ObjectID } from 'mongodb';
+import {
+  LinkChange,
+  CustomFieldChange,
+  StringChange,
+} from '../../../../common/types/graphql';
+import { IssueID } from './ids';
+
+export interface ObjectIDChange {
+  before?: ObjectID;
+  after?: ObjectID;
+}
+
+export interface ObjectIDListChange {
+  added: ObjectID[];
+  removed: ObjectID[];
+}
 
 export interface IssueChangeRecord {
   _id?: ObjectID;
-  issue: string;
+  issue: IssueID;
   project: ObjectID;
   by: ObjectID;
   at: Date;
-  type?: ScalarChange;
-  state?: ScalarChange;
-  summary?: ScalarChange;
-  description?: ScalarChange;
-  owner?: ScalarChange;
-  cc?: ListChange<string>;
-  labels?: ListChange<string>;
-  milestone?: ScalarChange;
+  type?: StringChange;
+  state?: StringChange;
+  summary?: StringChange;
+  description?: StringChange;
+  owner?: ObjectIDChange;
+  cc?: ObjectIDListChange;
+  labels?: ObjectIDListChange;
+  milestone?: StringChange;
   attachments?: {
     added?: string[];
     removed?: string[];
   };
-  comments?: {
-    added: number;
-    updated: number;
-    removed: number;
-  };
+  comment?: ObjectID;
   custom?: CustomFieldChange[];
   linked?: LinkChange[];
 }

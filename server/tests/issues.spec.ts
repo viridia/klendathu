@@ -5,18 +5,20 @@ import {
   constructTestServer,
   TestServer,
   createTestProject,
-  createTestUserAccount,
   restoreLogLevel,
   disableErrorLog,
 } from './fixtures';
 import { Errors } from '../../common/types/json';
 import { AccountRecord } from '../src/db/types';
+import { ObjectID } from 'mongodb';
+import { Relation } from '../../common/types/graphql';
 
 const IssueQuery = gql`query IssueQuery($id: ID!) {
   issue(id: $id) {
     id summary description state type reporter reporterSort owner ownerSort
-    labels
+    labels cc
     custom { key value }
+    links { to relation }
   }
 }`;
 
@@ -30,13 +32,22 @@ const IssuesQuery = gql`query IssuesQuery($query: IssueQueryParams!) {
   }
 }`;
 
-// const IssueChangeQuery = gql`query IssueChangeQuery($id: ID!) {
-//   issue(id: $id) {
-//     id summary description state type reporter reporterSort owner ownerSort
-//     labels
-//     custom { key value }
-//   }
-// }`;
+const IssueChangeQuery = gql`query IssueChangeQuery($project: ID!, $issue: ID!) {
+  issueChanges(project: $project, issue: $issue) {
+    results {
+      id issue project by at
+      type { before after }
+      state { before after }
+      summary { before after }
+      description { before after }
+      owner { before after }
+      cc { added removed }
+      labels { added removed }
+      custom { key before after }
+      linked { to before after }
+    }
+  }
+}`;
 
 const NewIssueMutation = gql`mutation NewIssueMutation($project: ID!, $input: IssueInput!) {
   newIssue(project: $project, input: $input) {
@@ -198,7 +209,7 @@ describe('issues', () => {
 
     test('non-member of project', async () => {
       const { mutate } = createTestClient(server.apollo);
-      server.context.user = await createTestUserAccount(server.db, 'smith', '"Kitten" Smith');
+      server.context.user = server.users.kitten;
       const res = await mutate({
         mutation: NewIssueMutation,
         variables: {
@@ -220,6 +231,13 @@ describe('issues', () => {
   });
 
   describe('update issue', () => {
+    const testData = {
+      type: 'bug',
+      state: 'new',
+      summary: 'first',
+      description: 'first issue',
+    };
+    let expectedResponse: any;
     let issueId: string;
 
     beforeEach(async () => {
@@ -229,19 +247,27 @@ describe('issues', () => {
         variables: {
           project,
           input: {
-            type: 'bug',
-            state: 'new',
-            summary: 'first',
-            description: 'first issue',
+            ...testData,
             isPublic: false,
           }
         },
       });
       issueId = result.data.newIssue.id;
+      expectedResponse = {
+        ...testData,
+        id: issueId,
+        reporter: server.context.user._id.toHexString(),
+        reporterSort: server.context.user.accountName,
+        owner: null,
+        ownerSort: '',
+        custom: [],
+      };
     });
 
     afterEach(async () => {
       await server.db.collection('issues').deleteMany({});
+      await server.db.collection('issueLinks').deleteMany({});
+      await server.db.collection('issueChanges').deleteMany({});
     });
 
     test('update return', async () => {
@@ -251,29 +277,18 @@ describe('issues', () => {
         variables: {
           id: issueId,
           input: {
+            ...testData,
             type: 'feature',
-            state: 'new',
-            summary: 'first',
-            description: 'first issue',
           }
         },
       });
 
       expect(res.errors).toBeUndefined();
       expect(res.data.updateIssue).toBeObject();
-      expect(res.data.updateIssue).toEqual(
-        expect.objectContaining({
-          type: 'feature',
-          state: 'new',
-          summary: 'first',
-          description: 'first issue',
-          reporter: server.context.user._id.toHexString(),
-          reporterSort: server.context.user.accountName,
-          owner: null,
-          ownerSort: '',
-          custom: expect.toBeEmptyArray(),
-        }),
-      );
+      expect(res.data.updateIssue).toMatchObject({
+        ...expectedResponse,
+        type: 'feature',
+      });
     });
 
     test('type', async () => {
@@ -283,10 +298,8 @@ describe('issues', () => {
         variables: {
           id: issueId,
           input: {
+            ...testData,
             type: 'feature',
-            state: 'new',
-            summary: 'first',
-            description: 'first issue',
           }
         },
       });
@@ -294,19 +307,31 @@ describe('issues', () => {
 
       const qres = await query({ query: IssueQuery, variables: { id: issueId } });
       expect(qres.errors).toBeUndefined();
-      expect(qres.data.issue).toEqual(
-        expect.objectContaining({
-          type: 'feature',
-          state: 'new',
-          summary: 'first',
-          description: 'first issue',
-          reporter: server.context.user._id.toHexString(),
-          reporterSort: server.context.user.accountName,
-          owner: null,
-          ownerSort: '',
-          custom: expect.toBeEmptyArray(),
-        }),
-      );
+      expect(qres.data.issue).toMatchObject({
+        ...testData,
+        type: 'feature',
+        reporter: server.context.user._id.toHexString(),
+        reporterSort: server.context.user.accountName,
+        owner: null,
+        ownerSort: '',
+        custom: expect.toBeEmptyArray(),
+      });
+
+      const cres = await query({ query: IssueChangeQuery, variables: { project, issue: issueId } });
+      expect(cres.errors).toBeUndefined();
+      expect(cres.data.issueChanges.results).toBeArrayOfSize(1);
+      expect(cres.data.issueChanges.results[0]).toMatchObject({
+        issue: issueId,
+        project,
+        by: server.context.user._id.toHexString(),
+        type: { before: 'bug', after: 'feature' },
+        state: null,
+        summary: null,
+        description: null,
+        owner: null,
+      });
+      expect(cres.data.issueChanges.results[0].id).toBeNonEmptyString();
+      expect(cres.data.issueChanges.results[0].at).toBeDate();
     });
 
     test('state', async () => {
@@ -316,10 +341,8 @@ describe('issues', () => {
         variables: {
           id: issueId,
           input: {
-            type: 'bug',
+            ...testData,
             state: 'assigned',
-            summary: 'first',
-            description: 'first issue',
           }
         },
       });
@@ -327,19 +350,22 @@ describe('issues', () => {
 
       const qres = await query({ query: IssueQuery, variables: { id: issueId } });
       expect(qres.errors).toBeUndefined();
-      expect(qres.data.issue).toEqual(
-        expect.objectContaining({
-          type: 'bug',
-          state: 'assigned',
-          summary: 'first',
-          description: 'first issue',
-          reporter: server.context.user._id.toHexString(),
-          reporterSort: server.context.user.accountName,
-          owner: null,
-          ownerSort: '',
-          custom: expect.toBeEmptyArray(),
-        }),
-      );
+      expect(qres.data.issue).toMatchObject({
+        ...testData,
+        state: 'assigned',
+        reporter: server.context.user._id.toHexString(),
+        reporterSort: server.context.user.accountName,
+        owner: null,
+        ownerSort: '',
+        custom: expect.toBeEmptyArray(),
+      });
+
+      const cres = await query({ query: IssueChangeQuery, variables: { project, issue: issueId } });
+      expect(cres.errors).toBeUndefined();
+      expect(cres.data.issueChanges.results).toBeArrayOfSize(1);
+      expect(cres.data.issueChanges.results[0]).toMatchObject({
+        state: { before: 'new', after: 'assigned' },
+      });
     });
 
     test('summary', async () => {
@@ -349,10 +375,8 @@ describe('issues', () => {
         variables: {
           id: issueId,
           input: {
-            type: 'bug',
-            state: 'new',
+            ...testData,
             summary: 'Updated summary',
-            description: 'first issue',
           }
         },
       });
@@ -360,19 +384,22 @@ describe('issues', () => {
 
       const qres = await query({ query: IssueQuery, variables: { id: issueId } });
       expect(qres.errors).toBeUndefined();
-      expect(qres.data.issue).toEqual(
-        expect.objectContaining({
-          type: 'bug',
-          state: 'new',
-          summary: 'Updated summary',
-          description: 'first issue',
-          reporter: server.context.user._id.toHexString(),
-          reporterSort: server.context.user.accountName,
-          owner: null,
-          ownerSort: '',
-          custom: expect.toBeEmptyArray(),
-        }),
-      );
+      expect(qres.data.issue).toMatchObject({
+        ...testData,
+        summary: 'Updated summary',
+        reporter: server.context.user._id.toHexString(),
+        reporterSort: server.context.user.accountName,
+        owner: null,
+        ownerSort: '',
+        custom: expect.toBeEmptyArray(),
+      });
+
+      const cres = await query({ query: IssueChangeQuery, variables: { project, issue: issueId } });
+      expect(cres.errors).toBeUndefined();
+      expect(cres.data.issueChanges.results).toBeArrayOfSize(1);
+      expect(cres.data.issueChanges.results[0]).toMatchObject({
+        summary: { before: 'first', after: 'Updated summary' },
+      });
     });
 
     test('description', async () => {
@@ -382,9 +409,7 @@ describe('issues', () => {
         variables: {
           id: issueId,
           input: {
-            type: 'bug',
-            state: 'new',
-            summary: 'first',
+            ...testData,
             description: 'updated description',
           }
         },
@@ -393,19 +418,720 @@ describe('issues', () => {
 
       const qres = await query({ query: IssueQuery, variables: { id: issueId } });
       expect(qres.errors).toBeUndefined();
-      expect(qres.data.issue).toEqual(
-        expect.objectContaining({
-          type: 'bug',
-          state: 'new',
-          summary: 'first',
-          description: 'updated description',
-          reporter: server.context.user._id.toHexString(),
-          reporterSort: server.context.user.accountName,
-          owner: null,
-          ownerSort: '',
-          custom: expect.toBeEmptyArray(),
-        }),
-      );
+      expect(qres.data.issue).toMatchObject({
+        ...testData,
+        description: 'updated description',
+        reporter: server.context.user._id.toHexString(),
+        reporterSort: server.context.user.accountName,
+        owner: null,
+        ownerSort: '',
+        custom: expect.toBeEmptyArray(),
+      });
+
+      const cres = await query({ query: IssueChangeQuery, variables: { project, issue: issueId } });
+      expect(cres.errors).toBeUndefined();
+      expect(cres.data.issueChanges.results).toBeArrayOfSize(1);
+      expect(cres.data.issueChanges.results[0]).toMatchObject({
+        description: { before: 'first issue', after: 'updated description' },
+      });
+    });
+
+    test('owner', async () => {
+      const { query, mutate } = createTestClient(server.apollo);
+      const res = await mutate({
+        mutation: UpdateIssueMutation,
+        variables: {
+          id: issueId,
+          input: {
+            ...testData,
+            owner: server.users.kitten._id.toHexString(),
+          }
+        },
+      });
+      expect(res.errors).toBeUndefined();
+
+      const qres = await query({ query: IssueQuery, variables: { id: issueId } });
+      expect(qres.errors).toBeUndefined();
+      expect(qres.data.issue).toMatchObject({
+        ...expectedResponse,
+        owner: server.users.kitten._id.toHexString(),
+        ownerSort: 'kitten',
+      });
+
+      const cres = await query({ query: IssueChangeQuery, variables: { project, issue: issueId } });
+      expect(cres.errors).toBeUndefined();
+      expect(cres.data.issueChanges.results).toBeArrayOfSize(1);
+      expect(cres.data.issueChanges.results[0]).toMatchObject({
+        owner: { before: null, after: server.users.kitten._id.toHexString() },
+      });
+    });
+
+    test('cc', async () => {
+      const { query, mutate } = createTestClient(server.apollo);
+      const res = await mutate({
+        mutation: UpdateIssueMutation,
+        variables: {
+          id: issueId,
+          input: {
+            ...testData,
+            cc: [
+              server.users.dflores._id.toHexString(),
+              server.users.kitten._id.toHexString(),
+            ]
+          }
+        },
+      });
+      expect(res.errors).toBeUndefined();
+
+      const qres = await query({ query: IssueQuery, variables: { id: issueId } });
+      expect(qres.errors).toBeUndefined();
+      expect(qres.data.issue).toMatchObject({
+        ...expectedResponse,
+        cc: [
+          server.users.dflores._id.toHexString(),
+          server.users.kitten._id.toHexString(),
+        ],
+      });
+
+      const cres = await query({ query: IssueChangeQuery, variables: { project, issue: issueId } });
+      expect(cres.errors).toBeUndefined();
+      expect(cres.data.issueChanges.results).toBeArrayOfSize(1);
+      expect(cres.data.issueChanges.results[0]).toMatchObject({
+        cc: {
+          added: [
+            server.users.dflores._id.toHexString(),
+            server.users.kitten._id.toHexString(),
+          ],
+          removed: [],
+        },
+      });
+    });
+
+    test('labels', async () => {
+      const { query, mutate } = createTestClient(server.apollo);
+      const l1 = new ObjectID();
+      const l2 = new ObjectID();
+      const res = await mutate({
+        mutation: UpdateIssueMutation,
+        variables: {
+          id: issueId,
+          input: {
+            ...testData,
+            labels: [ l1.toHexString(), l2.toHexString() ]
+          }
+        },
+      });
+      expect(res.errors).toBeUndefined();
+
+      const qres = await query({ query: IssueQuery, variables: { id: issueId } });
+      expect(qres.errors).toBeUndefined();
+      expect(qres.data.issue).toMatchObject({
+        ...expectedResponse,
+        labels: [ l1.toHexString(), l2.toHexString() ]
+      });
+
+      const cres = await query({ query: IssueChangeQuery, variables: { project, issue: issueId } });
+      expect(cres.errors).toBeUndefined();
+      expect(cres.data.issueChanges.results).toBeArrayOfSize(1);
+      expect(cres.data.issueChanges.results[0]).toMatchObject({
+        labels: {
+          added: [ l1.toHexString(), l2.toHexString() ],
+          removed: [],
+        },
+      });
+    });
+
+    test('custom', async () => {
+      const { query, mutate } = createTestClient(server.apollo);
+      const res = await mutate({
+        mutation: UpdateIssueMutation,
+        variables: {
+          id: issueId,
+          input: {
+            ...testData,
+            custom: [
+              { key: 'a', value: 1 },
+              { key: 'b', value: 2 },
+            ]
+          }
+        },
+      });
+      expect(res.errors).toBeUndefined();
+
+      const qres = await query({ query: IssueQuery, variables: { id: issueId } });
+      expect(qres.errors).toBeUndefined();
+      expect(qres.data.issue).toMatchObject({
+        ...expectedResponse,
+        custom: [
+          { key: 'a', value: 1 },
+          { key: 'b', value: 2 },
+        ]
+      });
+
+      const cres = await query({ query: IssueChangeQuery, variables: { project, issue: issueId } });
+      expect(cres.errors).toBeUndefined();
+      expect(cres.data.issueChanges.results).toBeArrayOfSize(1);
+      expect(cres.data.issueChanges.results[0]).toMatchObject({
+        custom: [
+          { key: 'a', before: null, after: 1 },
+          { key: 'b', before: null, after: 2 },
+        ],
+      });
+    });
+
+    test('link add', async () => {
+      const { query, mutate } = createTestClient(server.apollo);
+
+      // Create a second issue
+      const ires = await mutate({
+        mutation: NewIssueMutation,
+        variables: {
+          project,
+          input: { type: 'bug', state: 'new', summary: 'second', description: 'second issue' }
+        },
+      });
+      expect(ires.errors).toBeUndefined();
+      const otherIssueId = ires.data.newIssue.id;
+
+      // Add an issue link
+      const res = await mutate({
+        mutation: UpdateIssueMutation,
+        variables: {
+          id: issueId,
+          input: {
+            ...testData,
+            linked: [{ to: otherIssueId, relation: Relation.BlockedBy }],
+          }
+        },
+      });
+      expect(res.errors).toBeUndefined();
+
+      // Make sure both issues return the link
+      const qres = await query({ query: IssueQuery, variables: { id: issueId } });
+      expect(qres.errors).toBeUndefined();
+      expect(qres.data.issue).toMatchObject({
+        ...expectedResponse,
+        links: [{ relation: Relation.BlockedBy, to: otherIssueId }]
+      });
+
+      const qres2 = await query({ query: IssueQuery, variables: { id: otherIssueId } });
+      expect(qres2.errors).toBeUndefined();
+      expect(qres2.data.issue).toMatchObject({
+        links: [{ relation: Relation.Blocks, to: issueId }],
+      });
+
+      // Make sure both issues have a change entry
+      const cres = await query({ query: IssueChangeQuery, variables: { project, issue: issueId } });
+      expect(cres.errors).toBeUndefined();
+      expect(cres.data.issueChanges.results).toBeArrayOfSize(1);
+      expect(cres.data.issueChanges.results[0]).toMatchObject({
+        linked: [{ after: Relation.BlockedBy, before: null, to: otherIssueId }],
+      });
+
+      const cres2 = await query({
+        query: IssueChangeQuery,
+        variables: { project, issue: otherIssueId },
+      });
+      expect(cres2.errors).toBeUndefined();
+      expect(cres2.data.issueChanges.results).toBeArrayOfSize(1);
+      expect(cres2.data.issueChanges.results[0]).toMatchObject({
+        linked: [{ after: Relation.Blocks, before: null, to: issueId }],
+      });
+    });
+
+    test('link add (reverse)', async () => {
+      const { query, mutate } = createTestClient(server.apollo);
+
+      // Create a second issue
+      const ires = await mutate({
+        mutation: NewIssueMutation,
+        variables: {
+          project,
+          input: { type: 'bug', state: 'new', summary: 'second', description: 'second issue' }
+        },
+      });
+      expect(ires.errors).toBeUndefined();
+      const otherIssueId = ires.data.newIssue.id;
+
+      // Add an issue link in the opposite direction
+      const res = await mutate({
+        mutation: UpdateIssueMutation,
+        variables: {
+          id: otherIssueId,
+          input: {
+            ...testData,
+            linked: [{ to: issueId, relation: Relation.Blocks }],
+          }
+        },
+      });
+      expect(res.errors).toBeUndefined();
+
+      // Make sure both issues return the link
+      const qres = await query({ query: IssueQuery, variables: { id: issueId } });
+      expect(qres.errors).toBeUndefined();
+      expect(qres.data.issue).toMatchObject({
+        ...expectedResponse,
+        links: [{ relation: Relation.BlockedBy, to: otherIssueId }],
+      });
+
+      const qres2 = await query({ query: IssueQuery, variables: { id: otherIssueId } });
+      expect(qres2.errors).toBeUndefined();
+      expect(qres2.data.issue).toMatchObject({
+        links: [{ relation: Relation.Blocks, to: issueId }],
+      });
+
+      // Make sure both issues have a change entry
+      const cres = await query({ query: IssueChangeQuery, variables: { project, issue: issueId } });
+      expect(cres.errors).toBeUndefined();
+      expect(cres.data.issueChanges.results).toBeArrayOfSize(1);
+      expect(cres.data.issueChanges.results[0]).toMatchObject({
+        linked: [{ after: Relation.BlockedBy, before: null, to: otherIssueId }],
+      });
+
+      const cres2 = await query({
+        query: IssueChangeQuery,
+        variables: { project, issue: otherIssueId },
+      });
+      expect(cres2.errors).toBeUndefined();
+      expect(cres2.data.issueChanges.results).toBeArrayOfSize(1);
+      expect(cres2.data.issueChanges.results[0]).toMatchObject({
+        linked: [{ after: Relation.Blocks, before: null, to: issueId }],
+      });
+    });
+
+    test('link delete', async () => {
+      const { query, mutate } = createTestClient(server.apollo);
+
+      // Create a second issue
+      const ires = await mutate({
+        mutation: NewIssueMutation,
+        variables: {
+          project,
+          input: { type: 'bug', state: 'new', summary: 'second', description: 'second issue' }
+        },
+      });
+      expect(ires.errors).toBeUndefined();
+      const otherIssueId = ires.data.newIssue.id;
+
+      // Add an issue link
+      const res = await mutate({
+        mutation: UpdateIssueMutation,
+        variables: {
+          id: issueId,
+          input: {
+            ...testData,
+            linked: [{ to: otherIssueId, relation: Relation.BlockedBy }],
+          }
+        },
+      });
+      expect(res.errors).toBeUndefined();
+
+      // Clear change list
+      await server.db.collection('issueChanges').deleteMany({});
+
+      // Remove the link
+      const res2 = await mutate({
+        mutation: UpdateIssueMutation,
+        variables: {
+          id: issueId,
+          input: {
+            ...testData,
+            linked: []
+          }
+        },
+      });
+      expect(res2.errors).toBeUndefined();
+
+      const qres = await query({ query: IssueQuery, variables: { id: issueId } });
+      expect(qres.errors).toBeUndefined();
+      expect(qres.data.issue).toMatchObject({
+        ...expectedResponse,
+        links: []
+      });
+
+      const qres2 = await query({ query: IssueQuery, variables: { id: otherIssueId } });
+      expect(qres2.errors).toBeUndefined();
+      expect(qres2.data.issue).toMatchObject({
+        links: []
+      });
+
+      const cres = await query({ query: IssueChangeQuery, variables: { project, issue: issueId } });
+      expect(cres.errors).toBeUndefined();
+      expect(cres.data.issueChanges.results).toBeArrayOfSize(1);
+      expect(cres.data.issueChanges.results[0]).toMatchObject({
+        linked: [{ after: null, before: Relation.BlockedBy, to: otherIssueId }],
+      });
+
+      const cres2 = await query({
+        query: IssueChangeQuery,
+        variables: { project, issue: otherIssueId },
+      });
+      expect(cres2.errors).toBeUndefined();
+      expect(cres2.data.issueChanges.results).toBeArrayOfSize(1);
+      expect(cres2.data.issueChanges.results[0]).toMatchObject({
+        linked: [{ after: null, before: Relation.Blocks, to: issueId }],
+      });
+    });
+
+    test('link delete (reverse)', async () => {
+      const { query, mutate } = createTestClient(server.apollo);
+
+      // Create a second issue
+      const ires = await mutate({
+        mutation: NewIssueMutation,
+        variables: {
+          project,
+          input: { type: 'bug', state: 'new', summary: 'second', description: 'second issue' }
+        },
+      });
+      expect(ires.errors).toBeUndefined();
+      const otherIssueId = ires.data.newIssue.id;
+
+      // Add an issue link
+      const res = await mutate({
+        mutation: UpdateIssueMutation,
+        variables: {
+          id: issueId,
+          input: {
+            ...testData,
+            linked: [{ to: otherIssueId, relation: Relation.BlockedBy }],
+          }
+        },
+      });
+      expect(res.errors).toBeUndefined();
+
+      // Clear change list
+      await server.db.collection('issueChanges').deleteMany({});
+
+      // Remove the link fro the other issue
+      const res2 = await mutate({
+        mutation: UpdateIssueMutation,
+        variables: {
+          id: otherIssueId,
+          input: { ...testData, linked: [] },
+        },
+      });
+      expect(res2.errors).toBeUndefined();
+
+      const qres = await query({ query: IssueQuery, variables: { id: issueId } });
+      expect(qres.errors).toBeUndefined();
+      expect(qres.data.issue).toMatchObject({
+        ...expectedResponse,
+        links: []
+      });
+
+      const qres2 = await query({ query: IssueQuery, variables: { id: otherIssueId } });
+      expect(qres2.errors).toBeUndefined();
+      expect(qres2.data.issue).toMatchObject({
+        links: []
+      });
+
+      const cres = await query({ query: IssueChangeQuery, variables: { project, issue: issueId } });
+      expect(cres.errors).toBeUndefined();
+      expect(cres.data.issueChanges.results).toBeArrayOfSize(1);
+      expect(cres.data.issueChanges.results[0]).toMatchObject({
+        linked: [{ after: null, before: Relation.BlockedBy, to: otherIssueId }],
+      });
+
+      const cres2 = await query({
+        query: IssueChangeQuery,
+        variables: { project, issue: otherIssueId },
+      });
+      expect(cres2.errors).toBeUndefined();
+      expect(cres2.data.issueChanges.results).toBeArrayOfSize(1);
+      expect(cres2.data.issueChanges.results[0]).toMatchObject({
+        linked: [{ after: null, before: Relation.Blocks, to: issueId }],
+      });
+    });
+
+    test('link change (replace relation)', async () => {
+      const { query, mutate } = createTestClient(server.apollo);
+
+      // Create a second issue
+      const ires = await mutate({
+        mutation: NewIssueMutation,
+        variables: {
+          project,
+          input: { type: 'bug', state: 'new', summary: 'second', description: 'second issue' }
+        },
+      });
+      expect(ires.errors).toBeUndefined();
+      const otherIssueId = ires.data.newIssue.id;
+
+      // Add an issue link
+      const res = await mutate({
+        mutation: UpdateIssueMutation,
+        variables: {
+          id: issueId,
+          input: {
+            ...testData,
+            linked: [{ to: otherIssueId, relation: Relation.BlockedBy }],
+          }
+        },
+      });
+      expect(res.errors).toBeUndefined();
+
+      // Clear change list
+      await server.db.collection('issueChanges').deleteMany({});
+
+      // Change the link to a new relation type
+      const res2 = await mutate({
+        mutation: UpdateIssueMutation,
+        variables: {
+          id: issueId,
+          input: {
+            ...testData,
+            linked: [{ to: otherIssueId, relation: Relation.Duplicate }],
+          }
+        },
+      });
+      expect(res2.errors).toBeUndefined();
+
+      const qres = await query({ query: IssueQuery, variables: { id: issueId } });
+      expect(qres.errors).toBeUndefined();
+      expect(qres.data.issue).toMatchObject({
+        ...expectedResponse,
+        links: [{ relation: Relation.Duplicate, to: otherIssueId }],
+      });
+
+      const qres2 = await query({ query: IssueQuery, variables: { id: otherIssueId } });
+      expect(qres2.errors).toBeUndefined();
+      expect(qres2.data.issue).toMatchObject({
+        links: [{ relation: Relation.Duplicate, to: issueId }],
+      });
+
+      const cres = await query({ query: IssueChangeQuery, variables: { project, issue: issueId } });
+      expect(cres.errors).toBeUndefined();
+      expect(cres.data.issueChanges.results).toBeArrayOfSize(1);
+      expect(cres.data.issueChanges.results[0]).toMatchObject({
+        linked: [{ after: Relation.Duplicate, before: Relation.BlockedBy, to: otherIssueId }],
+      });
+
+      const cres2 = await query({
+        query: IssueChangeQuery,
+        variables: { project, issue: otherIssueId },
+      });
+      expect(cres2.errors).toBeUndefined();
+      expect(cres2.data.issueChanges.results).toBeArrayOfSize(1);
+      expect(cres2.data.issueChanges.results[0]).toMatchObject({
+        linked: [{ after: Relation.Duplicate, before: Relation.Blocks, to: issueId }],
+      });
+    });
+
+    test('link change (replace relation, reverse)', async () => {
+      const { query, mutate } = createTestClient(server.apollo);
+
+      // Create a second issue
+      const ires = await mutate({
+        mutation: NewIssueMutation,
+        variables: {
+          project,
+          input: { type: 'bug', state: 'new', summary: 'second', description: 'second issue' }
+        },
+      });
+      expect(ires.errors).toBeUndefined();
+      const otherIssueId = ires.data.newIssue.id;
+
+      // Add an issue link
+      const res = await mutate({
+        mutation: UpdateIssueMutation,
+        variables: {
+          id: issueId,
+          input: {
+            ...testData,
+            linked: [{ to: otherIssueId, relation: Relation.BlockedBy }],
+          }
+        },
+      });
+      expect(res.errors).toBeUndefined();
+
+      // Clear change list
+      await server.db.collection('issueChanges').deleteMany({});
+
+      // Change the link to a new relation type (other side)
+      const res2 = await mutate({
+        mutation: UpdateIssueMutation,
+        variables: {
+          id: otherIssueId,
+          input: {
+            type: 'bug',
+            state: 'new',
+            summary: 'second',
+            description: 'second issue',
+            linked: [{ to: issueId, relation: Relation.Duplicate }],
+          }
+        },
+      });
+      expect(res2.errors).toBeUndefined();
+
+      const qres = await query({ query: IssueQuery, variables: { id: issueId } });
+      expect(qres.errors).toBeUndefined();
+      expect(qres.data.issue).toMatchObject({
+        ...expectedResponse,
+        links: [{ relation: Relation.Duplicate, to: otherIssueId }],
+      });
+
+      const qres2 = await query({ query: IssueQuery, variables: { id: otherIssueId } });
+      expect(qres2.errors).toBeUndefined();
+      expect(qres2.data.issue).toMatchObject({
+        links: [{ relation: Relation.Duplicate, to: issueId }],
+      });
+
+      const cres = await query({ query: IssueChangeQuery, variables: { project, issue: issueId } });
+      expect(cres.errors).toBeUndefined();
+      expect(cres.data.issueChanges.results).toBeArrayOfSize(1);
+      expect(cres.data.issueChanges.results[0]).toMatchObject({
+        linked: [{ after: Relation.Duplicate, before: Relation.BlockedBy, to: otherIssueId }],
+      });
+
+      const cres2 = await query({
+        query: IssueChangeQuery,
+        variables: { project, issue: otherIssueId },
+      });
+      expect(cres2.errors).toBeUndefined();
+      expect(cres2.data.issueChanges.results).toBeArrayOfSize(1);
+      expect(cres2.data.issueChanges.results[0]).toMatchObject({
+        linked: [{ after: Relation.Duplicate, before: Relation.Blocks, to: issueId }],
+      });
+    });
+
+    test('link change (no effect)', async () => {
+      const { query, mutate } = createTestClient(server.apollo);
+
+      // Create a second issue
+      const ires = await mutate({
+        mutation: NewIssueMutation,
+        variables: {
+          project,
+          input: { type: 'bug', state: 'new', summary: 'second', description: 'second issue' }
+        },
+      });
+      expect(ires.errors).toBeUndefined();
+      const otherIssueId = ires.data.newIssue.id;
+
+      // Add an issue link
+      const res = await mutate({
+        mutation: UpdateIssueMutation,
+        variables: {
+          id: issueId,
+          input: {
+            ...testData,
+            linked: [{ to: otherIssueId, relation: Relation.BlockedBy }],
+          }
+        },
+      });
+      expect(res.errors).toBeUndefined();
+
+      // Clear change list
+      await server.db.collection('issueChanges').deleteMany({});
+
+      // Change the link to the same thing
+      const res2 = await mutate({
+        mutation: UpdateIssueMutation,
+        variables: {
+          id: issueId,
+          input: {
+            ...testData,
+            linked: [{ to: otherIssueId, relation: Relation.BlockedBy }],
+          }
+        },
+      });
+      expect(res2.errors).toBeUndefined();
+
+      const qres = await query({ query: IssueQuery, variables: { id: issueId } });
+      expect(qres.errors).toBeUndefined();
+      expect(qres.data.issue).toMatchObject({
+        ...expectedResponse,
+        links: [{ relation: Relation.BlockedBy, to: otherIssueId }],
+      });
+
+      const qres2 = await query({ query: IssueQuery, variables: { id: otherIssueId } });
+      expect(qres2.errors).toBeUndefined();
+      expect(qres2.data.issue).toMatchObject({
+        links: [{ relation: Relation.Blocks, to: issueId }],
+      });
+
+      const cres = await query({ query: IssueChangeQuery, variables: { project, issue: issueId } });
+      expect(cres.errors).toBeUndefined();
+      expect(cres.data.issueChanges.results).toBeArrayOfSize(0);
+
+      const cres2 = await query({
+        query: IssueChangeQuery,
+        variables: { project, issue: otherIssueId },
+      });
+      expect(cres2.errors).toBeUndefined();
+      expect(cres2.data.issueChanges.results).toBeArrayOfSize(0);
+    });
+
+    test('link change (no effect, reverse)', async () => {
+      const { query, mutate } = createTestClient(server.apollo);
+
+      // Create a second issue
+      const ires = await mutate({
+        mutation: NewIssueMutation,
+        variables: {
+          project,
+          input: { type: 'bug', state: 'new', summary: 'second', description: 'second issue' }
+        },
+      });
+      expect(ires.errors).toBeUndefined();
+      const otherIssueId = ires.data.newIssue.id;
+
+      // Add an issue link
+      const res = await mutate({
+        mutation: UpdateIssueMutation,
+        variables: {
+          id: issueId,
+          input: {
+            ...testData,
+            linked: [{ to: otherIssueId, relation: Relation.BlockedBy }],
+          }
+        },
+      });
+      expect(res.errors).toBeUndefined();
+
+      // Clear change list
+      await server.db.collection('issueChanges').deleteMany({});
+
+      // Change the link to the same thing
+      const res2 = await mutate({
+        mutation: UpdateIssueMutation,
+        variables: {
+          id: otherIssueId,
+          input: {
+            type: 'bug',
+            state: 'new',
+            summary: 'second',
+            description: 'second issue',
+            linked: [{ to: issueId, relation: Relation.Blocks }],
+          }
+        },
+      });
+      expect(res2.errors).toBeUndefined();
+
+      const qres = await query({ query: IssueQuery, variables: { id: issueId } });
+      expect(qres.errors).toBeUndefined();
+      expect(qres.data.issue).toMatchObject({
+        ...expectedResponse,
+        links: [{ relation: Relation.BlockedBy, to: otherIssueId }],
+      });
+
+      const qres2 = await query({ query: IssueQuery, variables: { id: otherIssueId } });
+      expect(qres2.errors).toBeUndefined();
+      expect(qres2.data.issue).toMatchObject({
+        links: [{ relation: Relation.Blocks, to: issueId }],
+      });
+
+      const cres = await query({ query: IssueChangeQuery, variables: { project, issue: issueId } });
+      expect(cres.errors).toBeUndefined();
+      expect(cres.data.issueChanges.results).toBeArrayOfSize(0);
+
+      const cres2 = await query({
+        query: IssueChangeQuery,
+        variables: { project, issue: otherIssueId },
+      });
+      expect(cres2.errors).toBeUndefined();
+      expect(cres2.data.issueChanges.results).toBeArrayOfSize(0);
     });
   });
 
