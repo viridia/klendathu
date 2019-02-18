@@ -38,6 +38,8 @@ export async function createTestUserAccount(
 
 export async function constructTestServer(): Promise<TestServer> {
   process.env.DB_NAME = 'klendathu-test';
+  process.env.DB_USER = 'klendathu-admin';
+  process.env.DB_PASSWORD = 'example';
   const client = await createClient();
   const db = client.db(process.env.DB_NAME);
   const user = await createTestUserAccount(db, 'dflores', 'Dizzy Flores');

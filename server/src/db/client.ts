@@ -7,7 +7,7 @@ export async function createClient(): Promise<MongoClient> {
   const dbUrl = process.env.DB_HOST;
   const client = await MongoClient.connect(dbUrl, {
     useNewUrlParser: true,
-    auth: { user: 'root', password: 'example' }
+    auth: { user: process.env.DB_USER, password: process.env.DB_PASSWORD }
   });
   const db = client.db(process.env.DB_NAME);
   logger.debug(`Connected to ${dbUrl}`);

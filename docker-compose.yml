@@ -4,11 +4,13 @@ services:
     image: mongo:4.0.5
     restart: always
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_USERNAME: klendathu-admin
       MONGO_INITDB_ROOT_PASSWORD: example
       MONGO_INITDB_DATABASE: klendathu
     ports:
       - 27017:27017
+    volumes:
+      - $PWD/data:/data/db
   db-admin:
     image: mongo-express:0.49.0
     restart: always
