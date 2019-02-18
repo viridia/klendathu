@@ -19,8 +19,19 @@ import {
   CustomColumnRenderer,
 } from './columns';
 import { IssueListEntry } from './IssueListEntry';
+import { keyframes } from 'styled-components';
+
+const highlightNew = (color: string) => keyframes`
+  from {
+    background-color: ${color};
+  }
+`;
 
 const IssueListViewTable = styled(Table)`
+  tr.added {
+    animation: ${props => highlightNew(props.theme.buttonColors.secondary.bg)} 1s ease-in;
+  }
+
   th {
     white-space: nowrap;
   }

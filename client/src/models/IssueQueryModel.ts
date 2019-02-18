@@ -6,8 +6,9 @@ import {
   Subscription,
   IssuesChangedSubscriptionArgs,
   Query,
+  ChangeAction,
 } from '../../../common/types/graphql';
-import { observable, IReactionDisposer, autorun, action, computed } from 'mobx';
+import { observable, IReactionDisposer, autorun, action, computed, ObservableSet } from 'mobx';
 import { client } from '../graphql/client';
 import bind from 'bind-decorator';
 import gql from 'graphql-tag';
@@ -27,7 +28,7 @@ const IssuesSubscription = gql`
   subscription IssuesQuery($project: ID!) {
     issuesChanged(project: $project) {
       action
-      issue { ...IssueFields }
+      value { ...IssueFields }
     }
   }
   ${fragments.issue}
@@ -45,6 +46,7 @@ export class IssueQueryModel {
   @observable public query: QueryParams = {};
   @observable public sort = 'id';
   @observable public descending = false;
+  @observable public recentlyAdded = new Set<string>() as ObservableSet<string>;
 
   @observable private projectId: string = null;
   private disposer: IReactionDisposer;
@@ -151,10 +153,13 @@ export class IssueQueryModel {
           variables: {
             project: this.projectId,
           },
-      }).subscribe(({ errors }) => {
+      }).subscribe(({ errors, data }) => {
         if (errors) {
           this.errors = errors;
         } else {
+          if (data.issuesChanged.action === ChangeAction.Added) {
+            this.recentlyAdded.replace([data.issuesChanged.value.id]);
+          }
           // console.log(data);
           if (this.querySubscription) {
             this.queryResult.refetch();

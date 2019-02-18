@@ -67,7 +67,7 @@ export class IssueListEntry extends React.Component<Props> {
       style.marginLeft = `${level * 32}px`;
     }
     return (
-      <tr>
+      <tr className={classNames({ added: context.issues.recentlyAdded.has(issue.id) })}>
         {project.role >= Role.UPDATER && (
           <SelectedCell className="selected">
             <CheckBox

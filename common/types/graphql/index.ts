@@ -689,7 +689,7 @@ export interface ProjectPrefsChange {
 export interface IssueChange {
   action: ChangeAction;
 
-  issue: Issue;
+  value: Issue;
 }
 
 /** Defines a relationship between one issue and another, includes both ends of the link. */

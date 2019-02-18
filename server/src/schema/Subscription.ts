@@ -26,7 +26,7 @@ type ProjectPrefsChange {
 
 type IssueChange {
   action: ChangeAction!
-  issue: Issue!
+  value: Issue!
 }
 
 type Subscription {
@@ -43,7 +43,6 @@ type Subscription {
   labelChanged(project: ID!): LabelChange!
 
   # Issue changed
-  # Issues changed
 
   "Watch for changes to project prefs (current user)."
   prefsChanged(project: ID!): ProjectPrefsChange!

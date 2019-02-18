@@ -35,7 +35,7 @@ import { pubsub } from './pubsub';
 const ISSUE_CHANGE = 'issue-change';
 
 interface IssueRecordChange {
-  issue: IssueRecord;
+  value: IssueRecord;
   action: ChangeAction;
 }
 
@@ -388,7 +388,7 @@ export const mutations = {
 
     pubsub.publish(ISSUE_CHANGE, {
       action: ChangeAction.Added,
-      issue: row,
+      value: row,
     });
     return row;
   },
@@ -851,10 +851,10 @@ export const subscriptions = {
     subscribe: withFilter(
       () => pubsub.asyncIterator([ISSUE_CHANGE]),
       (
-        { issue }: IssueRecordChange,
+        change: IssueRecordChange,
         { project }: IssuesChangedSubscriptionArgs,
         context: Context) => {
-        return context.user && issue.project.equals(project);
+        return context.user && change.value.project.equals(project);
       }
     ),
     resolve: (payload: IssueRecordChange, args: any, context: Context) => {
