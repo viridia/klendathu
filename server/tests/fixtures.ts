@@ -31,6 +31,7 @@ export async function createTestUserAccount(
       await db.collection('accounts').findOneAndUpdate({ accountName }, { $setOnInsert: account }, {
     upsert: true,
   });
+  logger.debug(JSON.stringify(result, null, 2));
   return result.value;
 }
 
@@ -43,7 +44,6 @@ export async function constructTestServer(): Promise<TestServer> {
   const user = await createTestUserAccount(db, 'dflores', 'Dizzy Flores');
   const kitten = await createTestUserAccount(db, 'kitten', '"Kitten" Smith');
   const context: Context = { client, db, user };
-  logger.debug(JSON.stringify(context.user, null, 2));
   const apollo = new ApolloServer({
     typeDefs,
     context,
