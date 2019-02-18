@@ -1,26 +1,25 @@
+import { LabelRecord, CommentRecord } from '../db/types';
 import { Context } from './Context';
-import { IssueChangeRecord } from '../db/types';
-import { IssueChangesQueryArgs } from '../../../common/types/graphql';
+import { CommentsQueryArgs } from '../../../common/types/graphql';
+import { ObjectID } from 'mongodb';
 import { UserInputError } from 'apollo-server-core';
 import { Errors, Role } from '../../../common/types/json';
-import { getProjectAndRole } from '../db/role';
 import { logger } from '../logger';
-import { ObjectID } from 'mongodb';
+import { getProjectAndRole } from '../db/role';
 
-interface PaginatedIssueChangeRecords {
+interface PaginatedCommentRecords {
   count: number;
   offset: number;
-  results: IssueChangeRecord[];
+  results: CommentRecord[];
 }
 
 export const queries = {
-  async issueChanges(
+  async comments(
       _: any,
-      { project: pid, issue, pagination }: IssueChangesQueryArgs,
-      context: Context): Promise<PaginatedIssueChangeRecords> {
-
+      { project: pid, issue, pagination }: CommentsQueryArgs,
+      context: Context): Promise<PaginatedCommentRecords> {
     const user = context.user ? context.user.accountName : null;
-    const issueChanges = context.db.collection<IssueChangeRecord>('issueChanges');
+    const comments = context.db.collection<CommentRecord>('comments');
     const { project, role } = await getProjectAndRole(
         context.db, context.user, new ObjectID(pid));
     if (!project) {
@@ -42,23 +41,17 @@ export const queries = {
       filter.issue = issue;
     }
 
-    // If they are not a project member, only allow public issues to be viewed.
-    // if (role < Role.VIEWER) {
-    //   filter.isPublic = true;
-    // }
-
-    const result = await issueChanges.find(filter).sort({ at: 1 }).toArray();
+    const results = await comments.find(filter).sort({ created: 1 }).toArray();
     return {
-      count: result.length,
+      count: results.length,
       offset: 0,
-      results: result,
+      results,
     };
   },
 };
 
 export const types = {
-  IssueChangeEntry: {
-    id(row: IssueChangeRecord) { return row._id; },
-    by: (row: IssueChangeRecord) => row.by ? row.by.toHexString() : null,
+  Comment: {
+    id(row: LabelRecord) { return row._id; },
   },
 };

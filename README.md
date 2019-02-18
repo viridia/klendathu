@@ -32,3 +32,4 @@ npm test
 * Express.js
 * Passport.js
 * Styled-components
+* Jest

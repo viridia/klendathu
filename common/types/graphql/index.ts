@@ -282,6 +282,8 @@ export interface Query {
   issueSearch: Issue[];
   /** Retrieve history of changes to an issue, or all issues within a project. */
   issueChanges: PaginatedIssueChanges;
+  /** Retrieve history of comments to an issue, or all issues within a project. */
+  comments: PaginatedComments;
   /** Search custom field text, used for auto completion. */
   searchCustomFields: string[];
   /** Current user's preferences for a project. */
@@ -550,6 +552,8 @@ export interface IssueChangeEntry {
   attachments?: Maybe<IdListChange>;
   /** Changes to comments. */
   comments?: Maybe<CommentsChange>;
+  /** A posted comment. (Each posted comment has an associated IssueChange record.) */
+  comment?: Maybe<Comment>;
   /** Changes to the list of custom fields. */
   custom?: Maybe<CustomFieldChange[]>;
   /** Changes to the list of linked issues. */
@@ -582,12 +586,30 @@ export interface IdListChange {
 
 /** Summary of changes to comments. */
 export interface CommentsChange {
-  /** ID of comments that were added. */
+  /** List of comments that were added. */
   added: string[];
-  /** Number of comments that were updated. */
+  /** List of comments that were updated. */
   updated: string[];
-  /** Number of comments that were removed. */
+  /** List of comments that were removed. */
   removed: string[];
+}
+
+/** Record representing a comment. */
+export interface Comment {
+  /** Comment ID. */
+  id: string;
+  /** Project owning this comment. */
+  project: string;
+  /** Issue this comment is attached to. */
+  issue: string;
+  /** User that created this comment. */
+  author: string;
+  /** Body of the comment. */
+  body: string;
+  /** Date and time when the comment was posted. */
+  created: DateTime;
+  /** Date and time when the comment was last edited. */
+  updated: DateTime;
 }
 
 /** A change to a custom field. */
@@ -608,6 +630,16 @@ export interface LinkChange {
   before?: Maybe<Relation>;
   /** Relationship after the change. */
   after?: Maybe<Relation>;
+}
+
+/** Comments query result. */
+export interface PaginatedComments {
+  /** Total number of results. */
+  count: number;
+  /** Current offset */
+  offset: number;
+  /** List of results. */
+  results: Comment[];
 }
 
 export interface Mutation {
@@ -779,6 +811,13 @@ export interface IssueSearchQueryArgs {
   search: string;
 }
 export interface IssueChangesQueryArgs {
+  project: string;
+
+  issue?: Maybe<string>;
+
+  pagination?: Maybe<Pagination>;
+}
+export interface CommentsQueryArgs {
   project: string;
 
   issue?: Maybe<string>;

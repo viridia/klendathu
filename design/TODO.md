@@ -1,7 +1,7 @@
 # TODO
 
-* Highlight newly-added row.
-* compiled template stuff.
+* Comments
+* Attachments
 * Make user links local to the view
 * Redis
 * Batching
@@ -19,6 +19,7 @@
 * Comments should be joined to change entries so we can paginate them together.
 * Syntax highlighting for code examples.
 * "Dark mode".
+* compiled template stuff.
 
 # Major pieces
 

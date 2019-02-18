@@ -1,5 +1,6 @@
 import { gql } from 'apollo-server-express';
 import { Account } from './Account';
+import { Comment } from './Comment';
 import { Issue } from './Issue';
 import { IssueChanges } from './IssueChanges';
 import { Label } from './Label';
@@ -25,6 +26,7 @@ type DeletionResult {
 
 export const typeDefs = [
   Account,
+  Comment,
   Issue,
   IssueChanges,
   Label,

@@ -54,13 +54,13 @@ type CustomFieldChange {
 
 "Summary of changes to comments."
 type CommentsChange {
-  "ID of comments that were added."
+  "List of comments that were added."
   added: [ID!]!
 
-  "Number of comments that were updated."
+  "List of comments that were updated."
   updated: [ID!]!
 
-  "Number of comments that were removed."
+  "List of comments that were removed."
   removed:  [ID!]!
 }
 
@@ -106,6 +106,9 @@ type IssueChangeEntry {
 
   "Changes to comments."
   comments: CommentsChange
+
+  "A posted comment. (Each posted comment has an associated IssueChange record.)"
+  comment: Comment
 
   "Changes to the list of custom fields."
   custom: [CustomFieldChange!]

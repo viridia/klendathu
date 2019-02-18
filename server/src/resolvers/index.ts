@@ -1,5 +1,6 @@
 export { Context } from './Context';
 import * as accounts from './account';
+import * as comments from './comments';
 import * as issues from './issues';
 import * as issueChanges from './issueChanges';
 import * as labels from './labels';
@@ -11,6 +12,7 @@ import * as templates from './template';
 export const resolverMap = {
   Query: {
     ...accounts.queries,
+    ...comments.queries,
     ...issues.queries,
     ...issueChanges.queries,
     ...labels.queries,
@@ -33,6 +35,7 @@ export const resolverMap = {
     ...projectPrefs.subscriptions,
   },
   ...accounts.types,
+  ...comments.types,
   ...issues.types,
   ...issueChanges.types,
   ...labels.types,
