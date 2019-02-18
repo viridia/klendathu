@@ -26,4 +26,5 @@ jobs:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
             - node_modules
+      - run: dockerize -wait tcp://127.0.0.1:27017
       - run: npm run test
