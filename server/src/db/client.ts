@@ -33,7 +33,6 @@ export async function createClient(): Promise<MongoClient> {
   logger.info(`Connected to ${dbUrl}`);
   await ensureCollections(db, [
     'accounts',
-    'comments',
     'issues',
     'issueChanges',
     'issueLinks',

@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { IssueLinks } from './input/IssueLinks';
-import { IssueChanges } from './IssueChanges';
 import { CommentEdit } from './input/CommentEdit';
 import { WorkflowActions } from './workflow/WorkflowActions';
 import { RouteComponentProps } from 'react-router-dom';
@@ -13,6 +12,7 @@ import {
   IssueInput,
   CustomField,
   Relation,
+  IssueChangeEntry,
 } from '../../../common/types/graphql';
 import {
   Dialog,
@@ -37,6 +37,7 @@ import { Spacer } from '../layout';
 import { idToIndex } from '../lib/idToIndex';
 import gql from 'graphql-tag';
 import styled from 'styled-components';
+import { IssueChanges } from './IssueChanges';
 
 const IssueDetailsHeader = styled.header`
   && {
@@ -74,17 +75,10 @@ const IssueDescription = styled.div`
   }
 `;
 
-// Global options for marked.
-marked.setOptions({
-  renderer: new marked.Renderer(),
-  gfm: true,
-  tables: true,
-  breaks: false,
-  pedantic: false,
-  sanitize: true,
-  smartLists: true,
-  smartypants: true,
-});
+export const CommentGroup = styled.span`
+  grid-column: controls;
+  justify-self: stretch;
+`;
 
 const LeftPanel = styled.div`
   align-items: flex-start;
@@ -104,9 +98,22 @@ const LeftPanel = styled.div`
   }
 `;
 
+// Global options for marked.
+marked.setOptions({
+  renderer: new marked.Renderer(),
+  gfm: true,
+  tables: true,
+  breaks: false,
+  pedantic: false,
+  sanitize: true,
+  smartLists: true,
+  smartypants: true,
+});
+
 interface Props extends RouteComponentProps<{ project: string; id: string }> {
   context: ViewContext;
   issue: Issue;
+  issueChanges: IssueChangeEntry[];
   loading: boolean;
 }
 
@@ -114,27 +121,6 @@ interface Props extends RouteComponentProps<{ project: string; id: string }> {
 export class IssueDetails extends React.Component<Props> {
   @observable private showDelete = false;
   @observable private busy = false;
-  // private comments: ObservableComments;
-  // private changes: ObservableChanges;
-
-  public componentWillMount() {
-    // this.comments = new ObservableComments(this.issueId);
-    // this.changes = new ObservableChanges(this.issueId);
-  }
-
-  public componentWillReceiveProps(nextProps: Props) {
-    // if (nextProps.issue.id !== this.issueId) {
-      // this.comments.release();
-      // this.changes.release();
-      // this.comments = new ObservableComments(this.issueId);
-      // this.changes = new ObservableChanges(this.issueId);
-    // }
-  }
-
-  public componentWillUnmount() {
-    // this.comments.release();
-    // this.changes.release();
-  }
 
   public render() {
     return (
@@ -199,7 +185,7 @@ export class IssueDetails extends React.Component<Props> {
   }
 
   private renderContent() {
-    const { context, issue, loading } = this.props;
+    const { context, issue, issueChanges, loading } = this.props;
     if (!issue) {
       return (
         <section className="content">
@@ -278,22 +264,17 @@ export class IssueDetails extends React.Component<Props> {
                   </IssueLinkGroup>
                 </>
               )}
-              {/*{(this.comments.length > 0 || this.changes.length > 0) && <tr>
-                <th className="header history">Issue History:</th>
-                <td>
-                  <IssueChanges
-                      issue={issue}
-                      comments={this.comments.comments}
-                      changes={this.changes.changes}
-                      project={project}
-                      account={account}
-                  />
-                </td>
-              </tr>} */}
 
-              <FormControlGroup>
+              {issueChanges.length > 0 && (
+                <>
+                  <FormLabel>Issue History:</FormLabel>
+                  <IssueChanges changes={issueChanges} />
+                </>
+              )}
+
+              <CommentGroup>
                 <CommentEdit onAddComment={this.onAddComment} />
-              </FormControlGroup>
+              </CommentGroup>
             </React.Fragment>)
           }
         </LeftPanel>
@@ -430,11 +411,15 @@ export class IssueDetails extends React.Component<Props> {
   }
 }
 
-const IssueQuery = gql`
-  query IssueQuery($id: ID!) {
-    issue(id: $id) { ...IssueFields }
+const IssueDetailsQuery = gql`
+  query IssueQuery($project: ID!, $issue: ID!) {
+    issue(id: $issue) { ...IssueFields }
+    issueChanges(project: $project, issue: $issue) {
+      count offset results { ...IssueChangeFields }
+    }
   }
   ${fragments.issue}
+  ${fragments.issueChange}
 `;
 
 export interface IssueProviderProps extends RouteComponentProps<{ project: string, id: string }> {
@@ -448,13 +433,26 @@ export const IssueDetailsView = (props: IssueProviderProps) => {
     return null;
   }
   return (
-    <Query query={IssueQuery} variables={{ id: `${project.id}.${id}` }} >
+    <Query
+        query={IssueDetailsQuery}
+        variables={{
+          issue: `${project.id}.${id}`,
+          project: project.id,
+        }}
+    >
       {({ data, error, loading }) => {
         if (error) {
           return <ErrorDisplay error={error} />;
         }
-        const { issue } = data;
-        return <IssueDetails {...props} issue={issue} loading={loading} />;
+        const { issue, issueChanges } = data;
+        return (
+          <IssueDetails
+              {...props}
+              issue={issue}
+              issueChanges={issueChanges ? issueChanges.results : []}
+              loading={loading}
+          />
+        );
       }}
     </Query>
   );

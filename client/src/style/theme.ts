@@ -19,9 +19,9 @@ export interface ThemeInterface {
   focusColor: string;
 
   // Text colors
-  textDark: string;
-  textDarkDisabled: string;
-  textDarkAccent: string;
+  textNormal: string;
+  textAccented: string;
+  textMuted: string;
 
   // Page
   pageBgColor: string;

@@ -47,9 +47,18 @@ import { idToIndex } from '../lib/idToIndex';
 import { IssueLinks } from './input/IssueLinks';
 import { IssueLinkEdit } from './input/IssueLinkEdit';
 import styled from 'styled-components';
+import ArrowUpIcon from '../svg-compiled/icons/IcArrowUpward';
+import { Spacer } from '../layout';
 
 const IssueComposeLayout = styled(Card)`
   flex: 1;
+  > header {
+    padding-left: 6px;
+
+    > button {
+      margin-right: .5rem;
+    }
+  }
 `;
 
 const IssueComposeFooter = styled.footer`
@@ -179,18 +188,25 @@ export class IssueCompose extends React.Component<Props> {
   }
 
   public render() {
-    const { issue } = this.props;
+    const { location, issue } = this.props;
     const { account, project, template } = this.props.context;
     if (!template) {
       return null;
     }
     const canSave = !this.busy && this.type && this.issueState && this.summary;
+    const backLink = (location.state && location.state.back) || { pathname: './issues' };
     return (
       <IssueComposeLayout>
         <header>
+          <NavContainer to={backLink} exact={true}>
+            <Button title="Back to issue list" className="issue-up">
+              <ArrowUpIcon />
+            </Button>
+          </NavContainer>
           {issue
             ? <span>Edit Issue #{idToIndex(issue.id)}</span>
             : <span>New Issue: {account.accountName}/{project.name}</span>}
+          <Spacer />
         </header>
         <IssueComposeBody
             name="lastpass-disable-search"

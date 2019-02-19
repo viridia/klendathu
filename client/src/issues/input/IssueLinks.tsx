@@ -17,7 +17,7 @@ const IssueLink = styled.div`
 
   > .relation {
     font-weight: bold;
-    color: ${props => props.theme.textDarkAccent};
+    color: ${props => props.theme.textAccented};
     margin-right: 5px;
   }
 `;

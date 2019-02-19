@@ -28,4 +28,18 @@ export const fragments = {
     position { x y }
     milestone
   }`,
+  issueChange: gql`
+  fragment IssueChangeFields on IssueChangeEntry {
+    id issue project by at
+    type { before after }
+    state { before after }
+    summary { before after }
+    description { before after }
+    owner { before after }
+    cc { added removed }
+    labels { added removed }
+    custom { key before after }
+    linked { to before after }
+    commentBody commentUpdated commentRemoved
+  }`,
 };

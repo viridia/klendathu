@@ -34,7 +34,9 @@ export interface IssueChangeRecord {
     added?: string[];
     removed?: string[];
   };
-  comment?: ObjectID;
+  commentBody?: string;
+  commentUpdated?: Date;
+  commentRemoved?: Date;
   custom?: CustomFieldChange[];
   linked?: LinkChange[];
 }

@@ -54,7 +54,7 @@
       "id": "feature",
       "caption": "Feature",
       "extends": "issue",
-      "bg": "#e8d1ff"
+      "bg": "#d8b1ff"
     },
     {
       "id": "task",

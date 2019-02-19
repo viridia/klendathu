@@ -1,7 +1,6 @@
 import { Context } from './Context';
 import {
   AccountRecord,
-  CommentRecord,
   IssueLinkRecord,
   IssueChangeRecord,
   IssueRecord,
@@ -340,12 +339,12 @@ export const mutations = {
       }
     }
 
-    const commentsToInsert: CommentRecord[] = (input.comments || []).map(comment => ({
+    const commentsToInsert: IssueChangeRecord[] = (input.comments || []).map(comment => ({
       issue: record._id,
       project: pr._id,
-      author: context.user._id,
-      body: comment,
-      created: now,
+      by: context.user._id,
+      commentBody: comment,
+      at: now,
       updated: now,
     }));
 
@@ -353,7 +352,7 @@ export const mutations = {
     const row: IssueRecord = result.ops[0];
     if (result.insertedCount === 1) {
       if (commentsToInsert.length > 0) {
-        await context.db.collection('comments').insertOne(commentsToInsert);
+        await context.db.collection<IssueChangeRecord>('issueChanges').insertMany(commentsToInsert);
       }
 
       if (input.linked && input.linked.length > 0) {
@@ -444,12 +443,13 @@ export const mutations = {
     // TODO: ensure attachments are valid
 
     const now = new Date();
-
     const update: any = {
       $set: {
         updated: now,
       },
     };
+    const additionalChangeRecords: IssueChangeRecord[] = [];
+    const promises: Array<Promise<any>> = [];
 
     const change: IssueChangeRecord = {
       project: project._id,
@@ -599,26 +599,24 @@ export const mutations = {
     //   }
     // }
 
-    // // Patch comments list.
-    // if ('comments' in input) {
-    //   for (const c of input.comments) {
-    //     // Insert a new comment from this author.
-    //     const comment: CommentRecord = {
-    //       issue: issueId,
-    //       project: projectId,
-    //       author: user.id,
-    //       body: c,
-    //       created: now,
-    //       updated: now,
-    //     };
-    //     await r.table('comments').insert(comment).run(server.conn);
-    //     if (!change.comments) {
-    //       change.comments = { added: 0, updated: 0, removed: 0 };
-    //       change.at = record.updated;
-    //     }
-    //     change.comments.added += 1;
-    //   }
-    // }
+    // Patch comments list.
+    if ('comments' in input) {
+      for (const c of input.comments) {
+        if (change.commentBody === undefined) {
+          // Combine the first comment with the change record
+          change.commentBody = c;
+          change.at = now;
+        } else {
+          additionalChangeRecords.push({
+            project: project._id,
+            issue: issue._id,
+            by: context.user._id,
+            at: now,
+            commentBody: c,
+          });
+        }
+      }
+    }
 
     if ('linked' in input) {
       // Find all links referencing this issue
@@ -633,9 +631,8 @@ export const mutations = {
       const linksToUpdate: IssueLinkRecord[] = [];
 
       // Change records for the other side of the link.
-      const changeRecords: IssueChangeRecord[] = [];
       const addChangeRecord = (iss: string, ch: { before?: Relation, after?: Relation }) => {
-        changeRecords.push({
+        additionalChangeRecords.push({
           project: project._id,
           by: context.user._id,
           issue: iss,
@@ -707,7 +704,6 @@ export const mutations = {
         change.at = now;
       }
 
-      const promises: Array<Promise<any>> = [];
       if (linksToInsert.length > 0) {
         promises.push(issueLinks.insertMany(linksToInsert));
       }
@@ -719,26 +715,29 @@ export const mutations = {
           promises.push(issueLinks.findOneAndReplace({ _id: lnk._id }, lnk));
         }
       }
-
-      if (changeRecords.length > 0) {
-        promises.push(issueChanges.insertMany(changeRecords));
-      }
-
-      await Promise.all(promises);
     }
 
     if (change.at) {
       await issueChanges.insertOne(change);
     }
 
-    if (change.at || update.comments) {
+    if (additionalChangeRecords.length > 0) {
+      promises.push(issueChanges.insertMany(additionalChangeRecords));
+    }
+
+    await Promise.all(promises);
+
+    if (change.at) {
       const result = await issues.findOneAndUpdate({ _id: issue._id }, update, {
         returnOriginal: false,
       });
       return result.value;
     }
 
-    logger.debug('updateIssue made no changes:', { user, id });
+    if (promises.length === 0) {
+      logger.debug('updateIssue made no changes:', { user, id });
+    }
+
     return issue;
   },
 

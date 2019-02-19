@@ -10,7 +10,7 @@ const UserCell = styled.td`
 
   > .unassigned {
     font-style: italic;
-    color: ${props => props.theme.textDarkDisabled}
+    color: ${props => props.theme.textMuted}
   }
 `;
 

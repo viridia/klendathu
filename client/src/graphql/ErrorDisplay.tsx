@@ -11,10 +11,12 @@ const ErrorList = styled.section`
   flex: 1;
   flex-direction: column;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 8px;
 `;
 
 const ErrorItem = styled.section`
+  margin-bottom: 1rem;
   > header {
     align-items: center;
     background-color: #400;
@@ -51,12 +53,12 @@ const ErrorRowLabel = styled.div`
 
 const ErrorRowData = styled.div`
   grid-column: content;
-  white-space: pre;
+  white-space: pre-wrap;
 `;
 
 const ErrorRowDataPre = styled(ErrorRowData)`
   font-family: monospace;
-  font-size: 1.1rem;
+  font-size: 0.9rem;
 `;
 
 const UserError = styled.div`
@@ -109,13 +111,53 @@ export function ErrorListDisplay({ errors }: { errors: ReadonlyArray<GraphQLErro
   );
 }
 
+export function NetworkErrorsDisplay({ errors }: { errors: any[] }) {
+  return (
+    <ErrorList>
+      {(errors || []).map((e, index) => (
+        <ErrorItem key={index}>
+          <header>
+            <div className="title">Network Error:</div>
+            <div className="message">{e.message}</div>
+          </header>
+          <ErrorTable>
+            {e.extensions && e.extensions.code && (
+              <React.Fragment>
+                <ErrorRowLabel>Error code:</ErrorRowLabel>
+                <ErrorRowData>{e.extensions.code}</ErrorRowData>
+              </React.Fragment>
+            )}
+            {e.extensions &&
+              e.extensions.exception &&
+              e.extensions.exception.stacktrace && (
+              <React.Fragment>
+                <ErrorRowDataPre>
+                  {e.extensions.exception.stacktrace.map(
+                    (line: string, i: number) => <div key={i}>{line}</div>)}
+                </ErrorRowDataPre>
+              </React.Fragment>
+            )}
+          </ErrorTable>
+        </ErrorItem>
+      ))}
+    </ErrorList>
+  );
+}
+
 export function ErrorDisplay({ error }: { error: ApolloError }) {
   // TODO: networkError
-  if (error.graphQLErrors) {
+  if (error.graphQLErrors && error.graphQLErrors.length > 0) {
     return (
       <ErrorListDisplay errors={error.graphQLErrors} />
     );
-  } else {
-    console.error('not handled by error display:', error);
+  } else if (error.networkError) {
+    const result = (error.networkError as any).result;
+    if (result.errors) {
+      return (
+        <NetworkErrorsDisplay errors={result.errors} />
+      );
+    }
   }
+  console.error('not handled by error display:', JSON.stringify(error, null, 2));
+  return null;
 }

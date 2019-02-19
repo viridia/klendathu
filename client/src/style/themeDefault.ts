@@ -10,9 +10,9 @@ export const themeDefault: ThemeInterface = {
   focusColor: transparentize(0.7, primary),
 
   // Text colors
-  textDark: '#222',
-  textDarkDisabled: dye(0.4, diluted),
-  textDarkAccent: dye(0.4, primary),
+  textNormal: '#222',
+  textAccented: dye(0.3, primary),
+  textMuted: desaturate(0.2, diluted),
 
   // Page
   pageBgColor: dye(0.9, primary),

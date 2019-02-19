@@ -1,6 +1,5 @@
 export { AccountRecord } from './AccountRecord';
 export { AttachmentRecord } from './AttachmentRecord';
-export { CommentRecord } from './CommentRecord';
 export { IssueChangeRecord } from './IssueChangeRecord';
 export { IssueLinkRecord } from './IssueLinkRecord';
 export { IssueRecord, CustomValues, CustomData } from './IssueRecord';

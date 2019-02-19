@@ -27,7 +27,7 @@ const GalleryPage = styled.section`
   /* flex-direction: column; */
   flex: 1;
   overflow-x: hidden;
-  color: ${props => props.theme.textDark};
+  color: ${props => props.theme.textNormal};
   background-color: ${props => props.theme.pageBgColor};
   grid-template-rows: 32px auto;
   grid-template-columns: 12em auto;

@@ -18,7 +18,7 @@ const CommentEditLayout = styled.section`
 
   > .comment-container {
     align-self: stretch;
-    margin-bottom: .2rem;
+    margin-bottom: .3rem;
     > textarea {
       height: 8rem;
     }

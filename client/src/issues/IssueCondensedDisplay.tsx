@@ -17,7 +17,7 @@ const IssueQuery = gql`
 
 const IssueCondensedEl = styled.div`
   align-items: flex-start;
-  color: ${props => props.theme.textDark};
+  color: ${props => props.theme.textNormal};
   display: flex;
   overflow-x: hidden;
 

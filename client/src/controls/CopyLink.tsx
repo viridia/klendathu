@@ -13,7 +13,7 @@ export function CopyLink(props: Props) {
   const { title, url } = props;
   const onClick = (e: any) => {
     e.preventDefault();
-    copy(url);
+    (copy as any).default(url);
   };
 
   return (

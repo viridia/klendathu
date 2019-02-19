@@ -33,9 +33,49 @@ export const queries = {
       throw new UserInputError(Errors.FORBIDDEN);
     }
 
-    // const order: r.Sort = { index: r.desc('id') };
     const filter: any = {
       project: project._id,
+    };
+
+    if (issue) {
+      filter.issue = issue;
+    }
+
+    // If they are not a project member, only allow public issues to be viewed.
+    // if (role < Role.VIEWER) {
+    //   filter.isPublic = true;
+    // }
+
+    const result = await issueChanges.find(filter).sort({ at: 1 }).toArray();
+    return {
+      count: result.length,
+      offset: 0,
+      results: result,
+    };
+  },
+
+  async comments(
+      _: any,
+      { project: pid, issue, pagination }: IssueChangesQueryArgs,
+      context: Context): Promise<PaginatedIssueChangeRecords> {
+
+    const user = context.user ? context.user.accountName : null;
+    const issueChanges = context.db.collection<IssueChangeRecord>('issueChanges');
+    const { project, role } = await getProjectAndRole(
+        context.db, context.user, new ObjectID(pid));
+    if (!project) {
+      logger.error('Query to non-existent project:', { user, project: pid });
+      throw new UserInputError(Errors.NOT_FOUND);
+    }
+
+    if (role === Role.NONE) {
+      logger.error('Permission denied viewing issue changes:', { user, project: pid });
+      throw new UserInputError(Errors.FORBIDDEN);
+    }
+
+    const filter: any = {
+      project: project._id,
+      commentBody: { $exists: true }
     };
 
     if (issue) {
@@ -58,7 +98,7 @@ export const queries = {
 
 export const types = {
   IssueChangeEntry: {
-    id(row: IssueChangeRecord) { return row._id; },
+    id: (row: IssueChangeRecord) => row._id,
     by: (row: IssueChangeRecord) => row.by ? row.by.toHexString() : null,
   },
 };

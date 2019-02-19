@@ -68,7 +68,7 @@ type Query {
   issueChanges(project: ID!, issue: ID, pagination: Pagination): PaginatedIssueChanges!
 
   "Retrieve history of comments to an issue, or all issues within a project."
-  comments(project: ID!, issue: ID, pagination: Pagination): PaginatedComments!
+  comments(project: ID!, issue: ID, pagination: Pagination): PaginatedIssueChanges!
 
   "Search custom field text, used for auto completion."
   searchCustomFields(project: ID!, field: String!, search: String!): [String!]!

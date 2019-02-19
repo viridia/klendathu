@@ -21,14 +21,14 @@ const IdCell = styled.td`
   > a {
     display: block;
     text-decoration: none;
-    color: ${props => props.theme.textDark};
+    color: ${props => props.theme.textNormal};
   }
 `;
 
 const TitleCell = styled.td`
   padding: 0 4px;
   > a {
-    color: ${props => props.theme.textDark};
+    color: ${props => props.theme.textNormal};
     line-height: 1.8rem; /* Needed to make chips line up with summary. */
     text-decoration: none;
   }

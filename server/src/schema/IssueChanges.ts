@@ -52,19 +52,7 @@ type CustomFieldChange {
   after: CustomValue
 }
 
-"Summary of changes to comments."
-type CommentsChange {
-  "List of comments that were added."
-  added: [ID!]!
-
-  "List of comments that were updated."
-  updated: [ID!]!
-
-  "List of comments that were removed."
-  removed:  [ID!]!
-}
-
-"A change record for an issue."
+"A change record for an issue. Note that comments are also stored as change records."
 type IssueChangeEntry {
   id: ID!
 
@@ -104,11 +92,14 @@ type IssueChangeEntry {
   "Changes to the issue attachment list."
   attachments: IDListChange
 
-  "Changes to comments."
-  comments: CommentsChange
+  "If this change is a comment, then this holds the body of the comment."
+  commentBody: String
 
-  "A posted comment. (Each posted comment has an associated IssueChange record.)"
-  comment: Comment
+  "If the comment was edited, this is when."
+  commentUpdated: DateTime
+
+  "If the comment was deleted, this is when."
+  commentRemoved: DateTime
 
   "Changes to the list of custom fields."
   custom: [CustomFieldChange!]
