@@ -6,9 +6,9 @@ Klendathu is an open-source bug tracking and project management application.
 
 # Some early screenshots
 
-![Image Summary List](./docs/screenshots_k4_1.png)
+![Image Summary List](./docs/screenshots/k4_1.png)
 
-![Image Details](./docs/screenshots_k4_2.png)
+![Image Details](./docs/screenshots/k4_2.png)
 
 # Running locally
 
