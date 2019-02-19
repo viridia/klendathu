@@ -1,8 +1,8 @@
 # TODO
 
 * Timeline
-  * Custom fields being handled improperly
-* Comments
+  * Comments display
+* Update timeline cache when done editing issue
 * Attachments
 * Make user links local to the view
 * Redis
@@ -29,6 +29,10 @@
   * Attachments
   * Milestones
 * Issue Details
+  * Add workflow actions
+  * Add assign to me
+  * Add comment editings
+  * Add comment display
 * Issue Delete
 * Issue Edit
 * Issue Query
@@ -48,6 +52,9 @@
   * Workflow
 * Client unit tests
 * Coalesce timeline entries.
+* Enable Twitter auth
+* Enable issue grouping
+* Export / backup database
 
 # Components
 

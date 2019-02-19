@@ -556,12 +556,12 @@ export const mutations = {
       const customChange: CustomFieldChange[] = [];
       for (const key of Object.getOwnPropertyNames(issue.custom)) {
         const value = issue.custom[key];
-        if (value !== null) {
+        if (value !== null && value !== undefined) {
           customPrev.set(key, issue.custom[key]);
         }
       }
       for (const entry of input.custom) {
-        if (entry.value !== null) {
+        if (entry.value !== null && entry.value !== undefined) {
           customNext.set(entry.key, entry.value);
         }
       }
@@ -583,6 +583,7 @@ export const mutations = {
           customChange.push({ key, before: value });
         }
       });
+
       if (customChange.length > 0) {
         change.custom = customChange;
         change.at = now;

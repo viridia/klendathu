@@ -484,10 +484,10 @@ export class IssueCompose extends React.Component<Props> {
   private onSubmit(e: any) {
     e.preventDefault();
     this.busy = true;
-    const custom: CustomFieldInput[] = this.issueType.fields.map(field => ({
-      key: field.id,
-      value: this.custom.has(field.id) ? this.custom.get(field.id) : field.default,
-    }));
+    // Note that this preserves custom fields that are not in the current issue template.
+    // I believe this is the preferred behavior so that you don't lose anything if you switch
+    // the issue type back.
+    const custom: CustomFieldInput[] = Array.from(this.custom, ([key, value]) => ({ key, value }));
     const linked: IssueLink[] = [];
     this.issueLinkMap.forEach((value, key) => {
       linked.push({ to: key, relation: value });
@@ -498,7 +498,6 @@ export class IssueCompose extends React.Component<Props> {
       summary: this.summary,
       description: this.description,
       owner: this.owner ? this.owner.id : undefined,
-      // ownerSort: this.owner ? this.owner.uname : undefined,
       cc: this.cc.map(cc => cc.id),
       labels: this.labels,
     //   milestone: this.milestone,
@@ -512,10 +511,11 @@ export class IssueCompose extends React.Component<Props> {
       this.busy = false;
       this.reset();
       if (!this.another) {
-        history.push(this.backLink, { highlight: issue.id });
+        history.push(this.backLink);
       }
     }, error => {
       // TODO: Do a better job
+      console.error('save returned error');
       console.error(JSON.stringify(error, null, 2));
     //   switch (error.code) {
     //     case Errors.SCHEMA:
@@ -545,11 +545,12 @@ export class IssueCompose extends React.Component<Props> {
       for (const { key, value } of issue.custom) {
         this.custom.set(key, value);
       }
-      if (issue.attachments) {
-        // getFileInfoList(issue.attachments.slice(), files => {
-        //   this.attachments.replace(files);
-        // });
-      }
+      this.attachments.replace(issue.attachments || []);
+      // if (issue.attachments) {
+      //   getFileInfoList(issue.attachments.slice(), files => {
+      //     this.attachments.replace(files);
+      //   });
+      // }
       this.issueLinkMap.clear();
       for (const link of issue.links) {
         this.issueLinkMap.set(link.to, link.relation);
@@ -565,7 +566,7 @@ export class IssueCompose extends React.Component<Props> {
       this.custom.clear();
       this.issueLinkMap.clear();
       this.comments.clear();
-    //   this.attachments.clear();
+      this.attachments.clear();
       this.public = false;
     }
   }

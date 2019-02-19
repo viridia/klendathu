@@ -51,6 +51,11 @@ const IssueDetailsHeader = styled.header`
   }
 `;
 
+const IssueDetailsContent = styled.section`
+  display: flex;
+  flex-direction: row;
+`;
+
 const IssueLinkGroup = styled.div`
   grid-column: controls;
   justify-self: stretch;
@@ -81,9 +86,9 @@ export const CommentGroup = styled.span`
 
 const LeftPanel = styled.div`
   align-items: flex-start;
-  align-self: stretch;
+  align-self: flex-start;
   display: grid;
-  flex: 1;
+  flex: 8;
   gap: 8px;
   grid-auto-flow: row;
   grid-template-columns: [labels] auto [controls] 1fr;
@@ -95,6 +100,16 @@ const LeftPanel = styled.div`
   > .fill {
     justify-self: stretch;
   }
+`;
+
+const RightPanel = styled.aside`
+  align-self: stretch;
+  border: 1px solid ${props => props.theme.cardHeaderDividerColor};
+  flex: 1;
+  flex-basis: auto;
+  margin: 1rem 1rem 1rem 0.5rem;
+  overflow-y: auto;
+  padding: .6rem;
 `;
 
 // Global options for marked.
@@ -196,7 +211,7 @@ export class IssueDetails extends React.Component<Props> {
     const issueType = context.getInheritedIssueType(issue.type);
     const issueState = template.states.find(st => st.id === issue.state);
     return (
-      <section className="content">
+      <IssueDetailsContent>
         <LeftPanel>
           {!loading && (
             <React.Fragment>
@@ -273,15 +288,18 @@ export class IssueDetails extends React.Component<Props> {
             </React.Fragment>)
           }
         </LeftPanel>
-        {project.role >= Role.UPDATER && (<aside className="right">
-          {/* <WorkflowActions
-              template={template}
-              changes={this.changes}
-              issue={issue}
-              onExecAction={this.onExecAction}
-          /> */}
-        </aside>)}
-      </section>
+
+        {project.role >= Role.UPDATER && (
+          <RightPanel>
+            <WorkflowActions
+                env={context}
+                timeline={this.props.timeline}
+                issue={issue}
+                onExecAction={this.onExecAction}
+            />
+          </RightPanel>
+        )}
+      </IssueDetailsContent>
     );
   }
 

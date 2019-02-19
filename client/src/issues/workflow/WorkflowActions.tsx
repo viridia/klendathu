@@ -1,15 +1,51 @@
-import { Workflow, WorkflowAction } from 'klendathu-json-types';
-import { ObservableChanges, ObservableIssue, session, Template } from '../../../models';
-import { AccountName } from '../../common/AccountName';
 import * as React from 'react';
 import { computed } from 'mobx';
+import { WorkflowAction, Workflow } from '../../../../common/types/json';
+import { Button, AccountName } from '../../controls';
+import { Issue, TimelineEntry } from '../../../../common/types/graphql';
+import { ViewContext, session } from '../../models';
+import styled from 'styled-components';
 
-// import './WorkflowActions.scss';
+const WorkflowActionsLayout = styled.section`
+  display: flex;
+  align-items: stretch;
+  flex-direction: column;
+`;
+
+const WorkflowActionEl = styled.section`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-bottom: 16px;
+
+  > button {
+    display: inline-block;
+    justify-content: center;
+    margin-bottom: 2px;
+    white-space: normal;
+  }
+`;
+
+const WorkflowEffect = styled.section`
+  font-size: 90%;
+  margin-left: 32px;
+  text-indent: -16px;
+  color: $textDark;
+
+  > .value {
+    white-space: nowrap;
+  }
+
+  > .none {
+    font-style: italic;
+    color: lighten($textDark, 10%);
+  }
+`;
 
 interface Props {
-  issue: ObservableIssue;
-  changes: ObservableChanges;
-  template: Template;
+  issue: Issue;
+  env: ViewContext;
+  timeline: TimelineEntry[];
   onExecAction: (a: ExecutableAction) => void;
 }
 
@@ -24,34 +60,40 @@ interface State {
 export class WorkflowActions extends React.Component<Props, State> {
   public render() {
     return (
-      <section className="wf-actions">
-        {this.actionTable.map((a, index) => (<div className="wf-action" key={index}>
-          <Button bsStyle="default" onClick={() => this.props.onExecAction(a)}>{a.caption}</Button>
-          {a.state && (
-            <div className="effect">state &rarr; <span className="value">{a.stateName}</span></div>
-          )}
-          {a.owner && (
-            <div className="effect">owner &rarr; <span className="value">
-              <AccountName id={a.owner} />
-            </span></div>
-          )}
-          {a.owner === null && (
-            <div className="effect">owner &rarr; <span className="none">none</span></div>
-          )}
-        </div>))}
-      </section>
+      <WorkflowActionsLayout>
+        {this.actionTable.map((a, index) => (
+          <WorkflowActionEl key={index}>
+            <Button kind="default" onClick={() => this.props.onExecAction(a)}>{a.caption}</Button>
+            {a.state && (
+              <WorkflowEffect className="effect">
+                state &rarr; <span className="value">{a.stateName}</span>
+              </WorkflowEffect>
+            )}
+            {a.owner && (
+              <WorkflowEffect className="effect">
+                owner &rarr; <span className="value"><AccountName id={a.owner} /></span>
+              </WorkflowEffect>
+            )}
+            {a.owner === null && (
+              <WorkflowEffect className="effect">
+                owner &rarr; <span className="none">none</span>
+              </WorkflowEffect>
+            )}
+          </WorkflowActionEl>
+        ))}
+      </WorkflowActionsLayout>
     );
   }
 
   /** Searches the issue for the owner prior to the current owner. */
   private findPreviousOwner(): string {
-    const { issue, changes } = this.props;
+    const { issue, timeline } = this.props;
     const owner = issue.owner;
-    if (!changes) {
+    if (!timeline) {
       return undefined;
     }
-    for (let i = changes.length - 1; i >= 0; i -= 1) {
-      const change = changes.changes[i];
+    for (let i = timeline.length - 1; i >= 0; i -= 1) {
+      const change = timeline[i];
       if (change.owner && change.owner.after !== owner) {
         return change.owner.after;
       }
@@ -61,19 +103,19 @@ export class WorkflowActions extends React.Component<Props, State> {
 
   @computed
   private get actionTable(): ExecutableAction[] {
-    const { template, issue } = this.props;
+    const { env, issue } = this.props;
     const workflow = this.workflow;
     if (!workflow) {
       return [];
     }
     const actions: ExecutableAction[] = [];
-    for (const action of template.actions) {
+    for (const action of env.template.actions) {
       if (this.isLegalTransition(action)) {
         const resolvedAction: ExecutableAction = {
           caption: action.caption,
         };
         if (action.state) {
-          const toState = template.states.find(a => a.id === action.state);
+          const toState = env.template.states.find(a => a.id === action.state);
           resolvedAction.state = action.state;
           resolvedAction.stateName = toState.caption;
         }
@@ -83,7 +125,7 @@ export class WorkflowActions extends React.Component<Props, State> {
           if (m) {
             const oName = m[1];
             if (oName === 'me') {
-              resolvedAction.owner = session.account.uid;
+              resolvedAction.owner = session.account.id;
             } else if (oName === 'reporter') {
               resolvedAction.owner = this.props.issue.reporter;
             } else if (oName === 'previous') {
@@ -108,8 +150,8 @@ export class WorkflowActions extends React.Component<Props, State> {
 
   @computed
   private get workflow(): Workflow {
-    const { template, issue } = this.props;
-    return template.getWorkflowForType(issue.type);
+    const { env, issue } = this.props;
+    return env.getWorkflowForType(issue.type);
   }
 
   @computed
@@ -119,12 +161,12 @@ export class WorkflowActions extends React.Component<Props, State> {
 
   /** Determine if the state transition for the action is a legal one. */
   private isLegalTransition(action: WorkflowAction) {
-    const { template, issue } = this.props;
-    const currentState = template.states.find(st => st.id === issue.state);
+    const { env, issue } = this.props;
+    const currentState = env.template.states.find(st => st.id === issue.state);
     // Make sure the state we're transitioning to is acceptable.
     if (action.state) {
       // New state must be listed in the set of template states (spelling check).
-      if (template.states.findIndex(st => st.id === action.state) < 0) {
+      if (env.template.states.findIndex(st => st.id === action.state) < 0) {
         return false;
       }
 

@@ -81,7 +81,7 @@ export const themeDefault: ThemeInterface = {
   menuDividerColor: dye(0.9, desaturate(0.5, primary)),
 
   // Cards
-  cardBgColor: dye(0.94, primary),
+  cardBgColor: dye(0.96, primary),
   cardBgColorAltRow: dye(0.92, primary),
   cardBorderColor: dye(0.7, diluted),
   cardShadowColor: transparentize(0.86, dye(0.4, primary)),

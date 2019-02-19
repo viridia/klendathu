@@ -40,9 +40,9 @@ interface Props extends RouteComponentProps<{ project: string; id: string }> {
 }
 
 function saveIssue(issue: Issue, input: IssueInput) {
-  return client.mutate<{ newIssue: Issue }>({
-    mutation: UpdateIssueMutation,
-    variables: { id: issue.id, input }
+  return client.mutate<{ updateIssue: Issue }>({
+      mutation: UpdateIssueMutation,
+      variables: { id: issue.id, input }
   }).then(({ data, errors }) => {
     if (errors) {
       // TODO: more information
@@ -50,8 +50,8 @@ function saveIssue(issue: Issue, input: IssueInput) {
       // TODO: An error UI.
       decodeErrorAsException(errors);
     } else {
-      toast.success(`Issue #${idToIndex(data.newIssue.id)} updated.`);
-      return data.newIssue;
+      toast.success(`Issue #${idToIndex(data.updateIssue.id)} updated.`);
+      return data.updateIssue;
     }
   });
 }
