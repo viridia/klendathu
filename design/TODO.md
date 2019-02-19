@@ -1,5 +1,7 @@
 # TODO
 
+* Timeline
+  * Custom fields being handled improperly
 * Comments
 * Attachments
 * Make user links local to the view
@@ -11,7 +13,7 @@
 * Better UI for entering linked issues
 * Sort issue searches by relevance
 * Issue Change History
-  * Per Issue
+  * Add comment rendering
   * Global
 * Better loading indicator
 * Navbar project list
@@ -45,6 +47,7 @@
   * Templates
   * Workflow
 * Client unit tests
+* Coalesce timeline entries.
 
 # Components
 

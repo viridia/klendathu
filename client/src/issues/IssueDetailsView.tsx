@@ -221,14 +221,10 @@ export class IssueDetails extends React.Component<Props> {
               <RelativeDate date={issue.createdAt} withPrefix={true} />
 
               <FormLabel>Reporter:</FormLabel>
-              {issue.reporter
-                    ? <AccountName id={issue.reporter} />
-                    : <span className="unassigned">unassigned</span>}
+              <AccountName id={issue.reporter} />
 
               <FormLabel>Owner:</FormLabel>
-              {issue.owner
-                    ? <AccountName id={issue.owner} />
-                    : <span className="unassigned">unassigned</span>}
+              <AccountName id={issue.owner} />
 
               {issue.cc.length > 0 && (
                 <>

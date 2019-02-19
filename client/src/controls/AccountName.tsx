@@ -17,6 +17,9 @@ interface Props {
 }
 
 export function AccountName({ id, to }: Props) {
+  if (id === null || id === undefined) {
+    return <span className="account-name unassigned">unassigned</span>;
+  }
   return (
     <Query query={AccountQuery} variables={{ id }} >
       {({ loading, error, data }) => {

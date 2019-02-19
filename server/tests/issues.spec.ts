@@ -579,6 +579,84 @@ describe('issues', () => {
       });
     });
 
+    test('custom (set to null)', async () => {
+      const { query, mutate } = createTestClient(server.apollo);
+      const res = await mutate({
+        mutation: UpdateIssueMutation,
+        variables: {
+          id: issueId,
+          input: {
+            ...testData,
+            custom: [
+              { key: 'a', value: null },
+              { key: 'b', value: null },
+            ]
+          }
+        },
+      });
+      expect(res.errors).toBeUndefined();
+
+      const qres = await query({ query: IssueQuery, variables: { id: issueId } });
+      expect(qres.errors).toBeUndefined();
+      expect(qres.data.issue).toMatchObject({
+        ...expectedResponse,
+        custom: []
+      });
+
+      const cres = await query({ query: TimelineQuery, variables: { project, issue: issueId } });
+      expect(cres.errors).toBeUndefined();
+      expect(cres.data.timeline.results).toBeArrayOfSize(0);
+    });
+
+    test('custom (no change)', async () => {
+      const { query, mutate } = createTestClient(server.apollo);
+      const res = await mutate({
+        mutation: UpdateIssueMutation,
+        variables: {
+          id: issueId,
+          input: {
+            ...testData,
+            custom: [
+              { key: 'a', value: 1 },
+              { key: 'b', value: 2 },
+            ]
+          }
+        },
+      });
+      expect(res.errors).toBeUndefined();
+
+      await server.db.collection('timeline').deleteMany({});
+
+      const res2 = await mutate({
+        mutation: UpdateIssueMutation,
+        variables: {
+          id: issueId,
+          input: {
+            ...testData,
+            custom: [
+              { key: 'a', value: 1 },
+              { key: 'b', value: 2 },
+            ]
+          }
+        },
+      });
+      expect(res2.errors).toBeUndefined();
+
+      const qres = await query({ query: IssueQuery, variables: { id: issueId } });
+      expect(qres.errors).toBeUndefined();
+      expect(qres.data.issue).toMatchObject({
+        ...expectedResponse,
+        custom: [
+          { key: 'a', value: 1 },
+          { key: 'b', value: 2 },
+        ]
+      });
+
+      const cres = await query({ query: TimelineQuery, variables: { project, issue: issueId } });
+      expect(cres.errors).toBeUndefined();
+      expect(cres.data.timeline.results).toBeArrayOfSize(0);
+    });
+
     test('link add', async () => {
       const { query, mutate } = createTestClient(server.apollo);
 

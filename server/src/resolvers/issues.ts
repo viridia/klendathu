@@ -46,7 +46,7 @@ interface PaginatedIssueRecords {
 
 function customArrayToMap(custom: CustomFieldInput[]): CustomValues {
   const result: CustomValues = {};
-  custom.forEach(({ key, value }) => { result[key] = value; });
+  custom.forEach(({ key, value }) => { if (value !== null) { result[key] = value; } });
   return result;
 }
 
@@ -555,10 +555,15 @@ export const mutations = {
       const customNext = new Map<string, CustomData>();
       const customChange: CustomFieldChange[] = [];
       for (const key of Object.getOwnPropertyNames(issue.custom)) {
-        customPrev.set(key, issue.custom[key]);
+        const value = issue.custom[key];
+        if (value !== null) {
+          customPrev.set(key, issue.custom[key]);
+        }
       }
       for (const entry of input.custom) {
-        customNext.set(entry.key, entry.value);
+        if (entry.value !== null) {
+          customNext.set(entry.key, entry.value);
+        }
       }
       customNext.forEach((value, key) => {
         if (customPrev.has(key)) {
