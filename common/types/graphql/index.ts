@@ -92,7 +92,7 @@ export interface IssueInput {
   /** One-line summary of the issue. */
   summary: string;
   /** Detailed description of the issue. */
-  description: string;
+  description?: Maybe<string>;
   /** Username of current owner of this issue. */
   owner?: Maybe<string>;
   /** Users who wish to be informed when this issue is updated. */
@@ -633,6 +633,8 @@ export interface Mutation {
   updateIssue: Issue;
   /** Delete an issue record. */
   deleteIssue: Issue;
+  /** Add a comment to an issue. */
+  addComment: TimelineEntry;
   /** Set current user's preferences for visible columns. */
   setPrefColumns: ProjectPrefs;
   /** Add a label to the set of visible labels. */
@@ -662,6 +664,8 @@ export interface Subscription {
   prefsChanged: ProjectPrefsChange;
   /** Watch issues for a given project. */
   issuesChanged: IssueChange;
+  /** Watch for changes to a specific issue. */
+  issueChanged: IssueChange;
 }
 
 export interface ProjectChange {
@@ -855,6 +859,11 @@ export interface UpdateIssueMutationArgs {
 export interface DeleteIssueMutationArgs {
   id: string;
 }
+export interface AddCommentMutationArgs {
+  id: string;
+
+  body: string;
+}
 export interface SetPrefColumnsMutationArgs {
   project: string;
 
@@ -894,4 +903,7 @@ export interface PrefsChangedSubscriptionArgs {
 }
 export interface IssuesChangedSubscriptionArgs {
   project: string;
+}
+export interface IssueChangedSubscriptionArgs {
+  issue: string;
 }

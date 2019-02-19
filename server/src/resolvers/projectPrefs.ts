@@ -189,7 +189,8 @@ export const subscriptions = {
       (
         { prefs }: PrefsRecordChange,
         { project: id }: PrefsChangedSubscriptionArgs,
-        context: Context) => {
+        context: Context
+      ) => {
         return context.user && prefs.project.equals(id) && prefs.user.equals(context.user._id);
       }
     ),

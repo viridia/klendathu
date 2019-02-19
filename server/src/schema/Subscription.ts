@@ -42,12 +42,13 @@ type Subscription {
   "Watch the list of labels defined for a project."
   labelChanged(project: ID!): LabelChange!
 
-  # Issue changed
-
   "Watch for changes to project prefs (current user)."
   prefsChanged(project: ID!): ProjectPrefsChange!
 
   "Watch issues for a given project."
   issuesChanged(project: ID!): IssueChange!
+
+  "Watch for changes to a specific issue."
+  issueChanged(issue: ID!): IssueChange!
 }
 `;

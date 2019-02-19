@@ -26,4 +26,13 @@ export const GlobalStyle = createGlobalStyle`
   ::-webkit-scrollbar-thumb:window-inactive {
     background: ${props => props.theme.scrollbarInactiveThumbColor};
   }
+
+  div.Toastify__toast {
+    border-radius: 6px;
+    padding: 8px 20px;
+  }
+
+  div.Toastify__toast--success {
+    background-color: #bd77e8;
+  }
 `;

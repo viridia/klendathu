@@ -21,6 +21,8 @@ import {
   IssuesChangedSubscriptionArgs,
   CustomFieldChange,
   Relation,
+  AddCommentMutationArgs,
+  IssueChangedSubscriptionArgs,
 } from '../../../common/types/graphql';
 import { UserInputError, AuthenticationError } from 'apollo-server-core';
 import { Errors, Role, inverseRelations } from '../../../common/types/json';
@@ -738,6 +740,10 @@ export const mutations = {
       const result = await issues.findOneAndUpdate({ _id: issue._id }, update, {
         returnOriginal: false,
       });
+      pubsub.publish(ISSUE_CHANGE, {
+        action: ChangeAction.Changed,
+        value: result.value,
+      });
       return result.value;
     }
 
@@ -745,6 +751,11 @@ export const mutations = {
       logger.debug('updateIssue made no changes:', { user, id });
     }
 
+    // The issue record didn't change, but the timeline might have.
+    pubsub.publish(ISSUE_CHANGE, {
+      action: ChangeAction.Changed,
+      value: issue,
+    });
     return issue;
   },
 
@@ -850,16 +861,78 @@ export const mutations = {
 
     return null;
   },
+
+  // "Add a comment to an issue."
+  // addComment(id: ID!, body: String!): TimelineEntry!
+  async addComment(
+      _: any,
+      { id, body }: AddCommentMutationArgs,
+      context: Context): Promise<TimelineEntryRecord> {
+    if (!context.user) {
+      throw new AuthenticationError(Errors.UNAUTHORIZED);
+    }
+    const user = context.user.accountName;
+    const issues = context.db.collection<IssueRecord>('issues');
+    const timeline = context.db.collection<TimelineEntryRecord>('timeline');
+    const issue = await issues.findOne({ _id: id });
+    if (!issue) {
+      logger.error('Attempt to comment on non-existent issue:', { user, id });
+      throw new UserInputError(Errors.NOT_FOUND);
+    }
+
+    const { project, role } = await getProjectAndRole(context.db, context.user, issue.project);
+    if (!project) {
+      logger.error('Attempt to comment on non-existent issue:', { user, id });
+      throw new UserInputError(Errors.NOT_FOUND);
+    }
+
+    if (role < Role.REPORTER) {
+      logger.error('Insufficient permissions to comment on:', { user, id });
+      throw new UserInputError(Errors.FORBIDDEN);
+    }
+
+    const now = new Date();
+    const record: TimelineEntryRecord = {
+      project: project._id,
+      issue: issue._id,
+      by: context.user._id,
+      at: now,
+      commentBody: body,
+    };
+
+    const result = await timeline.insertOne(record);
+    pubsub.publish(ISSUE_CHANGE, {
+      action: ChangeAction.Changed,
+      value: issue,
+    });
+    return result.ops[0];
+  },
 };
 
 export const subscriptions = {
+  issueChanged: {
+    subscribe: withFilter(
+      () => pubsub.asyncIterator([ISSUE_CHANGE]),
+      (
+        change: IssueRecordChange,
+        { issue }: IssueChangedSubscriptionArgs,
+        context: Context
+      ) => {
+        return context.user && change.value._id === issue;
+      }
+    ),
+    resolve: (payload: IssueRecordChange, args: any, context: Context) => {
+      return payload;
+    },
+  },
   issuesChanged: {
     subscribe: withFilter(
       () => pubsub.asyncIterator([ISSUE_CHANGE]),
       (
         change: IssueRecordChange,
         { project }: IssuesChangedSubscriptionArgs,
-        context: Context) => {
+        context: Context
+      ) => {
         return context.user && change.value.project.equals(project);
       }
     ),

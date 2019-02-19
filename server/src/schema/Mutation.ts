@@ -41,6 +41,9 @@ type Mutation {
   "Delete an issue record."
   deleteIssue(id: ID!): Issue!
 
+  "Add a comment to an issue."
+  addComment(id: ID!, body: String!): TimelineEntry!
+
   "Set current user's preferences for visible columns."
   setPrefColumns(project: ID!, columns: [String!]!): ProjectPrefs!
 

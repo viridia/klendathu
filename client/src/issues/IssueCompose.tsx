@@ -85,7 +85,7 @@ const LeftPanel = styled.div`
   justify-items: flex-start;
   margin: 1rem 0 0 1rem;
   padding: 0 0.5rem 1rem 0;
-  overflow-y: auto;
+  overflow-y: scroll;
 
   > .fill {
     justify-self: stretch;

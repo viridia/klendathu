@@ -18,7 +18,6 @@ import gql from 'graphql-tag';
 import { fragments } from '../graphql';
 import { client } from '../graphql/client';
 import bind from 'bind-decorator';
-import { GraphQLError } from 'graphql';
 import { IssueQueryModel } from './IssueQueryModel';
 import { ApolloError } from 'apollo-client';
 

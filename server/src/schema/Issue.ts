@@ -168,7 +168,7 @@ input IssueInput {
   summary: String!
 
   "Detailed description of the issue."
-  description: String!
+  description: String
 
   "Username of current owner of this issue."
   owner: ID

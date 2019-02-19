@@ -332,7 +332,8 @@ export const subscriptions = {
       (
         { project }: ProjectRecordChange,
         { owners }: ProjectsChangedSubscriptionArgs,
-        context: Context) => {
+        context: Context
+      ) => {
         // Anonymous users cannot subscribe to project additions.
         if (!context.user) {
           return false;
@@ -358,7 +359,8 @@ export const subscriptions = {
       (
         { project }: ProjectRecordChange,
         { project: id }: ProjectChangedSubscriptionArgs,
-        context: Context) => {
+        context: Context
+      ) => {
 
         if (!project._id.equals(id)) {
           return false;
