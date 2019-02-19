@@ -1,26 +1,26 @@
 import { Context } from './Context';
-import { IssueChangeRecord } from '../db/types';
-import { IssueChangesQueryArgs } from '../../../common/types/graphql';
+import { TimelineEntryRecord } from '../db/types';
 import { UserInputError } from 'apollo-server-core';
 import { Errors, Role } from '../../../common/types/json';
 import { getProjectAndRole } from '../db/role';
 import { logger } from '../logger';
 import { ObjectID } from 'mongodb';
+import { TimelineQueryArgs } from '../../../common/types/graphql';
 
 interface PaginatedIssueChangeRecords {
   count: number;
   offset: number;
-  results: IssueChangeRecord[];
+  results: TimelineEntryRecord[];
 }
 
 export const queries = {
-  async issueChanges(
+  async timeline(
       _: any,
-      { project: pid, issue, pagination }: IssueChangesQueryArgs,
+      { project: pid, issue, pagination }: TimelineQueryArgs,
       context: Context): Promise<PaginatedIssueChangeRecords> {
 
     const user = context.user ? context.user.accountName : null;
-    const issueChanges = context.db.collection<IssueChangeRecord>('issueChanges');
+    const timeline = context.db.collection<TimelineEntryRecord>('timeline');
     const { project, role } = await getProjectAndRole(
         context.db, context.user, new ObjectID(pid));
     if (!project) {
@@ -46,7 +46,7 @@ export const queries = {
     //   filter.isPublic = true;
     // }
 
-    const result = await issueChanges.find(filter).sort({ at: 1 }).toArray();
+    const result = await timeline.find(filter).sort({ at: 1 }).toArray();
     return {
       count: result.length,
       offset: 0,
@@ -56,11 +56,11 @@ export const queries = {
 
   async comments(
       _: any,
-      { project: pid, issue, pagination }: IssueChangesQueryArgs,
+      { project: pid, issue, pagination }: TimelineQueryArgs,
       context: Context): Promise<PaginatedIssueChangeRecords> {
 
     const user = context.user ? context.user.accountName : null;
-    const issueChanges = context.db.collection<IssueChangeRecord>('issueChanges');
+    const timeline = context.db.collection<TimelineEntryRecord>('timeline');
     const { project, role } = await getProjectAndRole(
         context.db, context.user, new ObjectID(pid));
     if (!project) {
@@ -87,7 +87,7 @@ export const queries = {
     //   filter.isPublic = true;
     // }
 
-    const result = await issueChanges.find(filter).sort({ at: 1 }).toArray();
+    const result = await timeline.find(filter).sort({ at: 1 }).toArray();
     return {
       count: result.length,
       offset: 0,
@@ -97,8 +97,8 @@ export const queries = {
 };
 
 export const types = {
-  IssueChangeEntry: {
-    id: (row: IssueChangeRecord) => row._id,
-    by: (row: IssueChangeRecord) => row.by ? row.by.toHexString() : null,
+  TimelineEntry: {
+    id: (row: TimelineEntryRecord) => row._id,
+    by: (row: TimelineEntryRecord) => row.by ? row.by.toHexString() : null,
   },
 };

@@ -312,7 +312,7 @@ export const mutations = {
         context.db.collection('issues').deleteMany({ project: project._id }),
         context.db.collection('labels').deleteMany({ project: project._id }),
         context.db.collection('issueLinks').deleteMany({ project: project._id }),
-        context.db.collection('issueChanges').deleteMany({ project: project._id }),
+        context.db.collection('timeline').deleteMany({ project: project._id }),
         context.db.collection('memberships').deleteMany({ project: project._id }),
         context.db.collection('projectPrefs').deleteMany({ project: project._id }),
       ]);

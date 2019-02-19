@@ -28,8 +28,8 @@ export const fragments = {
     position { x y }
     milestone
   }`,
-  issueChange: gql`
-  fragment IssueChangeFields on IssueChangeEntry {
+  timelineEntry: gql`
+  fragment TimelineEntryFields on TimelineEntry {
     id issue project by at
     type { before after }
     state { before after }

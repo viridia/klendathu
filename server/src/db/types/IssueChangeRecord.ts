@@ -16,7 +16,7 @@ export interface ObjectIDListChange {
   removed: ObjectID[];
 }
 
-export interface IssueChangeRecord {
+export interface TimelineEntryRecord {
   _id?: ObjectID;
   issue: IssueID;
   project: ObjectID;

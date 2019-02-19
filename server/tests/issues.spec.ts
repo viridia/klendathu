@@ -32,8 +32,8 @@ const IssuesQuery = gql`query IssuesQuery($query: IssueQueryParams!) {
   }
 }`;
 
-const IssueChangeQuery = gql`query IssueChangeQuery($project: ID!, $issue: ID!) {
-  issueChanges(project: $project, issue: $issue) {
+const TimelineQuery = gql`query TimelineQuery($project: ID!, $issue: ID!) {
+  timeline(project: $project, issue: $issue) {
     results {
       id issue project by at
       type { before after }
@@ -267,7 +267,7 @@ describe('issues', () => {
     afterEach(async () => {
       await server.db.collection('issues').deleteMany({});
       await server.db.collection('issueLinks').deleteMany({});
-      await server.db.collection('issueChanges').deleteMany({});
+      await server.db.collection('timeline').deleteMany({});
     });
 
     test('update return', async () => {
@@ -317,10 +317,10 @@ describe('issues', () => {
         custom: expect.toBeEmptyArray(),
       });
 
-      const cres = await query({ query: IssueChangeQuery, variables: { project, issue: issueId } });
+      const cres = await query({ query: TimelineQuery, variables: { project, issue: issueId } });
       expect(cres.errors).toBeUndefined();
-      expect(cres.data.issueChanges.results).toBeArrayOfSize(1);
-      expect(cres.data.issueChanges.results[0]).toMatchObject({
+      expect(cres.data.timeline.results).toBeArrayOfSize(1);
+      expect(cres.data.timeline.results[0]).toMatchObject({
         issue: issueId,
         project,
         by: server.context.user._id.toHexString(),
@@ -330,8 +330,8 @@ describe('issues', () => {
         description: null,
         owner: null,
       });
-      expect(cres.data.issueChanges.results[0].id).toBeNonEmptyString();
-      expect(cres.data.issueChanges.results[0].at).toBeDate();
+      expect(cres.data.timeline.results[0].id).toBeNonEmptyString();
+      expect(cres.data.timeline.results[0].at).toBeDate();
     });
 
     test('state', async () => {
@@ -360,10 +360,10 @@ describe('issues', () => {
         custom: expect.toBeEmptyArray(),
       });
 
-      const cres = await query({ query: IssueChangeQuery, variables: { project, issue: issueId } });
+      const cres = await query({ query: TimelineQuery, variables: { project, issue: issueId } });
       expect(cres.errors).toBeUndefined();
-      expect(cres.data.issueChanges.results).toBeArrayOfSize(1);
-      expect(cres.data.issueChanges.results[0]).toMatchObject({
+      expect(cres.data.timeline.results).toBeArrayOfSize(1);
+      expect(cres.data.timeline.results[0]).toMatchObject({
         state: { before: 'new', after: 'assigned' },
       });
     });
@@ -394,10 +394,10 @@ describe('issues', () => {
         custom: expect.toBeEmptyArray(),
       });
 
-      const cres = await query({ query: IssueChangeQuery, variables: { project, issue: issueId } });
+      const cres = await query({ query: TimelineQuery, variables: { project, issue: issueId } });
       expect(cres.errors).toBeUndefined();
-      expect(cres.data.issueChanges.results).toBeArrayOfSize(1);
-      expect(cres.data.issueChanges.results[0]).toMatchObject({
+      expect(cres.data.timeline.results).toBeArrayOfSize(1);
+      expect(cres.data.timeline.results[0]).toMatchObject({
         summary: { before: 'first', after: 'Updated summary' },
       });
     });
@@ -428,10 +428,10 @@ describe('issues', () => {
         custom: expect.toBeEmptyArray(),
       });
 
-      const cres = await query({ query: IssueChangeQuery, variables: { project, issue: issueId } });
+      const cres = await query({ query: TimelineQuery, variables: { project, issue: issueId } });
       expect(cres.errors).toBeUndefined();
-      expect(cres.data.issueChanges.results).toBeArrayOfSize(1);
-      expect(cres.data.issueChanges.results[0]).toMatchObject({
+      expect(cres.data.timeline.results).toBeArrayOfSize(1);
+      expect(cres.data.timeline.results[0]).toMatchObject({
         description: { before: 'first issue', after: 'updated description' },
       });
     });
@@ -458,10 +458,10 @@ describe('issues', () => {
         ownerSort: 'kitten',
       });
 
-      const cres = await query({ query: IssueChangeQuery, variables: { project, issue: issueId } });
+      const cres = await query({ query: TimelineQuery, variables: { project, issue: issueId } });
       expect(cres.errors).toBeUndefined();
-      expect(cres.data.issueChanges.results).toBeArrayOfSize(1);
-      expect(cres.data.issueChanges.results[0]).toMatchObject({
+      expect(cres.data.timeline.results).toBeArrayOfSize(1);
+      expect(cres.data.timeline.results[0]).toMatchObject({
         owner: { before: null, after: server.users.kitten._id.toHexString() },
       });
     });
@@ -493,10 +493,10 @@ describe('issues', () => {
         ],
       });
 
-      const cres = await query({ query: IssueChangeQuery, variables: { project, issue: issueId } });
+      const cres = await query({ query: TimelineQuery, variables: { project, issue: issueId } });
       expect(cres.errors).toBeUndefined();
-      expect(cres.data.issueChanges.results).toBeArrayOfSize(1);
-      expect(cres.data.issueChanges.results[0]).toMatchObject({
+      expect(cres.data.timeline.results).toBeArrayOfSize(1);
+      expect(cres.data.timeline.results[0]).toMatchObject({
         cc: {
           added: [
             server.users.dflores._id.toHexString(),
@@ -530,10 +530,10 @@ describe('issues', () => {
         labels: [ l1.toHexString(), l2.toHexString() ]
       });
 
-      const cres = await query({ query: IssueChangeQuery, variables: { project, issue: issueId } });
+      const cres = await query({ query: TimelineQuery, variables: { project, issue: issueId } });
       expect(cres.errors).toBeUndefined();
-      expect(cres.data.issueChanges.results).toBeArrayOfSize(1);
-      expect(cres.data.issueChanges.results[0]).toMatchObject({
+      expect(cres.data.timeline.results).toBeArrayOfSize(1);
+      expect(cres.data.timeline.results[0]).toMatchObject({
         labels: {
           added: [ l1.toHexString(), l2.toHexString() ],
           removed: [],
@@ -568,10 +568,10 @@ describe('issues', () => {
         ]
       });
 
-      const cres = await query({ query: IssueChangeQuery, variables: { project, issue: issueId } });
+      const cres = await query({ query: TimelineQuery, variables: { project, issue: issueId } });
       expect(cres.errors).toBeUndefined();
-      expect(cres.data.issueChanges.results).toBeArrayOfSize(1);
-      expect(cres.data.issueChanges.results[0]).toMatchObject({
+      expect(cres.data.timeline.results).toBeArrayOfSize(1);
+      expect(cres.data.timeline.results[0]).toMatchObject({
         custom: [
           { key: 'a', before: null, after: 1 },
           { key: 'b', before: null, after: 2 },
@@ -621,20 +621,20 @@ describe('issues', () => {
       });
 
       // Make sure both issues have a change entry
-      const cres = await query({ query: IssueChangeQuery, variables: { project, issue: issueId } });
+      const cres = await query({ query: TimelineQuery, variables: { project, issue: issueId } });
       expect(cres.errors).toBeUndefined();
-      expect(cres.data.issueChanges.results).toBeArrayOfSize(1);
-      expect(cres.data.issueChanges.results[0]).toMatchObject({
+      expect(cres.data.timeline.results).toBeArrayOfSize(1);
+      expect(cres.data.timeline.results[0]).toMatchObject({
         linked: [{ after: Relation.BlockedBy, before: null, to: otherIssueId }],
       });
 
       const cres2 = await query({
-        query: IssueChangeQuery,
+        query: TimelineQuery,
         variables: { project, issue: otherIssueId },
       });
       expect(cres2.errors).toBeUndefined();
-      expect(cres2.data.issueChanges.results).toBeArrayOfSize(1);
-      expect(cres2.data.issueChanges.results[0]).toMatchObject({
+      expect(cres2.data.timeline.results).toBeArrayOfSize(1);
+      expect(cres2.data.timeline.results[0]).toMatchObject({
         linked: [{ after: Relation.Blocks, before: null, to: issueId }],
       });
     });
@@ -681,20 +681,20 @@ describe('issues', () => {
       });
 
       // Make sure both issues have a change entry
-      const cres = await query({ query: IssueChangeQuery, variables: { project, issue: issueId } });
+      const cres = await query({ query: TimelineQuery, variables: { project, issue: issueId } });
       expect(cres.errors).toBeUndefined();
-      expect(cres.data.issueChanges.results).toBeArrayOfSize(1);
-      expect(cres.data.issueChanges.results[0]).toMatchObject({
+      expect(cres.data.timeline.results).toBeArrayOfSize(1);
+      expect(cres.data.timeline.results[0]).toMatchObject({
         linked: [{ after: Relation.BlockedBy, before: null, to: otherIssueId }],
       });
 
       const cres2 = await query({
-        query: IssueChangeQuery,
+        query: TimelineQuery,
         variables: { project, issue: otherIssueId },
       });
       expect(cres2.errors).toBeUndefined();
-      expect(cres2.data.issueChanges.results).toBeArrayOfSize(1);
-      expect(cres2.data.issueChanges.results[0]).toMatchObject({
+      expect(cres2.data.timeline.results).toBeArrayOfSize(1);
+      expect(cres2.data.timeline.results[0]).toMatchObject({
         linked: [{ after: Relation.Blocks, before: null, to: issueId }],
       });
     });
@@ -727,7 +727,7 @@ describe('issues', () => {
       expect(res.errors).toBeUndefined();
 
       // Clear change list
-      await server.db.collection('issueChanges').deleteMany({});
+      await server.db.collection('timeline').deleteMany({});
 
       // Remove the link
       const res2 = await mutate({
@@ -755,20 +755,20 @@ describe('issues', () => {
         links: []
       });
 
-      const cres = await query({ query: IssueChangeQuery, variables: { project, issue: issueId } });
+      const cres = await query({ query: TimelineQuery, variables: { project, issue: issueId } });
       expect(cres.errors).toBeUndefined();
-      expect(cres.data.issueChanges.results).toBeArrayOfSize(1);
-      expect(cres.data.issueChanges.results[0]).toMatchObject({
+      expect(cres.data.timeline.results).toBeArrayOfSize(1);
+      expect(cres.data.timeline.results[0]).toMatchObject({
         linked: [{ after: null, before: Relation.BlockedBy, to: otherIssueId }],
       });
 
       const cres2 = await query({
-        query: IssueChangeQuery,
+        query: TimelineQuery,
         variables: { project, issue: otherIssueId },
       });
       expect(cres2.errors).toBeUndefined();
-      expect(cres2.data.issueChanges.results).toBeArrayOfSize(1);
-      expect(cres2.data.issueChanges.results[0]).toMatchObject({
+      expect(cres2.data.timeline.results).toBeArrayOfSize(1);
+      expect(cres2.data.timeline.results[0]).toMatchObject({
         linked: [{ after: null, before: Relation.Blocks, to: issueId }],
       });
     });
@@ -801,7 +801,7 @@ describe('issues', () => {
       expect(res.errors).toBeUndefined();
 
       // Clear change list
-      await server.db.collection('issueChanges').deleteMany({});
+      await server.db.collection('timeline').deleteMany({});
 
       // Remove the link fro the other issue
       const res2 = await mutate({
@@ -826,20 +826,20 @@ describe('issues', () => {
         links: []
       });
 
-      const cres = await query({ query: IssueChangeQuery, variables: { project, issue: issueId } });
+      const cres = await query({ query: TimelineQuery, variables: { project, issue: issueId } });
       expect(cres.errors).toBeUndefined();
-      expect(cres.data.issueChanges.results).toBeArrayOfSize(1);
-      expect(cres.data.issueChanges.results[0]).toMatchObject({
+      expect(cres.data.timeline.results).toBeArrayOfSize(1);
+      expect(cres.data.timeline.results[0]).toMatchObject({
         linked: [{ after: null, before: Relation.BlockedBy, to: otherIssueId }],
       });
 
       const cres2 = await query({
-        query: IssueChangeQuery,
+        query: TimelineQuery,
         variables: { project, issue: otherIssueId },
       });
       expect(cres2.errors).toBeUndefined();
-      expect(cres2.data.issueChanges.results).toBeArrayOfSize(1);
-      expect(cres2.data.issueChanges.results[0]).toMatchObject({
+      expect(cres2.data.timeline.results).toBeArrayOfSize(1);
+      expect(cres2.data.timeline.results[0]).toMatchObject({
         linked: [{ after: null, before: Relation.Blocks, to: issueId }],
       });
     });
@@ -872,7 +872,7 @@ describe('issues', () => {
       expect(res.errors).toBeUndefined();
 
       // Clear change list
-      await server.db.collection('issueChanges').deleteMany({});
+      await server.db.collection('timeline').deleteMany({});
 
       // Change the link to a new relation type
       const res2 = await mutate({
@@ -900,20 +900,20 @@ describe('issues', () => {
         links: [{ relation: Relation.Duplicate, to: issueId }],
       });
 
-      const cres = await query({ query: IssueChangeQuery, variables: { project, issue: issueId } });
+      const cres = await query({ query: TimelineQuery, variables: { project, issue: issueId } });
       expect(cres.errors).toBeUndefined();
-      expect(cres.data.issueChanges.results).toBeArrayOfSize(1);
-      expect(cres.data.issueChanges.results[0]).toMatchObject({
+      expect(cres.data.timeline.results).toBeArrayOfSize(1);
+      expect(cres.data.timeline.results[0]).toMatchObject({
         linked: [{ after: Relation.Duplicate, before: Relation.BlockedBy, to: otherIssueId }],
       });
 
       const cres2 = await query({
-        query: IssueChangeQuery,
+        query: TimelineQuery,
         variables: { project, issue: otherIssueId },
       });
       expect(cres2.errors).toBeUndefined();
-      expect(cres2.data.issueChanges.results).toBeArrayOfSize(1);
-      expect(cres2.data.issueChanges.results[0]).toMatchObject({
+      expect(cres2.data.timeline.results).toBeArrayOfSize(1);
+      expect(cres2.data.timeline.results[0]).toMatchObject({
         linked: [{ after: Relation.Duplicate, before: Relation.Blocks, to: issueId }],
       });
     });
@@ -946,7 +946,7 @@ describe('issues', () => {
       expect(res.errors).toBeUndefined();
 
       // Clear change list
-      await server.db.collection('issueChanges').deleteMany({});
+      await server.db.collection('timeline').deleteMany({});
 
       // Change the link to a new relation type (other side)
       const res2 = await mutate({
@@ -977,20 +977,20 @@ describe('issues', () => {
         links: [{ relation: Relation.Duplicate, to: issueId }],
       });
 
-      const cres = await query({ query: IssueChangeQuery, variables: { project, issue: issueId } });
+      const cres = await query({ query: TimelineQuery, variables: { project, issue: issueId } });
       expect(cres.errors).toBeUndefined();
-      expect(cres.data.issueChanges.results).toBeArrayOfSize(1);
-      expect(cres.data.issueChanges.results[0]).toMatchObject({
+      expect(cres.data.timeline.results).toBeArrayOfSize(1);
+      expect(cres.data.timeline.results[0]).toMatchObject({
         linked: [{ after: Relation.Duplicate, before: Relation.BlockedBy, to: otherIssueId }],
       });
 
       const cres2 = await query({
-        query: IssueChangeQuery,
+        query: TimelineQuery,
         variables: { project, issue: otherIssueId },
       });
       expect(cres2.errors).toBeUndefined();
-      expect(cres2.data.issueChanges.results).toBeArrayOfSize(1);
-      expect(cres2.data.issueChanges.results[0]).toMatchObject({
+      expect(cres2.data.timeline.results).toBeArrayOfSize(1);
+      expect(cres2.data.timeline.results[0]).toMatchObject({
         linked: [{ after: Relation.Duplicate, before: Relation.Blocks, to: issueId }],
       });
     });
@@ -1023,7 +1023,7 @@ describe('issues', () => {
       expect(res.errors).toBeUndefined();
 
       // Clear change list
-      await server.db.collection('issueChanges').deleteMany({});
+      await server.db.collection('timeline').deleteMany({});
 
       // Change the link to the same thing
       const res2 = await mutate({
@@ -1051,16 +1051,16 @@ describe('issues', () => {
         links: [{ relation: Relation.Blocks, to: issueId }],
       });
 
-      const cres = await query({ query: IssueChangeQuery, variables: { project, issue: issueId } });
+      const cres = await query({ query: TimelineQuery, variables: { project, issue: issueId } });
       expect(cres.errors).toBeUndefined();
-      expect(cres.data.issueChanges.results).toBeArrayOfSize(0);
+      expect(cres.data.timeline.results).toBeArrayOfSize(0);
 
       const cres2 = await query({
-        query: IssueChangeQuery,
+        query: TimelineQuery,
         variables: { project, issue: otherIssueId },
       });
       expect(cres2.errors).toBeUndefined();
-      expect(cres2.data.issueChanges.results).toBeArrayOfSize(0);
+      expect(cres2.data.timeline.results).toBeArrayOfSize(0);
     });
 
     test('link change (no effect, reverse)', async () => {
@@ -1091,7 +1091,7 @@ describe('issues', () => {
       expect(res.errors).toBeUndefined();
 
       // Clear change list
-      await server.db.collection('issueChanges').deleteMany({});
+      await server.db.collection('timeline').deleteMany({});
 
       // Change the link to the same thing
       const res2 = await mutate({
@@ -1122,16 +1122,16 @@ describe('issues', () => {
         links: [{ relation: Relation.Blocks, to: issueId }],
       });
 
-      const cres = await query({ query: IssueChangeQuery, variables: { project, issue: issueId } });
+      const cres = await query({ query: TimelineQuery, variables: { project, issue: issueId } });
       expect(cres.errors).toBeUndefined();
-      expect(cres.data.issueChanges.results).toBeArrayOfSize(0);
+      expect(cres.data.timeline.results).toBeArrayOfSize(0);
 
       const cres2 = await query({
-        query: IssueChangeQuery,
+        query: TimelineQuery,
         variables: { project, issue: otherIssueId },
       });
       expect(cres2.errors).toBeUndefined();
-      expect(cres2.data.issueChanges.results).toBeArrayOfSize(0);
+      expect(cres2.data.timeline.results).toBeArrayOfSize(0);
     });
   });
 

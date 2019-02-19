@@ -12,7 +12,7 @@ import {
   IssueInput,
   CustomField,
   Relation,
-  IssueChangeEntry,
+  TimelineEntry,
 } from '../../../common/types/graphql';
 import {
   Dialog,
@@ -25,7 +25,6 @@ import {
   LabelName,
   Card,
   FormLabel,
-  FormControlGroup,
 } from '../controls';
 import { Role, IssueType, DataType, WorkflowAction } from '../../../common/types/json';
 import { ViewContext } from '../models';
@@ -37,7 +36,7 @@ import { Spacer } from '../layout';
 import { idToIndex } from '../lib/idToIndex';
 import gql from 'graphql-tag';
 import styled from 'styled-components';
-import { IssueChanges } from './IssueChanges';
+import { IssueTimeline } from './IssueTimeline';
 
 const IssueDetailsHeader = styled.header`
   && {
@@ -113,7 +112,7 @@ marked.setOptions({
 interface Props extends RouteComponentProps<{ project: string; id: string }> {
   context: ViewContext;
   issue: Issue;
-  issueChanges: IssueChangeEntry[];
+  timeline: TimelineEntry[];
   loading: boolean;
 }
 
@@ -185,7 +184,7 @@ export class IssueDetails extends React.Component<Props> {
   }
 
   private renderContent() {
-    const { context, issue, issueChanges, loading } = this.props;
+    const { context, issue, timeline, loading } = this.props;
     if (!issue) {
       return (
         <section className="content">
@@ -265,10 +264,10 @@ export class IssueDetails extends React.Component<Props> {
                 </>
               )}
 
-              {issueChanges.length > 0 && (
+              {timeline.length > 0 && (
                 <>
                   <FormLabel>Issue History:</FormLabel>
-                  <IssueChanges changes={issueChanges} />
+                  <IssueTimeline changes={timeline} />
                 </>
               )}
 
@@ -414,12 +413,12 @@ export class IssueDetails extends React.Component<Props> {
 const IssueDetailsQuery = gql`
   query IssueQuery($project: ID!, $issue: ID!) {
     issue(id: $issue) { ...IssueFields }
-    issueChanges(project: $project, issue: $issue) {
-      count offset results { ...IssueChangeFields }
+    timeline(project: $project, issue: $issue) {
+      count offset results { ...TimelineEntryFields }
     }
   }
   ${fragments.issue}
-  ${fragments.issueChange}
+  ${fragments.timelineEntry}
 `;
 
 export interface IssueProviderProps extends RouteComponentProps<{ project: string, id: string }> {
@@ -444,12 +443,12 @@ export const IssueDetailsView = (props: IssueProviderProps) => {
         if (error) {
           return <ErrorDisplay error={error} />;
         }
-        const { issue, issueChanges } = data;
+        const { issue, timeline } = data;
         return (
           <IssueDetails
               {...props}
               issue={issue}
-              issueChanges={issueChanges ? issueChanges.results : []}
+              timeline={timeline ? timeline.results : []}
               loading={loading}
           />
         );

@@ -1,6 +1,6 @@
 export { AccountRecord } from './AccountRecord';
 export { AttachmentRecord } from './AttachmentRecord';
-export { IssueChangeRecord } from './IssueChangeRecord';
+export { TimelineEntryRecord } from './TimelineEntryRecord';
 export { IssueLinkRecord } from './IssueLinkRecord';
 export { IssueRecord, CustomValues, CustomData } from './IssueRecord';
 export { LabelRecord } from './LabelRecord';

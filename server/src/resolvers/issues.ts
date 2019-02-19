@@ -2,7 +2,7 @@ import { Context } from './Context';
 import {
   AccountRecord,
   IssueLinkRecord,
-  IssueChangeRecord,
+  TimelineEntryRecord,
   IssueRecord,
   CustomValues,
   CustomData,
@@ -339,7 +339,7 @@ export const mutations = {
       }
     }
 
-    const commentsToInsert: IssueChangeRecord[] = (input.comments || []).map(comment => ({
+    const commentsToInsert: TimelineEntryRecord[] = (input.comments || []).map(comment => ({
       issue: record._id,
       project: pr._id,
       by: context.user._id,
@@ -352,12 +352,13 @@ export const mutations = {
     const row: IssueRecord = result.ops[0];
     if (result.insertedCount === 1) {
       if (commentsToInsert.length > 0) {
-        await context.db.collection<IssueChangeRecord>('issueChanges').insertMany(commentsToInsert);
+        await context.db.collection<TimelineEntryRecord>('timeline')
+            .insertMany(commentsToInsert);
       }
 
       if (input.linked && input.linked.length > 0) {
         const linksToInsert: IssueLinkRecord[] = [];
-        const changesToInsert: IssueChangeRecord[] = [];
+        const changesToInsert: TimelineEntryRecord[] = [];
         for (const link of input.linked) {
           linksToInsert.push({
             from: row._id,
@@ -381,7 +382,7 @@ export const mutations = {
           });
         }
         await context.db.collection('issueLinks').insertMany(linksToInsert);
-        await context.db.collection('issueChanges').insertMany(changesToInsert);
+        await context.db.collection('timeline').insertMany(changesToInsert);
       }
     }
 
@@ -403,7 +404,7 @@ export const mutations = {
 
     const issues = context.db.collection<IssueRecord>('issues');
     const issueLinks = context.db.collection<IssueLinkRecord>('issueLinks');
-    const issueChanges = context.db.collection<IssueChangeRecord>('issueChanges');
+    const timeline = context.db.collection<TimelineEntryRecord>('timeline');
     const issue = await issues.findOne({ _id: id });
     if (!issue) {
       logger.error('Attempt to update non-existent issue:', { user, id });
@@ -448,10 +449,10 @@ export const mutations = {
         updated: now,
       },
     };
-    const additionalChangeRecords: IssueChangeRecord[] = [];
+    const additionalChangeRecords: TimelineEntryRecord[] = [];
     const promises: Array<Promise<any>> = [];
 
-    const change: IssueChangeRecord = {
+    const change: TimelineEntryRecord = {
       project: project._id,
       issue: issue._id,
       by: context.user._id,
@@ -718,11 +719,11 @@ export const mutations = {
     }
 
     if (change.at) {
-      await issueChanges.insertOne(change);
+      await timeline.insertOne(change);
     }
 
     if (additionalChangeRecords.length > 0) {
-      promises.push(issueChanges.insertMany(additionalChangeRecords));
+      promises.push(timeline.insertMany(additionalChangeRecords));
     }
 
     await Promise.all(promises);

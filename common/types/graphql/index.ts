@@ -281,9 +281,9 @@ export interface Query {
   /** Search for issues by text query, sorted by relevance. */
   issueSearch: Issue[];
   /** Retrieve history of changes to an issue, or all issues within a project. */
-  issueChanges: PaginatedIssueChanges;
+  timeline: PaginatedTimeline;
   /** Retrieve history of comments to an issue, or all issues within a project. */
-  comments: PaginatedIssueChanges;
+  comments: PaginatedTimeline;
   /** Search custom field text, used for auto completion. */
   searchCustomFields: string[];
   /** Current user's preferences for a project. */
@@ -514,17 +514,17 @@ export interface PaginatedIssues {
 }
 
 /** Issue change query result. */
-export interface PaginatedIssueChanges {
+export interface PaginatedTimeline {
   /** Total number of results. */
   count: number;
   /** Current offset */
   offset: number;
   /** List of results. */
-  results: IssueChangeEntry[];
+  results: TimelineEntry[];
 }
 
 /** A change record for an issue. Note that comments are also stored as change records. */
-export interface IssueChangeEntry {
+export interface TimelineEntry {
   id: string;
   /** Issue this change applies to. */
   issue: string;
@@ -774,7 +774,7 @@ export interface IssueSearchQueryArgs {
 
   search: string;
 }
-export interface IssueChangesQueryArgs {
+export interface TimelineQueryArgs {
   project: string;
 
   issue?: Maybe<string>;

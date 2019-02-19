@@ -1,6 +1,6 @@
 import { gql } from 'apollo-server-express';
 
-export const IssueChanges = gql`
+export const Timeline = gql`
 "A change to an ID field."
 type IDChange {
   "Value of the field before the change."
@@ -53,7 +53,7 @@ type CustomFieldChange {
 }
 
 "A change record for an issue. Note that comments are also stored as change records."
-type IssueChangeEntry {
+type TimelineEntry {
   id: ID!
 
   "Issue this change applies to."
@@ -109,7 +109,7 @@ type IssueChangeEntry {
 }
 
 "Issue change query result."
-type PaginatedIssueChanges {
+type PaginatedTimeline {
   "Total number of results."
   count: Int!
 
@@ -117,6 +117,6 @@ type PaginatedIssueChanges {
   offset: Int!
 
   "List of results."
-  results: [IssueChangeEntry!]!
+  results: [TimelineEntry!]!
 }
 `;

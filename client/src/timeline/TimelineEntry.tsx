@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IssueChangeEntry, CustomFieldChange } from '../../../common/types/graphql';
+import { TimelineEntry, CustomFieldChange } from '../../../common/types/graphql';
 import { AccountName, LabelName, RelativeDate } from '../controls';
 import { LinkChangeDisplay } from './LinkChangeDisplay';
 import { ProjectEnv } from '../models';
@@ -79,7 +79,7 @@ function customChange({ key, before, after }: CustomFieldChange) {
     </TimelinePropery>);
 }
 
-export function TimelineEntry({ change }: { change: IssueChangeEntry }) {
+export function TimelineEntryDisplay({ change }: { change: TimelineEntry }) {
   return (
     <TimelineEntryLayout>
       <TimelineEntryHeader>

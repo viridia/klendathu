@@ -34,7 +34,7 @@ export async function createClient(): Promise<MongoClient> {
   await ensureCollections(db, [
     'accounts',
     'issues',
-    'issueChanges',
+    'timeline',
     'issueLinks',
     'labels',
     'memberships',

@@ -1,7 +1,7 @@
 export { Context } from './Context';
 import * as accounts from './account';
 import * as issues from './issues';
-import * as issueChanges from './issueChanges';
+import * as timeline from './timeline';
 import * as labels from './labels';
 import * as memberships from './memberships';
 import * as projects from './projects';
@@ -12,11 +12,11 @@ export const resolverMap = {
   Query: {
     ...accounts.queries,
     ...issues.queries,
-    ...issueChanges.queries,
     ...labels.queries,
     ...projects.queries,
     ...projectPrefs.queries,
     ...templates.queries,
+    ...timeline.queries,
   },
   Mutation: {
     ...accounts.mutations,
@@ -34,10 +34,10 @@ export const resolverMap = {
   },
   ...accounts.types,
   ...issues.types,
-  ...issueChanges.types,
   ...labels.types,
   ...memberships.types,
   ...projects.types,
   ...projectPrefs.types,
   ...templates.types,
+  ...timeline.types,
 };

@@ -1,2 +1,2 @@
 export { LinkChangeDisplay } from './LinkChangeDisplay';
-export { TimelineEntry } from './TimelineEntry';
+export { TimelineEntryDisplay } from './TimelineEntry';
