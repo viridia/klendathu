@@ -2,9 +2,8 @@
 
 * Timeline
   * Comments display
-  * Need subscription for timeline entries.
-  * Possibly do them as a separate query - issue timeline widget.
-* Update timeline cache when done editing issue
+  * Smart updating of timeline cache
+* Workflow actions
 * Attachments
 * Make user links local to the view
 * Batching
@@ -24,6 +23,7 @@
 
 # Major pieces
 
+* Dashboard view
 * Issue Compose
   * Attachments
   * Milestones

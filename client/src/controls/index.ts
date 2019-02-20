@@ -15,6 +15,7 @@ export { Form, FormControlGroup, FormLabel, TextArea, TextInput, ValidationState
 export { LabelName } from './LabelName';
 export { LinkButton } from './LinkButton';
 export { LoadingIndicator } from './LoadingIndicator';
+export { MarkdownText } from './MarkdownText';
 export { Menu, MenuItem, MenuDivider } from './Menu';
 export { NavContainer } from './NavContainer';
 export { NavLink } from './NavLink';

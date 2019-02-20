@@ -5,7 +5,6 @@ import { RouteComponentProps } from 'react-router-dom';
 import { action, observable, computed } from 'mobx';
 import { observer } from 'mobx-react';
 import bind from 'bind-decorator';
-import * as marked from 'marked';
 import {
   Issue,
   IssueInput,
@@ -23,6 +22,7 @@ import {
   LabelName,
   Card,
   FormLabel,
+  MarkdownText,
 } from '../controls';
 import { Role, IssueType, DataType, WorkflowAction } from '../../../common/types/json';
 import { ViewContext } from '../models';
@@ -106,7 +106,7 @@ const IssueLinkGroup = styled.div`
   }
 `;
 
-const IssueDescription = styled.div`
+const IssueDescription = styled(MarkdownText)`
   > p:first-child {
     margin-top: 0;
   }
@@ -120,22 +120,11 @@ export const CommentGroup = styled.span`
   justify-self: stretch;
 `;
 
-// Global options for marked.
-marked.setOptions({
-  renderer: new marked.Renderer(),
-  gfm: true,
-  tables: true,
-  breaks: false,
-  pedantic: false,
-  sanitize: true,
-  smartLists: true,
-  smartypants: true,
-});
-
 interface Props extends RouteComponentProps<{ project: string; id: string }> {
   context: ViewContext;
   issue: Issue;
   loading: boolean;
+  onAddComment: (body: string) => any;
 }
 
 @observer
@@ -206,7 +195,7 @@ export class IssueDetails extends React.Component<Props> {
   }
 
   private renderContent() {
-    const { context, issue, loading } = this.props;
+    const { context, issue, loading, onAddComment } = this.props;
     if (!issue) {
       return (
         <section className="content">
@@ -236,7 +225,7 @@ export class IssueDetails extends React.Component<Props> {
                 {issue.description.length > 0 &&
                   <>
                     <FormLabel>Description:</FormLabel>
-                    {this.renderDescription(issue.description)}
+                    <IssueDescription className="descr" content={issue.description} />
                   </>
                 }
 
@@ -287,7 +276,7 @@ export class IssueDetails extends React.Component<Props> {
                 <IssueTimeline issue={issue} />
 
                 <CommentGroup>
-                  <CommentEdit onAddComment={this.onAddComment} />
+                  <CommentEdit onAddComment={onAddComment} />
                 </CommentGroup>
               </React.Fragment>)
             }
@@ -300,15 +289,6 @@ export class IssueDetails extends React.Component<Props> {
           </RightPanel>
         )}
       </IssueDetailsContent>
-    );
-  }
-
-  private renderDescription(description: string) {
-    return (
-      <IssueDescription
-          className="descr"
-          dangerouslySetInnerHTML={{ __html: marked.parse(description) }}
-      />
     );
   }
 
@@ -338,14 +318,6 @@ export class IssueDetails extends React.Component<Props> {
   }
 
   @action.bound
-  private onAddComment(newComment: string) {
-    const { issue } = this.props;
-    // updateIssue(issue.id, {
-    //   comments: [newComment],
-    // });
-  }
-
-  @action.bound
   private onDeleteIssue() {
     this.showDelete = true;
     this.busy = false;
@@ -356,6 +328,7 @@ export class IssueDetails extends React.Component<Props> {
     // const { context, location, history, issue } = this.props;
     // const { account, project } = context;
     this.busy = true;
+    // TODO: Implement
     // return deleteIssue(issue.id).then(() => {
     //   const [prevIssue, nextIssue] = this.adjacentIssueIds(issue.id);
     //   this.showDelete = false;

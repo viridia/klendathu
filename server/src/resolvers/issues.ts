@@ -33,20 +33,10 @@ import { logger } from '../logger';
 import { ObjectID } from 'mongodb';
 import { escapeRegExp } from '../db/helpers';
 import { withFilter } from 'graphql-subscriptions';
-import { pubsub } from './pubsub';
+import { pubsub, Channels, RecordChange, publish } from './pubsub';
 
-const ISSUE_CHANGE = 'issue-change';
-const TIMELINE_CHANGE = 'timeline-change';
-
-interface IssueRecordChange {
-  value: IssueRecord;
-  action: ChangeAction;
-}
-
-interface TimelineRecordChange {
-  value: TimelineEntryRecord;
-  action: ChangeAction;
-}
+type IssueRecordChange = RecordChange<IssueRecord>;
+type TimelineRecordChange = RecordChange<TimelineEntryRecord>;
 
 interface PaginatedIssueRecords {
   count: number;
@@ -393,7 +383,7 @@ export const mutations = {
       if (timelineRecordsToInsert.length > 0) {
         const res = await timeline.insertMany(timelineRecordsToInsert);
         res.ops.forEach(changeRow => {
-          pubsub.publish(TIMELINE_CHANGE, {
+          publish(Channels.TIMELINE_CHANGE, {
             action: ChangeAction.Added,
             value: changeRow,
           });
@@ -402,14 +392,14 @@ export const mutations = {
     }
 
     // Notify this issue was added
-    pubsub.publish(ISSUE_CHANGE, {
+    publish(Channels.ISSUE_CHANGE, {
       action: ChangeAction.Added,
       value: row,
     });
 
     // Notify issues we linked to were changed
     linkedIssuesToUpdate.forEach(iss => {
-      pubsub.publish(ISSUE_CHANGE, {
+      publish(Channels.ISSUE_CHANGE, {
         action: ChangeAction.Changed,
         value: iss,
       });
@@ -769,7 +759,7 @@ export const mutations = {
     if (timelineRecordsToInsert.length > 0) {
       const timelineResults = await timeline.insertMany(timelineRecordsToInsert);
       timelineResults.ops.forEach(changeRow => {
-        pubsub.publish(TIMELINE_CHANGE, {
+        publish(Channels.TIMELINE_CHANGE, {
           action: ChangeAction.Added,
           value: changeRow,
         });
@@ -777,7 +767,7 @@ export const mutations = {
     }
 
     // The issue record didn't change, but the timeline might have.
-    pubsub.publish(ISSUE_CHANGE, {
+    publish(Channels.ISSUE_CHANGE, {
       action: ChangeAction.Changed,
       value: issue,
     });
@@ -926,7 +916,7 @@ export const mutations = {
     };
 
     const result = await timeline.insertOne(record);
-    pubsub.publish(TIMELINE_CHANGE, {
+    publish(Channels.TIMELINE_CHANGE, {
       action: ChangeAction.Added,
       value: result.ops[0],
     });
@@ -937,7 +927,7 @@ export const mutations = {
 export const subscriptions = {
   issueChanged: {
     subscribe: withFilter(
-      () => pubsub.asyncIterator([ISSUE_CHANGE]),
+      () => pubsub.asyncIterator([Channels.ISSUE_CHANGE]),
       (
         change: IssueRecordChange,
         { issue }: IssueChangedSubscriptionArgs,
@@ -953,7 +943,7 @@ export const subscriptions = {
   },
   issuesChanged: {
     subscribe: withFilter(
-      () => pubsub.asyncIterator([ISSUE_CHANGE]),
+      () => pubsub.asyncIterator([Channels.ISSUE_CHANGE]),
       (
         change: IssueRecordChange,
         { project }: IssuesChangedSubscriptionArgs,
@@ -969,7 +959,7 @@ export const subscriptions = {
   },
   timelineChanged: {
     subscribe: withFilter(
-      () => pubsub.asyncIterator([TIMELINE_CHANGE]),
+      () => pubsub.asyncIterator([Channels.TIMELINE_CHANGE]),
       (
         change: TimelineRecordChange,
         { issue, project }: TimelineChangedSubscriptionArgs,

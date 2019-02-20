@@ -4,6 +4,7 @@ import { AccountName, LabelName, RelativeDate } from '../controls';
 import { LinkChangeDisplay } from './LinkChangeDisplay';
 import { ProjectEnv } from '../models';
 import styled from 'styled-components';
+import { CommentDisplay } from './CommentDisplay';
 
 export function StateNameDisplay({ state }: { state: string }) {
   const env = React.useContext(ProjectEnv);
@@ -81,77 +82,87 @@ function customChange({ key, before, after }: CustomFieldChange) {
 }
 
 export function TimelineEntryDisplay({ change }: { change: TimelineEntry }) {
+  const {
+    type,
+    state,
+    summary,
+    description,
+    owner,
+    cc,
+    labels,
+    attachments,
+    linked,
+    custom,
+  } = change;
+  // If the change contains a comment body and no other changes, then we don't want to
+  // display a change header. Thus is a side-effect of the fact that the timeline contains
+  // both comments and change history records.
+  const anyNonCommentChange = type || state || summary || description || owner || cc || labels
+      || attachments || linked || custom;
   return (
     <TimelineEntryLayout>
-      <TimelineEntryHeader>
+      {anyNonCommentChange && <TimelineEntryHeader>
         <AccountName id={change.by} />
         &nbsp;made changes&nbsp;
         <RelativeDate date={change.at} withPrefix={true} />
         :
-      </TimelineEntryHeader>
-      <TimelineProperyList>
-        {change.type && (
+      </TimelineEntryHeader>}
+      {anyNonCommentChange && <TimelineProperyList>
+        {type && (
           <TimelinePropery>
             type: <span className="type">
-              {change.type.before}
+              {type.before}
             </span> to <span className="type">
-              {change.type.after}
+              {type.after}
             </span>
           </TimelinePropery>)}
-        {change.state && (
+        {state && (
           <TimelinePropery>
             state:{' '}
-            <StateNameDisplay state={change.state.before} />
+            <StateNameDisplay state={state.before} />
              {' '}to{' '}
-             <StateNameDisplay state={change.state.after} />
+             <StateNameDisplay state={state.after} />
           </TimelinePropery>)}
-        {change.summary && (<TimelinePropery>
+        {summary && (<TimelinePropery>
           changed <span className="field-name">summary</span> from &quot;
-          {change.summary.before}&quot; to &quot;
-          {change.summary.after}&quot;
+          {summary.before}&quot; to &quot;
+          {summary.after}&quot;
         </TimelinePropery>)}
-        {change.description && (<TimelinePropery>
+        {description && (<TimelinePropery>
           changed <span className="field-name">description</span>.
         </TimelinePropery>)}
-        {change.owner &&
+        {owner &&
           <TimelinePropery>owner:{' '}
-          <AccountName id={change.owner.before} />
+          <AccountName id={owner.before} />
           {' '}to{' '}
-          <AccountName id={change.owner.after} />
+          <AccountName id={owner.after} />
           </TimelinePropery>}
-        {change.cc && change.cc.added && change.cc.added.map(cc => (
-          <TimelinePropery key={cc}>
-            added <AccountName id={cc} /> to cc</TimelinePropery>))}
-        {change.cc && change.cc.removed && change.cc.removed.map(cc => (
-          <TimelinePropery key={cc}>
-            removed <AccountName id={cc} /> from cc</TimelinePropery>))}
-        {change.labels && change.labels.added && change.labels.added.map(l =>
+        {cc && cc.added && cc.added.map(acc => (
+          <TimelinePropery key={acc}>
+            added <AccountName id={acc} /> to cc</TimelinePropery>))}
+        {cc && cc.removed && cc.removed.map(acc => (
+          <TimelinePropery key={acc}>
+            removed <AccountName id={acc} /> from cc</TimelinePropery>))}
+        {labels && labels.added && labels.added.map(l =>
           (<TimelinePropery key={l}>
             added label <LabelName id={l} key={l} />
           </TimelinePropery>))}
-        {change.labels && change.labels.removed && change.labels.removed.map(l =>
+        {labels && labels.removed && labels.removed.map(l =>
           (<TimelinePropery key={l}>
             removed label <LabelName id={l} key={l} />
           </TimelinePropery>))}
-        {change.attachments && change.attachments.added && change.attachments.added.map(a =>
+        {attachments && attachments.added && attachments.added.map(a =>
           (<TimelinePropery key={a}>
             attached file <span className="attachment" />
           </TimelinePropery>))}
-        {change.attachments && change.attachments.removed &&
-            change.attachments.removed.map(a =>
+        {attachments && attachments.removed &&
+            attachments.removed.map(a =>
           (<TimelinePropery key={a}>
             removed file <span className="attachment" />
           </TimelinePropery>))}
-        {change.linked && change.linked.map(LinkChangeDisplay)}
-        {change.custom && change.custom.map(customChange)}
-        {/* {change.comments && change.comments.added === 1 &&
-          (<TimelinePropery>added a comment</TimelinePropery>)
-        }
-        {change.comments && change.comments.added > 1 &&
-          (<TimelinePropery
-           >added {change.comments.added} comments</TimelinePropery>)
-        }
-        {change.comments && change.comments.updated === 1 &&
+        {linked && linked.map(LinkChangeDisplay)}
+        {custom && custom.map(customChange)}
+        {/* {change.comments && change.comments.updated === 1 &&
           (<TimelinePropery>edited a comment</TimelinePropery>)
         }
         {change.comments && change.comments.updated > 1 &&
@@ -165,7 +176,8 @@ export function TimelineEntryDisplay({ change }: { change: TimelineEntry }) {
           (<TimelinePropery
            >deleted {change.comments.removed} comments</TimelinePropery>)
         } */}
-      </TimelineProperyList>
+      </TimelineProperyList>}
+      {change.commentBody && <CommentDisplay comment={change} />}
     </TimelineEntryLayout>
   );
 }
