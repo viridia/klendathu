@@ -317,7 +317,6 @@ export class IssueCompose extends React.Component<Props> {
           </LeftPanel>
           <RightPanel>
             <StateSelector
-                context={this.props.context}
                 workflow={this.workflow}
                 state={this.issueState}
                 prevState={this.prevState}
@@ -534,7 +533,7 @@ export class IssueCompose extends React.Component<Props> {
     const { issue } = this.props;
     if (issue) {
       this.type = issue.type;
-      this.issueState = issue.state;
+      this.prevState = this.issueState = issue.state;
       this.summary = issue.summary;
       this.description = issue.description;
       this.owner = issue.ownerAccount;
@@ -557,6 +556,7 @@ export class IssueCompose extends React.Component<Props> {
       }
     } else {
       this.resetType();
+      this.prevState = this.issueState;
       this.summary = '';
       this.description = '';
       this.owner = null;

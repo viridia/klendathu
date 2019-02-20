@@ -68,7 +68,7 @@ export class MainPage extends React.Component<RouteComponentProps<{}>> {
     return (
       <MainPageLayout>
         <ToastContainer
-          position="bottom-right"
+          position="bottom-left"
           autoClose={10000}
           hideProgressBar={true}
           newestOnTop={false}
