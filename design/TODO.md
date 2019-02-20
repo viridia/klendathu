@@ -2,19 +2,18 @@
 
 * Timeline
   * Comments display
+  * Need subscription for timeline entries.
+  * Possibly do them as a separate query - issue timeline widget.
 * Update timeline cache when done editing issue
 * Attachments
 * Make user links local to the view
-* Redis
 * Batching
 * ErrorDisplay
   * Show network errors
   * Mini display for errors in menus and chips
 * Better UI for entering linked issues
 * Sort issue searches by relevance
-* Issue Change History
-  * Add comment rendering
-  * Global
+* Project timeline
 * Better loading indicator
 * Navbar project list
 * Make Markdown a separate component.
@@ -55,6 +54,7 @@
 * Enable Twitter auth
 * Enable issue grouping
 * Export / backup database
+* Redis
 
 # Components
 

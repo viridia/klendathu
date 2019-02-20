@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { IssueLinks } from './input/IssueLinks';
 import { CommentEdit } from './input/CommentEdit';
-import { WorkflowActions } from './workflow/WorkflowActions';
 import { RouteComponentProps } from 'react-router-dom';
 import { action, observable, computed } from 'mobx';
 import { observer } from 'mobx-react';
@@ -12,7 +11,6 @@ import {
   IssueInput,
   CustomField,
   Relation,
-  TimelineEntry,
 } from '../../../common/types/graphql';
 import {
   Dialog,
@@ -34,6 +32,7 @@ import { idToIndex } from '../lib/idToIndex';
 import { IssueTimeline } from './IssueTimeline';
 import styled from 'styled-components';
 import ArrowUpIcon from '../svg-compiled/icons/IcArrowUpward';
+import { WorkflowActionsView } from './workflow/WorkflowActionsView';
 
 const IssueDetailsLayout = styled(Card)`
   flex: 1 0 0;
@@ -76,7 +75,7 @@ const LeftPanel = styled.div`
   grid-auto-flow: row;
   grid-template-columns: [labels] auto [controls] 1fr;
   justify-items: flex-start;
-  padding: 0 0.5rem 0 0;
+  padding: 0 0.5rem 0 1rem;
 
   > .fill {
     justify-self: stretch;
@@ -136,7 +135,6 @@ marked.setOptions({
 interface Props extends RouteComponentProps<{ project: string; id: string }> {
   context: ViewContext;
   issue: Issue;
-  timeline: TimelineEntry[];
   loading: boolean;
 }
 
@@ -208,7 +206,7 @@ export class IssueDetails extends React.Component<Props> {
   }
 
   private renderContent() {
-    const { context, issue, timeline, loading } = this.props;
+    const { context, issue, loading } = this.props;
     if (!issue) {
       return (
         <section className="content">
@@ -276,6 +274,7 @@ export class IssueDetails extends React.Component<Props> {
                     <td><ShowAttachments attachments={issue.attachments} /></td>
                   </tr>
                 )}*/}
+
                 {issue.links.length > 0 && (
                   <>
                     <FormLabel>Linked Issues:</FormLabel>
@@ -285,12 +284,7 @@ export class IssueDetails extends React.Component<Props> {
                   </>
                 )}
 
-                {timeline.length > 0 && (
-                  <>
-                    <FormLabel>Issue History:</FormLabel>
-                    <IssueTimeline changes={timeline} />
-                  </>
-                )}
+                <IssueTimeline issue={issue} />
 
                 <CommentGroup>
                   <CommentEdit onAddComment={this.onAddComment} />
@@ -302,12 +296,7 @@ export class IssueDetails extends React.Component<Props> {
 
         {project.role >= Role.UPDATER && (
           <RightPanel>
-            <WorkflowActions
-                env={context}
-                timeline={this.props.timeline}
-                issue={issue}
-                onExecAction={this.onExecAction}
-            />
+            <WorkflowActionsView issue={issue} onExecAction={this.onExecAction} />
           </RightPanel>
         )}
       </IssueDetailsContent>

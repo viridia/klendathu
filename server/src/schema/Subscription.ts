@@ -29,6 +29,11 @@ type IssueChange {
   value: Issue!
 }
 
+type TimelineChange {
+  action: ChangeAction!
+  value: TimelineEntry!
+}
+
 type Subscription {
   "Signal account details have changed. Not restricted; all users can see public account details."
   accountChanged: PublicAccount!
@@ -50,5 +55,8 @@ type Subscription {
 
   "Watch for changes to a specific issue."
   issueChanged(issue: ID!): IssueChange!
+
+  "Watch for changes to the timeline, either by issue or by project."
+  timelineChanged(project: ID!, issue: ID): TimelineChange!
 }
 `;

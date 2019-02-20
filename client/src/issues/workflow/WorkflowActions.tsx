@@ -49,7 +49,7 @@ interface Props {
   onExecAction: (a: ExecutableAction) => void;
 }
 
-interface ExecutableAction extends WorkflowAction {
+export interface ExecutableAction extends WorkflowAction {
   stateName?: string;
 }
 

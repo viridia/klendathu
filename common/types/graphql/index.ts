@@ -666,6 +666,8 @@ export interface Subscription {
   issuesChanged: IssueChange;
   /** Watch for changes to a specific issue. */
   issueChanged: IssueChange;
+  /** Watch for changes to the timeline, either by issue or by project. */
+  timelineChanged: TimelineChange;
 }
 
 export interface ProjectChange {
@@ -690,6 +692,12 @@ export interface IssueChange {
   action: ChangeAction;
 
   value: Issue;
+}
+
+export interface TimelineChange {
+  action: ChangeAction;
+
+  value: TimelineEntry;
 }
 
 /** Defines a relationship between one issue and another, includes both ends of the link. */
@@ -906,4 +914,9 @@ export interface IssuesChangedSubscriptionArgs {
 }
 export interface IssueChangedSubscriptionArgs {
   issue: string;
+}
+export interface TimelineChangedSubscriptionArgs {
+  project?: Maybe<string>;
+
+  issue?: Maybe<string>;
 }

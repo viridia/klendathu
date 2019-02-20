@@ -37,6 +37,7 @@ const TimelineEntryHeader = styled.header`
 const TimelineProperyList = styled.ul`
   margin: 6px 0 0 0;
   font-size: .9rem;
+  padding-left: 2rem;
 `;
 
 const TimelinePropery = styled.li`

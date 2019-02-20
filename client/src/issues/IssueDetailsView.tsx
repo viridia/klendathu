@@ -8,14 +8,10 @@ import { IssueDetails } from './IssueDetails';
 import gql from 'graphql-tag';
 
 const IssueDetailsQuery = gql`
-  query IssueQuery($project: ID!, $issue: ID!) {
+  query IssueQuery($issue: ID!) {
     issue(id: $issue) { ...IssueFields }
-    timeline(project: $project, issue: $issue) {
-      count offset results { ...TimelineEntryFields }
-    }
   }
   ${fragments.issue}
-  ${fragments.timelineEntry}
 `;
 
 const IssueSubscription = gql`
@@ -46,7 +42,6 @@ export const IssueDetailsView = (props: IssueProviderProps) => {
           query={IssueDetailsQuery}
           variables={{
             issue: `${project.id}.${id}`,
-            project: project.id,
           }}
           fetchPolicy="cache-and-network"
       >
@@ -60,7 +55,6 @@ export const IssueDetailsView = (props: IssueProviderProps) => {
               document: IssueSubscription,
               variables: {
                 issue: issue.id,
-                project: project.id,
               },
               updateQuery: (prev, { subscriptionData }) => {
                 return {
@@ -79,7 +73,6 @@ export const IssueDetailsView = (props: IssueProviderProps) => {
             <IssueDetails
                 {...props}
                 issue={issue}
-                timeline={timeline ? timeline.results : []}
                 loading={loading}
             />
           );

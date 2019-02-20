@@ -6,6 +6,7 @@ import {
   IssueRecord,
   CustomValues,
   CustomData,
+  ProjectRecord,
 } from '../db/types';
 import {
   IssueQueryArgs,
@@ -23,6 +24,7 @@ import {
   Relation,
   AddCommentMutationArgs,
   IssueChangedSubscriptionArgs,
+  TimelineChangedSubscriptionArgs,
 } from '../../../common/types/graphql';
 import { UserInputError, AuthenticationError } from 'apollo-server-core';
 import { Errors, Role, inverseRelations } from '../../../common/types/json';
@@ -34,9 +36,15 @@ import { withFilter } from 'graphql-subscriptions';
 import { pubsub } from './pubsub';
 
 const ISSUE_CHANGE = 'issue-change';
+const TIMELINE_CHANGE = 'timeline-change';
 
 interface IssueRecordChange {
   value: IssueRecord;
+  action: ChangeAction;
+}
+
+interface TimelineRecordChange {
+  value: TimelineEntryRecord;
   action: ChangeAction;
 }
 
@@ -288,6 +296,8 @@ export const mutations = {
 
     const user = context.user.accountName;
     const issues = context.db.collection<IssueRecord>('issues');
+    const projects = context.db.collection<ProjectRecord>('projects');
+    const timeline = context.db.collection<TimelineEntryRecord>('timeline');
     const { project: pr, role } =
         await getProjectAndRole(context.db, context.user, new ObjectID(project));
     if (!project) {
@@ -301,7 +311,7 @@ export const mutations = {
     }
 
     // Compute next issue id.
-    const p = await context.db.collection('projects').findOneAndUpdate(
+    const p = await projects.findOneAndUpdate(
       { _id: pr._id },
       { $inc: { issueIdCounter: 1 } });
 
@@ -341,7 +351,7 @@ export const mutations = {
       }
     }
 
-    const commentsToInsert: TimelineEntryRecord[] = (input.comments || []).map(comment => ({
+    const timelineRecordsToInsert: TimelineEntryRecord[] = (input.comments || []).map(comment => ({
       issue: record._id,
       project: pr._id,
       by: context.user._id,
@@ -352,45 +362,57 @@ export const mutations = {
 
     const result = await issues.insertOne(record);
     const row: IssueRecord = result.ops[0];
+    const linkedIssuesToUpdate: IssueRecord[] = [];
     if (result.insertedCount === 1) {
-      if (commentsToInsert.length > 0) {
-        await context.db.collection<TimelineEntryRecord>('timeline')
-            .insertMany(commentsToInsert);
-      }
-
       if (input.linked && input.linked.length > 0) {
         const linksToInsert: IssueLinkRecord[] = [];
-        const changesToInsert: TimelineEntryRecord[] = [];
         for (const link of input.linked) {
-          linksToInsert.push({
-            from: row._id,
-            to: link.to,
-            relation: link.relation,
-          });
-          changesToInsert.push({
-            issue: row._id,
-            project: pr._id,
-            by: context.user._id,
-            at: now,
-            linked: [{ to: link.to, after: link.relation }],
-          });
-          const inv = inverseRelations[link.relation];
-          changesToInsert.push({
-            issue: link.to,
-            project: pr._id,
-            by: context.user._id,
-            at: now,
-            linked: [{ to: row._id, after: inv }],
-          });
+          const target = await issues.findOne({ _id: new ObjectID(link.to) });
+          if (target) {
+            linksToInsert.push({
+              from: row._id,
+              to: target._id,
+              relation: link.relation,
+            });
+            // TODO: Load the target record and make a change for it.
+            // Create a change record for the issue we are linking to.
+            const inv = inverseRelations[link.relation];
+            timelineRecordsToInsert.push({
+              issue: target._id,
+              project: pr._id,
+              by: context.user._id,
+              at: now,
+              linked: [{ to: row._id, after: inv }],
+            });
+            linkedIssuesToUpdate.push(target);
+          }
         }
         await context.db.collection('issueLinks').insertMany(linksToInsert);
-        await context.db.collection('timeline').insertMany(changesToInsert);
+      }
+
+      if (timelineRecordsToInsert.length > 0) {
+        const res = await timeline.insertMany(timelineRecordsToInsert);
+        res.ops.forEach(changeRow => {
+          pubsub.publish(TIMELINE_CHANGE, {
+            action: ChangeAction.Added,
+            value: changeRow,
+          });
+        });
       }
     }
 
+    // Notify this issue was added
     pubsub.publish(ISSUE_CHANGE, {
       action: ChangeAction.Added,
       value: row,
+    });
+
+    // Notify issues we linked to were changed
+    linkedIssuesToUpdate.forEach(iss => {
+      pubsub.publish(ISSUE_CHANGE, {
+        action: ChangeAction.Changed,
+        value: iss,
+      });
     });
     return row;
   },
@@ -424,7 +446,7 @@ export const mutations = {
       throw new UserInputError(Errors.FORBIDDEN);
     }
 
-    //  Ensure that all of the issues we are linking to actually exist.
+    // Ensure that all of the issues we are linking to actually exist.
     if (input.linked) {
       const linkedIssueIds = new Set(input.linked.map(link => link.to));
       const linkedIssues = await issues
@@ -451,7 +473,7 @@ export const mutations = {
         updated: now,
       },
     };
-    const additionalChangeRecords: TimelineEntryRecord[] = [];
+    const timelineRecordsToInsert: TimelineEntryRecord[] = [];
     const promises: Array<Promise<any>> = [];
 
     const change: TimelineEntryRecord = {
@@ -616,7 +638,7 @@ export const mutations = {
           change.commentBody = c;
           change.at = now;
         } else {
-          additionalChangeRecords.push({
+          timelineRecordsToInsert.push({
             project: project._id,
             issue: issue._id,
             by: context.user._id,
@@ -641,7 +663,7 @@ export const mutations = {
 
       // Change records for the other side of the link.
       const addChangeRecord = (iss: string, ch: { before?: Relation, after?: Relation }) => {
-        additionalChangeRecords.push({
+        timelineRecordsToInsert.push({
           project: project._id,
           by: context.user._id,
           issue: iss,
@@ -727,28 +749,31 @@ export const mutations = {
     }
 
     if (change.at) {
-      await timeline.insertOne(change);
+      timelineRecordsToInsert.push(change);
     }
 
-    if (additionalChangeRecords.length > 0) {
-      promises.push(timeline.insertMany(additionalChangeRecords));
-    }
+    // if (additionalChangeRecords.length > 0) {
+    //   promises.push(timeline.insertMany(additionalChangeRecords));
+    // }
 
     await Promise.all(promises);
 
+    let returnValue: IssueRecord = issue;
     if (change.at) {
       const result = await issues.findOneAndUpdate({ _id: issue._id }, update, {
         returnOriginal: false,
       });
-      pubsub.publish(ISSUE_CHANGE, {
-        action: ChangeAction.Changed,
-        value: result.value,
-      });
-      return result.value;
+      returnValue = result.value;
     }
 
-    if (promises.length === 0) {
-      logger.debug('updateIssue made no changes:', { user, id });
+    if (timelineRecordsToInsert.length > 0) {
+      const timelineResults = await timeline.insertMany(timelineRecordsToInsert);
+      timelineResults.ops.forEach(changeRow => {
+        pubsub.publish(TIMELINE_CHANGE, {
+          action: ChangeAction.Added,
+          value: changeRow,
+        });
+      });
     }
 
     // The issue record didn't change, but the timeline might have.
@@ -756,7 +781,7 @@ export const mutations = {
       action: ChangeAction.Changed,
       value: issue,
     });
-    return issue;
+    return returnValue;
   },
 
     // // Compute which cc entries have been added or deleted.
@@ -901,9 +926,9 @@ export const mutations = {
     };
 
     const result = await timeline.insertOne(record);
-    pubsub.publish(ISSUE_CHANGE, {
-      action: ChangeAction.Changed,
-      value: issue,
+    pubsub.publish(TIMELINE_CHANGE, {
+      action: ChangeAction.Added,
+      value: result.ops[0],
     });
     return result.ops[0];
   },
@@ -918,6 +943,7 @@ export const subscriptions = {
         { issue }: IssueChangedSubscriptionArgs,
         context: Context
       ) => {
+        // TODO: Need a fast way to check project membership
         return context.user && change.value._id === issue;
       }
     ),
@@ -933,10 +959,34 @@ export const subscriptions = {
         { project }: IssuesChangedSubscriptionArgs,
         context: Context
       ) => {
+        // TODO: Need a fast way to check project membership
         return context.user && change.value.project.equals(project);
       }
     ),
     resolve: (payload: IssueRecordChange, args: any, context: Context) => {
+      return payload;
+    },
+  },
+  timelineChanged: {
+    subscribe: withFilter(
+      () => pubsub.asyncIterator([TIMELINE_CHANGE]),
+      (
+        change: TimelineRecordChange,
+        { issue, project }: TimelineChangedSubscriptionArgs,
+        context: Context
+      ) => {
+        // TODO: Need a fast way to check project membership
+        if (!change.value.project.equals(project)) {
+          return false;
+        }
+        if (issue) {
+          return change.value.issue === issue;
+        } else {
+          return true;
+        }
+      }
+    ),
+    resolve: (payload: TimelineRecordChange, args: any, context: Context) => {
       return payload;
     },
   },

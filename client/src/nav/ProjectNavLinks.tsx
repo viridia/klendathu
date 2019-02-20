@@ -48,7 +48,7 @@ function ProjectNavLinksImpl(props: Props) {
         <DependenciesIcon /> Dependencies
       </LeftNavLink>
       <LeftNavLink to={`${prefix}/history`}>
-        <HistoryIcon /> Changes
+        <HistoryIcon /> Timeline
       </LeftNavLink>
       <LeftNavLink to={`${prefix}/settings`}>
         <SettingsIcon /> Settings
