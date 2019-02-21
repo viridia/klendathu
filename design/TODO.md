@@ -1,9 +1,9 @@
 # TODO
 
-* Collapse
 * Filters
   * Server side
   * UI prefs in local storage
+  * Test!
 * Workflow actions
 * Attachments
 * Batching

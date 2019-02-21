@@ -5,7 +5,7 @@ import classNames from 'classnames';
 const CollapseStyle = styled.section`
   border-top: 1px solid ${props => props.theme.cardHeaderDividerColor};
   overflow: hidden;
-  transition: height 0.4s ease;
+  transition: max-height 0.4s ease;
 
   &.expanded {
     overflow: visible;
@@ -32,12 +32,14 @@ export class Collapse extends React.Component<Props> {
 
   public render() {
     const { expanded, className, children } = this.props;
-    const height = expanded && this.ref.current ? this.ref.current.scrollHeight : 0;
+    const height = expanded && this.ref.current
+        ? this.ref.current.scrollHeight + 4
+        : 0;
     return (
       <CollapseStyle
           ref={this.ref}
           className={classNames(className, { expanded })}
-          style={{ height }}
+          style={{ maxHeight: `${height}px` }}
       >
         {children}
       </CollapseStyle>

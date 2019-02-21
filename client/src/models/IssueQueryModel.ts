@@ -36,14 +36,14 @@ const IssuesSubscription = gql`
 
 type IssuesQueryResult = Pick<Query, 'issues'>;
 type IssueChangeResult = Pick<Subscription, 'issuesChanged'>;
-interface QueryParams { [param: string]: string | string[]; }
+interface SearchParams { [param: string]: string | string[]; }
 
 /** Reactive model class that represents a query over the issue table. */
 export class IssueQueryModel {
   @observable public loading = true;
   @observable public errors: ReadonlyArray<GraphQLError> = null;
   @observable.shallow public list: Issue[] = [];
-  @observable public query: QueryParams = {};
+  @observable public searchParams: SearchParams = {};
   @observable public sort = 'id';
   @observable public descending = false;
   @observable public recentlyAdded = new Set<string>() as ObservableSet<string>;
@@ -74,10 +74,10 @@ export class IssueQueryModel {
   }
 
   @action
-  public setQueryArgs(project: Project, queryParams: QueryParams) {
+  public setQueryArgs(project: Project, queryParams: SearchParams) {
     this.projectId = project ? project.id : null;
-    this.query = queryParams;
-    const sort = coerceToString(this.query.sort);
+    this.searchParams = queryParams;
+    const sort = coerceToString(this.searchParams.sort);
     if (sort) {
       if (sort.startsWith('-')) {
         this.sort = sort.slice(1);
@@ -182,6 +182,18 @@ export class IssueQueryModel {
       labels: this.labels,
     };
 
+    if ('state' in this.searchParams) {
+      issueQuery.state = coerceToStringArray(this.searchParams.state);
+    }
+
+    if ('type' in this.searchParams) {
+      issueQuery.type = coerceToStringArray(this.searchParams.type);
+    }
+
+    if ('owner' in this.searchParams) {
+      issueQuery.owner = coerceToStringArray(this.searchParams.owner);
+    }
+
     // console.debug('sort:', this.sort, 'descending:', this.descending);
 
     // this.query.labels = coerceToNumberArray(queryParams.label);
@@ -189,16 +201,16 @@ export class IssueQueryModel {
     // this.filterParams = {};
     // this.filterParams.search = queryParams.search;
     // this.group = queryParams.group;
-    // for (const key of Object.getOwnPropertyNames(queryParams)) {
+    // for (const key of Object.getOwnPropertyNames(this.searchParams)) {
     //   if (key in descriptors || key.startsWith('custom.') || key.startsWith('pred.')) {
     //     const desc = descriptors[key];
-    //     let value: any = queryParams[key];
+    //     let value: any = this.searchParams[key];
     //     if (desc && desc.type === OperandType.USER && value === 'me') {
-    //       value = session.account.uname;
-    //     } else if (desc && desc.type === OperandType.STATE_SET && value === 'open') {
-    //       value = project.template.states.filter(st => !st.closed).map(st => st.id);
+    //       value = session.account.accountName;
+    //     // } else if (desc && desc.type === OperandType.STATE_SET && value === 'open') {
+    //     //   value = project.template.states.filter(st => !st.closed).map(st => st.id);
     //     }
-    //     this.filterParams[key] = value;
+    //     issueQuery[key] = value;
     //   }
     // }
 
@@ -207,15 +219,15 @@ export class IssueQueryModel {
 
   @computed
   private get search(): string {
-    return coerceToString(this.query.search);
+    return coerceToString(this.searchParams.search);
   }
 
   @computed
   private get labels(): string[] {
-    const labels = coerceToStringArray(this.query.label);
-    if (labels) {
+    const labels = coerceToStringArray(this.searchParams.label);
+    if (labels && labels.length > 0) {
       return labels.map(l => `${this.projectId}.${l}`);
     }
-    return;
+    return undefined;
   }
 }

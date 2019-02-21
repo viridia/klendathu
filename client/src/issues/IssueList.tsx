@@ -183,7 +183,7 @@ export class IssueList extends React.Component<Props> {
     const sort = `${descending ? '-' : ''}${column}`;
     history.replace({
       ...this.props.location,
-      search: qs.stringify({ ...this.props.context.issues.query, sort }, {
+      search: qs.stringify({ ...this.props.context.issues.searchParams, sort }, {
         addQueryPrefix: true,
         encoder: encodeURI,
         arrayFormat: 'repeat',

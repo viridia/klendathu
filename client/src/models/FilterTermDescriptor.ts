@@ -7,29 +7,10 @@ import { idToIndex } from '../lib/idToIndex';
 import { ObservableSet } from 'mobx';
 import { ViewContext } from './ViewContext';
 import { queryAccount } from '../graphql';
+import { coerceToStringArray, coerceToString } from '../lib/coerce';
 
 interface Query {
   [key: string]: string | string[];
-}
-
-function toScalar(value: string | string[]): string {
-  if (typeof value === 'string') {
-    return value;
-  } else if (Array.isArray(value)) {
-    return value[0];
-  } else {
-    return null;
-  }
-}
-
-function toArray(value: string | string[]): string[] {
-  if (typeof value === 'string') {
-    return [value];
-  } else if (Array.isArray(value)) {
-    return value;
-  } else {
-    return [];
-  }
 }
 
 function resolveAccountName(accountName: string): Promise<PublicAccount> {
@@ -79,7 +60,7 @@ export const descriptors: { [type: string]: FilterTermDescriptor } = {
       const state = query.state;
       term.value = state === 'open'
         ? defaultOperandValue(env.template, OperandType.STATE_SET, null)
-        : new ObservableSet(toArray(state));
+        : new ObservableSet(coerceToStringArray(state));
     },
   },
   type: {
@@ -93,7 +74,7 @@ export const descriptors: { [type: string]: FilterTermDescriptor } = {
     },
     parseQuery(query, term, env) {
       const type = query.type;
-      term.value = new ObservableSet(toArray(type));
+      term.value = new ObservableSet(coerceToStringArray(type));
     },
   },
   summary: {
@@ -136,7 +117,7 @@ export const descriptors: { [type: string]: FilterTermDescriptor } = {
       }
     },
     parseQuery(query, term, env) {
-      resolveAccountName(toScalar(query.reporter)).then(account => {
+      resolveAccountName(coerceToString(query.reporter)).then(account => {
         term.value = account;
       });
     },
@@ -153,7 +134,7 @@ export const descriptors: { [type: string]: FilterTermDescriptor } = {
       }
     },
     parseQuery(query, term, env) {
-      resolveAccountName(toScalar(query.owner)).then(account => {
+      resolveAccountName(coerceToString(query.owner)).then(account => {
         term.value = account;
       });
     },
@@ -167,17 +148,8 @@ export const descriptors: { [type: string]: FilterTermDescriptor } = {
       }
     },
     parseQuery(query, term, env) {
-      term.value = Promise.all(toArray(query.cc).map(resolveAccountName))
+      term.value = Promise.all(coerceToStringArray(query.cc).map(resolveAccountName))
           .then(accounts => accounts.filter(a => a));
-      // if (typeof query.cc === 'string') {
-      //   const accountNames = toArray(query.cc);
-      //   const promises = accountNames
-      //       .map((uname: string) => queryAccount({ accountName: uname })
-      //       .then(account => account.data.account, () => null));
-      //   Promise.all(promises).then(users => {
-      //     term.value = users.filter(u => u);
-      //   });
-      // }
     }
   },
   labels: {
@@ -193,7 +165,8 @@ export const descriptors: { [type: string]: FilterTermDescriptor } = {
       const { project, account } = env;
       term.value = [];
       if (typeof query.labels === 'string') {
-        term.value = toArray(query.labels).map(n => `${account.accountName}/${project.name}/${n}`);
+        term.value = coerceToStringArray(query.labels)
+            .map(n => `${account.accountName}/${project.name}/${n}`);
       }
     }
   },
@@ -217,7 +190,7 @@ export function getDescriptor(env: ViewContext, fieldId: string): FilterTermDesc
               }
             },
             parseQuery: (query, term) => {
-              term.value = new ObservableSet(toArray(query[fieldId]));
+              term.value = new ObservableSet(coerceToStringArray(query[fieldId]));
             },
           };
         }
@@ -230,7 +203,7 @@ export function getDescriptor(env: ViewContext, fieldId: string): FilterTermDesc
               query[fieldId] = term.value;
             },
             parseQuery: (query, term) => {
-              term.value = toScalar(query[fieldId]);
+              term.value = coerceToString(query[fieldId]);
             },
           };
         default:

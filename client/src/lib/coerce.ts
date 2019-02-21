@@ -1,23 +1,21 @@
-export function coerceToString(param: string | string[]): string {
-  if (!param) {
+export function coerceToString(value: string | string[]): string {
+  if (typeof value === 'string') {
+    return value;
+  } else if (Array.isArray(value)) {
+    return value[0];
+  } else if (!value) {
     return undefined;
-  } else if (typeof param === 'string') {
-    return param;
-  } else if (Array.isArray(param)) {
-    return param[0];
   } else {
     return undefined;
   }
 }
 
-export function coerceToStringArray(param: string | string[]): string[] {
-  if (!param) {
-    return undefined;
-  } else if (typeof param === 'string') {
-    return [param];
-  } else if (Array.isArray(param)) {
-    return param;
+export function coerceToStringArray(value: string | string[]): string[] {
+  if (typeof value === 'string') {
+    return [value];
+  } else if (Array.isArray(value)) {
+    return value;
   } else {
-    return undefined;
+    return [];
   }
 }
