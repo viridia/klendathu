@@ -1,5 +1,9 @@
 # TODO
 
+* Collapse
+* Filters
+  * Server side
+  * UI prefs in local storage
 * Workflow actions
 * Attachments
 * Batching
@@ -19,6 +23,7 @@
 * Sort issue searches by relevance
 * Preserve issue navigation list between page refreshes.
 * Better error reporting in issue create and issue edit.
+* Ability to embed attachments in markdown
 
 # Major pieces
 
@@ -33,7 +38,6 @@
 * Issue Query
   * By Owner
 * Label Delete
-* Filters
 * Mass Edit
 * Progress View
 * Changes View

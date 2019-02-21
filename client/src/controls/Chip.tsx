@@ -1,8 +1,8 @@
 import * as React from 'react';
-import classNames from 'classnames';
 import { styled } from '../style';
 import { transparentize } from 'polished';
 import { contrastingColor } from '../lib/contrastingColor';
+import classNames from 'classnames';
 
 interface Props {
   children: React.ReactNode;

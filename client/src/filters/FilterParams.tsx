@@ -6,13 +6,19 @@ import { FilterTermEditor } from './FilterTermEditor';
 import { SaveFilterDialog } from './SaveFilterDialog';
 import { action, computed, IObservableArray, observable } from 'mobx';
 import { observer } from 'mobx-react';
-import classNames from 'classnames';
-import bind from 'bind-decorator';
-
-import CloseIcon from '../svg-compiled/icons/IcClose';
-import { DropdownButton, Button, Form, TextInput, MenuItem, Card, DiscloseButton, DismissButton } from '../controls';
-import styled from 'styled-components';
 import { Spacer } from '../layout';
+import {
+  DropdownButton,
+  Button, Form,
+  TextInput,
+  MenuItem,
+  Card,
+  DiscloseButton,
+  DismissButton,
+} from '../controls';
+import bind from 'bind-decorator';
+import styled from 'styled-components';
+import { Collapse } from '../controls/Collapse';
 
 interface GroupTerm {
   caption: string;
@@ -38,18 +44,6 @@ const FilterParamsHeader = styled.header`
     border-bottom: 0;
   }
   /* color: $textDarkAccent; */
-`;
-
-const Collapse = styled.section`
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.4s ease;
-  border-top: 1px solid ${props => props.theme.cardHeaderDividerColor};
-
-  &.expanded {
-    max-height: max-content;
-    overflow: visible;
-  }
 `;
 
 interface Props extends RouteComponentProps<{}> {
@@ -105,7 +99,7 @@ export class FilterParams extends React.Component<Props> {
     const { env, location } = this.props;
     const selectedGroup = GROUP_TERMS.find(gr => gr.field === this.group);
     return (
-      <Collapse className={classNames({ expanded: this.expanded })}>
+      <Collapse expanded={this.expanded}>
         <section className="term-list">
           {this.terms.map((term, index) => (
             <FilterTermEditor
