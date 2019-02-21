@@ -23,6 +23,32 @@ const InputContainer = styled.div`
   align-items: stretch;
   display: flex;
   flex-direction: column;
+
+  > .text-input-content {
+    align-items: center;
+    background-color: ${(props: ThemeProps) => props.theme.inputBgColor};
+    border: 1px solid ${(props: ThemeProps) => props.theme.inputBorderColor};
+    border-radius: 3px;
+    display: flex;
+    flex-direction: row;
+
+    &:focus-within {
+      box-shadow: 0 0 0 3px ${(props: ThemeProps) => props.theme.focusColor};
+      z-index: 1;
+    }
+
+    &.success {
+      box-shadow: inset 0 0 0 2px #00cc0044;
+    }
+
+    &.warning {
+      box-shadow: inset 0 0 0 2px #cccc0066;
+    }
+
+    &.error {
+      box-shadow: inset 0 0 0 2px #ee000033;
+    }
+  }
 `;
 
 export type ValidationState = 'error' | 'warning' | 'success';
@@ -44,13 +70,14 @@ const TextInputImpl = React.forwardRef((
   }: InputProps & React.InputHTMLAttributes<HTMLInputElement>,
   ref: any) => (
   <InputContainer className={containerClassName}>
-    <input
-        ref={ref}
-        className={classNames(className, validationStatus)}
-        {...attrs}
-    >
+    <div className={classNames('text-input-content', validationStatus)}>
+      <input
+          ref={ref}
+          className={className}
+          {...attrs}
+      />
       {children}
-    </input>
+    </div>
     {validationStatus &&
       <ValidationMsg className={classNames(validationStatus)}>
         {validationMsg}
@@ -60,28 +87,11 @@ const TextInputImpl = React.forwardRef((
 
 /** Text input form control. */
 export const TextInput = styled(TextInputImpl)`
-  background-color: ${(props: ThemeProps) => props.theme.inputBgColor};
-  border: 1px solid ${(props: ThemeProps) => props.theme.inputBorderColor};
-  border-radius: 3px;
+  border: none;
   padding: 6px;
   outline: none;
-
-  &:focus {
-    box-shadow: 0 0 0 3px ${(props: ThemeProps) => props.theme.focusColor};
-    z-index: 1;
-  }
-
-  &.success {
-    box-shadow: inset 0 0 0 2px #00cc0044;
-  }
-
-  &.warning {
-    box-shadow: inset 0 0 0 2px #cccc0066;
-  }
-
-  &.error {
-    box-shadow: inset 0 0 0 2px #ee000033;
-  }
+  margin: 0;
+  flex: 1;
 
   &::placeholder {
     font-size: 85%;

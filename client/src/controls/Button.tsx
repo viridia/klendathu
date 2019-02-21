@@ -61,7 +61,7 @@ export const Button = styled(ButtonImpl)`
   }
 
   &.small {
-    height: 24px;
+    height: 32px;
     font-size: 90%;
   }
 

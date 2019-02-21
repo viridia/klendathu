@@ -10,6 +10,8 @@ export { Chip } from './Chip';
 export { ColumnSort } from './ColumnSort';
 export { CopyLink } from './CopyLink';
 export { Dialog } from './Dialog';
+export { DiscloseButton } from './DiscloseButton';
+export { DismissButton } from './DismissButton';
 export { Dropdown, DropdownButton } from './Dropdown';
 export { Form, FormControlGroup, FormLabel, TextArea, TextInput, ValidationState } from './Form';
 export { LabelName } from './LabelName';

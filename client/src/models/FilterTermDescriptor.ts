@@ -1,13 +1,12 @@
-import { accounts } from './AccountStore';
 import { session } from './Session';
 import { OperandType, defaultOperandValue } from './OperandType';
-// import { ObservableSet } from './ObservableSet';
-// import { Account, DataType, FieldType, Predicate } from 'klendathu-json-types';
 import { FilterTerm } from './FilterTerm';
 import { FieldType, DataType } from '../../../common/types/json';
-import { Project, Predicate, PublicAccount } from '../../../common/types/graphql';
-import { ObservableSet } from '../lib/ObservableSet';
+import { Predicate, PublicAccount } from '../../../common/types/graphql';
 import { idToIndex } from '../lib/idToIndex';
+import { ObservableSet } from 'mobx';
+import { ViewContext } from './ViewContext';
+import { queryAccount } from '../graphql';
 
 interface Query {
   [key: string]: string | string[];
@@ -16,16 +15,36 @@ interface Query {
 function toScalar(value: string | string[]): string {
   if (typeof value === 'string') {
     return value;
-  } else {
+  } else if (Array.isArray(value)) {
     return value[0];
+  } else {
+    return null;
   }
 }
 
 function toArray(value: string | string[]): string[] {
   if (typeof value === 'string') {
     return [value];
-  } else {
+  } else if (Array.isArray(value)) {
     return value;
+  } else {
+    return [];
+  }
+}
+
+function resolveAccountName(accountName: string): Promise<PublicAccount> {
+  if (accountName === 'none' || !accountName) {
+    return Promise.resolve(null);
+  } else if (accountName === 'me') {
+    return Promise.resolve(session.account);
+  } else {
+    return queryAccount({ accountName }).then(
+      account => account.data.account,
+      error => {
+        console.error(`Error fetching account name: ${accountName}`, error);
+        return Promise.resolve(null);
+      }
+    );
   }
 }
 
@@ -43,7 +62,7 @@ export interface FilterTermDescriptor {
   buildQuery: (query: Query, term: FilterTerm) => void;
 
   /** Get filter term operand from query string. */
-  parseQuery: (query: Query, term: FilterTerm, project: Project) => void;
+  parseQuery: (query: Query, term: FilterTerm, env: ViewContext) => void;
 }
 
 export const descriptors: { [type: string]: FilterTermDescriptor } = {
@@ -53,13 +72,13 @@ export const descriptors: { [type: string]: FilterTermDescriptor } = {
     buildQuery: (query, term) => {
       if (term.value) {
         const states: ObservableSet = term.value;
-        query.state = states.values;
+        query.state = Array.from(states);
       }
     },
-    parseQuery(query, term, project) {
+    parseQuery(query, term, env) {
       const state = query.state;
       term.value = state === 'open'
-        ? defaultOperandValue(project.template, OperandType.STATE_SET, null)
+        ? defaultOperandValue(env.template, OperandType.STATE_SET, null)
         : new ObservableSet(toArray(state));
     },
   },
@@ -69,10 +88,10 @@ export const descriptors: { [type: string]: FilterTermDescriptor } = {
     buildQuery: (query, term) => {
       if (term.value) {
         const types: ObservableSet = term.value;
-        query.type = types.values;
+        query.type = Array.from(types);
       }
     },
-    parseQuery(query, term, project) {
+    parseQuery(query, term, env) {
       const type = query.type;
       term.value = new ObservableSet(toArray(type));
     },
@@ -86,7 +105,7 @@ export const descriptors: { [type: string]: FilterTermDescriptor } = {
         query.summaryPred = term.predicate;
       }
     },
-    parseQuery(query, term, project) {
+    parseQuery(query, term, env) {
       term.value = query.summary;
       term.predicate = query.summaryPred as Predicate;
     },
@@ -100,7 +119,7 @@ export const descriptors: { [type: string]: FilterTermDescriptor } = {
         query.descriptionPred = term.predicate;
       }
     },
-    parseQuery(query, term, project) {
+    parseQuery(query, term, env) {
       term.value = query.description;
       term.predicate = query.descriptionPred as Predicate;
     },
@@ -116,13 +135,10 @@ export const descriptors: { [type: string]: FilterTermDescriptor } = {
         query.reporter = 'none';
       }
     },
-    parseQuery(query, term, project) {
-      term.value = null;
-      if (query.reporter) {
-        accounts.byName(toScalar(query.reporter)).then(account => {
-          term.value = account;
-        });
-      }
+    parseQuery(query, term, env) {
+      resolveAccountName(toScalar(query.reporter)).then(account => {
+        term.value = account;
+      });
     },
   },
   owner: {
@@ -136,17 +152,10 @@ export const descriptors: { [type: string]: FilterTermDescriptor } = {
         query.owner = 'none';
       }
     },
-    parseQuery(query, term, project) {
-      term.value = null;
-      if (query.owner) {
-        if (query.owner === 'me') {
-          term.value = session.account;
-        } else {
-          accounts.byName(toScalar(query.owner)).then(account => {
-            term.value = account;
-          });
-        }
-      }
+    parseQuery(query, term, env) {
+      resolveAccountName(toScalar(query.owner)).then(account => {
+        term.value = account;
+      });
     },
   },
   cc: {
@@ -154,19 +163,21 @@ export const descriptors: { [type: string]: FilterTermDescriptor } = {
     type: OperandType.USERS,
     buildQuery: (query, term) => {
       if (term.value) {
-        query.cc = term.value.map((account: Account) => account.uname);
+        query.cc = term.value.map((account: PublicAccount) => account.accountName);
       }
     },
-    parseQuery(query, term, project) {
-      term.value = [];
-      if (typeof query.cc === 'string') {
-        const accountNames = toArray(query.cc);
-        const promises = accountNames
-            .map((uname: string) => accounts.byName(uname).catch(() => null));
-        Promise.all(promises).then(users => {
-          term.value = users.filter(u => u);
-        });
-      }
+    parseQuery(query, term, env) {
+      term.value = Promise.all(toArray(query.cc).map(resolveAccountName))
+          .then(accounts => accounts.filter(a => a));
+      // if (typeof query.cc === 'string') {
+      //   const accountNames = toArray(query.cc);
+      //   const promises = accountNames
+      //       .map((uname: string) => queryAccount({ accountName: uname })
+      //       .then(account => account.data.account, () => null));
+      //   Promise.all(promises).then(users => {
+      //     term.value = users.filter(u => u);
+      //   });
+      // }
     }
   },
   labels: {
@@ -178,19 +189,20 @@ export const descriptors: { [type: string]: FilterTermDescriptor } = {
         query.labels = labels.map(idToIndex);
       }
     },
-    parseQuery(query, term, project) {
+    parseQuery(query, term, env) {
+      const { project, account } = env;
       term.value = [];
       if (typeof query.labels === 'string') {
-        term.value = toArray(query.labels).map(n => `${project.account}/${project.uname}/${n}`);
+        term.value = toArray(query.labels).map(n => `${account.accountName}/${project.name}/${n}`);
       }
     }
   },
 };
 
-export function getDescriptor(project: Project, fieldId: string): FilterTermDescriptor {
+export function getDescriptor(env: ViewContext, fieldId: string): FilterTermDescriptor {
   if (fieldId && fieldId.startsWith('custom.')) {
     const id = fieldId.slice(7);
-    const customField = project.template.fields.get(id);
+    const customField = env.fields.get(id);
     if (customField) {
       switch (customField.type) {
         case DataType.ENUM: {
@@ -200,8 +212,8 @@ export function getDescriptor(project: Project, fieldId: string): FilterTermDesc
             customField,
             buildQuery: (query, term) => {
               if (term.value) {
-                query[fieldId] = (term.value as ObservableSet).values;
-                query[`pred.${id}`] = Predicate.IN;
+                query[fieldId] = Array.from(term.value as ObservableSet);
+                query[`pred.${id}`] = Predicate.In;
               }
             },
             parseQuery: (query, term) => {

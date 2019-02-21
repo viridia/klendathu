@@ -91,4 +91,8 @@ export const themeDefault: ThemeInterface = {
   // Forms
   inputBorderColor: dye(0.85, diluted),
   inputBgColor: dye(1, primary),
+
+  // Filters
+  filterParamsBgColor: dye(0.85, diluted),
+  filterParamsHeaderBgColor: dye(0.75, diluted),
 };

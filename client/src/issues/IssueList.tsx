@@ -20,6 +20,7 @@ import {
 } from './columns';
 import { IssueListEntry } from './IssueListEntry';
 import { keyframes } from 'styled-components';
+import { FilterParams } from '../filters/FilterParams';
 
 const highlightNew = (color: string) => keyframes`
   from {
@@ -73,15 +74,21 @@ export class IssueList extends React.Component<Props> {
     const { list } = issues;
     if (list.length === 0) {
       return (
-        <Card>
-          <EmptyList>No issues found</EmptyList>
-        </Card>
+        <React.Fragment>
+          <FilterParams {...this.props} env={this.props.context} />
+          <Card>
+            <EmptyList>No issues found</EmptyList>
+          </Card>
+        </React.Fragment>
       );
     }
     return (
-      <Card>
-        {this.renderIssues()}
-      </Card>
+      <React.Fragment>
+        <FilterParams {...this.props} env={this.props.context} />
+        <Card>
+          {this.renderIssues()}
+        </Card>
+      </React.Fragment>
     );
   }
 

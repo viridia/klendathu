@@ -1,10 +1,8 @@
 import * as React from 'react';
 import { IssueCondensedDisplay } from '../IssueCondensedDisplay';
 import { Observer } from 'mobx-react-lite';
-import { RelationName, Button } from '../../controls';
+import { RelationName, DismissButton } from '../../controls';
 import { Relation } from '../../../../common/types/graphql';
-
-import CloseIcon from '../../svg-compiled/icons/IcClose';
 import styled from 'styled-components';
 
 const IssueLinksEl = styled.ul`
@@ -19,21 +17,6 @@ const IssueLink = styled.div`
     font-weight: bold;
     color: ${props => props.theme.textAccented};
     margin-right: 5px;
-  }
-`;
-
-const DismissButton = styled(Button)`
-  align-items: center;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-  justify-content: center;
-  margin-left: .5rem;
-  padding: 0;
-
-  > svg {
-    width: 20px;
-    height: 20px;
   }
 `;
 
@@ -55,14 +38,7 @@ export function IssueLinks({ links, onRemoveLink }: Props) {
               <IssueLink>
                 <RelationName relation={relation} />
                 <IssueCondensedDisplay id={to} />
-                {onRemoveLink && (
-                  <DismissButton
-                      size="mini"
-                      kind="default"
-                      onClick={() => onRemoveLink(to)}
-                  >
-                    <CloseIcon />
-                  </DismissButton>)}
+                {onRemoveLink && <DismissButton onClick={() => onRemoveLink(to)} />}
               </IssueLink>
             </li>
           )

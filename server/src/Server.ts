@@ -38,6 +38,9 @@ export class Server {
           user: null,
         };
       },
+      onDisconnect: (websocket, context) => {
+        console.log(context);
+      },
     },
     introspection: true,
     playground: process.env.NODE_ENV !== 'production',

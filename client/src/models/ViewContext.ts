@@ -117,6 +117,21 @@ export class ViewContext {
     }
   }
 
+  @computed
+  public get fields(): Map<string, FieldType> {
+    if (this.template) {
+      const result = new Map<string, FieldType>();
+      for (const type of this.template.types) {
+        for (const field of (type.fields || [])) {
+          result.set(field.id, field);
+        }
+      }
+      return result;
+    } else {
+      return new Map();
+    }
+  }
+
   public getWorkflow(id: string): Workflow {
     return this.template.workflows.find(wf => wf.name === id);
   }

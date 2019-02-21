@@ -3,23 +3,35 @@ import { action, ObservableSet } from 'mobx';
 import { observer } from 'mobx-react';
 import { CheckBox } from '../../controls';
 import { FieldType } from '../../../../common/types/json';
+import styled from 'styled-components';
 
 interface Props {
   field: FieldType;
   value: ObservableSet;
 }
 
+const EnumSetLayout = styled.div`
+  display: grid;
+  grid-template-rows: auto;
+  grid-auto-flow: column;
+
+  > label {
+    display: block;
+    margin: 4px 1em 4px 0 !important;
+  }
+`;
+
 @observer
 export class EnumSetEditor extends React.Component<Props> {
   public render() {
     const { field, value } = this.props;
     return (
-      <div className="select-types">
+      <EnumSetLayout>
         {field.values.map(v => (
           <CheckBox key={v} data-id={v} checked={value.has(v)} onChange={this.onChange}>
             {v}
           </CheckBox>))}
-      </div>
+      </EnumSetLayout>
     );
   }
 

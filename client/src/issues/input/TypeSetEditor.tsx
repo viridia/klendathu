@@ -3,23 +3,35 @@ import * as React from 'react';
 import { CheckBox } from '../../controls';
 import { Template } from '../../../../common/types/json';
 import { ObservableSet } from 'mobx';
+import { styled } from '../../style';
 
 interface Props {
   template: Template;
   value: ObservableSet;
 }
 
+const SelectTypesLayout = styled.div`
+  display: grid;
+  grid-template-rows: auto auto;
+  grid-auto-flow: column;
+
+  > label {
+    display: block;
+    margin: 4px 1em 4px 0 !important;
+  }
+`;
+
 export class TypeSetEditor extends React.Component<Props> {
   public render() {
     const { template, value } = this.props;
     return (
-      <div className="select-types">
+      <SelectTypesLayout>
         {template.types.map(t => (
           !t.abstract &&
             <CheckBox key={t.id} data-id={t.id} checked={value.has(t.id)} onChange={this.onChange}>
               {t.caption}
             </CheckBox>))}
-      </div>
+      </SelectTypesLayout>
     );
   }
 

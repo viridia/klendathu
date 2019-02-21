@@ -72,7 +72,14 @@ export const MenuItem = styled(MenuItemImpl).attrs(() => ({
   outline: none;
   padding: 4px;
 
-  &:hover {
+  &[disabled] {
+    opacity: 0.6;
+    > svg {
+      opacity: 0.3;
+    }
+  }
+
+  &:hover:not([disabled]) {
     background-color: ${props => props.theme.menuHoverBgColor};
     color: ${props => props.theme.menuHoverTextColor};
   }

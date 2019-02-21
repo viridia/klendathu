@@ -3,13 +3,7 @@ import { Query } from 'react-apollo';
 import { PublicAccount } from '../../../common/types/graphql';
 import { NavLink } from './NavLink';
 import { History as H } from 'history';
-import gql from 'graphql-tag';
-
-export const AccountQuery = gql`
-  query AccountQuery($accountName: String, $id: ID) {
-    account(accountName: $accountName, id: $id) { id, accountName, type, display, photo }
-  }
-`;
+import { AccountQuery } from '../graphql';
 
 interface Props {
   id?: string;

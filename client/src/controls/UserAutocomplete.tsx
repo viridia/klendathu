@@ -3,16 +3,7 @@ import * as React from 'react';
 import { Autocomplete } from './Autocomplete';
 import { PublicAccount, AccountType } from '../../../common/types/graphql';
 import { Chip } from './Chip';
-import { client } from '../graphql/client';
-import gql from 'graphql-tag';
-
-const AccountsQuery = gql`
-  query AccountsQuery($token: String!, $type: AccountType) {
-    accounts(token: $token, type: $type) {
-      id accountName display photo type
-    }
-  }
-`;
+import { queryAccounts } from '../graphql';
 
 interface Props {
   className?: string;
@@ -45,14 +36,7 @@ export class UserAutocomplete extends React.Component<Props> {
     if (token.length < 1) {
       callback([]);
     } else {
-      client.query<{ accounts: PublicAccount[] }>({
-        query: AccountsQuery,
-        fetchPolicy: 'network-only',
-        variables: {
-          token,
-          type: AccountType.User,
-        }
-      }).then(({ data, loading, errors }) => {
+      queryAccounts(token, AccountType.User).then(({ data, loading, errors }) => {
         if (!loading && !errors && token === this.token) {
           callback(data.accounts.slice(0, 5));
         }

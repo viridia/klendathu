@@ -86,12 +86,11 @@ export interface ThemeInterface {
   cardBgColorAltRow: string;
   cardHeaderDividerColor: string;
 
-// accentedCardHeaderBgColor: bg2;
+  // Filters
+  filterParamsBgColor: string;
+  filterParamsHeaderBgColor: string;
 
-// internalCardBgColor: lighten(bg0, 15%);
-// internalCardBorder: lighten(cardBorder, 10%);
-
-// // Mass edit
+  // Mass edit
 // massEditBgColor: string;
 }
 

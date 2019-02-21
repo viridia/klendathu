@@ -48,6 +48,7 @@ export class LabelSelector extends React.Component<Props> {
         />
         <AutocompleteLabels
             {...this.props}
+            className={this.props.className}
             multiple={true}
             onSearch={this.onSearchLabels}
             onGetValue={this.onGetValue}

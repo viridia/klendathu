@@ -3,7 +3,7 @@ import {
   Dropdown as OverlayDropdown,
   DropdownMenu as OverlayDropdownMenu,
 } from 'react-overlays';
-import { Button, ButtonStyle } from './Button';
+import { Button, ButtonStyle, ButtonSize } from './Button';
 import { styled } from '../style';
 import { observable, action } from 'mobx';
 import { observer } from 'mobx-react';
@@ -71,12 +71,21 @@ export interface DropDownProps {
 export interface DropdownButtonProps {
   alignEnd?: boolean;
   drop?: 'up' | 'left' | 'right' | 'down';
+  size?: ButtonSize;
   id?: string;
   kind?: ButtonStyle;
+  className?: string;
   children: React.ReactNode;
   title: React.ReactNode;
   onSelect?: (key: string) => any;
 }
+
+const DropdownButtonEl = styled(Button)`
+  justify-content: space-between;
+  .down-arrow {
+    margin-left: 1rem;
+  }
+`;
 
 @observer
 export class DropdownButton extends React.Component<DropdownButtonProps> {
@@ -85,7 +94,9 @@ export class DropdownButton extends React.Component<DropdownButtonProps> {
   public render() {
     const {
       drop = 'down',
+      size,
       alignEnd = false,
+      className,
       children,
       title,
       kind,
@@ -102,13 +113,16 @@ export class DropdownButton extends React.Component<DropdownButtonProps> {
           <DropdownContainer {...props}>
             <OverlayDropdown.Toggle>
               {({ toggle, show, props: buttonProps }) => (
-                <Button
+                <DropdownButtonEl
                     kind={kind}
+                    size={size}
+                    className={className}
                     {...buttonProps as any}
                     onClick={(e: any) => { e.preventDefault(); toggle(e); }}
                 >
-                  {title}&nbsp;&#9662;
-                </Button>
+                  <span className="title">{title}</span>
+                  <span className="down-arrow">&#9662;</span>
+                </DropdownButtonEl>
               )}
             </OverlayDropdown.Toggle>
             <OverlayDropdown.Menu flip={true}>
@@ -144,10 +158,9 @@ export class DropdownButton extends React.Component<DropdownButtonProps> {
       while (target) {
         const role = target.getAttribute('role');
         if (role === 'menuitem') {
-          const eventKey = target.dataset.eventKey;
-          if (eventKey) {
+          if ('eventKey' in target.dataset) {
             e.preventDefault();
-            onSelect(eventKey);
+            onSelect(target.dataset.eventKey);
           }
           break;
         }

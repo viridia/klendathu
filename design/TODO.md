@@ -1,25 +1,24 @@
 # TODO
 
-* Timeline
-  * Comments display
-  * Smart updating of timeline cache
 * Workflow actions
 * Attachments
-* Make user links local to the view
 * Batching
 * ErrorDisplay
   * Show network errors
   * Mini display for errors in menus and chips
-* Better UI for entering linked issues
-* Sort issue searches by relevance
+* Better UI for entering linked issues - current process is cumbersome.
 * Project timeline
 * Better loading indicator
 * Navbar project list
-* Make Markdown a separate component.
-* Comments should be joined to change entries so we can paginate them together.
 * Syntax highlighting for code examples.
 * "Dark mode".
-* compiled template stuff.
+* Template inheritance.
+* Timeline
+  * Smart updating of timeline cache
+* Make user links local to the view
+* Sort issue searches by relevance
+* Preserve issue navigation list between page refreshes.
+* Better error reporting in issue create and issue edit.
 
 # Major pieces
 
@@ -30,10 +29,7 @@
 * Issue Details
   * Add workflow actions
   * Add assign to me
-  * Add comment editings
-  * Add comment display
 * Issue Delete
-* Issue Edit
 * Issue Query
   * By Owner
 * Label Delete
@@ -58,7 +54,6 @@
 
 # Components
 
-* DiscloseButton
 * HelpBlocks for forms (CreateProject dialog)
 * Table
   * SortOrder
