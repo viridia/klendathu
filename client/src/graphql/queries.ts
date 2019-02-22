@@ -17,7 +17,7 @@ type AccountQueryResult = Pick<Query, 'account'>;
 
 export function queryAccount({ accountName, id }: { accountName?: string, id?: string }) {
   return client.query<AccountQueryResult>({
-    query: AccountsQuery,
+    query: AccountQuery,
     fetchPolicy: 'network-only',
     variables: {
       accountName,

@@ -51,14 +51,17 @@ function customArrayToMap(custom: CustomFieldInput[]): CustomValues {
 }
 
 const strToId = (s: string): ObjectID => new ObjectID(s);
+const strToAccountId = (s: string): ObjectID => (s === 'none') ? undefined : new ObjectID(s);
 
 function stringPredicate(pred: Predicate, value: string): any {
   switch (pred) {
     case Predicate.In:
+    case Predicate.Contains:
       return { $regex: escapeRegExp(value), $options: 'i' };
     case Predicate.Equals:
       return value;
     case Predicate.NotIn:
+    case Predicate.NotContains:
       return { $not: new RegExp(escapeRegExp(value), 'i') };
     case Predicate.NotEquals:
       return { $ne: value };
@@ -156,7 +159,7 @@ export const queries = {
 
     // By Summary
     if (query.summary) {
-      query.summary = stringPredicate(query.summaryPred, query.summary);
+      filter.summary = stringPredicate(query.summaryPred, query.summary);
       if (!query.summary) {
         throw new UserInputError(Errors.INVALID_PREDICATE);
       }
@@ -164,20 +167,22 @@ export const queries = {
 
     // By Description
     if (query.description) {
-      query.description = stringPredicate(query.descriptionPred, query.description);
+      filter.description = stringPredicate(query.descriptionPred, query.description);
       if (!query.description) {
         throw new UserInputError(Errors.INVALID_PREDICATE);
       }
     }
 
     // By Reporter
-    if (query.reporter) {
-      filter.reporter = query.reporter.length === 1 ? query.reporter[0] : { $in: query.reporter };
+    if (query.reporter && query.reporter.length > 0) {
+      const reporter = query.reporter.map(strToAccountId);
+      filter.reporter = reporter.length === 1 ? reporter[0] : { $in: reporter };
     }
 
     // By Owner
-    if (query.owner) {
-      filter.owner = query.owner.length === 1 ? query.owner[0] : { $in: query.owner };
+    if (query.owner && query.owner.length > 0) {
+      const owner = query.owner.map(strToAccountId);
+      filter.owner = owner.length === 1 ? owner[0] : { $in: owner };
     }
 
     // Match any label
@@ -186,8 +191,9 @@ export const queries = {
     }
 
     // Match any cc
-    if (query.cc) {
-    //   const cc = await lookupUsers(args.cc);
+    if (query.cc && query.cc.length > 0) {
+      const cc = query.cc.map(strToAccountId);
+      filter.cc = { $in: cc };
     //   if (cc) {
     //     const e = cc.reduce((expr: r.Expression<boolean>, uid) => {
     //       const term = r.row('cc').contains(uid);
@@ -222,6 +228,7 @@ export const queries = {
     // if (req.subtasks) {
     //   return this.findSubtasks(query, sort);
     // }
+    console.log(filter);
     const result = await issues.find(filter).toArray();
     return {
       count: result.length,

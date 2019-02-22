@@ -162,11 +162,10 @@ export const descriptors: { [type: string]: FilterTermDescriptor } = {
       }
     },
     parseQuery(query, term, env) {
-      const { project, account } = env;
+      const { project } = env;
       term.value = [];
       if (typeof query.labels === 'string') {
-        term.value = coerceToStringArray(query.labels)
-            .map(n => `${account.accountName}/${project.name}/${n}`);
+        term.value = coerceToStringArray(query.labels).map(n => `${project.id}.${n}`);
       }
     }
   },

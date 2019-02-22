@@ -66,27 +66,20 @@ export class IssueList extends React.Component<Props> {
 
   public render() {
     const { issues } = this.props.context;
-    if (issues.loading) {
-      return <LoadingIndicator>Loading&hellip;</LoadingIndicator>;
-    } else if (issues.errors) {
+    if (issues.errors) {
       return <ErrorListDisplay errors={issues.errors} />;
     }
     const { list } = issues;
-    if (list.length === 0) {
-      return (
-        <React.Fragment>
-          <FilterParams {...this.props} env={this.props.context} />
-          <Card>
-            <EmptyList>No issues found</EmptyList>
-          </Card>
-        </React.Fragment>
-      );
+    if (issues.loading && !list) {
+      return <LoadingIndicator>Loading&hellip;</LoadingIndicator>;
     }
     return (
       <React.Fragment>
         <FilterParams {...this.props} env={this.props.context} />
         <Card>
-          {this.renderIssues()}
+          {list.length === 0
+          ? <EmptyList>No issues found</EmptyList>
+          : this.renderIssues()}
         </Card>
       </React.Fragment>
     );

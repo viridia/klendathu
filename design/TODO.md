@@ -4,6 +4,7 @@
   * Server side
   * UI prefs in local storage
   * Test!
+  * Search by custom fields
 * Workflow actions
 * Attachments
 * Batching

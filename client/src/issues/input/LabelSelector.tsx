@@ -80,7 +80,6 @@ export class LabelSelector extends React.Component<Props> {
           search: token,
         }
       }).then(({ data, loading, errors }) => {
-        console.error(errors);
         if (!loading && !errors && token === this.token) {
           const labels = data.labels;
           callback(labels.slice(0, 5).map(l => l.id), [newLabelOption]);

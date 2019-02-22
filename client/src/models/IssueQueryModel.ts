@@ -1,4 +1,4 @@
-import { fragments } from '../graphql';
+import { fragments, queryAccount } from '../graphql';
 import {
   Issue,
   Project,
@@ -7,8 +7,9 @@ import {
   IssuesChangedSubscriptionArgs,
   Query,
   ChangeAction,
+  Predicate,
 } from '../../../common/types/graphql';
-import { observable, IReactionDisposer, autorun, action, computed, ObservableSet } from 'mobx';
+import { observable, IReactionDisposer, autorun, action, ObservableSet } from 'mobx';
 import { client } from '../graphql/client';
 import bind from 'bind-decorator';
 import gql from 'graphql-tag';
@@ -16,6 +17,7 @@ import { GraphQLError } from 'graphql';
 import { coerceToString, coerceToStringArray } from '../lib/coerce';
 import { ObservableQuery, OperationVariables, ApolloQueryResult } from 'apollo-client';
 import { idToIndex } from '../lib/idToIndex';
+import { session } from './Session';
 
 const IssuesQuery = gql`
   query IssuesQuery($query: IssueQueryParams!, $pagination: Pagination) {
@@ -34,6 +36,18 @@ const IssuesSubscription = gql`
   ${fragments.issue}
 `;
 
+function resolveAccountName(name: string): Promise<string> {
+  if (name === 'none') {
+    return Promise.resolve('none');
+  } else if (name === 'me') {
+    return Promise.resolve(session.account.id);
+  }
+
+  return queryAccount({ accountName: name }).then(({ data }) => {
+    return data ? data.account.id : undefined;
+  });
+}
+
 type IssuesQueryResult = Pick<Query, 'issues'>;
 type IssueChangeResult = Pick<Subscription, 'issuesChanged'>;
 interface SearchParams { [param: string]: string | string[]; }
@@ -43,12 +57,12 @@ export class IssueQueryModel {
   @observable public loading = true;
   @observable public errors: ReadonlyArray<GraphQLError> = null;
   @observable.shallow public list: Issue[] = [];
-  @observable public searchParams: SearchParams = {};
   @observable public sort = 'id';
   @observable public descending = false;
   @observable public recentlyAdded = new Set<string>() as ObservableSet<string>;
 
   @observable private projectId: string = null;
+  @observable private issueQuery: IssueQueryParams = { project: null };
   private disposer: IReactionDisposer;
   private sDisposer: IReactionDisposer;
   private queryResult: ObservableQuery<IssuesQueryResult, OperationVariables>;
@@ -56,7 +70,7 @@ export class IssueQueryModel {
   private subscription: any;
 
   constructor() {
-    this.disposer = autorun(this.runQuery);
+    this.disposer = autorun(this.runQuery, { delay: 50 });
     this.sDisposer = autorun(this.runSubscription);
   }
 
@@ -75,21 +89,83 @@ export class IssueQueryModel {
 
   @action
   public setQueryArgs(project: Project, queryParams: SearchParams) {
-    this.projectId = project ? project.id : null;
-    this.searchParams = queryParams;
-    const sort = coerceToString(this.searchParams.sort);
-    if (sort) {
-      if (sort.startsWith('-')) {
-        this.sort = sort.slice(1);
-        this.descending = true;
-      } else {
-        this.sort = sort;
-        this.descending = false;
+    // Resolve account names
+    Promise.all([
+      Promise.all(coerceToStringArray(queryParams.reporter).map(resolveAccountName)),
+      Promise.all(coerceToStringArray(queryParams.owner).map(resolveAccountName)),
+      Promise.all(coerceToStringArray(queryParams.cc).map(resolveAccountName)),
+    ]).then(([ reporters, owners, ccs ]) => {
+      // Compute query parameters to send to server
+      this.projectId = project ? project.id : null;
+      const issueQuery: IssueQueryParams = {
+        project: this.projectId,
+        labels: [],
+        reporter: reporters.filter(acc => acc),
+        owner: owners.filter(acc => acc),
+        cc: ccs.filter(acc => acc),
+      };
+
+      if ('search' in queryParams) {
+        issueQuery.search = coerceToString(queryParams.search);
       }
-    } else {
-      this.sort = 'id';
-      this.descending = true;
-    }
+
+      if ('state' in queryParams) {
+        issueQuery.state = coerceToStringArray(queryParams.state);
+      }
+
+      if ('type' in queryParams) {
+        issueQuery.type = coerceToStringArray(queryParams.type);
+      }
+
+      if ('summary' in queryParams) {
+        issueQuery.summary = coerceToString(queryParams.summary);
+        issueQuery.summaryPred =
+            coerceToString(queryParams.summaryPred) as Predicate || Predicate.Contains;
+      }
+
+      if ('description' in queryParams) {
+        issueQuery.description = coerceToString(queryParams.description);
+        issueQuery.summaryPred =
+            coerceToString(queryParams.descriptionPred) as Predicate || Predicate.Contains;
+      }
+
+      if ('labels' in queryParams) {
+        issueQuery.labels = coerceToStringArray(queryParams.labels)
+            .map(l => `${this.projectId}.${l}`);
+      }
+
+      // TODO: Custom fields
+      // this.filterParams = {};
+      // this.filterParams.search = queryParams.search;
+      // this.group = queryParams.group;
+      // for (const key of Object.getOwnPropertyNames(this.searchParams)) {
+      //   if (key in descriptors || key.startsWith('custom.') || key.startsWith('pred.')) {
+      //     const desc = descriptors[key];
+      //     let value: any = this.searchParams[key];
+      //     if (desc && desc.type === OperandType.USER && value === 'me') {
+      //       value = session.account.accountName;
+      //     // } else if (desc && desc.type === OperandType.STATE_SET && value === 'open') {
+      //     //   value = project.template.states.filter(st => !st.closed).map(st => st.id);
+      //     }
+      //     issueQuery[key] = value;
+      //   }
+      // }
+
+      this.issueQuery = issueQuery;
+      const sort = coerceToString(queryParams.sort);
+      if (sort) {
+        if (sort.startsWith('-')) {
+          this.sort = sort.slice(1);
+          this.descending = true;
+        } else {
+          this.sort = sort;
+          this.descending = false;
+        }
+      } else {
+        this.sort = 'id';
+        this.descending = true;
+      }
+    });
   }
 
   public adjacentIssueIds(id: string): [string, string] {
@@ -105,7 +181,7 @@ export class IssueQueryModel {
 
   @bind
   private runQuery() {
-    if (!this.projectId) {
+    if (!this.issueQuery.project) {
       if (this.querySubscription) {
         this.querySubscription.unsubscribe();
         this.querySubscription = null;
@@ -172,62 +248,5 @@ export class IssueQueryModel {
   @action
   private update(issues: Issue[]) {
     this.list = issues.slice();
-  }
-
-  @computed
-  private get issueQuery(): IssueQueryParams {
-    const issueQuery: IssueQueryParams = {
-      project: this.projectId,
-      search: this.search,
-      labels: this.labels,
-    };
-
-    if ('state' in this.searchParams) {
-      issueQuery.state = coerceToStringArray(this.searchParams.state);
-    }
-
-    if ('type' in this.searchParams) {
-      issueQuery.type = coerceToStringArray(this.searchParams.type);
-    }
-
-    if ('owner' in this.searchParams) {
-      issueQuery.owner = coerceToStringArray(this.searchParams.owner);
-    }
-
-    // console.debug('sort:', this.sort, 'descending:', this.descending);
-
-    // this.query.labels = coerceToNumberArray(queryParams.label);
-
-    // this.filterParams = {};
-    // this.filterParams.search = queryParams.search;
-    // this.group = queryParams.group;
-    // for (const key of Object.getOwnPropertyNames(this.searchParams)) {
-    //   if (key in descriptors || key.startsWith('custom.') || key.startsWith('pred.')) {
-    //     const desc = descriptors[key];
-    //     let value: any = this.searchParams[key];
-    //     if (desc && desc.type === OperandType.USER && value === 'me') {
-    //       value = session.account.accountName;
-    //     // } else if (desc && desc.type === OperandType.STATE_SET && value === 'open') {
-    //     //   value = project.template.states.filter(st => !st.closed).map(st => st.id);
-    //     }
-    //     issueQuery[key] = value;
-    //   }
-    // }
-
-    return issueQuery;
-  }
-
-  @computed
-  private get search(): string {
-    return coerceToString(this.searchParams.search);
-  }
-
-  @computed
-  private get labels(): string[] {
-    const labels = coerceToStringArray(this.searchParams.label);
-    if (labels && labels.length > 0) {
-      return labels.map(l => `${this.projectId}.${l}`);
-    }
-    return undefined;
   }
 }

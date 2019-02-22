@@ -4,7 +4,7 @@ import { RouteComponentProps } from 'react-router-dom';
 import { FilterTerm, getDescriptor, ViewContext } from '../models';
 import { FilterTermEditor } from './FilterTermEditor';
 import { SaveFilterDialog } from './SaveFilterDialog';
-import { action, computed, IObservableArray, observable } from 'mobx';
+import { action, computed, IObservableArray, observable, autorun, IReactionDisposer } from 'mobx';
 import { observer } from 'mobx-react';
 import { Spacer } from '../layout';
 import {
@@ -48,7 +48,6 @@ const FilterParamsHeader = styled.header`
 
 interface Props extends RouteComponentProps<{}> {
   env: ViewContext;
-  // issues: IssueListQuery;
 }
 
 @observer
@@ -58,17 +57,17 @@ export class FilterParams extends React.Component<Props> {
   @observable private group = '';
   @observable private showSaveDialog = false;
   @observable private terms = [] as IObservableArray<FilterTerm>;
+  private disposer: IReactionDisposer;
 
-  public componentWillMount() {
-    const { location } = this.props;
-    this.parseQuery(location.search);
+  constructor(props: Props) {
+    super(props);
+    this.disposer = autorun(() => {
+      this.parseQuery(location.search);
+    });
   }
 
-  public componentWillReceiveProps(nextProps: Props) {
-    const { location } = nextProps;
-    if (location.search !== this.props.location.search) {
-      this.parseQuery(location.search);
-    }
+  public componentWillUnmount() {
+    this.disposer();
   }
 
   public render() {
@@ -85,6 +84,7 @@ export class FilterParams extends React.Component<Props> {
                   placeholder="Search"
                   value={this.search}
                   onChange={this.onChangeSearch}
+                  onKeyDown={this.onSearchKeyDown}
               >
                 <DismissButton className="clear" onClick={this.onClearSearch} />
               </TextInput>
@@ -174,6 +174,7 @@ export class FilterParams extends React.Component<Props> {
   private onClearSearch(e: any) {
     e.preventDefault();
     this.search = '';
+    this.terms.clear();
     this.onApplyFilter(e);
   }
 
@@ -201,11 +202,20 @@ export class FilterParams extends React.Component<Props> {
     this.terms.splice(index, 1);
   }
 
-  @bind
+  @action.bound
   private onSearch(e: any) {
     e.preventDefault();
     this.terms.clear();
     this.pushFilter();
+  }
+
+  @action.bound
+  private onSearchKeyDown(e: any) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      this.terms.clear();
+      this.pushFilter();
+    }
   }
 
   @bind
