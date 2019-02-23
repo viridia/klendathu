@@ -60,12 +60,12 @@ interface Props extends RouteComponentProps<{}> {
 @observer
 export class IssueListEntry extends React.Component<Props> {
   public render() {
-    const { env: context, issue, columnRenderers, selection } = this.props;
+    const { env: context, issue, columnRenderers, selection, location } = this.props;
     const { account, project, prefs } = context;
     const index = idToIndex(issue.id);
     const linkTarget = {
       pathname: `/${account.accountName}/${project.name}/${index}`,
-      state: { back: this.props.location },
+      state: { back: location },
     };
     const issueId = `issue-${issue.id}`;
     const style: any = {};

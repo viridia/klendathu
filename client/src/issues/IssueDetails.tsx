@@ -33,6 +33,7 @@ import { IssueTimeline } from './IssueTimeline';
 import styled from 'styled-components';
 import ArrowUpIcon from '../svg-compiled/icons/IcArrowUpward';
 import { WorkflowActionsView } from './workflow/WorkflowActionsView';
+import { LocationState } from 'history';
 
 const IssueDetailsLayout = styled(Card)`
   flex: 1 0 0;
@@ -120,7 +121,7 @@ export const CommentGroup = styled.span`
   justify-self: stretch;
 `;
 
-interface Props extends RouteComponentProps<{ project: string; id: string }> {
+interface Props extends RouteComponentProps<{ project: string; id: string }, LocationState> {
   context: ViewContext;
   issue: Issue;
   loading: boolean;
@@ -134,7 +135,7 @@ export class IssueDetails extends React.Component<Props> {
 
   public render() {
     return (
-      <IssueDetailsLayout>
+      <IssueDetailsLayout className="issue-details">
         {this.renderHeader()}
         {this.renderContent()}
         <Dialog open={this.showDelete} onClose={this.onCancelDelete} className="confirm-dialog">
@@ -158,10 +159,14 @@ export class IssueDetails extends React.Component<Props> {
   private renderHeader() {
     const { location, context, issue } = this.props;
     const { account, project } = context;
-    const backLink = (location.state && location.state.back) || { pathname: './issues' };
+    const back: LocationState = (location.state && location.state.back) || { pathname: './issues' };
+    const here: LocationState = {
+      pathname: location.pathname,
+      search: location.search,
+    };
     return (
       <IssueDetailsHeader>
-        <NavContainer to={backLink} exact={true}>
+        <NavContainer to={back} exact={true}>
           <Button title="Back to issue list" className="issue-up">
             <ArrowUpIcon />
           </Button>
@@ -175,7 +180,7 @@ export class IssueDetails extends React.Component<Props> {
           <NavContainer
               to={{
                 pathname: `/${account.accountName}/${project.name}/edit/${this.issueIndex}`,
-                state: { ...location.state, back: this.props.location },
+                state: { ...location.state, back: here },
               }}
           >
             <Button title="Edit issue" disabled={project.role < Role.UPDATER}>Edit</Button>
@@ -189,7 +194,7 @@ export class IssueDetails extends React.Component<Props> {
             Delete
           </Button>
         </ButtonGroup>
-        <IssueNavigator issue={issue} />
+        <IssueNavigator {...this.props} issue={issue} />
       </IssueDetailsHeader>
     );
   }

@@ -16,6 +16,7 @@ const RELATIONS: Relation[] = [
 
 interface Props {
   issue: Issue;
+  exclude?: Set<string>;
   onLink(relation: Relation, target: Issue): void;
 }
 
@@ -30,7 +31,7 @@ const IssueLinkEditEl = styled.div`
   }
 `;
 
-export function IssueLinkEdit({ issue, onLink }: Props) {
+export function IssueLinkEdit({ issue, onLink, exclude }: Props) {
   const [relation, setRelation] = React.useState(Relation.BlockedBy);
   const [target, setTarget] = React.useState<Issue>(null);
   const env = React.useContext(ProjectEnv);
@@ -51,10 +52,13 @@ export function IssueLinkEdit({ issue, onLink }: Props) {
           className="ac-issue"
           env={env}
           placeholder="select an issue..."
-          exclude={issue && issue.id}
+          exclude={exclude}
           selection={target}
           onSelectionChange={i => setTarget(i as Issue)}
-          // onEnter={this.onAddIssueLink}
+          onAcceptSuggestion={() => {
+            onLink(relation, target);
+            setTarget(null);
+          }}
       />
       <Button
           onClick={(e: any) => {

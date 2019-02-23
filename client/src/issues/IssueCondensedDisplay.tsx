@@ -23,7 +23,7 @@ const IssueCondensedEl = styled.div`
 
   > .id {
     font-weight: bold;
-    margin-right: .5rem;
+    margin-right: .3rem;
   }
 
   > .summary {

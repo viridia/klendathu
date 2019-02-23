@@ -33,6 +33,7 @@ const ContentPaneLayout = styled.section`
   flex-direction: column;
   grid-area: main;
   padding: 0.6rem;
+  overflow-x: hidden;
 
   > header {
     align-items: center;
