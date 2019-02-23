@@ -3,7 +3,6 @@ import { styled } from '../style';
 import classNames from 'classnames';
 
 const CollapseStyle = styled.section`
-  /* border-top: 1px solid ${props => props.theme.cardHeaderDividerColor}; */
   overflow: hidden;
   transition: max-height 0.4s ease;
 

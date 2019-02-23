@@ -44,6 +44,7 @@ export interface ThemeInterface {
     action: ButtonColors;
     primary: ButtonColors;
     secondary: ButtonColors;
+    alternate: ButtonColors;
   };
 
   // Tabs

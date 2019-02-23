@@ -13,6 +13,13 @@ import { idToIndex } from '../lib/idToIndex';
 
 const SelectedCell = styled.td`
   width: 2rem;
+  > label {
+    align-items: center;
+    display: flex;
+    height: 1.5rem;
+    justify-content: center;
+    width: 100%;
+  }
 `;
 
 const IdCell = styled.td`

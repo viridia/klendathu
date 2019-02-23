@@ -134,18 +134,22 @@ export class MassAction extends React.Component<Props> {
         <DropdownButton
             className="action-type"
             size="small"
+            kind="alternate"
             title={caption}
             onSelect={this.onSelectActionType}
         >
           {items}
         </DropdownButton>
         <section className="action-operand">
-          {action && (<EditOperand
-              type={action.type}
-              value={action.value}
-              customField={action.customField}
-              onChange={this.onChangeValue}
-          />)}
+          {action && (
+            <EditOperand
+                type={action.type}
+                kind="alternate"
+                value={action.value}
+                customField={action.customField}
+                onChange={this.onChangeValue}
+            />
+          )}
         </section>
         {index !== undefined && <DismissButton onClick={this.onRemove}/>}
     </MassActionLayout>

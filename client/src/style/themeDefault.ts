@@ -51,7 +51,12 @@ export const themeDefault: ThemeInterface = {
       bg: dye(0.8, primary),
       text: dye(0.2, primary),
       border: dye(0.73, primary),
-    }
+    },
+    alternate: {
+      bg: dye(0.9, alt),
+      text: dye(0.2, alt),
+      border: dye(0.7, desaturate(0.4, alt)),
+    },
   },
 
   // Tabs
@@ -76,9 +81,9 @@ export const themeDefault: ThemeInterface = {
   menuBorderColor: dye(0.7, diluted),
   menuActiveBgColor: dye(0.5, primary),
   menuActiveTextColor: dye(0.9, primary),
-  menuHoverBgColor: dye(0.95, primary),
+  menuHoverBgColor: dye(0.95, diluted),
   menuHoverTextColor: '#222',
-  menuFocusBgColor: dye(0.9, primary),
+  menuFocusBgColor: dye(0.9, diluted),
   menuFocusTextColor: '#000',
   menuDividerColor: dye(0.9, desaturate(0.5, primary)),
 

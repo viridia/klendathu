@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { styled } from '../style';
 import { darken, saturate } from 'polished';
 
-export type ButtonStyle = 'action' | 'primary' | 'secondary' | 'default';
+export type ButtonStyle = 'action' | 'primary' | 'secondary' | 'alternate' | 'default';
 export type ButtonSize = 'small' | 'mini';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {

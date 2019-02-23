@@ -48,7 +48,7 @@ export class MassEdit extends React.Component<Props> {
               Mass Edit ({env.selection.size} issues selected)
             </div>
             <Button
-                kind="default"
+                kind="alternate"
                 size="small"
                 disabled={this.actions.length === 0}
                 onClick={this.onSave}
