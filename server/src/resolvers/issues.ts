@@ -228,7 +228,7 @@ export const queries = {
     // if (req.subtasks) {
     //   return this.findSubtasks(query, sort);
     // }
-    console.log(filter);
+    // console.log(filter);
     const result = await issues.find(filter).toArray();
     return {
       count: result.length,

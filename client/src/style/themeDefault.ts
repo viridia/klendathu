@@ -2,10 +2,12 @@ import { ThemeInterface, dye } from './theme';
 import { desaturate, transparentize } from 'polished';
 
 const primary = '#9c27b0';
+const alt = '#4727c0';
 const diluted = desaturate(0.2, primary);
 
 export const themeDefault: ThemeInterface = {
   primaryColor: primary,
+  altColor: alt,
   dilutedColor: diluted,
   focusColor: transparentize(0.7, primary),
 
@@ -95,4 +97,10 @@ export const themeDefault: ThemeInterface = {
   // Filters
   filterParamsBgColor: dye(0.85, diluted),
   filterParamsHeaderBgColor: dye(0.75, diluted),
+
+  // Mass Edit
+  massEditBgColor: dye(0.85, alt),
+  massEditHeaderBgColor: dye(0.8, alt),
+  massEditBorderColor: dye(0.7, alt),
+  massEdithadowColor: transparentize(0.86, dye(0.4, alt)),
 };

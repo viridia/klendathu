@@ -100,7 +100,7 @@ export class MainPage extends React.Component<RouteComponentProps<{}>> {
                       <Route
                         path="/:owner/:name/issues"
                         exact={true}
-                        render={props => (<IssueListView {...props} context={this.viewContext}/>)}
+                        render={props => (<IssueListView {...props} env={this.viewContext}/>)}
                       />
                       <Route
                         path="/:owner/:name/labels"

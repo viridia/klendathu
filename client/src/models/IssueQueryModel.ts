@@ -11,13 +11,13 @@ import {
 } from '../../../common/types/graphql';
 import { observable, IReactionDisposer, autorun, action, ObservableSet } from 'mobx';
 import { client } from '../graphql/client';
-import bind from 'bind-decorator';
-import gql from 'graphql-tag';
 import { GraphQLError } from 'graphql';
 import { coerceToString, coerceToStringArray } from '../lib/coerce';
 import { ObservableQuery, OperationVariables, ApolloQueryResult } from 'apollo-client';
 import { idToIndex } from '../lib/idToIndex';
 import { session } from './Session';
+import bind from 'bind-decorator';
+import gql from 'graphql-tag';
 
 const IssuesQuery = gql`
   query IssuesQuery($query: IssueQueryParams!, $pagination: Pagination) {
@@ -54,6 +54,7 @@ interface SearchParams { [param: string]: string | string[]; }
 
 /** Reactive model class that represents a query over the issue table. */
 export class IssueQueryModel {
+  public searchParams: SearchParams;
   @observable public loading = true;
   @observable public errors: ReadonlyArray<GraphQLError> = null;
   @observable.shallow public list: Issue[] = [];
@@ -89,6 +90,8 @@ export class IssueQueryModel {
 
   @action
   public setQueryArgs(project: Project, queryParams: SearchParams) {
+    this.searchParams = queryParams;
+
     // Resolve account names
     Promise.all([
       Promise.all(coerceToStringArray(queryParams.reporter).map(resolveAccountName)),

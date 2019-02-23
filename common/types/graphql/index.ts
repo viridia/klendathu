@@ -154,6 +154,12 @@ export interface FilterInput {
 }
 /** Used for adding / removing labels, cc users, attachments. */
 export interface IssueEdit {
+  type?: Maybe<string>;
+
+  state?: Maybe<string>;
+
+  owner?: Maybe<string>;
+
   addCC?: Maybe<string[]>;
 
   removeCC?: Maybe<string[]>;
@@ -916,7 +922,7 @@ export interface IssueChangedSubscriptionArgs {
   issue: string;
 }
 export interface TimelineChangedSubscriptionArgs {
-  project?: Maybe<string>;
+  project: string;
 
   issue?: Maybe<string>;
 }

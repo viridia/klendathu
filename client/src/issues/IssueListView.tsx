@@ -3,9 +3,11 @@ import * as qs from 'qs';
 import { RouteComponentProps } from 'react-router';
 import { ViewContext } from '../models';
 import { IssueList } from './IssueList';
+import { FilterParams } from '../filters/FilterParams';
+import { MassEdit } from '../massedit/MassEdit';
 
 interface Props extends RouteComponentProps<{}> {
-  context: ViewContext;
+  env: ViewContext;
   // milestones: MilestoneListQuery;
 }
 
@@ -14,11 +16,17 @@ interface Props extends RouteComponentProps<{}> {
     to a sub-component.
  */
 export function IssueListView(props: Props) {
-  const { context } = props;
+  const { env } = props;
   React.useEffect(() => {
-    context.issues.setQueryArgs(
-      context.project,
+    env.issues.setQueryArgs(
+      env.project,
       qs.parse(location.search, { ignoreQueryPrefix: true }));
   });
-  return <IssueList {...props} />;
+  return (
+    <React.Fragment>
+      <FilterParams {...props} env={env} />
+      <MassEdit {...props} env={env} />
+      <IssueList {...props} />
+    </React.Fragment>
+  );
 }

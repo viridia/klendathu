@@ -17,6 +17,7 @@ export interface ThemeInterface {
   primaryColor: string;
   dilutedColor: string;
   focusColor: string;
+  altColor: string;
 
   // Text colors
   textNormal: string;
@@ -91,7 +92,10 @@ export interface ThemeInterface {
   filterParamsHeaderBgColor: string;
 
   // Mass edit
-// massEditBgColor: string;
+  massEditBgColor: string;
+  massEditHeaderBgColor: string;
+  massEditBorderColor: string;
+  massEdithadowColor: string;
 }
 
 export interface ThemeProps {

@@ -203,6 +203,9 @@ input IssueInput {
 
 "Used for adding / removing labels, cc users, attachments."
 input IssueEdit {
+  type: String
+  state: String
+  owner: ID
   addCC: [ID!]
   removeCC: [ID!]
   addLabels: [ID!]
