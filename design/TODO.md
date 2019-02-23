@@ -20,6 +20,9 @@
 * Template inheritance.
 * Timeline
   * Smart updating of timeline cache
+  * Show days in right column.
+  * Should allow supression of change entries.
+  * Coalesce closely-spaced changes by the same person.
 * Make user links local to the view
 * Sort issue searches by relevance
 * Preserve issue navigation list between page refreshes.

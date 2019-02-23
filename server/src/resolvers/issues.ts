@@ -563,8 +563,8 @@ export const mutations = {
       update.$set.labels = input.labels;
       if (labelsNext.size > 0 || labelsPrev.size > 0) {
         change.labels = {
-          added: Array.from(labelsNext).map(strToId),
-          removed: Array.from(labelsPrev).map(strToId),
+          added: Array.from(labelsNext),
+          removed: Array.from(labelsPrev),
         };
         change.at = now;
       }
