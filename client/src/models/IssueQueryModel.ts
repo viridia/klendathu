@@ -154,7 +154,6 @@ export class IssueQueryModel {
       //   }
       // }
 
-      this.issueQuery = issueQuery;
       const sort = coerceToString(queryParams.sort);
       if (sort) {
         if (sort.startsWith('-')) {
@@ -168,6 +167,9 @@ export class IssueQueryModel {
         this.sort = 'id';
         this.descending = true;
       }
+
+      issueQuery.sort = [sort];
+      this.issueQuery = issueQuery;
     });
   }
 

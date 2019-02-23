@@ -225,11 +225,28 @@ export const queries = {
       }
     }
 
+    const sort: any = {};
+    if (query.sort) {
+      for (const sortKey of query.sort) {
+        let key = sortKey;
+        let order = 1;
+        if (sortKey.startsWith('-')) {
+          order = -1;
+          key = sortKey.slice(1);
+        }
+        sort[key] = order;
+      }
+    } else {
+      sort._id = 1;
+    }
+
+    logger.debug(JSON.stringify(sort, null, 1));
+
     // if (req.subtasks) {
     //   return this.findSubtasks(query, sort);
     // }
     // console.log(filter);
-    const result = await issues.find(filter).toArray();
+    const result = await issues.find(filter).sort(sort).toArray();
     return {
       count: result.length,
       offset: 0,

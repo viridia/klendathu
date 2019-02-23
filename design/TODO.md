@@ -2,9 +2,11 @@
 
 * Filters
   * Server side
+    * custom fields
   * UI prefs in local storage
   * Test!
   * Search by custom fields
+* Sorting
 * Workflow actions
 * Attachments
 * Batching

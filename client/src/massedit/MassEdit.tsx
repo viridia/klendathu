@@ -9,10 +9,10 @@ import { ViewContext } from '../models';
 import { IssueEdit } from '../../../common/types/graphql';
 import bind from 'bind-decorator';
 import { styled } from '../style';
-// import './MassEdit.scss';
 
 const MassEditCard = styled(Card)`
   background-color: ${props => props.theme.massEditBgColor};
+  flex-shrink: 0;
   && {
     margin-bottom: 12px;
     border-color: ${props => props.theme.massEditBorderColor};

@@ -5,7 +5,7 @@ import { ErrorListDisplay } from '../graphql/ErrorDisplay';
 import { ViewContext } from '../models';
 import { LoadingIndicator, Card, CheckBox, ColumnSort } from '../controls';
 import { observer } from 'mobx-react';
-import { computed, action, observable, ObservableSet } from 'mobx';
+import { computed, action } from 'mobx';
 import { EmptyList, Table, TableHead, TableBody } from '../layout';
 import { styled } from '../style';
 import { Role } from '../../../common/types/json';
@@ -25,6 +25,10 @@ const highlightNew = (color: string) => keyframes`
   from {
     background-color: ${color};
   }
+`;
+
+const IssueListCard = styled(Card)`
+  flex-shrink: 0;
 `;
 
 const IssueListViewTable = styled(Table)`
@@ -68,7 +72,7 @@ export class IssueList extends React.Component<Props> {
     if (errors) {
       return <ErrorListDisplay errors={errors} />;
     } else if (list && list.length > 0) {
-      return <Card>{this.renderIssues()}</Card>;
+      return <IssueListCard>{this.renderIssues()}</IssueListCard>;
     } else if (loading) {
       return <LoadingIndicator>Loading&hellip;</LoadingIndicator>;
     } else {
