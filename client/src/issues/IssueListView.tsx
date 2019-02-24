@@ -20,6 +20,7 @@ export function IssueListView(props: Props) {
   React.useEffect(() => {
     env.issues.setQueryArgs(
       env.project,
+      env.states,
       qs.parse(location.search, { ignoreQueryPrefix: true }));
   });
   return (
