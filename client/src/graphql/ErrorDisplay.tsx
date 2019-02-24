@@ -3,6 +3,9 @@ import styled from 'styled-components';
 import { ApolloError } from 'apollo-client';
 import { GraphQLError } from 'graphql';
 import { Errors } from '../../../common/types/json';
+import { Observer } from 'mobx-react-lite';
+import { ViewContext } from '../models';
+import { Dialog, Button } from '../controls';
 
 const ErrorList = styled.section`
   background-color: #000;
@@ -68,7 +71,7 @@ const UserError = styled.div`
 
 export function ErrorListDisplay({ errors }: { errors: ReadonlyArray<GraphQLError> }) {
   for (const err of errors) {
-    console.error(JSON.stringify(err, null, 2));
+    // console.error(JSON.stringify(err, null, 2));
     if (err.message === Errors.NOT_FOUND) {
       if (err.extensions.exception.object === 'project') {
         return <UserError>Error: Project not found</UserError>;
@@ -80,14 +83,14 @@ export function ErrorListDisplay({ errors }: { errors: ReadonlyArray<GraphQLErro
     }
   }
   return (
-    <ErrorList>
+    <ErrorList className="error-list">
       {(errors || []).map((gqlError, index) => (
         <ErrorItem key={index}>
           <header>
             <div className="title">GraphQL Error:</div>
             <div className="message">{gqlError.message}</div>
           </header>
-          <ErrorTable>
+          <ErrorTable className="error-table">
             {gqlError.extensions && gqlError.extensions.code && (
               <React.Fragment>
                 <ErrorRowLabel>Error code:</ErrorRowLabel>
@@ -113,14 +116,14 @@ export function ErrorListDisplay({ errors }: { errors: ReadonlyArray<GraphQLErro
 
 export function NetworkErrorsDisplay({ errors }: { errors: any[] }) {
   return (
-    <ErrorList>
+    <ErrorList className="error-list">
       {(errors || []).map((e, index) => (
         <ErrorItem key={index}>
           <header>
             <div className="title">Network Error:</div>
             <div className="message">{e.message}</div>
           </header>
-          <ErrorTable>
+          <ErrorTable className="error-table">
             {e.extensions && e.extensions.code && (
               <React.Fragment>
                 <ErrorRowLabel>Error code:</ErrorRowLabel>
@@ -160,4 +163,35 @@ export function ErrorDisplay({ error }: { error: ApolloError }) {
   }
   console.error('not handled by error display:', JSON.stringify(error, null, 2));
   return null;
+}
+
+export function ErrorDialog({ env }: { env: ViewContext}) {
+  const clearError = () => {
+    env.mutationError = null;
+  };
+
+  return (
+    <Observer>
+      {() => {
+        if (env.mutationError) {
+          return (
+            <Dialog
+              open={true}
+              onClose={clearError}
+              style={{ flex: 5, minWidth: '30rem' }}
+            >
+              <Dialog.Header hasClose={true}>Error</Dialog.Header>
+              <Dialog.Body style={{ padding: 0, flex: 1 }}>
+                <ErrorDisplay error={env.mutationError as ApolloError} />
+              </Dialog.Body>
+              <Dialog.Footer>
+                <Button onClick={clearError} >Close</Button>
+              </Dialog.Footer>
+            </Dialog>
+          );
+        }
+        return null;
+      }}
+    </Observer>
+  );
 }

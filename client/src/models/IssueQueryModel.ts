@@ -168,7 +168,7 @@ export class IssueQueryModel {
         this.descending = true;
       }
 
-      issueQuery.sort = [sort];
+      issueQuery.sort = sort ? [sort] : null;
       this.issueQuery = issueQuery;
     });
   }

@@ -6,9 +6,34 @@ import { toast } from 'react-toastify';
 import { Collapse } from '../controls/Collapse';
 import { Button, Card } from '../controls';
 import { ViewContext } from '../models';
-import { IssueEdit } from '../../../common/types/graphql';
+import { UpdateIssueInput, Mutation } from '../../../common/types/graphql';
 import bind from 'bind-decorator';
 import { styled } from '../style';
+import gql from 'graphql-tag';
+import { fragments } from '../graphql';
+import { client } from '../graphql/client';
+
+const UpdateIssueMutation = gql`
+  mutation UpdateIssueMutation($id: ID!, $input: UpdateIssueInput!) {
+    updateIssue(id: $id, input: $input) {
+      ...IssueFields
+    }
+  }
+  ${fragments.issue}
+`;
+
+type UpdateIssueMutationResult = Pick<Mutation, 'updateIssue'>;
+
+const DeleteIssueMutation = gql`
+  mutation DeleteIssueMutation($id: ID!) {
+    deleteIssue(id: $id) {
+      ...IssueFields
+    }
+  }
+  ${fragments.issue}
+`;
+
+type DeleteIssueMutationResult = Pick<Mutation, 'deleteIssue'>;
 
 const MassEditCard = styled(Card)`
   background-color: ${props => props.theme.massEditBgColor};
@@ -97,7 +122,7 @@ export class MassEdit extends React.Component<Props> {
     const promises: Array<Promise<any>> = [];
     let deleted = false;
     env.selection.forEach(issueId => {
-      const updates: Partial<IssueEdit> = {};
+      const updates: UpdateIssueInput = {};
       this.actions.forEach(action => {
         if (action.id === 'delete') {
           deleted = true;
@@ -106,9 +131,20 @@ export class MassEdit extends React.Component<Props> {
         }
       });
       if (deleted) {
-        // promises.push(deleteIssue(issueId));
+        promises.push(client.mutate<DeleteIssueMutationResult>({
+          mutation: DeleteIssueMutation,
+          variables: {
+            id: issueId,
+          }
+        }));
       } else {
-        // promises.push(updateIssue(issueId, updates));
+        promises.push(client.mutate<UpdateIssueMutationResult>({
+          mutation: UpdateIssueMutation,
+          variables: {
+            id: issueId,
+            input: updates,
+          }
+        }));
       }
     });
 
@@ -119,6 +155,8 @@ export class MassEdit extends React.Component<Props> {
       } else {
         toast.success(`${env.selection.size} issues updated.`);
       }
+    }, error => {
+      env.mutationError = error;
     });
   }
 }

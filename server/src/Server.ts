@@ -42,6 +42,13 @@ export class Server {
       //   console.log(context);
       // },
     },
+    // formatError: (error: any) => {
+    //   console.log(error);
+    //   return new Error('Internal server error');
+    //   // Or, you can delete the exception information
+    //   // delete error.extensions.exception;
+    //   // return error;
+    // },
     introspection: true,
     playground: process.env.NODE_ENV !== 'production',
   });

@@ -1,13 +1,10 @@
 # TODO
 
-* Filters
-  * Server side
-    * custom fields
-  * UI prefs in local storage
-  * Test!
-  * Search by custom fields
-* Sorting
 * Workflow actions
+* Filters
+  * Filter by custom fields
+  * UI prefs in local storage
+  * Saving filters
 * Attachments
 * Batching
 * ErrorDisplay
@@ -30,6 +27,8 @@
 * Preserve issue navigation list between page refreshes.
 * Better error reporting in issue create and issue edit.
 * Ability to embed attachments in markdown
+* Sorting by custom fields
+* @mentions
 
 # Major pieces
 
@@ -44,6 +43,7 @@
 * Issue Query
   * By Owner
 * Label Delete
+* GitHub integration
 * Mass Edit
 * Progress View
 * Changes View

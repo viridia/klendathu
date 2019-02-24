@@ -123,6 +123,8 @@ const DialogEl = styled.div`
   border: ${(props: ThemeProps) => props.theme.dialogBorder};
   border-radius: 6px;
   box-shadow: ${(props: ThemeProps) => props.theme.dialogShadow};
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
   max-height: 95%;
   max-width: 95%;

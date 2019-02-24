@@ -17,6 +17,7 @@ import { LabelListView } from '../labels/LabelListView';
 import { ViewContextProvider } from './ViewContextProvider';
 import { IssueEditView } from '../issues/IssueEditView';
 import { IssueDetailsView } from '../issues/IssueDetailsView';
+import { ErrorDialog } from '../graphql/ErrorDisplay';
 
 const MainPageLayout = styled(Page)`
   display: grid;
@@ -74,6 +75,7 @@ export class MainPage extends React.Component<RouteComponentProps<{}>> {
           hideProgressBar={true}
           newestOnTop={false}
         />
+        <ErrorDialog env={this.viewContext} />
         <Header context={this.viewContext} />
         <LeftNav context={this.viewContext} />
         <ContentPaneLayout>
@@ -96,7 +98,7 @@ export class MainPage extends React.Component<RouteComponentProps<{}>> {
                       />
                       <Route
                         path="/:owner/:name/:id(\d+)"
-                        render={props => <IssueDetailsView {...props} context={this.viewContext} />}
+                        render={props => <IssueDetailsView {...props} env={this.viewContext} />}
                       />
                       <Route
                         path="/:owner/:name/issues"

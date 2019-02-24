@@ -5,7 +5,7 @@ import { observer } from 'mobx-react';
 import { FieldType } from '../../../common/types/json';
 import { DropdownButton, MenuItem, DismissButton } from '../controls';
 import { EditOperand } from '../issues/input/EditOperand';
-import { IssueEdit, PublicAccount } from '../../../common/types/graphql';
+import { UpdateIssueInput, PublicAccount } from '../../../common/types/graphql';
 import bind from 'bind-decorator';
 import styled from 'styled-components';
 
@@ -35,7 +35,7 @@ interface ActionType {
   id: string;
   caption: string;
   type: OperandType;
-  apply: (update: Partial<IssueEdit>, value: any) => void;
+  apply: (update: UpdateIssueInput, value: any) => void;
   customField?: FieldType;
 }
 
@@ -58,7 +58,7 @@ export class MassAction extends React.Component<Props> {
       id: 'addLabel',
       caption: 'Add Label',
       type: OperandType.LABEL,
-      apply: (update: Partial<IssueEdit>, value: string[]) => {
+      apply: (update: UpdateIssueInput, value: string[]) => {
         update.addLabels = [].concat(update.addLabels || [], value.slice());
       },
     },
@@ -66,7 +66,7 @@ export class MassAction extends React.Component<Props> {
       id: 'removeLabel',
       caption: 'Remove Label',
       type: OperandType.LABEL,
-      apply: (update: Partial<IssueEdit>, value: string[]) => {
+      apply: (update: UpdateIssueInput, value: string[]) => {
         update.removeLabels = [].concat(update.removeLabels || [], value.slice());
       },
     },
@@ -74,7 +74,7 @@ export class MassAction extends React.Component<Props> {
       id: 'state',
       caption: 'Change State',
       type: OperandType.STATE,
-      apply: (update: Partial<IssueEdit>, value: string) => {
+      apply: (update: UpdateIssueInput, value: string) => {
         update.state = value;
       },
     },
@@ -82,7 +82,7 @@ export class MassAction extends React.Component<Props> {
       id: 'type',
       caption: 'Change Type',
       type: OperandType.TYPE,
-      apply: (update: Partial<IssueEdit>, value: string) => {
+      apply: (update: UpdateIssueInput, value: string) => {
         update.type = value;
       },
     },
@@ -90,7 +90,7 @@ export class MassAction extends React.Component<Props> {
       id: 'owner',
       caption: 'Change Owner',
       type: OperandType.USER,
-      apply: (update: Partial<IssueEdit>, value: PublicAccount) => {
+      apply: (update: UpdateIssueInput, value: PublicAccount) => {
         const user = value ? value.id : null;
         update.owner = user;
       },
@@ -99,7 +99,7 @@ export class MassAction extends React.Component<Props> {
       id: 'addCC',
       caption: 'Add CC',
       type: OperandType.USERS,
-      apply: (update: Partial<IssueEdit>, value: PublicAccount[]) => {
+      apply: (update: UpdateIssueInput, value: PublicAccount[]) => {
         update.addCC = value.map(l => l.id);
         return true;
       },
@@ -108,7 +108,7 @@ export class MassAction extends React.Component<Props> {
       id: 'removeCC',
       caption: 'Remove CC',
       type: OperandType.USERS,
-      apply: (update: Partial<IssueEdit>, value: PublicAccount[]) => {
+      apply: (update: UpdateIssueInput, value: PublicAccount[]) => {
         update.removeCC = value.map(l => l.id);
       },
     },

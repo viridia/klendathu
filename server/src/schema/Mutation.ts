@@ -36,13 +36,16 @@ type Mutation {
   newIssue(project: ID!, input: IssueInput!): Issue!
 
   "Update an existing issue record."
-  updateIssue(id: ID!, input: IssueInput!): Issue!
+  updateIssue(id: ID!, input: UpdateIssueInput!): Issue!
 
   "Delete an issue record."
   deleteIssue(id: ID!): Issue!
 
   "Add a comment to an issue."
   addComment(id: ID!, body: String!): TimelineEntry!
+
+  "Make an incremental change to an issue (mass edit)."
+  editIssue(issue: ID!, input: UpdateIssueInput!): Issue!
 
   "Set current user's preferences for visible columns."
   setPrefColumns(project: ID!, columns: [String!]!): ProjectPrefs!

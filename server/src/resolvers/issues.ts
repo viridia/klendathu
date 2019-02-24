@@ -30,7 +30,7 @@ import { UserInputError, AuthenticationError } from 'apollo-server-core';
 import { Errors, Role, inverseRelations } from '../../../common/types/json';
 import { getProjectAndRole } from '../db/role';
 import { logger } from '../logger';
-import { ObjectID } from 'mongodb';
+import { ObjectID, UpdateQuery } from 'mongodb';
 import { escapeRegExp } from '../db/helpers';
 import { withFilter } from 'graphql-subscriptions';
 import { pubsub, Channels, RecordChange, publish } from './pubsub';
@@ -52,6 +52,8 @@ function customArrayToMap(custom: CustomFieldInput[]): CustomValues {
 
 const strToId = (s: string): ObjectID => new ObjectID(s);
 const strToAccountId = (s: string): ObjectID => (s === 'none') ? undefined : new ObjectID(s);
+
+const COALESCE_WINDOW = 10 * 60 * 1000; // Ten minutes
 
 function stringPredicate(pred: Predicate, value: string): any {
   switch (pred) {
@@ -234,13 +236,14 @@ export const queries = {
           order = -1;
           key = sortKey.slice(1);
         }
+        // if (key.startsWith('custom.')) {
+        //   //
+        // }
         sort[key] = order;
       }
     } else {
       sort._id = 1;
     }
-
-    logger.debug(JSON.stringify(sort, null, 1));
 
     // if (req.subtasks) {
     //   return this.findSubtasks(query, sort);
@@ -562,7 +565,7 @@ export const mutations = {
       const ccNext = new Set(input.cc);    // Newly-added items
       input.cc.forEach(cc => ccPrev.delete(cc));
       issue.cc.forEach(cc => ccNext.delete(cc.toHexString()));
-      update.$set.cc = input.cc;
+      update.$set.cc = input.cc.map(strToId);
       if (ccNext.size > 0 || ccPrev.size > 0) {
         change.cc = {
           added: Array.from(ccNext.keys()).map(strToId),
@@ -570,10 +573,48 @@ export const mutations = {
         };
         change.at = now;
       }
+    } else if ('addCC' in input || 'removeCC' in input) {
+      const ccPrev = new Set(issue.cc.map(cc => cc.toHexString()));
+      const ccToAdd = new Set(input.addCC || []);
+      const ccAdded: ObjectID[] = [];
+      const ccRemoved: ObjectID[] = [];
+      for (const cc of ccToAdd) {
+        if (cc && !ccPrev.has(cc)) {
+          ccPrev.add(cc);
+          ccAdded.push(strToId(cc));
+        }
+      }
+
+      for (const cc of (input.removeCC || [])) {
+        if (cc && ccPrev.has(cc) && !ccToAdd.has(cc)) {
+          ccPrev.delete(cc);
+          ccRemoved.push(strToId(cc));
+        }
+      }
+
+      if (ccAdded.length > 0 || ccRemoved.length > 0) {
+        change.cc = {
+          added: ccAdded,
+          removed: ccRemoved,
+        };
+        change.at = now;
+        if (ccAdded.length > 0) {
+          if (!update.$addToSet) {
+            update.$addToSet = {};
+          }
+          update.$addToSet.cc = { $each: ccAdded };
+        }
+        if (ccRemoved.length > 0) {
+          if (!update.$pullAll) {
+            update.$pullAll = {};
+          }
+          update.$pullAll.cc = ccRemoved;
+        }
+      }
     }
 
     if ('labels' in input) {
-      const labelsPrev = new Set(issue.labels);     // Removed items
+      const labelsPrev = new Set(issue.labels);    // Current labels
       const labelsNext = new Set(input.labels);    // Newly-added items
       input.labels.forEach(labels => labelsPrev.delete(labels));
       issue.labels.forEach(labels => labelsNext.delete(labels));
@@ -584,6 +625,44 @@ export const mutations = {
           removed: Array.from(labelsPrev),
         };
         change.at = now;
+      }
+    } else if ('addLabels' in input || 'removeLabels' in input) {
+      const labelsPrev = new Set(issue.labels);
+      const labelsToAdd = new Set(input.addLabels || []);
+      const labelsAdded: string[] = [];
+      const labelsRemoved: string[] = [];
+      for (const label of labelsToAdd) {
+        if (!labelsPrev.has(label)) {
+          labelsPrev.add(label);
+          labelsAdded.push(label);
+        }
+      }
+
+      for (const label of (input.removeLabels || [])) {
+        if (labelsPrev.has(label) && !labelsToAdd.has(label)) {
+          labelsPrev.delete(label);
+          labelsRemoved.push(label);
+        }
+      }
+
+      if (labelsAdded.length > 0 || labelsRemoved.length > 0) {
+        change.labels = {
+          added: labelsAdded,
+          removed: labelsRemoved,
+        };
+        change.at = now;
+        if (labelsAdded.length > 0) {
+          if (!update.$addToSet) {
+            update.$addToSet = {};
+          }
+          update.$addToSet.labels = { $each: labelsAdded };
+        }
+        if (labelsRemoved.length > 0) {
+          if (!update.$pullAll) {
+            update.$pullAll = {};
+          }
+          update.$pullAll.labels = labelsRemoved;
+        }
       }
     }
 
@@ -763,7 +842,91 @@ export const mutations = {
     }
 
     if (change.at) {
-      timelineRecordsToInsert.push(change);
+      // See if we can coalesce with a recent change
+      const recentChanges = await timeline.find({
+        project: project._id,
+        issue: issue._id,
+        by: change.by,
+        at: { $gt: new Date(now.getTime() - COALESCE_WINDOW) },
+      }).sort({ at: -1 }).limit(1).toArray();
+      let coalesced = false;
+      if (recentChanges.length > 0) {
+        const recent = recentChanges[0];
+        // Cannot coalesce comment entries
+        if (!recent.commentBody) {
+          const updateRecent: UpdateQuery<TimelineEntryRecord> = {
+            $set: { at: change.at },
+          };
+          // Merge property changes.
+          if (change.type) {
+            updateRecent.$set.type = {
+              before: recent.type ? recent.type.before : change.type.before,
+              after: change.type.after,
+            };
+          }
+          if (change.state) {
+            updateRecent.$set.state = {
+              before: recent.state ? recent.state.before : change.state.before,
+              after: change.state.after,
+            };
+          }
+          if (change.summary) {
+            updateRecent.$set.summary = {
+              before: recent.summary ? recent.summary.before : change.summary.before,
+              after: change.summary.after,
+            };
+          }
+          if (change.description) {
+            updateRecent.$set.description = {
+              before: recent.description ? recent.description.before : change.description.before,
+              after: change.description.after,
+            };
+          }
+          if (change.owner) {
+            updateRecent.$set.owner = {
+              before: recent.owner ? recent.owner.before : change.owner.before,
+              after: change.owner.after,
+            };
+          }
+          if (change.cc) {
+            updateRecent.$set.cc = {
+              added: [...(recent.cc ? recent.cc.added : []), ...change.cc.added],
+              removed: [...(recent.cc ? recent.cc.removed : []), ...change.cc.removed],
+            };
+          }
+          if (change.labels) {
+            updateRecent.$set.labels = {
+              added: [...(recent.labels ? recent.labels.added : []), ...change.labels.added],
+              removed: [...(recent.labels ? recent.labels.removed : []), ...change.labels.removed],
+            };
+          }
+
+          if (change.custom) {
+            updateRecent.$set.custom = [...(recent.custom || []), ...change.custom];
+          }
+
+          if (change.linked) {
+            updateRecent.$set.linked = [...(recent.linked || []), ...change.linked];
+          }
+
+          // TODO:
+          // milestone?: StringChange;
+          // attachments?: {
+          //   added?: string[];
+          //   removed?: string[];
+          // };
+          // commentUpdated?: Date;
+          // commentRemoved?: Date;
+
+          const chgRes = await timeline.findOneAndUpdate({ _id: recent._id }, updateRecent);
+          coalesced = !!chgRes.ok;
+        }
+      }
+
+      // If we didn't coalesce, then add a new entry.
+      if (!coalesced) {
+        timelineRecordsToInsert.push(change);
+      }
     }
 
     // if (additionalChangeRecords.length > 0) {
@@ -797,80 +960,6 @@ export const mutations = {
     });
     return returnValue;
   },
-
-    // // Compute which cc entries have been added or deleted.
-    // if (input.addCC || input.removeCC) {
-    //   const added: string[] = [];
-    //   const removed: string[] = [];
-
-    //   const cc = [...issue.cc];
-    //   if (input.addCC) {
-    //     for (const l of input.addCC) {
-    //       if (cc.indexOf(l) < 0) {
-    //         added.push(l);
-    //         cc.push(l);
-    //       }
-    //     }
-    //   }
-
-    //   if (input.removeCC) {
-    //     for (const l of input.removeCC) {
-    //       const index = cc.indexOf(l);
-    //       if (index >= 0) {
-    //         removed.push(l);
-    //         cc.splice(index, 1);
-    //       }
-    //     }
-    //   }
-
-    //   if (added || removed) {
-    //     record.cc = cc;
-    //     change.cc = { added, removed };
-    //     change.at = record.updated;
-    //   }
-    // } else if ('cc' in input) {
-    //   const ccPrev = new Set(issue.cc); // Removed items
-    //   const ccNext = new Set(input.cc);    // Newly-added items
-    //   input.cc.forEach(cc => ccPrev.delete(cc));
-    //   issue.cc.forEach(cc => ccNext.delete(cc));
-    //   record.cc = input.cc;
-    //   if (ccNext.size > 0 || ccPrev.size > 0) {
-    //     change.cc = { added: Array.from(ccNext), removed: Array.from(ccPrev) };
-    //     change.at = record.updated;
-    //   }
-    // }
-
-    // // Compute which labels have been added or deleted.
-    // if (input.addLabels || input.removeLabels) {
-    //   const added: string[] = [];
-    //   const removed: string[] = [];
-
-    //   const labels = [...issue.labels];
-    //   if (input.addLabels) {
-    //     for (const l of input.addLabels) {
-    //       if (labels.indexOf(l) < 0) {
-    //         added.push(l);
-    //         labels.push(l);
-    //       }
-    //     }
-    //   }
-
-    //   if (input.removeLabels) {
-    //     for (const l of input.removeLabels) {
-    //       const index = labels.indexOf(l);
-    //       if (index >= 0) {
-    //         removed.push(l);
-    //         labels.splice(index, 1);
-    //       }
-    //     }
-    //   }
-
-    //   if (added || removed) {
-    //     record.labels = labels;
-    //     change.labels = { added, removed };
-    //     change.at = record.updated;
-    //   }
-    // }
 
   async deleteIssue(
       _: any,
@@ -1010,8 +1099,10 @@ export const types = {
   Issue: {
     id(row: IssueRecord) { return row._id; },
     owner: (row: IssueRecord) => row.owner ? row.owner.toHexString() : null,
+    // cc: (row: IssueRecord) => row.cc || [],
     createdAt: (row: IssueRecord) => row.created,
     updatedAt: (row: IssueRecord) => row.updated,
+    // labels: (row: IssueRecord) => row.labels || [],
     custom(row: IssueRecord) {
       return Object.getOwnPropertyNames(row.custom).map(key => ({
         key,

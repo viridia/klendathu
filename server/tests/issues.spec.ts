@@ -55,7 +55,7 @@ const NewIssueMutation = gql`mutation NewIssueMutation($project: ID!, $input: Is
   }
 }`;
 
-const UpdateIssueMutation = gql`mutation UpdateIssueMutation($id: ID!, $input: IssueInput!) {
+const UpdateIssueMutation = gql`mutation UpdateIssueMutation($id: ID!, $input: UpdateIssueInput!) {
   updateIssue(id: $id, input: $input) {
     id summary description state type reporter reporterSort owner ownerSort custom { key value }
   }
@@ -507,6 +507,144 @@ describe('issues', () => {
       });
     });
 
+    test('addCC', async () => {
+      const { query, mutate } = createTestClient(server.apollo);
+      const res = await mutate({
+        mutation: UpdateIssueMutation,
+        variables: {
+          id: issueId,
+          input: {
+            ...testData,
+            addCC: [
+              server.users.dflores._id.toHexString(),
+              server.users.kitten._id.toHexString(),
+            ]
+          }
+        },
+      });
+      expect(res.errors).toBeUndefined();
+
+      const qres = await query({ query: IssueQuery, variables: { id: issueId } });
+      expect(qres.errors).toBeUndefined();
+      expect(qres.data.issue).toMatchObject({
+        ...expectedResponse,
+        cc: [
+          server.users.dflores._id.toHexString(),
+          server.users.kitten._id.toHexString(),
+        ],
+      });
+
+      const cres = await query({ query: TimelineQuery, variables: { project, issue: issueId } });
+      expect(cres.errors).toBeUndefined();
+      expect(cres.data.timeline.results).toBeArrayOfSize(1);
+      expect(cres.data.timeline.results[0]).toMatchObject({
+        cc: {
+          added: [
+            server.users.dflores._id.toHexString(),
+            server.users.kitten._id.toHexString(),
+          ],
+          removed: [],
+        },
+      });
+
+      await server.db.collection('timeline').deleteMany({});
+
+      // Add more
+      const res2 = await mutate({
+        mutation: UpdateIssueMutation,
+        variables: {
+          id: issueId,
+          input: {
+            ...testData,
+            addCC: [
+              server.users.dflores._id.toHexString(),
+              server.users.blacky._id.toHexString(),
+            ]
+          }
+        },
+      });
+      expect(res2.errors).toBeUndefined();
+
+      const qres2 = await query({ query: IssueQuery, variables: { id: issueId } });
+      expect(qres2.errors).toBeUndefined();
+      expect(qres2.data.issue).toMatchObject({
+        ...expectedResponse,
+        cc: [
+          server.users.dflores._id.toHexString(),
+          server.users.kitten._id.toHexString(),
+          server.users.blacky._id.toHexString(),
+        ],
+      });
+
+      const cres2 = await query({ query: TimelineQuery, variables: { project, issue: issueId } });
+      expect(cres2.errors).toBeUndefined();
+      expect(cres2.data.timeline.results).toBeArrayOfSize(1);
+      expect(cres2.data.timeline.results[0]).toMatchObject({
+        cc: {
+          added: [
+            server.users.blacky._id.toHexString(),
+          ],
+          removed: [],
+        },
+      });
+    });
+
+    test('removeCC', async () => {
+      const { query, mutate } = createTestClient(server.apollo);
+      const res = await mutate({
+        mutation: UpdateIssueMutation,
+        variables: {
+          id: issueId,
+          input: {
+            ...testData,
+            cc: [
+              server.users.dflores._id.toHexString(),
+              server.users.kitten._id.toHexString(),
+            ]
+          }
+        },
+      });
+      expect(res.errors).toBeUndefined();
+
+      await server.db.collection('timeline').deleteMany({});
+
+      const res2 = await mutate({
+        mutation: UpdateIssueMutation,
+        variables: {
+          id: issueId,
+          input: {
+            ...testData,
+            removeCC: [
+              server.users.kitten._id.toHexString(),
+              server.users.blacky._id.toHexString(),
+            ]
+          }
+        },
+      });
+      expect(res2.errors).toBeUndefined();
+
+      const qres = await query({ query: IssueQuery, variables: { id: issueId } });
+      expect(qres.errors).toBeUndefined();
+      expect(qres.data.issue).toMatchObject({
+        ...expectedResponse,
+        cc: [
+          server.users.dflores._id.toHexString(),
+        ],
+      });
+
+      const cres = await query({ query: TimelineQuery, variables: { project, issue: issueId } });
+      expect(cres.errors).toBeUndefined();
+      expect(cres.data.timeline.results).toBeArrayOfSize(1);
+      expect(cres.data.timeline.results[0]).toMatchObject({
+        cc: {
+          added: [],
+          removed: [
+            server.users.kitten._id.toHexString(),
+          ],
+        },
+      });
+    });
+
     test('labels', async () => {
       const { query, mutate } = createTestClient(server.apollo);
       const l1 = new ObjectID();
@@ -537,6 +675,121 @@ describe('issues', () => {
         labels: {
           added: [ l1.toHexString(), l2.toHexString() ],
           removed: [],
+        },
+      });
+    });
+
+    test('addLabels', async () => {
+      const { query, mutate } = createTestClient(server.apollo);
+      const l1 = new ObjectID();
+      const l2 = new ObjectID();
+      const l3 = new ObjectID();
+      const res = await mutate({
+        mutation: UpdateIssueMutation,
+        variables: {
+          id: issueId,
+          input: {
+            ...testData,
+            addLabels: [ l1.toHexString(), l2.toHexString() ]
+          }
+        },
+      });
+      expect(res.errors).toBeUndefined();
+
+      const qres = await query({ query: IssueQuery, variables: { id: issueId } });
+      expect(qres.errors).toBeUndefined();
+      expect(qres.data.issue).toMatchObject({
+        ...expectedResponse,
+        labels: [ l1.toHexString(), l2.toHexString() ]
+      });
+
+      const cres = await query({ query: TimelineQuery, variables: { project, issue: issueId } });
+      expect(cres.errors).toBeUndefined();
+      expect(cres.data.timeline.results).toBeArrayOfSize(1);
+      expect(cres.data.timeline.results[0]).toMatchObject({
+        labels: {
+          added: [ l1.toHexString(), l2.toHexString() ],
+          removed: [],
+        },
+      });
+
+      await server.db.collection('timeline').deleteMany({});
+
+      // Add more
+      const res2 = await mutate({
+        mutation: UpdateIssueMutation,
+        variables: {
+          id: issueId,
+          input: {
+            ...testData,
+            addLabels: [ l1.toHexString(), l3.toHexString() ]
+          }
+        },
+      });
+      expect(res2.errors).toBeUndefined();
+
+      const qres2 = await query({ query: IssueQuery, variables: { id: issueId } });
+      expect(qres2.errors).toBeUndefined();
+      expect(qres2.data.issue).toMatchObject({
+        ...expectedResponse,
+        labels: [ l1.toHexString(), l2.toHexString(), l3.toHexString() ]
+      });
+
+      const cres2 = await query({ query: TimelineQuery, variables: { project, issue: issueId } });
+      expect(cres2.errors).toBeUndefined();
+      expect(cres2.data.timeline.results).toBeArrayOfSize(1);
+      expect(cres2.data.timeline.results[0]).toMatchObject({
+        labels: {
+          added: [ l3.toHexString() ],
+          removed: [],
+        },
+      });
+    });
+
+    test('removeLabels', async () => {
+      const { query, mutate } = createTestClient(server.apollo);
+      const l1 = new ObjectID();
+      const l2 = new ObjectID();
+      const l3 = new ObjectID();
+      const res = await mutate({
+        mutation: UpdateIssueMutation,
+        variables: {
+          id: issueId,
+          input: {
+            ...testData,
+            addLabels: [ l1.toHexString(), l2.toHexString() ]
+          }
+        },
+      });
+      expect(res.errors).toBeUndefined();
+      await server.db.collection('timeline').deleteMany({});
+
+      const res2 = await mutate({
+        mutation: UpdateIssueMutation,
+        variables: {
+          id: issueId,
+          input: {
+            ...testData,
+            removeLabels: [ l1.toHexString(), l3.toHexString() ]
+          }
+        },
+      });
+      expect(res2.errors).toBeUndefined();
+
+      const qres = await query({ query: IssueQuery, variables: { id: issueId } });
+      expect(qres.errors).toBeUndefined();
+      expect(qres.data.issue).toMatchObject({
+        ...expectedResponse,
+        labels: [ l2.toHexString() ]
+      });
+
+      const cres = await query({ query: TimelineQuery, variables: { project, issue: issueId } });
+      expect(cres.errors).toBeUndefined();
+      expect(cres.data.timeline.results).toBeArrayOfSize(1);
+      expect(cres.data.timeline.results[0]).toMatchObject({
+        labels: {
+          added: [],
+          removed: [ l1.toHexString() ],
         },
       });
     });
@@ -1210,6 +1463,90 @@ describe('issues', () => {
       });
       expect(cres2.errors).toBeUndefined();
       expect(cres2.data.timeline.results).toBeArrayOfSize(0);
+    });
+
+    test('coalesce changes', async () => {
+      const { query, mutate } = createTestClient(server.apollo);
+      const l1 = new ObjectID();
+      const l2 = new ObjectID();
+
+      await mutate({
+        mutation: UpdateIssueMutation,
+        variables: {
+          id: issueId,
+          input: {
+            type: 'feature',
+            state: 'assigned',
+          }
+        },
+      });
+
+      await mutate({
+        mutation: UpdateIssueMutation,
+        variables: {
+          id: issueId,
+          input: {
+            type: 'doc',
+            state: 'in_progress',
+          }
+        },
+      });
+
+      await mutate({
+        mutation: UpdateIssueMutation,
+        variables: {
+          id: issueId,
+          input: {
+            summary: 'Updated summary',
+            description: 'updated description',
+          }
+        },
+      });
+
+      await mutate({
+        mutation: UpdateIssueMutation,
+        variables: {
+          id: issueId,
+          input: {
+            summary: 'Coalesced summary',
+            description: 'Coalesced description',
+            labels: [ l1.toHexString() ],
+          }
+        },
+      });
+
+      await mutate({
+        mutation: UpdateIssueMutation,
+        variables: {
+          id: issueId,
+          input: {
+            owner: server.users.kitten._id.toHexString(),
+            cc: [server.users.dflores._id.toHexString()],
+            addLabels: [ l2.toHexString() ],
+          }
+        },
+      });
+
+      const cres = await query({ query: TimelineQuery, variables: { project, issue: issueId } });
+      expect(cres.errors).toBeUndefined();
+      expect(cres.data.timeline.results).toBeArrayOfSize(1);
+      // console.log(JSON.stringify(cres.data.timeline.results[0], null, 2));
+      expect(cres.data.timeline.results[0]).toMatchObject({
+        issue: issueId,
+        project,
+        by: server.context.user._id.toHexString(),
+        type: { before: 'bug', after: 'doc' },
+        state: { before: 'new', after: 'in_progress' },
+        summary: { before: 'first', after: 'Coalesced summary' },
+        description: { before: 'first issue', after: 'Coalesced description' },
+        owner: { before: null, after: server.users.kitten._id.toHexString() },
+        cc: { removed: [], added: [server.users.dflores._id.toHexString()] },
+        labels: { removed: [], added: [ l1.toHexString(), l2.toHexString() ] },
+        // custom: [
+        //   { key: 'a', before: null, after: 1 },
+        //   { key: 'b', before: null, after: 2 },
+        // ],
+      });
     });
   });
 

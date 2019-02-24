@@ -23,7 +23,7 @@ const IssueQuery = gql`
 `;
 
 const UpdateIssueMutation = gql`
-  mutation UpdateIssueMutation($id: ID!, $input: IssueInput!) {
+  mutation UpdateIssueMutation($id: ID!, $input: UpdateIssueInput!) {
     updateIssue(id: $id, input: $input) {
       ...IssueFields
       ownerAccount { ...AccountFields }

@@ -7,9 +7,10 @@ import { observer } from 'mobx-react';
 import bind from 'bind-decorator';
 import {
   Issue,
-  IssueInput,
   CustomField,
   Relation,
+  Mutation,
+  UpdateIssueInput,
 } from '../../../common/types/graphql';
 import {
   Dialog,
@@ -34,6 +35,23 @@ import styled from 'styled-components';
 import ArrowUpIcon from '../svg-compiled/icons/IcArrowUpward';
 import { WorkflowActionsView } from './workflow/WorkflowActionsView';
 import { LocationState } from 'history';
+import gql from 'graphql-tag';
+import { fragments } from '../graphql';
+import { client } from '../graphql/client';
+
+const UpdateIssueMutation = gql`
+  mutation UpdateIssueMutation($id: ID!, $input: UpdateIssueInput!) {
+    updateIssue(id: $id, input: $input) {
+      ...IssueFields
+      ownerAccount { ...AccountFields }
+      ccAccounts { ...AccountFields }
+    }
+  }
+  ${fragments.account}
+  ${fragments.issue}
+`;
+
+type UpdateIssueMutationResult = Pick<Mutation, 'updateIssue'>;
 
 const IssueDetailsLayout = styled(Card)`
   flex: 1 0 0;
@@ -122,7 +140,7 @@ export const CommentGroup = styled.span`
 `;
 
 interface Props extends RouteComponentProps<{ project: string; id: string }, LocationState> {
-  context: ViewContext;
+  env: ViewContext;
   issue: Issue;
   loading: boolean;
   onAddComment: (body: string) => any;
@@ -157,8 +175,8 @@ export class IssueDetails extends React.Component<Props> {
   }
 
   private renderHeader() {
-    const { location, context, issue } = this.props;
-    const { account, project } = context;
+    const { location, env, issue } = this.props;
+    const { account, project } = env;
     const back: LocationState = (location.state && location.state.back) || { pathname: './issues' };
     const here: LocationState = {
       pathname: location.pathname,
@@ -200,7 +218,7 @@ export class IssueDetails extends React.Component<Props> {
   }
 
   private renderContent() {
-    const { context, issue, loading, onAddComment } = this.props;
+    const { env, issue, loading, onAddComment } = this.props;
     if (!issue) {
       return (
         <section className="content">
@@ -208,8 +226,8 @@ export class IssueDetails extends React.Component<Props> {
         </section>
       );
     }
-    const { project, template } = context;
-    const issueType = context.getInheritedIssueType(issue.type);
+    const { project, template } = env;
+    const issueType = env.getInheritedIssueType(issue.type);
     const issueState = template.states.find(st => st.id === issue.state);
     return (
       <IssueDetailsContent>
@@ -330,8 +348,8 @@ export class IssueDetails extends React.Component<Props> {
 
   @action.bound
   private onConfirmDelete() {
-    // const { context, location, history, issue } = this.props;
-    // const { account, project } = context;
+    // const { env, location, history, issue } = this.props;
+    // const { account, project } = env;
     this.busy = true;
     // TODO: Implement
     // return deleteIssue(issue.id).then(() => {
@@ -367,14 +385,20 @@ export class IssueDetails extends React.Component<Props> {
 
   @bind
   private onExecAction(act: WorkflowAction) {
-    const { issue } = this.props;
-    const updates: Partial<IssueInput> = {
+    const { issue, env } = this.props;
+    const updates: UpdateIssueInput = {
       state: act.state,
       owner: act.owner,
     };
-    // return updateIssue(issue.id, updates).then(() => {
-    //   // this.props.data.refetch();
-    // });
+    return client.mutate<UpdateIssueMutationResult>({
+      mutation: UpdateIssueMutation,
+      variables: {
+        id: issue.id,
+        input: updates,
+      }
+    }).catch(error => {
+      env.mutationError = error;
+    });
   }
 
   @computed
