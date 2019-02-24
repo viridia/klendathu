@@ -2,7 +2,6 @@ import gql from 'graphql-tag';
 import { fragments } from './fragments';
 import { Query, AccountType } from '../../../common/types/graphql';
 import { client } from './client';
-import { FetchPolicy } from 'apollo-client';
 
 /** Common queries */
 

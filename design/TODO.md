@@ -1,34 +1,34 @@
 # TODO
 
-* Workflow actions
+* Navbar project list
+* Workflow actions (test)
+* Delete issues
+* Attachments
 * Filters
   * Filter by custom fields
   * UI prefs in local storage
   * Saving filters
-* Attachments
-* Batching
-* ErrorDisplay
-  * Show network errors
-  * Mini display for errors in menus and chips
+* GraphQL Batching
 * Better UI for entering linked issues - current process is cumbersome.
 * Project timeline
 * Better loading indicator
-* Navbar project list
 * Syntax highlighting for code examples.
 * "Dark mode".
 * Template inheritance.
 * Timeline
-  * Smart updating of timeline cache
   * Show days in right column.
   * Should allow supression of change entries.
-  * Coalesce closely-spaced changes by the same person.
 * Make user links local to the view
 * Sort issue searches by relevance
 * Preserve issue navigation list between page refreshes.
 * Better error reporting in issue create and issue edit.
 * Ability to embed attachments in markdown
 * Sorting by custom fields
+* UI options stored in local storage.
 * @mentions
+* Markdown preview
+* ErrorDisplay
+  * Mini display for errors in menus and chips
 
 # Major pieces
 
@@ -38,13 +38,11 @@
   * Milestones
 * Issue Details
   * Add workflow actions
-  * Add assign to me
 * Issue Delete
 * Issue Query
   * By Owner
 * Label Delete
 * GitHub integration
-* Mass Edit
 * Progress View
 * Changes View
 * Email Verification
@@ -56,7 +54,6 @@
   * Templates
   * Workflow
 * Client unit tests
-* Coalesce timeline entries.
 * Enable Twitter auth
 * Enable issue grouping
 * Export / backup database
