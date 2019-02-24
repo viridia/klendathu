@@ -30,7 +30,6 @@ const WorkflowEffect = styled.section`
   font-size: 90%;
   margin-left: 32px;
   text-indent: -16px;
-  color: $textDark;
 
   > .value {
     white-space: nowrap;
@@ -38,7 +37,7 @@ const WorkflowEffect = styled.section`
 
   > .none {
     font-style: italic;
-    color: lighten($textDark, 10%);
+    color: ${props => props.theme.textMuted};
   }
 `;
 
@@ -66,17 +65,17 @@ export class WorkflowActions extends React.Component<Props, State> {
             <Button kind="default" onClick={() => this.props.onExecAction(a)}>{a.caption}</Button>
             {a.state && (
               <WorkflowEffect className="effect">
-                state &rarr; <span className="value">{a.stateName}</span>
+                state &#x21d2; <span className="value">{a.stateName}</span>
               </WorkflowEffect>
             )}
             {a.owner && (
               <WorkflowEffect className="effect">
-                owner &rarr; <span className="value"><AccountName id={a.owner} /></span>
+                owner &#x21d2; <span className="value"><AccountName id={a.owner} /></span>
               </WorkflowEffect>
             )}
             {a.owner === null && (
               <WorkflowEffect className="effect">
-                owner &rarr; <span className="none">none</span>
+                owner &#x21d2; <span className="none">unassigned</span>
               </WorkflowEffect>
             )}
           </WorkflowActionEl>
@@ -136,11 +135,12 @@ export class WorkflowActions extends React.Component<Props, State> {
           }
           // If the owner wouldn't change, then don't show that effect.
           if (resolvedAction.owner === issue.owner) {
-            resolvedAction.owner = undefined;
+            delete resolvedAction.owner;
           }
         }
         // Only include actions that have an effect.
-        if (resolvedAction.state !== undefined || resolvedAction !== undefined) {
+        const { caption, ...effects} = resolvedAction;
+        if (Object.getOwnPropertyNames(effects).length > 0) {
           actions.push(resolvedAction);
         }
       }

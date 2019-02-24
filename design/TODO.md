@@ -1,6 +1,9 @@
 # TODO
 
 * Workflow actions (test)
+  * Clone: target new issue
+  * Duplicate: ask duplicate of.
+  * Create Linked: target new issue
 * Custom Props columns
   * Column edit.
 * Attachments
@@ -31,6 +34,7 @@
 * ErrorDisplay
   * Mini display for errors in menus and chips
 * Issue list flashes when switching projects.
+* It's OK to merge change entries with comment bodies as long as they don't both have one.
 
 # Major pieces
 

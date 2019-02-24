@@ -9,40 +9,21 @@ import {
   ProjectRecord,
 } from '../db/types';
 import {
-  IssueQueryArgs,
-  IssuesQueryArgs,
-  IssueSearchQueryArgs,
-  SearchCustomFieldsQueryArgs,
   NewIssueMutationArgs,
   UpdateIssueMutationArgs,
   DeleteIssueMutationArgs,
   CustomFieldInput,
-  Predicate,
   ChangeAction,
-  IssuesChangedSubscriptionArgs,
   CustomFieldChange,
   Relation,
   AddCommentMutationArgs,
-  IssueChangedSubscriptionArgs,
-  TimelineChangedSubscriptionArgs,
 } from '../../../common/types/graphql';
 import { UserInputError, AuthenticationError } from 'apollo-server-core';
 import { Errors, Role, inverseRelations } from '../../../common/types/json';
 import { getProjectAndRole } from '../db/role';
 import { logger } from '../logger';
 import { ObjectID, UpdateQuery } from 'mongodb';
-import { escapeRegExp } from '../db/helpers';
-import { withFilter } from 'graphql-subscriptions';
-import { pubsub, Channels, RecordChange, publish } from './pubsub';
-
-type IssueRecordChange = RecordChange<IssueRecord>;
-type TimelineRecordChange = RecordChange<TimelineEntryRecord>;
-
-interface PaginatedIssueRecords {
-  count: number;
-  offset: number;
-  issues: IssueRecord[];
-}
+import { Channels, publish } from './pubsub';
 
 function customArrayToMap(custom: CustomFieldInput[]): CustomValues {
   const result: CustomValues = {};
@@ -51,255 +32,8 @@ function customArrayToMap(custom: CustomFieldInput[]): CustomValues {
 }
 
 const strToId = (s: string): ObjectID => new ObjectID(s);
-const strToAccountId = (s: string): ObjectID => (s === 'none') ? undefined : new ObjectID(s);
 
 const COALESCE_WINDOW = 10 * 60 * 1000; // Ten minutes
-
-function stringPredicate(pred: Predicate, value: string): any {
-  switch (pred) {
-    case Predicate.In:
-    case Predicate.Contains:
-      return { $regex: escapeRegExp(value), $options: 'i' };
-    case Predicate.Equals:
-      return value;
-    case Predicate.NotIn:
-    case Predicate.NotContains:
-      return { $not: new RegExp(escapeRegExp(value), 'i') };
-    case Predicate.NotEquals:
-      return { $ne: value };
-    case Predicate.StartsWith:
-      return { $regex: `^${escapeRegExp(value)}`, $options: 'i' };
-    case Predicate.EndsWith:
-      return { $regex: `${escapeRegExp(value)}$`, $options: 'i' };
-    default:
-      logger.error('Invalid string predicate:', pred);
-      return null;
-  }
-}
-
-export const queries = {
-  async issue(
-      _: any,
-      { id }: IssueQueryArgs,
-      context: Context): Promise<IssueRecord> {
-    const user = context.user ? context.user.accountName : null;
-    const issue = await context.db.collection('issues').findOne<IssueRecord>({ _id: id });
-    if (!issue) {
-      logger.error('Attempt to fetch non-existent issue:', { user, id });
-      throw new UserInputError(Errors.NOT_FOUND);
-    }
-
-    const { project, role } = await getProjectAndRole(context.db, context.user, issue.project);
-    if (!project) {
-      logger.error('Issue references non-existent project:', { user, id });
-      throw new UserInputError(Errors.NOT_FOUND);
-    }
-
-    if (role === Role.NONE) {
-      logger.error('Permission denied viewing issue:', { user, id });
-      throw new UserInputError(Errors.FORBIDDEN);
-    }
-
-    return issue;
-  },
-
-  async issues(
-      _: any,
-      { query, pagination }: IssuesQueryArgs,
-      context: Context): Promise<PaginatedIssueRecords> {
-
-    const user = context.user ? context.user.accountName : null;
-    const issues = context.db.collection<IssueRecord>('issues');
-    const { project, role } = await getProjectAndRole(
-        context.db, context.user, new ObjectID(query.project));
-    if (!project) {
-      logger.error('Query to non-existent project:', { user, project: query.project });
-      throw new UserInputError(Errors.NOT_FOUND);
-    }
-
-    if (role === Role.NONE) {
-      logger.error('Permission denied viewing issue:', { user, project: query.project });
-      throw new UserInputError(Errors.FORBIDDEN);
-    }
-
-    const filter: any = {
-      project: project._id,
-    };
-
-    // If they are not a project member, only allow public issues to be viewed.
-    if (role < Role.VIEWER) {
-      filter.isPublic = true;
-    }
-
-    // Search by token
-    if (query.search) {
-      // TODO: other fields - comments, etc.
-      const words = query.search.split(/\s+/);
-      const matchers = words.map(word => `(?i)\\b${escapeRegExp(word)}`);
-      filter.$and = matchers.map(m => ({ $or: [
-        { summary: { $regex: m } },
-        { description: { $regex: m } },
-      ] }));
-    }
-
-    // By Type
-    if (query.type) {
-      filter.type = query.type.length === 1 ? query.type[0] : { $in: query.type };
-    }
-
-    // By State
-    if (query.state) {
-      filter.state = query.state.length === 1 ? query.state[0] : { $in: query.state };
-    }
-
-    // By Summary
-    if (query.summary) {
-      filter.summary = stringPredicate(query.summaryPred, query.summary);
-      if (!query.summary) {
-        throw new UserInputError(Errors.INVALID_PREDICATE);
-      }
-    }
-
-    // By Description
-    if (query.description) {
-      filter.description = stringPredicate(query.descriptionPred, query.description);
-      if (!query.description) {
-        throw new UserInputError(Errors.INVALID_PREDICATE);
-      }
-    }
-
-    // By Reporter
-    if (query.reporter && query.reporter.length > 0) {
-      const reporter = query.reporter.map(strToAccountId);
-      filter.reporter = reporter.length === 1 ? reporter[0] : { $in: reporter };
-    }
-
-    // By Owner
-    if (query.owner && query.owner.length > 0) {
-      const owner = query.owner.map(strToAccountId);
-      filter.owner = owner.length === 1 ? owner[0] : { $in: owner };
-    }
-
-    // Match any label
-    if (query.labels && query.labels.length > 0) {
-      filter.labels = { $in: query.labels };
-    }
-
-    // Match any cc
-    if (query.cc && query.cc.length > 0) {
-      const cc = query.cc.map(strToAccountId);
-      filter.cc = { $in: cc };
-    //   if (cc) {
-    //     const e = cc.reduce((expr: r.Expression<boolean>, uid) => {
-    //       const term = r.row('cc').contains(uid);
-    //       return expr ? expr.or(term) : term;
-    //     }, null);
-    //     if (e) {
-    //       filters.push(e);
-    //     }
-    //   }
-    }
-
-    // TODO: Search by date, comments
-    // // Other things we might want to search by:
-    // // comments / commenter
-    // // created (date range)
-    // // updated
-
-    if (query.custom) {
-      for (const customSearch of query.custom) {
-        console.log(customSearch);
-        // TODO: Search by custom field
-      //   if (key.startsWith('custom.')) {
-      //     const fieldId = key.slice(7);
-      //     const pred = args[`pred.${fieldId}`] as Predicate || Predicate.CONTAINS;
-      //     const expr = stringPredicate(r.row('custom')(fieldId), pred, args[key]);
-      //     if (expr) {
-      //       // console.log(expr.toString());
-      //       filters.push(expr);
-      //     }
-      //   }
-      }
-    }
-
-    const sort: any = {};
-    if (query.sort) {
-      for (const sortKey of query.sort) {
-        let key = sortKey;
-        let order = 1;
-        if (sortKey.startsWith('-')) {
-          order = -1;
-          key = sortKey.slice(1);
-        }
-        // TODO: Sort by custom field
-        // if (key.startsWith('custom.')) {
-        //   //
-        // }
-        sort[key] = order;
-      }
-    } else {
-      sort._id = 1;
-    }
-
-    // TODO: Find related subtasks
-    // if (req.subtasks) {
-    //   return this.findSubtasks(query, sort);
-    // }
-    // console.log(filter);
-    const result = await issues.find(filter).sort(sort).toArray();
-    return {
-      count: result.length,
-      offset: 0,
-      issues: result,
-    };
-  },
-
-  async issueSearch(
-      _: any,
-      { project, search }: IssueSearchQueryArgs,
-      context: Context): Promise<IssueRecord[]> {
-    if (!context.user) {
-      throw new AuthenticationError(Errors.UNAUTHORIZED);
-    }
-
-    const user = context.user.accountName;
-    const { project: pr, role } =
-        await getProjectAndRole(context.db, context.user, new ObjectID(project));
-    if (!project) {
-      logger.error('Attempt to update non-existent project:', { user, project });
-      throw new UserInputError(Errors.NOT_FOUND);
-    }
-
-    if (role < Role.MANAGER) {
-      logger.error('Insufficient permissions to update project:', { user, project });
-      throw new UserInputError(Errors.FORBIDDEN);
-    }
-    const issues = context.db.collection<IssueRecord>('issues');
-    console.log(pr, issues);
-    // TODO: Implement
-    // if (args.accountName) {
-    //   return accounts.findOne({ accountName: args.accountName });
-    // } else if (args.id) {
-    //   return accounts.findOne({ _id: new ObjectID(args.id) });
-    // }
-    return null;
-  },
-
-  searchCustomFields(
-      _: any,
-      { project, field, search }: SearchCustomFieldsQueryArgs,
-      context: Context): Promise<IssueRecord[]> {
-    const issues = context.db.collection<IssueRecord>('issues');
-    console.log(issues);
-    // TODO: Implement
-    // if (args.accountName) {
-    //   return accounts.findOne({ accountName: args.accountName });
-    // } else if (args.id) {
-    //   return accounts.findOne({ _id: new ObjectID(args.id) });
-    // }
-    return null;
-  },
-};
 
 export const mutations = {
   async newIssue(
@@ -551,10 +285,10 @@ export const mutations = {
           change.owner = { before: issue.owner, after: new ObjectID(input.owner) };
           change.at = now;
         }
-      } else if (!issue.owner) {
+      } else if (!input.owner) {
         update.$set.owner = null;
         update.$set.ownerSort = null;
-        change.owner = { before: issue.owner, after: new ObjectID(input.owner) };
+        change.owner = { before: issue.owner, after: null };
         change.at = now;
       }
     }
@@ -841,6 +575,16 @@ export const mutations = {
       }
     }
 
+    // Mutate the issue record.
+    let returnValue: IssueRecord = issue;
+    if (change.at) {
+      const result = await issues.findOneAndUpdate({ _id: issue._id }, update, {
+        returnOriginal: false,
+      });
+      returnValue = result.value;
+    }
+
+    // Update the timeline records
     if (change.at) {
       // See if we can coalesce with a recent change
       const recentChanges = await timeline.find({
@@ -852,8 +596,8 @@ export const mutations = {
       let coalesced = false;
       if (recentChanges.length > 0) {
         const recent = recentChanges[0];
-        // Cannot coalesce comment entries
-        if (!recent.commentBody) {
+        // Cannot coalesce comment bodies
+        if (!(recent.commentBody && change.commentBody)) {
           const updateRecent: UpdateQuery<TimelineEntryRecord> = {
             $set: { at: change.at },
           };
@@ -918,30 +662,26 @@ export const mutations = {
           // commentUpdated?: Date;
           // commentRemoved?: Date;
 
-          const chgRes = await timeline.findOneAndUpdate({ _id: recent._id }, updateRecent);
+          const chgRes = await timeline.findOneAndUpdate({ _id: recent._id }, updateRecent, {
+            returnOriginal: false,
+          });
           coalesced = !!chgRes.ok;
+          if (coalesced) {
+            publish(Channels.TIMELINE_CHANGE, {
+              action: ChangeAction.Added,
+              value: chgRes.value,
+            });
+          }
         }
       }
 
-      // If we didn't coalesce, then add a new entry.
+      // If we didn't coalesce, then add a new timeline entry.
       if (!coalesced) {
         timelineRecordsToInsert.push(change);
       }
     }
 
-    // if (additionalChangeRecords.length > 0) {
-    //   promises.push(timeline.insertMany(additionalChangeRecords));
-    // }
-
     await Promise.all(promises);
-
-    let returnValue: IssueRecord = issue;
-    if (change.at) {
-      const result = await issues.findOneAndUpdate({ _id: issue._id }, update, {
-        returnOriginal: false,
-      });
-      returnValue = result.value;
-    }
 
     if (timelineRecordsToInsert.length > 0) {
       const timelineResults = await timeline.insertMany(timelineRecordsToInsert);
@@ -1034,120 +774,5 @@ export const mutations = {
       value: result.ops[0],
     });
     return result.ops[0];
-  },
-};
-
-export const subscriptions = {
-  issueChanged: {
-    subscribe: withFilter(
-      () => pubsub.asyncIterator([Channels.ISSUE_CHANGE]),
-      (
-        change: IssueRecordChange,
-        { issue }: IssueChangedSubscriptionArgs,
-        context: Context
-      ) => {
-        // TODO: Need a fast way to check project membership
-        return context.user && change.value._id === issue;
-      }
-    ),
-    resolve: (payload: IssueRecordChange, args: any, context: Context) => {
-      return payload;
-    },
-  },
-  issuesChanged: {
-    subscribe: withFilter(
-      () => pubsub.asyncIterator([Channels.ISSUE_CHANGE]),
-      (
-        change: IssueRecordChange,
-        { project }: IssuesChangedSubscriptionArgs,
-        context: Context
-      ) => {
-        // TODO: Need a fast way to check project membership
-        return context.user && change.value.project.equals(project);
-      }
-    ),
-    resolve: (payload: IssueRecordChange, args: any, context: Context) => {
-      return payload;
-    },
-  },
-  timelineChanged: {
-    subscribe: withFilter(
-      () => pubsub.asyncIterator([Channels.TIMELINE_CHANGE]),
-      (
-        change: TimelineRecordChange,
-        { issue, project }: TimelineChangedSubscriptionArgs,
-        context: Context
-      ) => {
-        // TODO: Need a fast way to check project membership
-        if (!change.value.project.equals(project)) {
-          return false;
-        }
-        if (issue) {
-          return change.value.issue === issue;
-        } else {
-          return true;
-        }
-      }
-    ),
-    resolve: (payload: TimelineRecordChange, args: any, context: Context) => {
-      return payload;
-    },
-  },
-};
-
-export const types = {
-  Issue: {
-    id(row: IssueRecord) { return row._id; },
-    owner: (row: IssueRecord) => row.owner ? row.owner.toHexString() : null,
-    // cc: (row: IssueRecord) => row.cc || [],
-    createdAt: (row: IssueRecord) => row.created,
-    updatedAt: (row: IssueRecord) => row.updated,
-    // labels: (row: IssueRecord) => row.labels || [],
-    custom(row: IssueRecord) {
-      return Object.getOwnPropertyNames(row.custom).map(key => ({
-        key,
-        value: row.custom[key]
-      }));
-    },
-    reporterAccount(row: IssueRecord, _: any, context: Context): Promise<AccountRecord> {
-      return context.db.collection<AccountRecord>('accounts').findOne({ _id: row.reporter });
-    },
-    ownerAccount(row: IssueRecord, _: any, context: Context): Promise<AccountRecord> {
-      if (row.owner) {
-        return context.db.collection<AccountRecord>('accounts').findOne({ _id: row.owner });
-      }
-      return null;
-    },
-    async ccAccounts(row: IssueRecord, _: any, context: Context): Promise<AccountRecord[]> {
-      if (row.cc && row.cc.length > 0) {
-        return context.db.collection<AccountRecord>('accounts')
-            .find({ _id: { $in: row.cc } }).toArray();
-      }
-      return [];
-    },
-    async links(row: IssueRecord, _: any, context: Context) {
-      const links = await context.db.collection<IssueLinkRecord>('issueLinks').find({
-        $or: [
-          { from: row._id },
-          { to: row._id },
-        ]
-      }).toArray();
-      // Links that are from the specified issue are returned as-is; links that are
-      // to the issue are returned with the inverse relation.
-      return links.map(link => {
-        if (link.from === row._id) {
-          return link;
-        }
-        return {
-          to: link.from,
-          from: row._id,
-          relation: inverseRelations[link.relation],
-        };
-      });
-    },
-  },
-  CustomValue: {
-    serialize: (value: any) => value,
-    parseValue: (value: any) => value,
   },
 };
