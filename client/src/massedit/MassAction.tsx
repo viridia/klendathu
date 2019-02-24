@@ -122,7 +122,7 @@ export class MassAction extends React.Component<Props> {
   ];
 
   public render() {
-    const { index, action, env } = this.props;
+    const { index, action } = this.props;
     const items: JSX.Element[] = [];
     MassAction.ACTION_TYPES.forEach(at => {
       items.push(<MenuItem eventKey={at.id} key={at.id}>{at.caption}</MenuItem>);
@@ -152,13 +152,9 @@ export class MassAction extends React.Component<Props> {
           )}
         </section>
         {index !== undefined && <DismissButton onClick={this.onRemove}/>}
-    </MassActionLayout>
+      </MassActionLayout>
     );
   }
-
-  // renderOpValue() {
-  //   return null;
-  // }
 
   @bind
   private onSelectActionType(id: any) {
@@ -169,8 +165,6 @@ export class MassAction extends React.Component<Props> {
         ...newAction,
         value: defaultOperandValue(env.template, newAction.type, newAction.customField),
       });
-    // } else {
-    //   onChange(index, { ...newAction, value: action.value });
     }
   }
 
@@ -178,7 +172,6 @@ export class MassAction extends React.Component<Props> {
   private onChangeValue(value: any) {
     const { action } = this.props;
     action.value = value;
-    // onChange(index, { ...action, value });
   }
 
   @bind
