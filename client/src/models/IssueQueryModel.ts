@@ -18,7 +18,7 @@ import { idToIndex } from '../lib/idToIndex';
 import { session } from './Session';
 import bind from 'bind-decorator';
 import gql from 'graphql-tag';
-import { Template, WorkflowState } from '../../../common/types/json';
+import { WorkflowState } from '../../../common/types/json';
 
 const IssuesQuery = gql`
   query IssuesQuery($query: IssueQueryParams!, $pagination: Pagination) {
@@ -145,8 +145,6 @@ export class IssueQueryModel {
       }
 
       // TODO: Custom fields
-      // this.filterParams = {};
-      // this.filterParams.search = queryParams.search;
       // this.group = queryParams.group;
       // for (const key of Object.getOwnPropertyNames(this.searchParams)) {
       //   if (key in descriptors || key.startsWith('custom.') || key.startsWith('pred.')) {

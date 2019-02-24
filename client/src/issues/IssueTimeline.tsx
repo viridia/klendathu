@@ -4,9 +4,10 @@ import { TimelineEntryDisplay } from '../timeline';
 import { fragments, ErrorDisplay } from '../graphql';
 import { Query } from 'react-apollo';
 import { session } from '../models';
-import { FormLabel } from '../controls';
-import styled from 'styled-components';
+import { isSameDay, format, differenceInWeeks, distanceInWordsToNow } from 'date-fns';
+// import styled from 'styled-components';
 import gql from 'graphql-tag';
+import { styled } from '../style';
 
 const IssueTimelineQuery = gql`
   query IssueTimelineQuery($project: ID!, $issue: ID!) {
@@ -27,15 +28,19 @@ const IssueTimelineSubscription = gql`
   ${fragments.timelineEntry}
 `;
 
+export const TimeLabel = styled.span`
+  color: ${props => props.theme.textExtraMuted};
+  font-weight: bold;
+  grid-column: labels;
+  justify-self: end;
+  white-space: nowrap;
+`;
+
 type TimelineChangeResult = Pick<Subscription, 'timelineChanged'>;
 
 interface Props {
   issue: Issue;
 }
-
-const IssueTimelineLayout = styled.section`
-  justify-self: stretch;
-`;
 
 export function IssueTimeline({ issue }: Props) {
   return (
@@ -74,15 +79,25 @@ export function IssueTimeline({ issue }: Props) {
         }
 
         if (timeline && timeline.results && timeline.results.length > 0) {
-          return (
-            <>
-              <FormLabel>Issue History:</FormLabel>
-              <IssueTimelineLayout className="changes-list">
-                {timeline.results.map((ch: TimelineEntry) =>
-                  <TimelineEntryDisplay key={ch.id} change={ch} />)}
-              </IssueTimelineLayout>
-            </>
-          );
+          let prevTime: Date = null;
+          const now = new Date();
+          const entries: JSX.Element[] = [];
+
+          timeline.results.forEach((te: TimelineEntry) => {
+            if (prevTime === null || !isSameDay(prevTime, te.at)) {
+              prevTime = te.at;
+              if (differenceInWeeks(now, te.at) < 1) {
+                entries.push(
+                  <TimeLabel key={`time_${te.id}`}>{format(te.at, 'dddd')}:</TimeLabel>);
+              } else {
+                entries.push(
+                  <TimeLabel key={`time_${te.id}`}>{distanceInWordsToNow(te.at)}:</TimeLabel>);
+              }
+            }
+            entries.push(<TimelineEntryDisplay key={te.id} change={te} />);
+          });
+
+          return entries;
         }
         return null;
       }}

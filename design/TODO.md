@@ -1,6 +1,5 @@
 # TODO
 
-* Component that displays relative date by day? Also grouping.
 * Workflow actions (test)
 * Custom Props columns
   * Column edit.

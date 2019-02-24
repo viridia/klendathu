@@ -122,16 +122,9 @@ export const queries = {
       throw new UserInputError(Errors.FORBIDDEN);
     }
 
-    // const order: r.Sort = { index: r.desc('id') };
     const filter: any = {
       project: project._id,
     };
-
-    // TODO: All of the various query things.
-
-    // let dbQuery = r.table('issues')
-    //     .orderBy(order)
-    //     .filter({ project: `${account}/${project}` });
 
     // If they are not a project member, only allow public issues to be viewed.
     if (role < Role.VIEWER) {
@@ -207,6 +200,7 @@ export const queries = {
     //   }
     }
 
+    // TODO: Search by date, comments
     // // Other things we might want to search by:
     // // comments / commenter
     // // created (date range)
@@ -215,6 +209,7 @@ export const queries = {
     if (query.custom) {
       for (const customSearch of query.custom) {
         console.log(customSearch);
+        // TODO: Search by custom field
       //   if (key.startsWith('custom.')) {
       //     const fieldId = key.slice(7);
       //     const pred = args[`pred.${fieldId}`] as Predicate || Predicate.CONTAINS;
@@ -236,6 +231,7 @@ export const queries = {
           order = -1;
           key = sortKey.slice(1);
         }
+        // TODO: Sort by custom field
         // if (key.startsWith('custom.')) {
         //   //
         // }
@@ -245,6 +241,7 @@ export const queries = {
       sort._id = 1;
     }
 
+    // TODO: Find related subtasks
     // if (req.subtasks) {
     //   return this.findSubtasks(query, sort);
     // }
@@ -279,6 +276,7 @@ export const queries = {
     }
     const issues = context.db.collection<IssueRecord>('issues');
     console.log(pr, issues);
+    // TODO: Implement
     // if (args.accountName) {
     //   return accounts.findOne({ accountName: args.accountName });
     // } else if (args.id) {
@@ -293,6 +291,7 @@ export const queries = {
       context: Context): Promise<IssueRecord[]> {
     const issues = context.db.collection<IssueRecord>('issues');
     console.log(issues);
+    // TODO: Implement
     // if (args.accountName) {
     //   return accounts.findOne({ accountName: args.accountName });
     // } else if (args.id) {
@@ -479,7 +478,6 @@ export const mutations = {
       }
     }
 
-    // TODO: ensure reporter is valid
     // TODO: ensure ccs are valid
     // TODO: ensure labels are valid
     // TODO: ensure attachments are valid
@@ -526,6 +524,7 @@ export const mutations = {
       change.at = now;
     }
 
+    // TODO: Implement
     // if ('milestone' in input && input.milestone !== issue.milestone) {
     //   record.milestone = input.milestone;
     //   change.milestone = { before: issue.milestone, after: input.milestone };
@@ -707,6 +706,7 @@ export const mutations = {
       }
     }
 
+    // TODO: Implement
     // if ('attachments' in input) {
     //   const existingAttachments = issue.attachments || [];
     //   record.attachments = input.attachments;

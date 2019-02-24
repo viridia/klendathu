@@ -15,6 +15,7 @@ export const themeDefault: ThemeInterface = {
   textNormal: '#222',
   textAccented: dye(0.3, primary),
   textMuted: desaturate(0.2, diluted),
+  textExtraMuted: desaturate(0.2, dye(0.6, diluted)),
 
   // Page
   pageBgColor: dye(0.9, primary),
@@ -94,6 +95,11 @@ export const themeDefault: ThemeInterface = {
   cardShadowColor: transparentize(0.86, dye(0.4, primary)),
   cardHeaderBgColor: dye(0.88, primary),
   cardHeaderDividerColor: transparentize(0.8, dye(0.1, diluted)),
+
+  // Comment blocks
+  commentBgColor: dye(1.0, primary),
+  commentBorderColor: dye(0.85, diluted),
+  commentHeaderColor: dye(0.98, primary),
 
   // Forms
   inputBorderColor: dye(0.85, diluted),

@@ -15,8 +15,8 @@ export function StateNameDisplay({ state }: { state: string }) {
 }
 
 const TimelineEntryLayout = styled.section`
-  margin-bottom: 8px;
   justify-self: stretch;
+  grid-column: controls;
 `;
 
 const TimelineEntryHeader = styled.header`

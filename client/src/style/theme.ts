@@ -23,6 +23,7 @@ export interface ThemeInterface {
   textNormal: string;
   textAccented: string;
   textMuted: string;
+  textExtraMuted: string;
 
   // Page
   pageBgColor: string;
@@ -87,6 +88,11 @@ export interface ThemeInterface {
   cardHeaderBgColor: string;
   cardBgColorAltRow: string;
   cardHeaderDividerColor: string;
+
+  // Comment Blocks
+  commentBgColor: string;
+  commentBorderColor: string;
+  commentHeaderColor: string;
 
   // Filters
   filterParamsBgColor: string;
