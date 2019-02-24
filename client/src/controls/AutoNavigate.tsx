@@ -49,7 +49,7 @@ export class AutoNavigate extends React.Component<Props> {
   }
 
   @bind
-  private onKeyDown(e: KeyboardEvent) {
+  private onKeyDown(e: any) {
     // Enter key
     if (e.key === 'Enter' && this.form) {
       // The list of all focusable elements in the form.

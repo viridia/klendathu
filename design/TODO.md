@@ -1,9 +1,11 @@
 # TODO
 
-* Navbar project list
+* Component that displays relative date by day? Also grouping.
 * Workflow actions (test)
-* Delete issues
+* Custom Props columns
+  * Column edit.
 * Attachments
+* Delete issues
 * Filters
   * Filter by custom fields
   * UI prefs in local storage
@@ -62,8 +64,6 @@
 # Components
 
 * HelpBlocks for forms (CreateProject dialog)
-* Table
-  * SortOrder
 * Dropdown (non-button)
 * Spinner
 * Switch
@@ -108,3 +108,27 @@ Issue List State:
     * Accounts can create additional templates or edit the default
     * Templates can extend, which includes all of the issue types and states
 
+# Frontend compilation tests:
+
+  "apollo-cache-inmemory": "^1.4.2",
+  "apollo-link": "^1.2.6",
+  "apollo-link-context": "^1.0.12",
+  "apollo-link-error": "^1.1.5",
+  "apollo-utilities": "^1.1.2",
+  "axios": "^0.18.0",
+  "copy-to-clipboard": "^3.0.8",
+  "dateformat": "^3.0.3",
+  "graphql": "^14.1.1",
+  "graphql-subscriptions": "^1.0.0",
+  "graphql-tag": "^2.10.1",
+  "marked": "^0.6.0",
+  "mobx": "^5.9.0",
+  "mobx-react": "^5.4.3",
+  "mobx-react-lite": "^1.0.1",
+  "polished": "^2.3.3",
+  "qs": "^6.6.0",
+  "react-overlays": "^1.1.1",
+  "react-router": "^4.3.1",
+  "react-router-dom": "^4.3.1",
+  "react-toastify": "^4.5.2",
+  "react-transition-group": "^2.5.3",

@@ -4,9 +4,9 @@ import { Query } from 'react-apollo';
 import { hsl } from 'polished';
 import { PublicAccount } from '../../../common/types/graphql';
 import { styled } from '../style';
+import { contrastingColor } from '../lib/contrastingColor';
 import gql from 'graphql-tag';
 import DefaultAvatar from '../icons/default-avatar.png';
-import { contrastingColor } from '../lib/contrastingColor';
 
 const avatarQuery = gql`
   query AvatarQuery($accountName: String, $id: ID) {

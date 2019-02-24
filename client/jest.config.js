@@ -1,6 +1,7 @@
 module.exports = {
   transform: {
-    '^.+\\.tsx?$': 'ts-jest'
+    '^.+\\.tsx?$': 'ts-jest',
+    "^.+\\.(css|png|jpg)$": "jest-transform-stub",
   },
   globals: {
     'ts-jest': {
