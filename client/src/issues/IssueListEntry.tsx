@@ -13,6 +13,13 @@ import { idToIndex } from '../lib/idToIndex';
 
 const SelectedCell = styled.td`
   width: 2rem;
+  > label {
+    align-items: center;
+    display: flex;
+    height: 1.5rem;
+    justify-content: center;
+    width: 100%;
+  }
 `;
 
 const IdCell = styled.td`
@@ -44,7 +51,7 @@ const TitleCell = styled.td`
 `;
 
 interface Props extends RouteComponentProps<{}> {
-  context: ViewContext;
+  env: ViewContext;
   issue: Issue;
   columnRenderers: Map<string, ColumnRenderer>;
   selection: ObservableSet;
@@ -53,12 +60,12 @@ interface Props extends RouteComponentProps<{}> {
 @observer
 export class IssueListEntry extends React.Component<Props> {
   public render() {
-    const { context, issue, columnRenderers, selection } = this.props;
+    const { env: context, issue, columnRenderers, selection, location } = this.props;
     const { account, project, prefs } = context;
     const index = idToIndex(issue.id);
     const linkTarget = {
       pathname: `/${account.accountName}/${project.name}/${index}`,
-      state: { back: this.props.location },
+      state: { back: location },
     };
     const issueId = `issue-${issue.id}`;
     const style: any = {};

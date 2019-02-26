@@ -41,9 +41,10 @@ export async function constructTestServer(): Promise<TestServer> {
   process.env.DB_PASSWORD = 'example';
   const client = await createClient();
   const db = client.db(process.env.DB_NAME);
-  const user = await createTestUserAccount(db, 'dflores', 'Dizzy Flores');
+  const dflores = await createTestUserAccount(db, 'dflores', 'Dizzy Flores');
   const kitten = await createTestUserAccount(db, 'kitten', '"Kitten" Smith');
-  const context: Context = { client, db, user };
+  const blacky = await createTestUserAccount(db, 'blacky', 'Capt. Blackstone');
+  const context: Context = { client, db, user: dflores };
   const apollo = new ApolloServer({
     typeDefs,
     context,
@@ -53,7 +54,7 @@ export async function constructTestServer(): Promise<TestServer> {
     await apollo.stop();
     await client.close();
   };
-  return { client, db, context, apollo, close, users: { dflores: user, kitten } };
+  return { client, db, context, apollo, close, users: { dflores, kitten, blacky } };
 }
 
 const CreateProjectMutation = gql`mutation CreateProjectMutation(

@@ -12,6 +12,9 @@ export enum OperandType {
   ENUM = 'enum',
   TEXT = 'text', // Exact match
   SEARCH_TEXT = 'searchText',
+  LINK = 'link',
+  RELATION = 'relation',
+  ISSUE = 'issue',
 }
 
 export function defaultOperandValue(

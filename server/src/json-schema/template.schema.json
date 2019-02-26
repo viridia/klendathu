@@ -176,21 +176,32 @@
             "description": "State to transition to.",
             "type": "string"
           },
+          "summary": {
+            "description": "Replacement summary.",
+            "type": "string"
+          },
+          "description": {
+            "description": "Replacement description.",
+            "type": "string"
+          },
           "owner": {
             "description": "Owner to assign to (expression).",
             "type": ["string", "null"]
           },
-          "linked": {
-            "description": "Link to set.",
-            "type": "object",
-            "properties": {
-              "to": {
-                "description": "Issue to link to (expression).",
-                "type": "string"
-              },
-              "relation": {
-                "description": "Type of relation to create.",
-                "type": "string"
+          "addLinks": {
+            "description": "Links to add.",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "to": {
+                  "description": "Issue to link to (expression).",
+                  "type": "string"
+                },
+                "relation": {
+                  "description": "Type of relation to create.",
+                  "type": "string"
+                }
               }
             }
           },
@@ -202,34 +213,6 @@
                 "type": "array",
                 "items": {
                   "type": "string"
-                }
-              }
-            }
-          },
-          "ask": {
-            "description": "List of variables which must be suppled by the user.",
-            "type": "array",
-            "items": {
-              "type": "object",
-              "title": "ActionInput",
-              "additionalProperties": false,
-              "properties": {
-                "id": {
-                  "description": "Name of variable to store the input value.",
-                  "type": "string"
-                },
-                "caption": {
-                  "description": "Label for the input field.",
-                  "type": "string"
-                },
-                "type": {
-                  "description": "Data type for the input field.",
-                  "type": "string",
-                  "enum": [
-                    "string",
-                    "issue",
-                    "user"
-                  ]
                 }
               }
             }

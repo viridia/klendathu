@@ -49,5 +49,11 @@ export async function createClient(): Promise<MongoClient> {
     'projectPrefs',
     'templates',
   ]);
+  db.collection('issues').createIndex({ type: 1 });
+  db.collection('issues').createIndex({ state: 1 });
+  db.collection('issues').createIndex({ ownerSort: 1 });
+  db.collection('issues').createIndex({ reporterSort: 1 });
+  db.collection('issues').createIndex({ created: 1 });
+  db.collection('issues').createIndex({ update: 1 });
   return client;
 }

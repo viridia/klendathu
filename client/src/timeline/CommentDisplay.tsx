@@ -4,21 +4,22 @@ import { TimelineEntry } from '../../../common/types/graphql';
 import { styled } from '../style';
 
 const CommentLayout = styled.section`
-  border: 1px solid lighten($cardBorder, 15%);
+  border: 1px solid ${props => props.theme.commentBorderColor};
   border-radius: 4px;
-  margin-bottom: 8px;
+  overflow: hidden;
 `;
 
 // Same as TimelineEntryHeader
 const CommentHeader = styled.header`
-  font-size: .9rem;
-  padding: 0 8px 4px 0;
-  line-height: 1.4em;
-  display: flex;
-  justify-content: flex-start;
   align-items: center;
+  background-color: ${props => props.theme.commentHeaderColor};
   border-bottom: 1px solid ${props => props.theme.cardHeaderDividerColor};
   color: ${props => props.theme.textMuted};
+  display: flex;
+  font-size: .9rem;
+  padding: 4px 6px;
+  line-height: 1.4em;
+  justify-content: flex-start;
 
   .account-name {
     font-weight: bold;
@@ -27,11 +28,12 @@ const CommentHeader = styled.header`
 `;
 
 const CommentBody = styled(MarkdownText)`
-  margin: 0;
-  padding: 4px 0;
+  background-color: ${props => props.theme.commentBgColor};
+  color: ${props => props.theme.textNormal};
   font-size: 90%;
-  color: $textDark;
   line-height: 1.3em;
+  margin: 0;
+  padding: 4px 6px;
 
   > p {
     &:first-child {

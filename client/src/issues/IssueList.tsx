@@ -5,7 +5,7 @@ import { ErrorListDisplay } from '../graphql/ErrorDisplay';
 import { ViewContext } from '../models';
 import { LoadingIndicator, Card, CheckBox, ColumnSort } from '../controls';
 import { observer } from 'mobx-react';
-import { computed, action, observable, ObservableSet } from 'mobx';
+import { computed, action } from 'mobx';
 import { EmptyList, Table, TableHead, TableBody } from '../layout';
 import { styled } from '../style';
 import { Role } from '../../../common/types/json';
@@ -20,12 +20,15 @@ import {
 } from './columns';
 import { IssueListEntry } from './IssueListEntry';
 import { keyframes } from 'styled-components';
-import { FilterParams } from '../filters/FilterParams';
 
 const highlightNew = (color: string) => keyframes`
   from {
     background-color: ${color};
   }
+`;
+
+const IssueListCard = styled(Card)`
+  flex-shrink: 0;
 `;
 
 const IssueListViewTable = styled(Table)`
@@ -43,7 +46,7 @@ const IssueListViewTable = styled(Table)`
 `;
 
 interface Props extends RouteComponentProps<{}> {
-  context: ViewContext;
+  env: ViewContext;
   // milestones: MilestoneListQuery;
 }
 
@@ -53,7 +56,6 @@ interface Props extends RouteComponentProps<{}> {
  */
 @observer
 export class IssueList extends React.Component<Props> {
-  @observable private selection = new ObservableSet();
   private selectAllEl = React.createRef<HTMLInputElement>();
 
   public componentWillMount() {
@@ -65,24 +67,17 @@ export class IssueList extends React.Component<Props> {
   }
 
   public render() {
-    const { issues } = this.props.context;
-    if (issues.errors) {
-      return <ErrorListDisplay errors={issues.errors} />;
-    }
-    const { list } = issues;
-    if (issues.loading && !list) {
+    const { issues } = this.props.env;
+    const { errors, loading, list } = issues;
+    if (errors) {
+      return <ErrorListDisplay errors={errors} />;
+    } else if (list && list.length > 0) {
+      return <IssueListCard>{this.renderIssues()}</IssueListCard>;
+    } else if (loading) {
       return <LoadingIndicator>Loading&hellip;</LoadingIndicator>;
+    } else {
+      return <EmptyList>No issues found</EmptyList>;
     }
-    return (
-      <React.Fragment>
-        <FilterParams {...this.props} env={this.props.context} />
-        <Card>
-          {list.length === 0
-          ? <EmptyList>No issues found</EmptyList>
-          : this.renderIssues()}
-        </Card>
-      </React.Fragment>
-    );
   }
 
   private renderIssues() {
@@ -90,7 +85,7 @@ export class IssueList extends React.Component<Props> {
   }
 
   private renderIssueTable() {
-    const { issues } = this.props.context;
+    const { issues, selection } = this.props.env;
     return (
       <IssueListViewTable>
         {this.renderTableHeader()}
@@ -101,7 +96,7 @@ export class IssueList extends React.Component<Props> {
                 key={issue.id}
                 issue={issue}
                 columnRenderers={this.columnRenderers}
-                selection={this.selection}
+                selection={selection}
             />))}
         </TableBody>
       </IssueListViewTable>
@@ -109,13 +104,13 @@ export class IssueList extends React.Component<Props> {
   }
 
   private renderTableHeader() {
-    const { project, issues } = this.props.context;
+    const { project, issues, selection } = this.props.env;
     return (
       <TableHead>
         <tr>
           {project.role >= Role.UPDATER && (<th className="selected">
             <CheckBox
-                checked={this.selection.size > 0}
+                checked={selection.size > 0}
                 ref={this.selectAllEl}
                 onChange={this.onChangeSelectAll}
             />
@@ -176,7 +171,7 @@ export class IssueList extends React.Component<Props> {
     const sort = `${descending ? '-' : ''}${column}`;
     history.replace({
       ...this.props.location,
-      search: qs.stringify({ ...this.props.context.issues.searchParams, sort }, {
+      search: qs.stringify({ ...this.props.env.issues.searchParams, sort }, {
         addQueryPrefix: true,
         encoder: encodeURI,
         arrayFormat: 'repeat',
@@ -186,19 +181,19 @@ export class IssueList extends React.Component<Props> {
 
   @action.bound
   private onChangeSelectAll(e: any) {
+    const { issues, selection } = this.props.env;
     if (e.target.checked) {
-      const { issues } = this.props.context;
       for (const issue of issues.list) {
-        this.selection.add(issue.id);
+        selection.add(issue.id);
       }
     } else {
-      this.selection.clear();
+      selection.clear();
     }
   }
 
   @computed
   private get columnRenderers(): Map<string, ColumnRenderer> {
-    const { template } = this.props.context;
+    const { template } = this.props.env;
     const columnRenderers = new Map<string, ColumnRenderer>();
     columnRenderers.set('reporter',
         new UserColumnRenderer('Reporter', 'reporter', 'reporter pad'));
@@ -219,18 +214,18 @@ export class IssueList extends React.Component<Props> {
 
   @computed
   private get columns(): string[] {
-    const { prefs } = this.props.context;
+    const { prefs } = this.props.env;
     return prefs.columns;
   }
 
   // Checkbox 'indeterminate' state can only be set programmatically.
   private updateSelectAll() {
     if (this.selectAllEl.current) {
-      const { issues } = this.props.context;
-      const noneSelected = this.selection.size === 0;
+      const { issues, selection } = this.props.env;
+      const noneSelected = selection.size === 0;
       let allSelected = true;
       for (const issue of issues.list) {
-        if (!this.selection.has(issue.id)) {
+        if (!selection.has(issue.id)) {
           allSelected = false;
           break;
         }

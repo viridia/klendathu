@@ -4,7 +4,7 @@ import gql from 'graphql-tag';
 import { fragments, ErrorDisplay } from '../../graphql';
 import { Query } from 'react-apollo';
 import { ProjectEnv } from '../../models';
-import { WorkflowActions, ExecutableAction } from './WorkflowActions';
+import { WorkflowActions } from './WorkflowActions';
 
 const IssueTimelineQuery = gql`
   query IssueTimelineQuery($project: ID!, $issue: ID!) {
@@ -17,10 +17,9 @@ const IssueTimelineQuery = gql`
 
 interface Props {
   issue: Issue;
-  onExecAction: (a: ExecutableAction) => void;
 }
 
-export function WorkflowActionsView({ issue, onExecAction }: Props) {
+export function WorkflowActionsView({ issue }: Props) {
   const env = React.useContext(ProjectEnv);
   return (
     <Query
@@ -40,7 +39,6 @@ export function WorkflowActionsView({ issue, onExecAction }: Props) {
             env={env}
             issue={issue}
             timeline={timeline ? timeline.results : []}
-            onExecAction={onExecAction}
           />
         );
       }}

@@ -1,45 +1,61 @@
 # TODO
 
-* Filters
-  * Server side
-  * UI prefs in local storage
-  * Test!
-  * Search by custom fields
-* Workflow actions
+* Workflow actions (test)
+  * Unit test for addLinks / removeLinks
+  * Clone: target new issue
+  * Duplicate: ask duplicate of.
+  * Create Linked: target new issue
+* Custom Props columns
+  * Column edit.
 * Attachments
-* Batching
-* ErrorDisplay
-  * Show network errors
-  * Mini display for errors in menus and chips
+* Delete issues
+* Filters
+  * Filter by custom fields
+  * UI prefs in local storage
+  * Saving filters
+* GraphQL Batching
 * Better UI for entering linked issues - current process is cumbersome.
 * Project timeline
 * Better loading indicator
-* Navbar project list
 * Syntax highlighting for code examples.
 * "Dark mode".
 * Template inheritance.
 * Timeline
-  * Smart updating of timeline cache
+  * Show days in right column.
+  * Should allow supression of change entries.
 * Make user links local to the view
 * Sort issue searches by relevance
 * Preserve issue navigation list between page refreshes.
 * Better error reporting in issue create and issue edit.
-* Ability to embed attachments in markdown
+* Ability to embed inline attachments in markdown
+* Sorting by custom fields
+* UI options stored in local storage.
+* @mentions
+* Markdown preview
+* ErrorDisplay
+  * Mini display for errors in menus and chips
+* Issue list flashes when switching projects.
+* Idea: a global mobx time observer, which can be used to keep relative dates up to date.
+* Idea: if a change entry has *no* effect, then remove it from the timeline.
+* Be smarter about updating the graphql subscription cache for timeline updates.
+* Use coverage reports to improve server unit tests.
 
 # Major pieces
 
 * Dashboard view
+  * Figure out what content to put there.
+  * Summary of issues: open / closed / etc.
+  * Some sort of sparkline or graph.
 * Issue Compose
   * Attachments
   * Milestones
 * Issue Details
   * Add workflow actions
-  * Add assign to me
 * Issue Delete
 * Issue Query
   * By Owner
 * Label Delete
-* Mass Edit
+* GitHub integration
 * Progress View
 * Changes View
 * Email Verification
@@ -51,7 +67,6 @@
   * Templates
   * Workflow
 * Client unit tests
-* Coalesce timeline entries.
 * Enable Twitter auth
 * Enable issue grouping
 * Export / backup database
@@ -60,8 +75,6 @@
 # Components
 
 * HelpBlocks for forms (CreateProject dialog)
-* Table
-  * SortOrder
 * Dropdown (non-button)
 * Spinner
 * Switch
@@ -105,4 +118,3 @@ Issue List State:
   * OK so every account has a "default" template
     * Accounts can create additional templates or edit the default
     * Templates can extend, which includes all of the issue types and states
-

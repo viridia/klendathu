@@ -1,6 +1,6 @@
 # Klendathu
 
-[![CircleCI](https://circleci.com/gh/viridia/klendathu.svg?style=svg)](https://circleci.com/gh/viridia/klendathu)
+[![CircleCI](https://circleci.com/gh/viridia/klendathu.svg?style=svg)](https://circleci.com/gh/viridia/klendathu) [![Greenkeeper badge](https://badges.greenkeeper.io/viridia/klendathu.svg)](https://greenkeeper.io/)
 
 Klendathu is an open-source bug tracking and project management application.
 

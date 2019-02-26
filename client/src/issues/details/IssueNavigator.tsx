@@ -5,13 +5,15 @@ import { ButtonGroup, NavContainer, Button } from '../../controls';
 
 import ArrowBackIcon from '../../svg-compiled/icons/IcArrowBack';
 import ArrowForwardIcon from '../../svg-compiled/icons/IcArrowForward';
+import { LocationState } from 'history';
+import { RouteComponentProps } from 'react-router';
 
-interface Props {
+interface Props extends RouteComponentProps<{}, LocationState> {
   issue: Issue;
 }
 
 /** Component that iterates through prev / next issue */
-export function IssueNavigator({ issue }: Props) {
+export function IssueNavigator({ issue, location }: Props) {
   const env = React.useContext(ProjectEnv);
   if (!issue) {
     return null;

@@ -1,12 +1,9 @@
 import * as React from 'react';
 import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
-
-import AddBoxIcon from '../svg-compiled/icons/IcAddBox';
-
-// import './SaveFilterDialog.scss';
 import { Project } from '../../../common/types/graphql';
 import { Dialog, Form, FormLabel, TextInput, Button } from '../controls';
+import AddBoxIcon from '../svg-compiled/icons/IcAddBox';
 
 interface Props {
   project: Project;

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as dateFormat from 'dateformat';
+import { differenceInCalendarDays } from 'date-fns';
 
 export function humanAge(date: Date, brief = false, withPrefix = false): string {
   if (!date) {
@@ -45,7 +46,7 @@ export function humanAge(date: Date, brief = false, withPrefix = false): string 
     }
     return `${hours} hours ago`;
   }
-  const days = Math.floor(hours / 24);
+  const days = differenceInCalendarDays(new Date(), date);
   if (days <= 1) {
     if (brief) {
       return '1d';

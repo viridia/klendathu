@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { OperandType } from '../../models/OperandType';
 import { FieldType } from '../../../../common/types/json';
-import { TextInput, MenuItem, DropdownButton, UserAutocomplete } from '../../controls';
+import { TextInput, MenuItem, DropdownButton, UserAutocomplete, ButtonStyle } from '../../controls';
 import { StateSetEditor } from './StateSetEditor';
 import { TypeSetEditor } from './TypeSetEditor';
 import { LabelSelector } from './LabelSelector';
@@ -12,6 +12,7 @@ import { Observer } from 'mobx-react-lite';
 interface Props {
   type: OperandType;
   value: any;
+  kind?: ButtonStyle;
   customField: FieldType;
   onChange: (value: any) => void;
 }
@@ -23,7 +24,7 @@ export function EditOperand(props: Props) {
     <Observer>
       {() => {
         const { project, template } = env;
-        const { type, customField, onChange, value } = props;
+        const { type, customField, onChange, value, kind } = props;
         if (!type || value === undefined) {
           return null;
         }
@@ -60,6 +61,7 @@ export function EditOperand(props: Props) {
             return (
               <DropdownButton
                   size="small"
+                  kind={kind}
                   title={selectedState ? selectedState.caption : 'Choose state...'}
                   onSelect={onChange}
               >
@@ -74,6 +76,7 @@ export function EditOperand(props: Props) {
             return (
               <DropdownButton
                   size="small"
+                  kind={kind}
                   title={selectedType ? selectedType.caption : 'Choose type...'}
                   onSelect={onChange}
               >

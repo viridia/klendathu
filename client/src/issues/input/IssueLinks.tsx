@@ -26,25 +26,26 @@ interface Props {
 }
 
 export function IssueLinks({ links, onRemoveLink }: Props) {
-  if (!links || links.size === 0) {
-    return null;
-  }
   return (
     <Observer>
-      {() => (
-        <IssueLinksEl className="issue-links">{
-          Array.from(links.entries()).map(([to, relation]) => (
-            <li className="issue-link" key={to}>
-              <IssueLink>
-                <RelationName relation={relation} />
-                <IssueCondensedDisplay id={to} />
-                {onRemoveLink && <DismissButton onClick={() => onRemoveLink(to)} />}
-              </IssueLink>
-            </li>
-          )
-        )}</IssueLinksEl>
-
-      )}
+      {() => {
+        if (!links || links.size === 0) {
+          return null;
+        }
+        return (
+          <IssueLinksEl className="issue-links">{
+            Array.from(links.entries()).map(([to, relation]) => (
+              <li className="issue-link" key={to}>
+                <IssueLink>
+                  <RelationName relation={relation} />
+                  <IssueCondensedDisplay id={to} />
+                  {onRemoveLink && <DismissButton onClick={() => onRemoveLink(to)} />}
+                </IssueLink>
+              </li>
+            )
+          )}</IssueLinksEl>
+        );
+      }}
     </Observer>
   );
 }

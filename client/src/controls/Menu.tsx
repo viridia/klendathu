@@ -71,6 +71,7 @@ export const MenuItem = styled(MenuItemImpl).attrs(() => ({
   flex-direction: row;
   outline: none;
   padding: 4px;
+  white-space: nowrap;
 
   &[disabled] {
     opacity: 0.6;

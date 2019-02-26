@@ -41,7 +41,7 @@ import {
 import { Role, Workflow, IssueType, DataType } from '../../../common/types/json';
 import { session, ViewContext } from '../models';
 import { StateSelector } from './input/StateSelector';
-import { action, computed, IObservableArray, observable, toJS } from 'mobx';
+import { action, computed, IObservableArray, observable, toJS, ObservableMap } from 'mobx';
 import { observer } from 'mobx-react';
 import { idToIndex } from '../lib/idToIndex';
 import { IssueLinks } from './input/IssueLinks';
@@ -168,7 +168,7 @@ export class IssueCompose extends React.Component<Props> {
   @observable.shallow private cc = [] as IObservableArray<PublicAccount>;
   @observable.shallow private labels = [] as IObservableArray<string>;
   // @observable private milestone: string = '';
-  @observable.shallow private issueLinkMap = new Map<string, Relation>();
+  @observable private issueLinkMap = new ObservableMap<string, Relation>();
   @observable private custom = new Map<string, string | number | boolean>();
   @observable private comments = [] as IObservableArray<string>;
   @observable private busy = false;
@@ -298,7 +298,11 @@ export class IssueCompose extends React.Component<Props> {
             <FormLabel>Linked Issues:</FormLabel>
             <IssueLinkGroup>
               <IssueLinks links={this.issueLinkMap} onRemoveLink={this.onRemoveIssueLink}/>
-              <IssueLinkEdit issue={issue} onLink={this.onAddIssueLink} />
+              <IssueLinkEdit
+                  issue={issue}
+                  exclude={this.excludeLinks}
+                  onLink={this.onAddIssueLink}
+              />
             </IssueLinkGroup>
 
             <FormLabel>Attach Files:</FormLabel>
@@ -618,5 +622,14 @@ export class IssueCompose extends React.Component<Props> {
     return (location.state && location.state.back)
         || (issue && `/${account.accountName}/${project.name}/${idToIndex(issue.id)}`)
         || `/${account.accountName}/${project.name}/issues`;
+  }
+
+  @computed
+  private get excludeLinks(): Set<string> {
+    const result = new Set<string>(this.issueLinkMap.keys());
+    if (this.props.issue) {
+      result.add(this.props.issue.id);
+    }
+    return result;
   }
 }

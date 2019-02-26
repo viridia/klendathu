@@ -35,7 +35,13 @@ const GROUP_TERMS: GroupTerm[] = [
 
 const FilterParamsSection = styled(Card)`
   background-color: ${props => props.theme.filterParamsBgColor};
+  flex-shrink: 0;
   margin-bottom: 12px;
+  z-index: 1;
+`;
+
+const FilterTermList = styled.section`
+  border-top: 1px solid ${props => props.theme.cardHeaderDividerColor};
 `;
 
 const FilterParamsHeader = styled.header`
@@ -100,7 +106,7 @@ export class FilterParams extends React.Component<Props> {
     const selectedGroup = GROUP_TERMS.find(gr => gr.field === this.group);
     return (
       <Collapse expanded={this.expanded}>
-        <section className="term-list">
+        <FilterTermList>
           {this.terms.map((term, index) => (
             <FilterTermEditor
                 index={index}
@@ -160,7 +166,7 @@ export class FilterParams extends React.Component<Props> {
                 filter={this.queryString}
                 onHide={this.onCloseSaveDialog}
             />}
-        </section>
+        </FilterTermList>
       </Collapse>
     );
   }

@@ -92,7 +92,7 @@ export interface IssueInput {
   /** One-line summary of the issue. */
   summary: string;
   /** Detailed description of the issue. */
-  description?: Maybe<string>;
+  description: string;
   /** Username of current owner of this issue. */
   owner?: Maybe<string>;
   /** Users who wish to be informed when this issue is updated. */
@@ -143,6 +143,53 @@ export interface IssueLinkInput {
   /** Type of the relation. */
   relation: Relation;
 }
+/** Type for updating a new issue. */
+export interface UpdateIssueInput {
+  /** Issue type (defined by template). */
+  type?: Maybe<string>;
+  /** Current workflow state. */
+  state?: Maybe<string>;
+  /** One-line summary of the issue. */
+  summary?: Maybe<string>;
+  /** Detailed description of the issue. */
+  description?: Maybe<string>;
+  /** Username of current owner of this issue. */
+  owner?: Maybe<string>;
+  /** Users who wish to be informed when this issue is updated. */
+  cc?: Maybe<string[]>;
+  /** Labels associated with this issue. */
+  labels?: Maybe<string[]>;
+  /** List of custom fields for this issue. */
+  custom?: Maybe<CustomFieldInput[]>;
+  /** List of attachments. */
+  attachments?: Maybe<AttachmentInput[]>;
+  /** Whether this issue should be visible to non-members of the project. */
+  isPublic?: Maybe<boolean>;
+  /** X / Y position of issue in mural view. */
+  position?: Maybe<CoordInput>;
+  /** Milestone that we plan to address this issue in. */
+  milestone?: Maybe<string>;
+  /** List of issues linked to this one. */
+  linked?: Maybe<IssueLinkInput[]>;
+  /** List of comments. */
+  comments?: Maybe<string[]>;
+  /** Mass edit: add to the CC list. */
+  addCC?: Maybe<string[]>;
+  /** Mass edit: remove from the CC list. */
+  removeCC?: Maybe<string[]>;
+  /** Mass edit: add to the labels list. */
+  addLabels?: Maybe<string[]>;
+  /** Mass edit: remove from the labels list. */
+  removeLabels?: Maybe<string[]>;
+  /** Mass edit: add to the attachments list. */
+  addAttachments?: Maybe<AttachmentInput[]>;
+  /** Mass edit: remove from the attachments list. */
+  removeAttachments?: Maybe<string[]>;
+  /** Mass edit: add link. */
+  addLinks?: Maybe<IssueLinkInput[]>;
+  /** Mass edit: remove link. */
+  removeLinks?: Maybe<string[]>;
+}
 /** Used for setting filters. */
 export interface FilterInput {
   /** Name of this filter. */
@@ -151,20 +198,6 @@ export interface FilterInput {
   value: string;
   /** Which view this was (issues, progress, etc.). */
   view?: Maybe<string>;
-}
-/** Used for adding / removing labels, cc users, attachments. */
-export interface IssueEdit {
-  addCC?: Maybe<string[]>;
-
-  removeCC?: Maybe<string[]>;
-
-  addLabels?: Maybe<string[]>;
-
-  removeLabels?: Maybe<string[]>;
-
-  addAttachments?: Maybe<AttachmentInput[]>;
-
-  removeAttachments?: Maybe<string[]>;
 }
 /** Input for milestone */
 export interface MilestoneInput {
@@ -635,6 +668,8 @@ export interface Mutation {
   deleteIssue: Issue;
   /** Add a comment to an issue. */
   addComment: TimelineEntry;
+  /** Make an incremental change to an issue (mass edit). */
+  editIssue: Issue;
   /** Set current user's preferences for visible columns. */
   setPrefColumns: ProjectPrefs;
   /** Add a label to the set of visible labels. */
@@ -862,7 +897,7 @@ export interface NewIssueMutationArgs {
 export interface UpdateIssueMutationArgs {
   id: string;
 
-  input: IssueInput;
+  input: UpdateIssueInput;
 }
 export interface DeleteIssueMutationArgs {
   id: string;
@@ -871,6 +906,11 @@ export interface AddCommentMutationArgs {
   id: string;
 
   body: string;
+}
+export interface EditIssueMutationArgs {
+  issue: string;
+
+  input: UpdateIssueInput;
 }
 export interface SetPrefColumnsMutationArgs {
   project: string;
@@ -916,7 +956,7 @@ export interface IssueChangedSubscriptionArgs {
   issue: string;
 }
 export interface TimelineChangedSubscriptionArgs {
-  project?: Maybe<string>;
+  project: string;
 
   issue?: Maybe<string>;
 }

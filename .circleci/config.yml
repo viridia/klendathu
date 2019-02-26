@@ -26,4 +26,6 @@ jobs:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
             - node_modules
+      - run: npm run build-client
       - run: npm run test-server
+      - run: npm run test-client

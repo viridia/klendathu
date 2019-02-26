@@ -2,10 +2,12 @@ import { ThemeInterface, dye } from './theme';
 import { desaturate, transparentize } from 'polished';
 
 const primary = '#9c27b0';
+const alt = '#4727c0';
 const diluted = desaturate(0.2, primary);
 
 export const themeDefault: ThemeInterface = {
   primaryColor: primary,
+  altColor: alt,
   dilutedColor: diluted,
   focusColor: transparentize(0.7, primary),
 
@@ -13,6 +15,7 @@ export const themeDefault: ThemeInterface = {
   textNormal: '#222',
   textAccented: dye(0.3, primary),
   textMuted: desaturate(0.2, diluted),
+  textExtraMuted: desaturate(0.2, dye(0.6, diluted)),
 
   // Page
   pageBgColor: dye(0.9, primary),
@@ -49,7 +52,12 @@ export const themeDefault: ThemeInterface = {
       bg: dye(0.8, primary),
       text: dye(0.2, primary),
       border: dye(0.73, primary),
-    }
+    },
+    alternate: {
+      bg: dye(0.9, alt),
+      text: dye(0.2, alt),
+      border: dye(0.7, desaturate(0.4, alt)),
+    },
   },
 
   // Tabs
@@ -74,9 +82,9 @@ export const themeDefault: ThemeInterface = {
   menuBorderColor: dye(0.7, diluted),
   menuActiveBgColor: dye(0.5, primary),
   menuActiveTextColor: dye(0.9, primary),
-  menuHoverBgColor: dye(0.95, primary),
+  menuHoverBgColor: dye(0.95, diluted),
   menuHoverTextColor: '#222',
-  menuFocusBgColor: dye(0.9, primary),
+  menuFocusBgColor: dye(0.9, diluted),
   menuFocusTextColor: '#000',
   menuDividerColor: dye(0.9, desaturate(0.5, primary)),
 
@@ -88,6 +96,11 @@ export const themeDefault: ThemeInterface = {
   cardHeaderBgColor: dye(0.88, primary),
   cardHeaderDividerColor: transparentize(0.8, dye(0.1, diluted)),
 
+  // Comment blocks
+  commentBgColor: dye(1.0, primary),
+  commentBorderColor: dye(0.85, diluted),
+  commentHeaderColor: dye(0.98, primary),
+
   // Forms
   inputBorderColor: dye(0.85, diluted),
   inputBgColor: dye(1, primary),
@@ -95,4 +108,10 @@ export const themeDefault: ThemeInterface = {
   // Filters
   filterParamsBgColor: dye(0.85, diluted),
   filterParamsHeaderBgColor: dye(0.75, diluted),
+
+  // Mass Edit
+  massEditBgColor: dye(0.85, alt),
+  massEditHeaderBgColor: dye(0.8, alt),
+  massEditBorderColor: dye(0.7, alt),
+  massEdithadowColor: transparentize(0.86, dye(0.4, alt)),
 };

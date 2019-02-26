@@ -7,6 +7,7 @@ import { LeftNavLink } from './LeftNavLink';
 import AppsIcon from '../svg-compiled/icons/IcApps';
 import { ViewContext } from '../models';
 import { Route } from 'react-router';
+import { ProjectLinks } from './ProjectLinks';
 
 const NavLayout = styled.nav`
   background-color: ${props => props.theme.leftNavBgColor};
@@ -30,6 +31,7 @@ export function LeftNav({ context }: Props) {
       <LeftNavLink to={'/projects'}>
         <AppsIcon /> Projects
       </LeftNavLink>
+      <ProjectLinks />
     </NavLayout>
   );
 }

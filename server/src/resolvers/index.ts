@@ -1,6 +1,9 @@
 export { Context } from './Context';
 import * as accounts from './account';
-import * as issues from './issues';
+import * as issueTypes from './issueTypes';
+import * as issueMutations from './issueMutations';
+import * as issueQueries from './issueQueries';
+import * as issueSubscriptions from './issueSubscriptions';
 import * as timeline from './timeline';
 import * as labels from './labels';
 import * as memberships from './memberships';
@@ -11,7 +14,7 @@ import * as templates from './template';
 export const resolverMap = {
   Query: {
     ...accounts.queries,
-    ...issues.queries,
+    ...issueQueries.queries,
     ...labels.queries,
     ...projects.queries,
     ...projectPrefs.queries,
@@ -20,20 +23,20 @@ export const resolverMap = {
   },
   Mutation: {
     ...accounts.mutations,
-    ...issues.mutations,
+    ...issueMutations.mutations,
     ...labels.mutations,
     ...projects.mutations,
     ...projectPrefs.mutations,
     ...templates.mutations,
   },
   Subscription: {
-    ...issues.subscriptions,
+    ...issueSubscriptions.subscriptions,
     ...labels.subscriptions,
     ...projects.subscriptions,
     ...projectPrefs.subscriptions,
   },
   ...accounts.types,
-  ...issues.types,
+  ...issueTypes.types,
   ...labels.types,
   ...memberships.types,
   ...projects.types,

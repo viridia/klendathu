@@ -40,8 +40,8 @@ export class ColumnSort extends React.Component<Props> {
         <span className="content">{children}</span>
         {sortKey === column ?
           (descending
-            ? <span className="sort descend">&#x25bc;</span>
-            : <span className="sort ascend">&#x25b2;</span>)
+            ? <span className="sort descend">&#x25b2;</span>
+            : <span className="sort ascend">&#x25bc;</span>)
           : <span className="sort">&nbsp;</span>}
       </ColumnSortEl>
     );

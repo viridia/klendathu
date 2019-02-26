@@ -65,6 +65,8 @@ export class ViewContext {
   @observable public account: PublicAccount = null;
   @observable public template: Template = null;
   @observable public prefs: ProjectPrefs = null;
+  @observable public selection = new ObservableSet();
+  @observable public mutationError: Error = null;
   public issues = new IssueQueryModel();
 
   private disposer: IReactionDisposer;

@@ -11,13 +11,14 @@ import {
 } from '../../../common/types/graphql';
 import { observable, IReactionDisposer, autorun, action, ObservableSet } from 'mobx';
 import { client } from '../graphql/client';
-import bind from 'bind-decorator';
-import gql from 'graphql-tag';
 import { GraphQLError } from 'graphql';
 import { coerceToString, coerceToStringArray } from '../lib/coerce';
 import { ObservableQuery, OperationVariables, ApolloQueryResult } from 'apollo-client';
 import { idToIndex } from '../lib/idToIndex';
 import { session } from './Session';
+import bind from 'bind-decorator';
+import gql from 'graphql-tag';
+import { WorkflowState } from '../../../common/types/json';
 
 const IssuesQuery = gql`
   query IssuesQuery($query: IssueQueryParams!, $pagination: Pagination) {
@@ -54,6 +55,7 @@ interface SearchParams { [param: string]: string | string[]; }
 
 /** Reactive model class that represents a query over the issue table. */
 export class IssueQueryModel {
+  public searchParams: SearchParams;
   @observable public loading = true;
   @observable public errors: ReadonlyArray<GraphQLError> = null;
   @observable.shallow public list: Issue[] = [];
@@ -67,7 +69,7 @@ export class IssueQueryModel {
   private sDisposer: IReactionDisposer;
   private queryResult: ObservableQuery<IssuesQueryResult, OperationVariables>;
   private querySubscription: any;
-  private subscription: any;
+  private subscription: ZenObservable.Subscription;
 
   constructor() {
     this.disposer = autorun(this.runQuery, { delay: 50 });
@@ -82,13 +84,18 @@ export class IssueQueryModel {
       this.querySubscription.unsubscribe();
     }
     if (this.subscription) {
-      this.subscription();
+      this.subscription.unsubscribe();
       this.subscription = null;
     }
   }
 
   @action
-  public setQueryArgs(project: Project, queryParams: SearchParams) {
+  public setQueryArgs(
+      project: Project,
+      states: Map<string, WorkflowState>,
+      queryParams: SearchParams) {
+    this.searchParams = queryParams;
+
     // Resolve account names
     Promise.all([
       Promise.all(coerceToStringArray(queryParams.reporter).map(resolveAccountName)),
@@ -110,7 +117,10 @@ export class IssueQueryModel {
       }
 
       if ('state' in queryParams) {
-        issueQuery.state = coerceToStringArray(queryParams.state);
+        issueQuery.state =
+            queryParams.state === 'open'
+            ? Array.from(states.values()).filter(st => !st.closed).map(st => st.id)
+            : coerceToStringArray(queryParams.state);
       }
 
       if ('type' in queryParams) {
@@ -135,23 +145,15 @@ export class IssueQueryModel {
       }
 
       // TODO: Custom fields
-      // this.filterParams = {};
-      // this.filterParams.search = queryParams.search;
       // this.group = queryParams.group;
       // for (const key of Object.getOwnPropertyNames(this.searchParams)) {
       //   if (key in descriptors || key.startsWith('custom.') || key.startsWith('pred.')) {
       //     const desc = descriptors[key];
       //     let value: any = this.searchParams[key];
-      //     if (desc && desc.type === OperandType.USER && value === 'me') {
-      //       value = session.account.accountName;
-      //     // } else if (desc && desc.type === OperandType.STATE_SET && value === 'open') {
-      //     //   value = project.template.states.filter(st => !st.closed).map(st => st.id);
-      //     }
       //     issueQuery[key] = value;
       //   }
       // }
 
-      this.issueQuery = issueQuery;
       const sort = coerceToString(queryParams.sort);
       if (sort) {
         if (sort.startsWith('-')) {
@@ -165,6 +167,9 @@ export class IssueQueryModel {
         this.sort = 'id';
         this.descending = true;
       }
+
+      issueQuery.sort = sort ? [sort] : null;
+      this.issueQuery = issueQuery;
     });
   }
 
@@ -218,7 +223,7 @@ export class IssueQueryModel {
   @bind
   private runSubscription() {
     if (this.subscription) {
-      this.subscription();
+      this.subscription.unsubscribe();
       this.subscription = null;
     }
 

@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Project, MilestoneListQuery } from '../../../models';
 import { Button, Dialog, Autocomplete, SearchCallback } from '../../controls';
 import { observer } from 'mobx-react';
-import { Milestone } from 'klendathu-json-types';
+// import { Milestone } from 'klendathu-json-types';
 import { observable, action } from 'mobx';
 import classNames from 'classnames';
 import bind from 'bind-decorator';

@@ -39,9 +39,11 @@ interface Props {
   env: ViewContext;
   className?: string;
   placeholder?: string;
-  exclude?: string;
+  autoFocus?: boolean;
+  exclude?: Set<string>;
   selection: Issue | Issue[];
   onSelectionChange: (selection: Issue | Issue[] | null) => void;
+  onAcceptSuggestion?: () => void;
 }
 
 export class IssueSelector extends React.Component<Props> {
@@ -56,6 +58,7 @@ export class IssueSelector extends React.Component<Props> {
           onGetSortKey={this.onGetSortKey}
           onRenderSuggestion={this.onRenderSuggestion}
           onRenderSelection={this.onRenderSelection}
+          onAcceptSuggestion={this.props.onAcceptSuggestion}
       />
     );
   }
@@ -74,8 +77,12 @@ export class IssueSelector extends React.Component<Props> {
           query: { project: project.id, search: token }
         }
       }).then(({ data, loading, errors }) => {
+        let issues = data.issues.issues;
+        if (this.props.exclude) {
+          issues = issues.filter(i => !this.props.exclude.has(i.id));
+        }
         if (!loading && data && !errors && token === this.token) {
-          callback(data.issues.issues.slice(0, 5));
+          callback(issues.slice(0, 5));
         }
       });
     }

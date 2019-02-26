@@ -1,10 +1,31 @@
 import * as React from 'react';
-import { computed } from 'mobx';
-import { WorkflowAction, Workflow } from '../../../../common/types/json';
-import { Button, AccountName } from '../../controls';
-import { Issue, TimelineEntry } from '../../../../common/types/graphql';
-import { ViewContext, session } from '../../models';
+import { computed, action, observable, ObservableMap, toJS } from 'mobx';
+import { Workflow } from '../../../../common/types/json';
+import { Issue, TimelineEntry, Mutation, UpdateIssueInput } from '../../../../common/types/graphql';
+import { ViewContext } from '../../models';
+import { fragments } from '../../graphql';
+import { client } from '../../graphql/client';
+import { observer } from 'mobx-react';
+import { ExecutableAction } from './ExecutableAction';
+import { WorkflowActionControl } from './WorkflowActionControl';
+import { ActionEnv } from './ActionEnv';
+import { WorkflowInputsDialog } from './WorkflowInputsDialog';
 import styled from 'styled-components';
+import gql from 'graphql-tag';
+
+const UpdateIssueMutation = gql`
+  mutation UpdateIssueMutation($id: ID!, $input: UpdateIssueInput!) {
+    updateIssue(id: $id, input: $input) {
+      ...IssueFields
+      ownerAccount { ...AccountFields }
+      ccAccounts { ...AccountFields }
+    }
+  }
+  ${fragments.account}
+  ${fragments.issue}
+`;
+
+type UpdateIssueMutationResult = Pick<Mutation, 'updateIssue'>;
 
 const WorkflowActionsLayout = styled.section`
   display: flex;
@@ -12,183 +33,124 @@ const WorkflowActionsLayout = styled.section`
   flex-direction: column;
 `;
 
-const WorkflowActionEl = styled.section`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  margin-bottom: 16px;
-
-  > button {
-    display: inline-block;
-    justify-content: center;
-    margin-bottom: 2px;
-    white-space: normal;
-  }
-`;
-
-const WorkflowEffect = styled.section`
-  font-size: 90%;
-  margin-left: 32px;
-  text-indent: -16px;
-  color: $textDark;
-
-  > .value {
-    white-space: nowrap;
-  }
-
-  > .none {
-    font-style: italic;
-    color: lighten($textDark, 10%);
-  }
-`;
-
 interface Props {
-  issue: Issue;
   env: ViewContext;
+  issue: Issue;
   timeline: TimelineEntry[];
-  onExecAction: (a: ExecutableAction) => void;
 }
 
-export interface ExecutableAction extends WorkflowAction {
-  stateName?: string;
-}
+@observer
+export class WorkflowActions extends React.Component<Props> {
+  @observable private pendingAction: ExecutableAction = null;
+  @observable private actionProps = new ObservableMap<string, any>();
+  @observable private showInput = false;
 
-interface State {
-  actions: ExecutableAction[];
-}
-
-export class WorkflowActions extends React.Component<Props, State> {
   public render() {
+    const { issue, env } = this.props;
     return (
       <WorkflowActionsLayout>
-        {this.actionTable.map((a, index) => (
-          <WorkflowActionEl key={index}>
-            <Button kind="default" onClick={() => this.props.onExecAction(a)}>{a.caption}</Button>
-            {a.state && (
-              <WorkflowEffect className="effect">
-                state &rarr; <span className="value">{a.stateName}</span>
-              </WorkflowEffect>
-            )}
-            {a.owner && (
-              <WorkflowEffect className="effect">
-                owner &rarr; <span className="value"><AccountName id={a.owner} /></span>
-              </WorkflowEffect>
-            )}
-            {a.owner === null && (
-              <WorkflowEffect className="effect">
-                owner &rarr; <span className="none">none</span>
-              </WorkflowEffect>
-            )}
-          </WorkflowActionEl>
+        {this.pendingAction && (
+          <WorkflowInputsDialog
+            env={env}
+            title={this.pendingAction.caption}
+            inputs={this.pendingAction.inputs}
+            issue={issue}
+            outputs={this.actionProps}
+            open={this.showInput}
+            onClose={this.onCloseInput}
+            onApplyChanges={this.onClickApply}
+          />
+        )}
+        {this.actions.map((a, index) => (
+          <WorkflowActionControl
+              key={index}
+              execAction={a}
+              issue={issue}
+              vars={this.actionEnv}
+              onExec={this.exec}
+          />
         ))}
       </WorkflowActionsLayout>
     );
   }
 
-  /** Searches the issue for the owner prior to the current owner. */
-  private findPreviousOwner(): string {
-    const { issue, timeline } = this.props;
-    const owner = issue.owner;
-    if (!timeline) {
-      return undefined;
-    }
-    for (let i = timeline.length - 1; i >= 0; i -= 1) {
-      const change = timeline[i];
-      if (change.owner && change.owner.after !== owner) {
-        return change.owner.after;
-      }
-    }
-    return undefined;
-  }
-
   @computed
-  private get actionTable(): ExecutableAction[] {
-    const { env, issue } = this.props;
+  private get actions(): ExecutableAction[] {
+    const { env } = this.props;
     const workflow = this.workflow;
     if (!workflow) {
       return [];
     }
-    const actions: ExecutableAction[] = [];
-    for (const action of env.template.actions) {
-      if (this.isLegalTransition(action)) {
-        const resolvedAction: ExecutableAction = {
-          caption: action.caption,
-        };
-        if (action.state) {
-          const toState = env.template.states.find(a => a.id === action.state);
-          resolvedAction.state = action.state;
-          resolvedAction.stateName = toState.caption;
-        }
-        // Handle owner expressions.
-        if (typeof action.owner === 'string') {
-          const m = action.owner.match(/\{(\w+?)\}/);
-          if (m) {
-            const oName = m[1];
-            if (oName === 'me') {
-              resolvedAction.owner = session.account.id;
-            } else if (oName === 'reporter') {
-              resolvedAction.owner = this.props.issue.reporter;
-            } else if (oName === 'previous') {
-              resolvedAction.owner = this.findPreviousOwner();
-            } else if (oName === 'none') {
-              resolvedAction.owner = null;
-            }
-          }
-          // If the owner wouldn't change, then don't show that effect.
-          if (resolvedAction.owner === issue.owner) {
-            resolvedAction.owner = undefined;
-          }
-        }
-        // Only include actions that have an effect.
-        if (resolvedAction.state !== undefined || resolvedAction !== undefined) {
-          actions.push(resolvedAction);
-        }
-      }
+    return env.template.actions.map(act => new ExecutableAction(env, act));
+  }
+
+  @computed
+  private get actionEnv(): ActionEnv {
+    const { issue, timeline } = this.props;
+    return new ActionEnv(issue, timeline, this.actionProps);
+  }
+
+  @action.bound
+  private onCloseInput() {
+    this.showInput = false;
+  }
+
+  @action.bound
+  private onClickApply() {
+    this.showInput = false;
+    this.apply(this.pendingAction);
+  }
+
+  @action.bound
+  private exec(execAction: ExecutableAction) {
+    if (execAction.inputs.size > 0) {
+      this.actionProps.clear();
+      this.pendingAction = execAction;
+      this.showInput = true;
+      return;
     }
-    return actions;
+    this.apply(execAction);
+  }
+
+  @action.bound
+  private apply(act: ExecutableAction) {
+    const { issue, env } = this.props;
+    if (act.target === 'copy' || act.target === 'new') {
+      // Create empty issue input
+      if (act.target === 'copy') {
+        // Copy from old issue
+        console.log('copy');
+      }
+      // Create issue
+      // Navigate to edit view
+      console.log('TODO: workflow target');
+      return;
+    }
+
+    const effects = act.effects(issue, this.actionEnv);
+    if (effects.length === 0) {
+      return;
+    }
+
+    const update: UpdateIssueInput = {};
+    effects.forEach(eff => {
+      update[eff.key] = eff.value as string;
+    });
+
+    return client.mutate<UpdateIssueMutationResult>({
+      mutation: UpdateIssueMutation,
+      variables: {
+        id: issue.id,
+        input: update,
+      }
+    }).catch(error => {
+      env.mutationError = error;
+    });
   }
 
   @computed
   private get workflow(): Workflow {
     const { env, issue } = this.props;
     return env.getWorkflowForType(issue.type);
-  }
-
-  @computed
-  private get workflowStates(): string[] {
-    return this.workflow ? this.workflow.states : [];
-  }
-
-  /** Determine if the state transition for the action is a legal one. */
-  private isLegalTransition(action: WorkflowAction) {
-    const { env, issue } = this.props;
-    const currentState = env.template.states.find(st => st.id === issue.state);
-    // Make sure the state we're transitioning to is acceptable.
-    if (action.state) {
-      // New state must be listed in the set of template states (spelling check).
-      if (env.template.states.findIndex(st => st.id === action.state) < 0) {
-        return false;
-      }
-
-      // New state must be included in states for current workflow
-      if (this.workflowStates.indexOf(action.state) < 0) {
-        return false;
-      }
-
-      // New state must be mentioned in outgoing transitions of current state.
-      if (currentState.transitions.indexOf(action.state) < 0) {
-        return false;
-      }
-    }
-
-    // Check if this action has a current state requirement.
-    // console.log(JSON.stringify(action, null, 2));
-    if (action.require && action.require.state) {
-      if (action.require.state.indexOf(issue.state) < 0) {
-        return false;
-      }
-    }
-
-    return true;
   }
 }

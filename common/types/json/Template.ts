@@ -1,3 +1,5 @@
+import { Relation } from '../graphql';
+
 /** Field data type. */
 export enum DataType {
   TEXT = 'text',
@@ -67,16 +69,52 @@ export interface WorkflowState {
   transitions: string[];
 }
 
-/** List of permissible actions for each workflow state. */
+/** Iteractive input properties for a workflow action - prompts user for input. */
+export interface WorkflowInput {
+  /** Id of the input property */
+  id: string;
+
+  /** Caption of the input field */
+  caption: string;
+
+  /** Type of data being queried */
+  type: 'issue';
+}
+
+/** Describes mutations made as a result of executing a workflow action. */
+export interface WorkflowLinkEffect {
+  to: string;
+  relation: Relation;
+}
+
+/** Describes mutations made as a result of executing a workflow action. */
 export interface WorkflowAction {
   /** Title of this action. */
   caption: string;
 
+  /** Indicates that this action should create a new issue. */
+  target?: 'self' | 'new' | 'copy';
+
   /** State to transition to. */
   state?: string;
 
+  /** Replacement summary. */
+  summary?: string;
+
+  /** Replacement description. */
+  description?: string;
+
   /** Owner to assign to. */
   owner?: string;
+
+  /** Action to create a link. */
+  linked?: WorkflowLinkEffect;
+
+  /** Action to add links. */
+  addLinks?: WorkflowLinkEffect[];
+
+  /** Input to get from the user. */
+  ask?: WorkflowInput[];
 
   /** Prerequisites for this action. */
   require?: {

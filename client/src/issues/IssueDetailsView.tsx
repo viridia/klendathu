@@ -34,7 +34,7 @@ const AddCommentMutation = gql`
 `;
 
 export interface IssueProviderProps extends RouteComponentProps<{ project: string, id: string }> {
-  context: ViewContext;
+  env: ViewContext;
 }
 
 type IssueChangeResult = Pick<Subscription, 'issueChanged'>;
@@ -42,7 +42,7 @@ type AddCommentResult = Pick<Mutation, 'addComment'>;
 
 export const IssueDetailsView = (props: IssueProviderProps) => {
   const { id } = props.match.params;
-  const { project } = props.context;
+  const { project } = props.env;
   if (!project) {
     return null;
   }
@@ -57,6 +57,7 @@ export const IssueDetailsView = (props: IssueProviderProps) => {
     }).then(() => {
       toast.success('Comment posted.');
     }, error => {
+      props.env.mutationError = error;
       toast.error('Error posting comment.');
       console.log(error);
     });

@@ -168,7 +168,7 @@ input IssueInput {
   summary: String!
 
   "Detailed description of the issue."
-  description: String
+  description: String!
 
   "Username of current owner of this issue."
   owner: ID
@@ -201,14 +201,73 @@ input IssueInput {
   comments: [ID!]
 }
 
-"Used for adding / removing labels, cc users, attachments."
-input IssueEdit {
+"Type for updating a new issue."
+input UpdateIssueInput {
+  "Issue type (defined by template)."
+  type: String
+
+  "Current workflow state."
+  state: String
+
+  "One-line summary of the issue."
+  summary: String
+
+  "Detailed description of the issue."
+  description: String
+
+  "Username of current owner of this issue."
+  owner: ID
+
+  "Users who wish to be informed when this issue is updated."
+  cc: [ID!]
+
+  "Labels associated with this issue."
+  labels: [ID!]
+
+  "List of custom fields for this issue."
+  custom: [CustomFieldInput!]
+
+  "List of attachments."
+  attachments: [AttachmentInput!]
+
+  "Whether this issue should be visible to non-members of the project."
+  isPublic: Boolean
+
+  "X / Y position of issue in mural view."
+  position: CoordInput
+
+  "Milestone that we plan to address this issue in."
+  milestone: String
+
+  "List of issues linked to this one."
+  linked: [IssueLinkInput!]
+
+  "List of comments."
+  comments: [ID!]
+
+  "Mass edit: add to the CC list."
   addCC: [ID!]
+
+  "Mass edit: remove from the CC list."
   removeCC: [ID!]
+
+  "Mass edit: add to the labels list."
   addLabels: [ID!]
+
+  "Mass edit: remove from the labels list."
   removeLabels: [ID!]
+
+  "Mass edit: add to the attachments list."
   addAttachments: [AttachmentInput!]
+
+  "Mass edit: remove from the attachments list."
   removeAttachments: [String!]
+
+  "Mass edit: add link."
+  addLinks: [IssueLinkInput!]
+
+  "Mass edit: remove link."
+  removeLinks: [ID!]
 }
 
 "Query params for searching for issues via custom fields."

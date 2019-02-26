@@ -82,6 +82,7 @@ interface Props<S> {
   onGetSortKey?: (suggestion: S) => string | number;
   onSelectionChange: (selection: S | S[] | null) => void;
   onValueChange?: (text: string) => void;
+  onAcceptSuggestion?: () => void;
 }
 
 @observer
@@ -349,14 +350,16 @@ export class Autocomplete<S> extends React.Component<Props<S>> {
             this.value = '';
           }
         }
-        if (suggestionCount > 0 && this.suggestionIndex !== -1) {
-          if (this.open) {
+        if (this.open) {
+          if (suggestionCount > 0 && this.suggestionIndex !== -1) {
             this.open = false;
             const item = this.suggestions.concat(this.suffixActions)[this.suggestionIndex];
             this.chooseSuggestion(item);
             e.preventDefault();
             e.stopPropagation();
           }
+        } else if (this.selection().length > 0 && this.props.onAcceptSuggestion) {
+          this.props.onAcceptSuggestion();
         }
         break;
       case 'Backspace':

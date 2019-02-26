@@ -4,13 +4,7 @@ import { CommentEdit } from './input/CommentEdit';
 import { RouteComponentProps } from 'react-router-dom';
 import { action, observable, computed } from 'mobx';
 import { observer } from 'mobx-react';
-import bind from 'bind-decorator';
-import {
-  Issue,
-  IssueInput,
-  CustomField,
-  Relation,
-} from '../../../common/types/graphql';
+import { Issue, CustomField, Relation } from '../../../common/types/graphql';
 import {
   Dialog,
   Button,
@@ -24,7 +18,7 @@ import {
   FormLabel,
   MarkdownText,
 } from '../controls';
-import { Role, IssueType, DataType, WorkflowAction } from '../../../common/types/json';
+import { Role, IssueType, DataType } from '../../../common/types/json';
 import { ViewContext } from '../models';
 import { IssueTypeDisplay, IssueNavigator } from './details';
 import { Spacer } from '../layout';
@@ -33,6 +27,7 @@ import { IssueTimeline } from './IssueTimeline';
 import styled from 'styled-components';
 import ArrowUpIcon from '../svg-compiled/icons/IcArrowUpward';
 import { WorkflowActionsView } from './workflow/WorkflowActionsView';
+import { LocationState } from 'history';
 
 const IssueDetailsLayout = styled(Card)`
   flex: 1 0 0;
@@ -85,7 +80,7 @@ const LeftPanel = styled.div`
 const RightPanel = styled.aside`
   align-self: stretch;
   border: 1px solid ${props => props.theme.cardHeaderDividerColor};
-  flex: 1;
+  width: 16rem;
   flex-basis: auto;
   margin: 1rem 1rem 1rem 0.5rem;
   overflow-y: auto;
@@ -120,8 +115,8 @@ export const CommentGroup = styled.span`
   justify-self: stretch;
 `;
 
-interface Props extends RouteComponentProps<{ project: string; id: string }> {
-  context: ViewContext;
+interface Props extends RouteComponentProps<{ project: string; id: string }, LocationState> {
+  env: ViewContext;
   issue: Issue;
   loading: boolean;
   onAddComment: (body: string) => any;
@@ -134,7 +129,7 @@ export class IssueDetails extends React.Component<Props> {
 
   public render() {
     return (
-      <IssueDetailsLayout>
+      <IssueDetailsLayout className="issue-details">
         {this.renderHeader()}
         {this.renderContent()}
         <Dialog open={this.showDelete} onClose={this.onCancelDelete} className="confirm-dialog">
@@ -156,12 +151,16 @@ export class IssueDetails extends React.Component<Props> {
   }
 
   private renderHeader() {
-    const { location, context, issue } = this.props;
-    const { account, project } = context;
-    const backLink = (location.state && location.state.back) || { pathname: './issues' };
+    const { location, env, issue } = this.props;
+    const { account, project } = env;
+    const back: LocationState = (location.state && location.state.back) || { pathname: './issues' };
+    const here: LocationState = {
+      pathname: location.pathname,
+      search: location.search,
+    };
     return (
       <IssueDetailsHeader>
-        <NavContainer to={backLink} exact={true}>
+        <NavContainer to={back} exact={true}>
           <Button title="Back to issue list" className="issue-up">
             <ArrowUpIcon />
           </Button>
@@ -175,7 +174,7 @@ export class IssueDetails extends React.Component<Props> {
           <NavContainer
               to={{
                 pathname: `/${account.accountName}/${project.name}/edit/${this.issueIndex}`,
-                state: { ...location.state, back: this.props.location },
+                state: { ...location.state, back: here },
               }}
           >
             <Button title="Edit issue" disabled={project.role < Role.UPDATER}>Edit</Button>
@@ -189,13 +188,13 @@ export class IssueDetails extends React.Component<Props> {
             Delete
           </Button>
         </ButtonGroup>
-        <IssueNavigator issue={issue} />
+        <IssueNavigator {...this.props} issue={issue} />
       </IssueDetailsHeader>
     );
   }
 
   private renderContent() {
-    const { context, issue, loading, onAddComment } = this.props;
+    const { env, issue, loading, onAddComment } = this.props;
     if (!issue) {
       return (
         <section className="content">
@@ -203,8 +202,8 @@ export class IssueDetails extends React.Component<Props> {
         </section>
       );
     }
-    const { project, template } = context;
-    const issueType = context.getInheritedIssueType(issue.type);
+    const { project, template } = env;
+    const issueType = env.getInheritedIssueType(issue.type);
     const issueState = template.states.find(st => st.id === issue.state);
     return (
       <IssueDetailsContent>
@@ -285,7 +284,7 @@ export class IssueDetails extends React.Component<Props> {
 
         {project.role >= Role.UPDATER && (
           <RightPanel>
-            <WorkflowActionsView issue={issue} onExecAction={this.onExecAction} />
+            <WorkflowActionsView issue={issue} />
           </RightPanel>
         )}
       </IssueDetailsContent>
@@ -325,8 +324,8 @@ export class IssueDetails extends React.Component<Props> {
 
   @action.bound
   private onConfirmDelete() {
-    // const { context, location, history, issue } = this.props;
-    // const { account, project } = context;
+    // const { env, location, history, issue } = this.props;
+    // const { account, project } = env;
     this.busy = true;
     // TODO: Implement
     // return deleteIssue(issue.id).then(() => {
@@ -358,18 +357,6 @@ export class IssueDetails extends React.Component<Props> {
   private onCancelDelete() {
     this.showDelete = false;
     this.busy = false;
-  }
-
-  @bind
-  private onExecAction(act: WorkflowAction) {
-    const { issue } = this.props;
-    const updates: Partial<IssueInput> = {
-      state: act.state,
-      owner: act.owner,
-    };
-    // return updateIssue(issue.id, updates).then(() => {
-    //   // this.props.data.refetch();
-    // });
   }
 
   @computed

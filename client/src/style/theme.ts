@@ -17,11 +17,13 @@ export interface ThemeInterface {
   primaryColor: string;
   dilutedColor: string;
   focusColor: string;
+  altColor: string;
 
   // Text colors
   textNormal: string;
   textAccented: string;
   textMuted: string;
+  textExtraMuted: string;
 
   // Page
   pageBgColor: string;
@@ -43,6 +45,7 @@ export interface ThemeInterface {
     action: ButtonColors;
     primary: ButtonColors;
     secondary: ButtonColors;
+    alternate: ButtonColors;
   };
 
   // Tabs
@@ -86,12 +89,20 @@ export interface ThemeInterface {
   cardBgColorAltRow: string;
   cardHeaderDividerColor: string;
 
+  // Comment Blocks
+  commentBgColor: string;
+  commentBorderColor: string;
+  commentHeaderColor: string;
+
   // Filters
   filterParamsBgColor: string;
   filterParamsHeaderBgColor: string;
 
   // Mass edit
-// massEditBgColor: string;
+  massEditBgColor: string;
+  massEditHeaderBgColor: string;
+  massEditBorderColor: string;
+  massEdithadowColor: string;
 }
 
 export interface ThemeProps {

@@ -16,6 +16,11 @@ export interface ObjectIDListChange {
   removed: ObjectID[];
 }
 
+export interface StringListChange {
+  added: string[];
+  removed: string[];
+}
+
 export interface TimelineEntryRecord {
   _id?: ObjectID;
   issue: IssueID;
@@ -28,7 +33,7 @@ export interface TimelineEntryRecord {
   description?: StringChange;
   owner?: ObjectIDChange;
   cc?: ObjectIDListChange;
-  labels?: ObjectIDListChange;
+  labels?: StringListChange;
   milestone?: StringChange;
   attachments?: {
     added?: string[];
