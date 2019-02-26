@@ -1465,6 +1465,66 @@ describe('issues', () => {
       expect(cres2.data.timeline.results).toBeArrayOfSize(0);
     });
 
+    test('link addLinks', async () => {
+      const { query, mutate } = createTestClient(server.apollo);
+
+      // Create a second issue
+      const ires = await mutate({
+        mutation: NewIssueMutation,
+        variables: {
+          project,
+          input: { type: 'bug', state: 'new', summary: 'second', description: 'second issue' }
+        },
+      });
+      expect(ires.errors).toBeUndefined();
+      const otherIssueId = ires.data.newIssue.id;
+
+      // Add an issue link
+      const res = await mutate({
+        mutation: UpdateIssueMutation,
+        variables: {
+          id: issueId,
+          input: {
+            ...testData,
+            addLinks: [{ to: otherIssueId, relation: Relation.BlockedBy }],
+          }
+        },
+      });
+      expect(res.errors).toBeUndefined();
+
+      // Make sure both issues return the link
+      const qres = await query({ query: IssueQuery, variables: { id: issueId } });
+      expect(qres.errors).toBeUndefined();
+      expect(qres.data.issue).toMatchObject({
+        ...expectedResponse,
+        links: [{ relation: Relation.BlockedBy, to: otherIssueId }]
+      });
+
+      const qres2 = await query({ query: IssueQuery, variables: { id: otherIssueId } });
+      expect(qres2.errors).toBeUndefined();
+      expect(qres2.data.issue).toMatchObject({
+        links: [{ relation: Relation.Blocks, to: issueId }],
+      });
+
+      // Make sure both issues have a change entry
+      const cres = await query({ query: TimelineQuery, variables: { project, issue: issueId } });
+      expect(cres.errors).toBeUndefined();
+      expect(cres.data.timeline.results).toBeArrayOfSize(1);
+      expect(cres.data.timeline.results[0]).toMatchObject({
+        linked: [{ after: Relation.BlockedBy, before: null, to: otherIssueId }],
+      });
+
+      const cres2 = await query({
+        query: TimelineQuery,
+        variables: { project, issue: otherIssueId },
+      });
+      expect(cres2.errors).toBeUndefined();
+      expect(cres2.data.timeline.results).toBeArrayOfSize(1);
+      expect(cres2.data.timeline.results[0]).toMatchObject({
+        linked: [{ after: Relation.Blocks, before: null, to: issueId }],
+      });
+    });
+
     test('coalesce changes', async () => {
       const { query, mutate } = createTestClient(server.apollo);
       const l1 = new ObjectID();

@@ -262,6 +262,12 @@ input UpdateIssueInput {
 
   "Mass edit: remove from the attachments list."
   removeAttachments: [String!]
+
+  "Mass edit: add link."
+  addLinks: [IssueLinkInput!]
+
+  "Mass edit: remove link."
+  removeLinks: [ID!]
 }
 
 "Query params for searching for issues via custom fields."

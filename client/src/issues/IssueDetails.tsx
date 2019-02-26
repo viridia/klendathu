@@ -4,14 +4,7 @@ import { CommentEdit } from './input/CommentEdit';
 import { RouteComponentProps } from 'react-router-dom';
 import { action, observable, computed } from 'mobx';
 import { observer } from 'mobx-react';
-import bind from 'bind-decorator';
-import {
-  Issue,
-  CustomField,
-  Relation,
-  Mutation,
-  UpdateIssueInput,
-} from '../../../common/types/graphql';
+import { Issue, CustomField, Relation } from '../../../common/types/graphql';
 import {
   Dialog,
   Button,
@@ -25,7 +18,7 @@ import {
   FormLabel,
   MarkdownText,
 } from '../controls';
-import { Role, IssueType, DataType, WorkflowAction } from '../../../common/types/json';
+import { Role, IssueType, DataType } from '../../../common/types/json';
 import { ViewContext } from '../models';
 import { IssueTypeDisplay, IssueNavigator } from './details';
 import { Spacer } from '../layout';
@@ -35,23 +28,6 @@ import styled from 'styled-components';
 import ArrowUpIcon from '../svg-compiled/icons/IcArrowUpward';
 import { WorkflowActionsView } from './workflow/WorkflowActionsView';
 import { LocationState } from 'history';
-import gql from 'graphql-tag';
-import { fragments } from '../graphql';
-import { client } from '../graphql/client';
-
-const UpdateIssueMutation = gql`
-  mutation UpdateIssueMutation($id: ID!, $input: UpdateIssueInput!) {
-    updateIssue(id: $id, input: $input) {
-      ...IssueFields
-      ownerAccount { ...AccountFields }
-      ccAccounts { ...AccountFields }
-    }
-  }
-  ${fragments.account}
-  ${fragments.issue}
-`;
-
-type UpdateIssueMutationResult = Pick<Mutation, 'updateIssue'>;
 
 const IssueDetailsLayout = styled(Card)`
   flex: 1 0 0;
@@ -104,7 +80,7 @@ const LeftPanel = styled.div`
 const RightPanel = styled.aside`
   align-self: stretch;
   border: 1px solid ${props => props.theme.cardHeaderDividerColor};
-  flex: 1;
+  width: 16rem;
   flex-basis: auto;
   margin: 1rem 1rem 1rem 0.5rem;
   overflow-y: auto;
@@ -308,7 +284,7 @@ export class IssueDetails extends React.Component<Props> {
 
         {project.role >= Role.UPDATER && (
           <RightPanel>
-            <WorkflowActionsView issue={issue} onExecAction={this.onExecAction} />
+            <WorkflowActionsView issue={issue} />
           </RightPanel>
         )}
       </IssueDetailsContent>
@@ -381,24 +357,6 @@ export class IssueDetails extends React.Component<Props> {
   private onCancelDelete() {
     this.showDelete = false;
     this.busy = false;
-  }
-
-  @bind
-  private onExecAction(act: WorkflowAction) {
-    const { issue, env } = this.props;
-    const updates: UpdateIssueInput = {
-      state: act.state,
-      owner: act.owner,
-    };
-    return client.mutate<UpdateIssueMutationResult>({
-      mutation: UpdateIssueMutation,
-      variables: {
-        id: issue.id,
-        input: updates,
-      }
-    }).catch(error => {
-      env.mutationError = error;
-    });
   }
 
   @computed

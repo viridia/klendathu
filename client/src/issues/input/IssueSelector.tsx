@@ -39,10 +39,11 @@ interface Props {
   env: ViewContext;
   className?: string;
   placeholder?: string;
+  autoFocus?: boolean;
   exclude?: Set<string>;
   selection: Issue | Issue[];
   onSelectionChange: (selection: Issue | Issue[] | null) => void;
-  onAcceptSuggestion: () => void;
+  onAcceptSuggestion?: () => void;
 }
 
 export class IssueSelector extends React.Component<Props> {

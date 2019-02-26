@@ -1,6 +1,7 @@
 # TODO
 
 * Workflow actions (test)
+  * Unit test for addLinks / removeLinks
   * Clone: target new issue
   * Duplicate: ask duplicate of.
   * Create Linked: target new issue
@@ -26,7 +27,7 @@
 * Sort issue searches by relevance
 * Preserve issue navigation list between page refreshes.
 * Better error reporting in issue create and issue edit.
-* Ability to embed attachments in markdown
+* Ability to embed inline attachments in markdown
 * Sorting by custom fields
 * UI options stored in local storage.
 * @mentions
@@ -34,11 +35,17 @@
 * ErrorDisplay
   * Mini display for errors in menus and chips
 * Issue list flashes when switching projects.
-* It's OK to merge change entries with comment bodies as long as they don't both have one.
+* Idea: a global mobx time observer, which can be used to keep relative dates up to date.
+* Idea: if a change entry has *no* effect, then remove it from the timeline.
+* Be smarter about updating the graphql subscription cache for timeline updates.
+* Use coverage reports to improve server unit tests.
 
 # Major pieces
 
 * Dashboard view
+  * Figure out what content to put there.
+  * Summary of issues: open / closed / etc.
+  * Some sort of sparkline or graph.
 * Issue Compose
   * Attachments
   * Milestones

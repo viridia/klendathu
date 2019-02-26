@@ -239,14 +239,7 @@
       "caption": "Close: Duplicate",
       "state": "duplicate",
       "owner": "{reporter}",
-      "ask": [
-        {
-          "id": "dup_of",
-          "caption": "Duplicates:",
-          "type": "issue"
-        }
-      ],
-      "linked": { "relation": "DUPLICATE", "to": "{dup_of}" }
+      "addLinks": [{ "relation": "DUPLICATE", "to": "{dup:Duplicates?}" }]
     },
     {
       "caption": "Finish: QA",
@@ -277,12 +270,13 @@
     {
       "caption": "Clone",
       "target": "copy",
-      "state": "new"
+      "state": "new",
+      "summary": "Clone: {summary}"
     },
     {
       "caption": "Create linked",
       "target": "new",
-      "linked": { "relation": "BLOCKED_BY", "to": "{self}" }
+      "addLinks": [{ "relation": "{rel:Relation?}", "to": "{self}" }]
     }
   ],
   "workflows": [

@@ -100,13 +100,19 @@ export const queries = {
 
     // Search by token
     if (query.search) {
-      // TODO: other fields - comments, etc.
+      // TODO: other fields - comments, etc. That might require pipeline pre-aggregation?
       const words = query.search.split(/\s+/);
-      const matchers = words.map(word => `(?i)\\b${escapeRegExp(word)}`);
-      filter.$and = matchers.map(m => ({ $or: [
-        { summary: { $regex: m } },
-        { description: { $regex: m } },
-      ] }));
+      filter.$and = [];
+      for (const word of words) {
+        const pattern = `(?i)\\b${escapeRegExp(word)}`;
+        const idPattern = `(?i)\\.${escapeRegExp(word)}`;
+        const disjuncts = [
+          { summary: { $regex: pattern } },
+          { description: { $regex: pattern } },
+          { _id: { $regex: idPattern } },
+        ];
+        filter.$and.push({ $or: disjuncts });
+      }
     }
 
     // By Type

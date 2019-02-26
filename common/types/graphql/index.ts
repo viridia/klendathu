@@ -185,6 +185,10 @@ export interface UpdateIssueInput {
   addAttachments?: Maybe<AttachmentInput[]>;
   /** Mass edit: remove from the attachments list. */
   removeAttachments?: Maybe<string[]>;
+  /** Mass edit: add link. */
+  addLinks?: Maybe<IssueLinkInput[]>;
+  /** Mass edit: remove link. */
+  removeLinks?: Maybe<string[]>;
 }
 /** Used for setting filters. */
 export interface FilterInput {

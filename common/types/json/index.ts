@@ -22,4 +22,5 @@ export {
   Workflow,
   WorkflowAction,
   WorkflowState,
+  WorkflowLinkEffect,
 } from './Template';

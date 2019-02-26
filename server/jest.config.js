@@ -19,5 +19,9 @@ module.exports = {
   moduleFileExtensions: [
     'ts',
     'js',
-  ]
+  ],
+  reporters: [
+    'default',
+    'jest-junit',
+  ],
 }
