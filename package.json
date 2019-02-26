@@ -69,7 +69,7 @@
     "passport-twitter": "^1.0.4",
     "polished": "^2.3.3",
     "qs": "^6.6.0",
-    "react": "^16.8.1",
+    "react": "^16.8.3",
     "react-apollo": "^2.4.0",
     "react-dom": "^16.8.1",
     "react-hot-loader": "^4.6.3",

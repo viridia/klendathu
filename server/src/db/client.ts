@@ -9,19 +9,25 @@ function sleep(ms: number) {
 async function waitForConnection(): Promise<MongoClient> {
   logger.debug(`Connection to MongoDB at ${process.env.DB_HOST}.`);
   let retries = 0;
-  while (retries < 10) {
+  let error: any = null;
+  // logger.debug(`DB_NAME ${process.env.DB_HOST}`);
+  // logger.debug(`DB_USER ${process.env.DB_USER}`);
+  // logger.debug(`DB_PASSWORD ${process.env.DB_PASSWORD}`);
+  while (retries < 4) {
     try {
       return await MongoClient.connect(process.env.DB_HOST, {
         useNewUrlParser: true,
         auth: { user: process.env.DB_USER, password: process.env.DB_PASSWORD }
       });
     } catch (e) {
+      error = e;
       retries += 1;
       logger.warn('Connection to MongoDB failed, retrying.');
-      await sleep(1000);
+      await sleep(2000);
     }
   }
-  logger.warn(`Connection to MongoDB failed after ${retries} attempts, aborting.`);
+  logger.error(`Connection to MongoDB failed after ${retries} attempts, aborting.`);
+  logger.error(error);
   process.exit(-1);
 }
 
