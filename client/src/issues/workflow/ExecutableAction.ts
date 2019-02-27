@@ -2,7 +2,6 @@ import { WorkflowAction } from '../../../../common/types/json';
 import { UpdateIssueInput, Issue, Relation } from '../../../../common/types/graphql';
 import { ViewContext, OperandType } from '../../models';
 import { ActionEnv } from './ActionEnv';
-import { toJS } from 'mobx';
 
 export interface ExecutableInput {
   id: string;

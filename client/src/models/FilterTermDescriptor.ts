@@ -152,20 +152,20 @@ export const descriptors: { [type: string]: FilterTermDescriptor } = {
           .then(accounts => accounts.filter(a => a));
     }
   },
-  labels: {
+  label: {
     caption: 'Labels',
     type: OperandType.LABEL,
     buildQuery: (query, term) => {
       if (term.value) {
         const labels: string[] = term.value;
-        query.labels = labels.map(idToIndex);
+        query.label = labels.map(idToIndex);
       }
     },
     parseQuery(query, term, env) {
       const { project } = env;
       term.value = [];
-      if (typeof query.labels === 'string') {
-        term.value = coerceToStringArray(query.labels).map(n => `${project.id}.${n}`);
+      if (typeof query.label === 'string') {
+        term.value = coerceToStringArray(query.label).map(n => `${project.id}.${n}`);
       }
     }
   },

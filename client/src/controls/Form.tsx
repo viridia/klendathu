@@ -32,6 +32,10 @@ const InputContainer = styled.div`
     display: flex;
     flex-direction: row;
 
+    > input, > textarea {
+      border-radius: 2px;
+    }
+
     &:focus-within {
       box-shadow: 0 0 0 3px ${(props: ThemeProps) => props.theme.focusColor};
       z-index: 1;

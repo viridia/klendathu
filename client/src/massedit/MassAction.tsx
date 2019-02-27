@@ -160,7 +160,7 @@ export class MassAction extends React.Component<Props> {
   private onSelectActionType(id: any) {
     const { index, action, onChange, env } = this.props;
     const newAction = MassAction.ACTION_TYPES.find(actionType => actionType.id === id);
-    if (!action || newAction.type !== action.type) {
+    if (!action || newAction.id !== action.id) {
       onChange(index, {
         ...newAction,
         value: defaultOperandValue(env.template, newAction.type, newAction.customField),

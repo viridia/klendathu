@@ -40,7 +40,7 @@ const FilterParamsSection = styled(Card)`
   z-index: 1;
 `;
 
-const FilterTermList = styled.section`
+const FilterTermList = styled.form`
   border-top: 1px solid ${props => props.theme.cardHeaderDividerColor};
 `;
 
@@ -49,7 +49,6 @@ const FilterParamsHeader = styled.header`
     background-color: ${props => props.theme.filterParamsHeaderBgColor};
     border-bottom: 0;
   }
-  /* color: $textDarkAccent; */
 `;
 
 interface Props extends RouteComponentProps<{}> {
@@ -106,7 +105,7 @@ export class FilterParams extends React.Component<Props> {
     const selectedGroup = GROUP_TERMS.find(gr => gr.field === this.group);
     return (
       <Collapse expanded={this.expanded}>
-        <FilterTermList>
+        <FilterTermList onSubmit={this.onApplyFilter}>
           {this.terms.map((term, index) => (
             <FilterTermEditor
                 index={index}

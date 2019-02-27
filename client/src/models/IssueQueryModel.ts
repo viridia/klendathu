@@ -139,8 +139,8 @@ export class IssueQueryModel {
             coerceToString(queryParams.descriptionPred) as Predicate || Predicate.Contains;
       }
 
-      if ('labels' in queryParams) {
-        issueQuery.labels = coerceToStringArray(queryParams.labels)
+      if ('label' in queryParams) {
+        issueQuery.labels = coerceToStringArray(queryParams.label)
             .map(l => `${this.projectId}.${l}`);
       }
 

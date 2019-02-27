@@ -1,8 +1,9 @@
 # TODO
 
+* Filtering by labels no longer works.
 * Bug in expansion of mass edit
 * Bug in search by summary
-* Bug in changing mass edit op
+* Make autocompletes enter key submit form.
 * Workflow actions (test)
   * Unit test for removeLinks
   * Clone: target new issue
@@ -42,6 +43,7 @@
 * Idea: if a change entry has *no* effect, then remove it from the timeline.
 * Be smarter about updating the graphql subscription cache for timeline updates.
 * Use coverage reports to improve server unit tests.
+* Set up parallel tests in CircleCI
 
 # Major pieces
 
