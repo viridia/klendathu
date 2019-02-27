@@ -9,14 +9,13 @@ const CollapseStyle = styled.section`
   &.expanded {
     overflow: visible;
     > * {
-      transform: scaleY(1);
+      opacity: 1;
     }
   }
 
   > * {
-    transform: scaleY(0);
-    transform-origin: top left;
-    transition: transform 0.4s ease;
+    opacity: 0;
+    transition: opacity 0.4s ease;
   }
 `;
 
@@ -26,22 +25,18 @@ interface Props {
   children: React.ReactNode;
 }
 
-export class Collapse extends React.Component<Props> {
-  private ref = React.createRef<HTMLElement>();
-
-  public render() {
-    const { expanded, className, children } = this.props;
-    const height = expanded && this.ref.current
-        ? this.ref.current.scrollHeight + 4
-        : 0;
-    return (
-      <CollapseStyle
-          ref={this.ref}
-          className={classNames(className, { expanded, collapsed: !expanded })}
-          style={{ maxHeight: `${height}px` }}
-      >
-        {children}
-      </CollapseStyle>
-    );
-  }
+export function Collapse({ expanded, className, children }: Props) {
+  const ref = React.useRef<HTMLElement>(null);
+  React.useLayoutEffect(() => {
+    const height = expanded ? ref.current.scrollHeight + 4 : 0;
+    ref.current.style.maxHeight = `${height}px`;
+  });
+  return (
+    <CollapseStyle
+        ref={ref}
+        className={classNames(className, { expanded, collapsed: !expanded })}
+    >
+      {children}
+    </CollapseStyle>
+  );
 }

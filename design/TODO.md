@@ -1,6 +1,5 @@
 # TODO
 
-* Filtering by labels no longer works.
 * Bug in expansion of mass edit
 * Bug in search by summary
 * Make autocompletes enter key submit form.

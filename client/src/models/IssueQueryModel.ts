@@ -165,7 +165,7 @@ export class IssueQueryModel {
         }
       } else {
         this.sort = 'id';
-        this.descending = true;
+        this.descending = false;
       }
 
       issueQuery.sort = sort ? [sort] : null;
