@@ -1,10 +1,13 @@
 # TODO
 
+* Bug in expansion of mass edit
+* Bug in search by summary
+* Bug in changing mass edit op
 * Workflow actions (test)
-  * Unit test for addLinks / removeLinks
+  * Unit test for removeLinks
   * Clone: target new issue
-  * Duplicate: ask duplicate of.
   * Create Linked: target new issue
+  * Workflow inputs: return to apply dialog.
 * Custom Props columns
   * Column edit.
 * Attachments
