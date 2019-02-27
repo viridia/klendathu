@@ -42,7 +42,7 @@ const MassEditCard = styled(Card)`
     margin-bottom: 12px;
     border-color: ${props => props.theme.massEditBorderColor};
   }
-  .collapsed & {
+  .expand-exit-done & {
     box-shadow: none;
   }
 `;

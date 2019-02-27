@@ -1,21 +1,13 @@
 import * as React from 'react';
 import { styled } from '../style';
-import classNames from 'classnames';
+import { CSSTransition } from 'react-transition-group';
 
 const CollapseStyle = styled.section`
   overflow: hidden;
   transition: max-height 0.4s ease;
 
-  &.expanded {
+  &.expand-enter-done {
     overflow: visible;
-    > * {
-      opacity: 1;
-    }
-  }
-
-  > * {
-    opacity: 0;
-    transition: opacity 0.4s ease;
   }
 `;
 
@@ -32,11 +24,10 @@ export function Collapse({ expanded, className, children }: Props) {
     ref.current.style.maxHeight = `${height}px`;
   });
   return (
-    <CollapseStyle
-        ref={ref}
-        className={classNames(className, { expanded, collapsed: !expanded })}
-    >
-      {children}
-    </CollapseStyle>
+    <CSSTransition in={expanded} classNames="expand" timeout={300}>
+      <CollapseStyle ref={ref} className={className}>
+        {children}
+      </CollapseStyle>
+    </CSSTransition>
   );
 }
