@@ -4,6 +4,7 @@ import { IssueSelector } from './IssueSelector';
 import { Relation, Issue } from '../../../../common/types/graphql';
 import { styled } from '../../style';
 import { ProjectEnv } from '../../models';
+import { RelationSelector } from './RelationSelector';
 
 const RELATIONS: Relation[] = [
   Relation.Blocks,
@@ -38,16 +39,7 @@ export function IssueLinkEdit({ issue, onLink, exclude }: Props) {
 
   return (
     <IssueLinkEditEl>
-      <DropdownButton
-        id="issue-link-type"
-        title={RELATION_NAMES[relation]}
-        onSelect={r => setRelation(r as Relation)}
-      >
-        {RELATIONS.map(r => (
-          <MenuItem key={r} eventKey={r} active={r === relation}>
-            <RelationName relation={r} />
-          </MenuItem>))}
-      </DropdownButton>
+      <RelationSelector value={relation} onChange={setRelation} />
       <IssueSelector
           className="ac-issue"
           env={env}

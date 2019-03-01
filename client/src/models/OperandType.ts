@@ -1,5 +1,6 @@
 import { Template, FieldType } from '../../../common/types/json';
 import { ObservableSet } from 'mobx';
+import { Relation } from '../../../common/types/graphql';
 
 export enum OperandType {
   STATE = 'state',
@@ -33,6 +34,8 @@ export function defaultOperandValue(
     return [];
   } else if (type === OperandType.ENUM) {
     return new ObservableSet(customField.values);
+  } else if (type === OperandType.RELATION) {
+    return Relation.BlockedBy;
   } else {
     return '';
   }

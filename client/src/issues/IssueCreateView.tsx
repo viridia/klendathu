@@ -17,7 +17,7 @@ const NewIssueMutation = gql`
 `;
 
 interface Props extends RouteComponentProps<{}> {
-  context: ViewContext;
+  env: ViewContext;
 }
 
 export function IssueCreateView(props: Props) {

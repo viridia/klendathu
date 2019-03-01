@@ -90,11 +90,16 @@ export class MainPage extends React.Component<RouteComponentProps<{}>> {
                     <Switch>
                       <Route
                         path="/:owner/:name/new"
-                        render={props => <IssueCreateView {...props} context={this.viewContext} />}
+                        render={props => <IssueCreateView {...props} env={this.viewContext} />}
+                      />
+                      <Route
+                        path="/:owner/:name/clone/:id"
+                        render={props =>
+                          <IssueEditView {...props} env={this.viewContext} clone={true} />}
                       />
                       <Route
                         path="/:owner/:name/edit/:id"
-                        render={props => <IssueEditView {...props} context={this.viewContext} />}
+                        render={props => <IssueEditView {...props} env={this.viewContext} />}
                       />
                       <Route
                         path="/:owner/:name/:id(\d+)"

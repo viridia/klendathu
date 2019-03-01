@@ -7,6 +7,7 @@ import { observer } from 'mobx-react';
 import { observable, action } from 'mobx';
 import classNames from 'classnames';
 import bind from 'bind-decorator';
+import { Milestone } from '../../../../common/types/graphql';
 
 interface Props {
   className?: string;

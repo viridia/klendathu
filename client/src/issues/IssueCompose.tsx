@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as qs from 'qs';
 // import { Milestone } from 'klendathu-json-types';
 // import { MilestoneListQuery } from '../../models';
 // import { MilestoneSelector } from './input';
@@ -149,7 +150,7 @@ const IssueLinkGroup = styled.div`
 `;
 
 interface Props extends RouteComponentProps<{}> {
-  context: ViewContext;
+  env: ViewContext;
   // milestones: MilestoneListQuery;
   // milestones?: any;
   issue?: Issue;
@@ -181,6 +182,7 @@ export class IssueCompose extends React.Component<Props> {
     } else {
       this.resetType();
     }
+    this.applyParams();
   }
 
   public componentWillUpdate() {
@@ -189,7 +191,7 @@ export class IssueCompose extends React.Component<Props> {
 
   public render() {
     const { location, issue } = this.props;
-    const { account, project, template } = this.props.context;
+    const { account, project, template } = this.props.env;
     if (!template) {
       return null;
     }
@@ -364,7 +366,7 @@ export class IssueCompose extends React.Component<Props> {
 
   private renderCustomFields(issueType: IssueType) {
     const result: JSX.Element[] = [];
-    const { project } = this.props.context;
+    const { project } = this.props.env;
     for (const field of this.issueType.fields) {
       let component = null;
       const value = this.custom.get(field.id) || field.default || '';
@@ -578,7 +580,7 @@ export class IssueCompose extends React.Component<Props> {
   @action.bound
   private resetType() {
     // If no type selected, choose the first available.
-    const { template } = this.props.context;
+    const { template } = this.props.env;
     if (template && !this.type) {
       const defaultType = (template.types || []).find(t => !t.abstract);
       if (defaultType) {
@@ -600,24 +602,52 @@ export class IssueCompose extends React.Component<Props> {
     }
   }
 
+  /** Add in the effects of query params (redirect from workflow UI) */
+  private applyParams() {
+    const params = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
+    if (params.state) {
+      this.prevState = this.issueState = params.state;
+    }
+    if (params.type) {
+      this.type = params.type;
+    }
+    if (params.summary) {
+      this.summary = params.summary;
+    }
+    if (params.description) {
+      this.description = params.description;
+    }
+    if (params.owner) {
+      this.owner = params.owner;
+    }
+    // TODO: Apply other issue attributes: cc, custom, attachments, milestone
+    for (const key of Object.getOwnPropertyNames(params)) {
+      const value = params[key];
+      if (key.startsWith('addLinks_')) {
+        const [, id] = key.split(/_/);
+        this.issueLinkMap.set(id, value as Relation);
+      }
+    }
+  }
+
   @computed
   get issueType(): IssueType {
-    const { context } = this.props;
+    const { env: context } = this.props;
     return context.getInheritedIssueType(this.type);
   }
 
   @computed
   get workflow(): Workflow {
-    const { template } = this.props.context;
+    const { template } = this.props.env;
     const issueType = this.issueType;
     if (template && issueType && issueType.workflow) {
-      return this.props.context.getWorkflow(issueType.workflow);
+      return this.props.env.getWorkflow(issueType.workflow);
     }
     return null;
   }
 
   private get backLink(): string {
-    const { account, project } = this.props.context;
+    const { account, project } = this.props.env;
     const { location, issue } = this.props;
     return (location.state && location.state.back)
         || (issue && `/${account.accountName}/${project.name}/${idToIndex(issue.id)}`)

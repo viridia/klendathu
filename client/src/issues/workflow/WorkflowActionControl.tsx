@@ -22,14 +22,18 @@ const WorkflowActionEl = styled.section`
 `;
 
 const WorkflowEffect = styled.section`
+  display: block;
   font-size: 90%;
-  margin-left: 32px;
-  text-indent: -20px;
+  margin-left: 20px;
+  text-indent: -12px;
+
+  > * {
+    text-indent: 0;
+  }
 
   > .value {
     font-weight: bold;
   }
-
 
   & .placeholder {
     color: ${props => props.theme.textAccented};

@@ -4,16 +4,17 @@ import * as qs from 'qs';
 import { computed, action, observable, ObservableMap } from 'mobx';
 import { Workflow } from '../../../../common/types/json';
 import { Issue, TimelineEntry, Mutation, UpdateIssueInput } from '../../../../common/types/graphql';
-import { ViewContext } from '../../models';
+import { ViewContext, OperandType, defaultOperandValue } from '../../models';
 import { fragments } from '../../graphql';
 import { client } from '../../graphql/client';
 import { observer } from 'mobx-react';
-import { ExecutableAction } from './ExecutableAction';
+import { ExecutableAction, ExecutableLinkEffect } from './ExecutableAction';
 import { WorkflowActionControl } from './WorkflowActionControl';
 import { ActionEnv } from './ActionEnv';
 import { WorkflowInputsDialog } from './WorkflowInputsDialog';
 import styled from 'styled-components';
 import gql from 'graphql-tag';
+import { idToIndex } from '../../lib/idToIndex';
 
 const UpdateIssueMutation = gql`
   mutation UpdateIssueMutation($id: ID!, $input: UpdateIssueInput!) {
@@ -69,7 +70,7 @@ export class WorkflowActions extends React.Component<Props> {
               key={index}
               execAction={a}
               issue={issue}
-              vars={this.actionEnv}
+              vars={this.placeholderEnv}
               onExec={this.exec}
           />
         ))}
@@ -87,10 +88,14 @@ export class WorkflowActions extends React.Component<Props> {
     return env.template.actions.map(act => new ExecutableAction(env, act));
   }
 
+  /** Returns an environment that contains placeholder values which is used to display
+      what would happen if the workflow action was invoked.
+   */
   @computed
-  private get actionEnv(): ActionEnv {
+  private get placeholderEnv(): ActionEnv {
     const { issue, timeline } = this.props;
-    return new ActionEnv(issue, timeline, this.actionProps);
+    const actionProps = new ObservableMap<string, any>();
+    return new ActionEnv(issue, timeline, actionProps);
   }
 
   @action.bound
@@ -106,8 +111,15 @@ export class WorkflowActions extends React.Component<Props> {
 
   @action.bound
   private exec(execAction: ExecutableAction) {
+    const { env } = this.props;
     if (execAction.inputs.size > 0) {
       this.actionProps.clear();
+      for (const input of execAction.inputs.values()) {
+        const defaultValue = defaultOperandValue(env.template, input.type, null);
+        if (defaultValue !== undefined) {
+          this.actionProps.set(input.id, defaultValue);
+        }
+      }
       this.pendingAction = execAction;
       this.showInput = true;
       return;
@@ -117,25 +129,35 @@ export class WorkflowActions extends React.Component<Props> {
 
   @action.bound
   private apply(act: ExecutableAction) {
-    const { issue, env, history } = this.props;
-    const effects = act.effects(issue, this.actionEnv);
+    const { issue, env, timeline, history } = this.props;
+    const finalEnv = new ActionEnv(issue, timeline, this.actionProps);
+    const effects = act.effects(issue, finalEnv);
 
     if (act.target === 'copy' || act.target === 'new') {
       const query: any = {};
       effects.forEach(eff => {
-        query[eff.key] = eff.value;
+        if (eff.type === OperandType.LINK) {
+          const value = eff.value as ExecutableLinkEffect[];
+          for (const v of value) {
+            query[`${eff.key}_${v.to.toString()}`] = v.relation;
+          }
+        } else {
+          query[eff.key] = eff.value;
+        }
       });
 
       // Create empty issue input
       if (act.target === 'copy') {
-        // Copy from old issue
-        console.log('copy');
+        history.push({
+          pathname: `/${env.account.accountName}/${env.project.name}/clone/${idToIndex(issue.id)}`,
+          search: qs.stringify(query, { addQueryPrefix: true }),
+        });
+      } else {
+        history.push({
+          pathname: `/${env.account.accountName}/${env.project.name}/new`,
+          search: qs.stringify(query, { addQueryPrefix: true }),
+        });
       }
-
-      history.push({
-        pathname: `/${env.account.accountName}/${env.project.name}/new`,
-        search: qs.stringify(query, { addQueryPrefix: true }),
-      });
       return;
     }
 

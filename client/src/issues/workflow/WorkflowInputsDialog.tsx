@@ -8,6 +8,7 @@ import { IssueSelector } from '../input';
 import { styled } from '../../style';
 import { computed } from 'mobx';
 import { Issue } from '../../../../common/types/graphql';
+import { EditOperand } from '../input/EditOperand';
 
 const InputControlGroup = styled(FormControlGroup)`
   justify-self: stretch;
@@ -56,9 +57,7 @@ export class WorkflowInputsDialog extends React.Component<Props> {
 
   private renderInputField(input: ExecutableInput, first: boolean): JSX.Element {
     const { env, outputs, issue } = this.props;
-    if (input.type === OperandType.RELATION) {
-      // TODO: Implement
-    } else if (input.type === OperandType.ISSUE) {
+    if (input.type === OperandType.ISSUE) {
       return (
         <IssueSelector
             env={env}
@@ -68,10 +67,16 @@ export class WorkflowInputsDialog extends React.Component<Props> {
             onSelectionChange={selection => outputs.set(input.id, selection)}
         />
       );
-    } else if (input.type === OperandType.TEXT) {
-      // TODO: Implement
+    } else {
+      return (
+        <EditOperand
+            type={input.type}
+            value={outputs.get(input.id)}
+            customField={null}
+            onChange={value => outputs.set(input.id, value)}
+        />
+      );
     }
-    return null;
   }
 
   @computed

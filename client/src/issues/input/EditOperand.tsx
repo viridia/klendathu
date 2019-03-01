@@ -8,6 +8,7 @@ import { LabelSelector } from './LabelSelector';
 import { EnumSetEditor } from './EnumSetEditor';
 import { ProjectEnv } from '../../models';
 import { Observer } from 'mobx-react-lite';
+import { RelationSelector } from './RelationSelector';
 
 interface Props {
   type: OperandType;
@@ -113,6 +114,9 @@ export function EditOperand(props: Props) {
           }
           case OperandType.ENUM: {
             return <EnumSetEditor field={customField} value={value} />;
+          }
+          case OperandType.RELATION: {
+            return <RelationSelector value={value} onChange={onChange} />;
           }
           default:
             return null;

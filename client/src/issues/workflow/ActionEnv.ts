@@ -48,6 +48,10 @@ export class ActionEnv {
     return session.account ? session.account.id : null;
   }
 
+  get self(): string {
+    return this.issue.id;
+  }
+
   get none(): string {
     return null;
   }

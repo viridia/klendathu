@@ -55,6 +55,7 @@ function HeaderImpl({ children, className, hasClose }: HeaderProps) {
 const Header = styled(HeaderImpl)`
   align-items: center;
   background-color: ${(props: ThemeProps) => props.theme.dialogHeaderBgColor};
+  border-radius: 6px 6px 0 0;
   color: ${(props: ThemeProps) => props.theme.dialogHeaderTextColor};
   display: flex;
   flex-direction: row;
@@ -125,7 +126,6 @@ const DialogEl = styled.div`
   box-shadow: ${(props: ThemeProps) => props.theme.dialogShadow};
   display: flex;
   flex-direction: column;
-  overflow: hidden;
   max-height: 95%;
   max-width: 95%;
   min-width: 15em;

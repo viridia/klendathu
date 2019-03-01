@@ -3,7 +3,7 @@ import { RouteComponentProps } from 'react-router-dom';
 import { IssueCompose } from './IssueCompose';
 import { toast } from 'react-toastify';
 import { ViewContext } from '../models';
-import { IssueInput, Issue } from '../../../common/types/graphql';
+import { IssueInput, Issue, Project } from '../../../common/types/graphql';
 import gql from 'graphql-tag';
 import { fragments, ErrorDisplay } from '../graphql';
 import { Query } from 'react-apollo';
@@ -22,6 +22,13 @@ const IssueQuery = gql`
   ${fragments.issue}
 `;
 
+const NewIssueMutation = gql`
+  mutation NewIssueMutation($project: ID!, $input: IssueInput!) {
+    newIssue(project: $project, input: $input) { ...IssueFields }
+  }
+  ${fragments.issue}
+`;
+
 const UpdateIssueMutation = gql`
   mutation UpdateIssueMutation($id: ID!, $input: UpdateIssueInput!) {
     updateIssue(id: $id, input: $input) {
@@ -35,7 +42,8 @@ const UpdateIssueMutation = gql`
 `;
 
 interface Props extends RouteComponentProps<{ project: string; id: string }> {
-  context: ViewContext;
+  env: ViewContext;
+  clone?: boolean;
   // milestones: MilestoneListQuery;
 }
 
@@ -56,8 +64,25 @@ function saveIssue(issue: Issue, input: IssueInput) {
   });
 }
 
+function createIssue(project: Project, input: IssueInput): Promise<Issue> {
+  return client.mutate<{ newIssue: Issue }>({
+    mutation: NewIssueMutation,
+    variables: { project: project.id, input }
+  }).then(({ data, errors }) => {
+    if (errors) {
+      // TODO: more information
+      toast.error('Issue creation failed.');
+      // TODO: An error UI.
+      decodeErrorAsException(errors);
+    } else {
+      toast.success(`Issue #${idToIndex(data.newIssue.id)} created.`);
+      return data.newIssue;
+    }
+  });
+}
+
 export function IssueEditView(props: Props) {
-  const context = props.context;
+  const context = props.env;
   const id = props.match.params.id;
   return (
     <Query query={IssueQuery} variables={{ id: `${context.project.id}.${id}` }}>
@@ -68,7 +93,11 @@ export function IssueEditView(props: Props) {
           return <ErrorDisplay error={error} />;
         } else {
           const onSave = (input: IssueInput): Promise<Issue> => {
-            return saveIssue(data.issue, input);
+            if (props.clone) {
+              return createIssue(context.project, input);
+            } else {
+              return saveIssue(data.issue, input);
+            }
           };
 
           return <IssueCompose {...props} issue={data.issue} onSave={onSave} />;
