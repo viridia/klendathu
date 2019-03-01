@@ -1,20 +1,14 @@
 import * as React from 'react';
-// import { Issue } from 'klendathu-json-types';
-import {
-  ObservableProjectPrefs,
-  Project
-} from '../../models';
-import { LabelName } from '../common/LabelName';
-import { AccountName } from '../common/AccountName';
-import { Avatar } from '../common/Avatar';
 import { RouteComponentProps } from 'react-router-dom';
 import { observer } from 'mobx-react';
 import classNames from 'classnames';
 import bind from 'bind-decorator';
+import { Issue } from '../../../common/types/graphql';
+import { LabelName, Avatar, AccountName } from '../controls';
+import { ViewContext } from '../models';
 
 interface Props extends RouteComponentProps<{}> {
-  project: Project;
-  prefs: ObservableProjectPrefs;
+  env: ViewContext;
   issue: Issue;
   group?: string;
 }
@@ -22,7 +16,7 @@ interface Props extends RouteComponentProps<{}> {
 @observer
 export class IssueCard extends React.Component<Props> {
   public render() {
-    const { issue, prefs } = this.props;
+    const { issue, env } = this.props;
     const index = issue.id.split('/', 4)[2];
     return (
       <div className="issue-card" draggable={true} onDragStart={this.onDragStart}>
@@ -35,8 +29,8 @@ export class IssueCard extends React.Component<Props> {
             {issue.summary}
           </span>
           {issue.labels
-            .filter(l => prefs.showLabel(l))
-            .map(l => <LabelName label={l} key={l} />)}
+            .filter(l => env.visibleLabels.has(l))
+            .map(l => <LabelName id={l} key={l} />)}
       </div>
         <footer>
           <Avatar id={issue.owner} />
@@ -58,8 +52,8 @@ export class IssueCard extends React.Component<Props> {
   }
 
   private renderIssueType() {
-    const { issue, project } = this.props;
-    const typeInfo = project.template.types.find(t => t.id === issue.type);
+    const { issue, env } = this.props;
+    const typeInfo = env.getInheritedIssueType(issue.type);
     if (!typeInfo) {
       return <div className="type">{issue.type}</div>;
     }

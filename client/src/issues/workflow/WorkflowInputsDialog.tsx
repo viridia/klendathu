@@ -34,7 +34,7 @@ export class WorkflowInputsDialog extends React.Component<Props> {
       <Dialog open={open} onClose={onClose}>
         <Dialog.Header>{title}</Dialog.Header>
         <Dialog.Body>
-          <Form layout="ledger" onSubmit={this.onClickApply}>
+          <Form layout="ledger" onSubmit={this.onApply}>
             <AutoNavigate />
             {Array.from(inputs.values()).map((inputField, index) => (
               <React.Fragment key={inputField.id}>
@@ -48,7 +48,7 @@ export class WorkflowInputsDialog extends React.Component<Props> {
         </Dialog.Body>
         <Dialog.Footer>
           <Button kind="default" onClick={onClose}>Cancel</Button>
-          <Button kind="primary" onClick={this.onClickApply} disabled={disabled}>Apply</Button>
+          <Button kind="primary" onClick={this.onApply} disabled={disabled}>Apply</Button>
         </Dialog.Footer>
       </Dialog>
     );
@@ -93,8 +93,10 @@ export class WorkflowInputsDialog extends React.Component<Props> {
   }
 
   @bind
-  private onClickApply(e: any) {
+  private onApply(e: any) {
     e.preventDefault();
-    this.props.onApplyChanges();
+    if (this.canApply) {
+      this.props.onApplyChanges();
+    }
   }
 }

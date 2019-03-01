@@ -70,13 +70,14 @@ export class AutoNavigate extends React.Component<Props> {
         }
 
         // Increment the index. See if there any any focusable elements following this one.
-        activeIndex += 1;
-        if (activeIndex < elements.length) {
+        while (activeIndex < elements.length - 1) {
+          activeIndex += 1;
           // Now set focus to it.
           const nextActive = elements[activeIndex];
-          if (nextActive) {
+          if (nextActive && nextActive.tagName === 'INPUT' || nextActive.tagName === 'TEXTAREA') {
             (nextActive as HTMLInputElement).focus();
             e.preventDefault();
+            return;
           }
         }
       }

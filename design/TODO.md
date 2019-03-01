@@ -1,6 +1,5 @@
 # TODO
 
-* Bug in search by summary
 * Make autocompletes enter key submit form.
 * Workflow actions (test)
   * Unit test for removeLinks

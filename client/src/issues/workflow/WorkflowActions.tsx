@@ -1,5 +1,7 @@
 import * as React from 'react';
-import { computed, action, observable, ObservableMap, toJS } from 'mobx';
+import * as H from 'history';
+import * as qs from 'qs';
+import { computed, action, observable, ObservableMap } from 'mobx';
 import { Workflow } from '../../../../common/types/json';
 import { Issue, TimelineEntry, Mutation, UpdateIssueInput } from '../../../../common/types/graphql';
 import { ViewContext } from '../../models';
@@ -37,6 +39,7 @@ interface Props {
   env: ViewContext;
   issue: Issue;
   timeline: TimelineEntry[];
+  history: H.History;
 }
 
 @observer
@@ -114,20 +117,28 @@ export class WorkflowActions extends React.Component<Props> {
 
   @action.bound
   private apply(act: ExecutableAction) {
-    const { issue, env } = this.props;
+    const { issue, env, history } = this.props;
+    const effects = act.effects(issue, this.actionEnv);
+
     if (act.target === 'copy' || act.target === 'new') {
+      const query: any = {};
+      effects.forEach(eff => {
+        query[eff.key] = eff.value;
+      });
+
       // Create empty issue input
       if (act.target === 'copy') {
         // Copy from old issue
         console.log('copy');
       }
-      // Create issue
-      // Navigate to edit view
-      console.log('TODO: workflow target');
+
+      history.push({
+        pathname: `/${env.account.accountName}/${env.project.name}/new`,
+        search: qs.stringify(query, { addQueryPrefix: true }),
+      });
       return;
     }
 
-    const effects = act.effects(issue, this.actionEnv);
     if (effects.length === 0) {
       return;
     }

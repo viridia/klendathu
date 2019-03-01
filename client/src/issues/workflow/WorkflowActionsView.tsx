@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as H from 'history';
 import { Issue } from '../../../../common/types/graphql';
 import gql from 'graphql-tag';
 import { fragments, ErrorDisplay } from '../../graphql';
@@ -17,9 +18,10 @@ const IssueTimelineQuery = gql`
 
 interface Props {
   issue: Issue;
+  history: H.History;
 }
 
-export function WorkflowActionsView({ issue }: Props) {
+export function WorkflowActionsView({ issue, history }: Props) {
   const env = React.useContext(ProjectEnv);
   return (
     <Query
@@ -36,6 +38,7 @@ export function WorkflowActionsView({ issue }: Props) {
         const { timeline } = data;
         return (
           <WorkflowActions
+            history={history}
             env={env}
             issue={issue}
             timeline={timeline ? timeline.results : []}

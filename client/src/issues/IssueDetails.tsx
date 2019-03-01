@@ -284,7 +284,7 @@ export class IssueDetails extends React.Component<Props> {
 
         {project.role >= Role.UPDATER && (
           <RightPanel>
-            <WorkflowActionsView issue={issue} />
+            <WorkflowActionsView history={this.props.history} issue={issue} />
           </RightPanel>
         )}
       </IssueDetailsContent>

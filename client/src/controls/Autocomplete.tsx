@@ -359,6 +359,8 @@ export class Autocomplete<S> extends React.Component<Props<S>> {
             e.stopPropagation();
           }
         } else if (this.selection().length > 0 && this.props.onAcceptSuggestion) {
+          e.preventDefault();
+          e.stopPropagation();
           this.props.onAcceptSuggestion();
         }
         break;
