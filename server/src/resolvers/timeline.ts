@@ -16,7 +16,7 @@ interface PaginatedIssueChangeRecords {
 export const queries = {
   async timeline(
       _: any,
-      { project: pid, issue, pagination }: TimelineQueryArgs,
+      { project: pid, issue, pagination, recent }: TimelineQueryArgs,
       context: Context): Promise<PaginatedIssueChangeRecords> {
 
     const user = context.user ? context.user.accountName : null;
@@ -46,7 +46,7 @@ export const queries = {
     //   filter.isPublic = true;
     // }
 
-    const result = await timeline.find(filter).sort({ at: 1 }).toArray();
+    const result = await timeline.find(filter).sort({ at: recent ? -1 : 1 }).toArray();
     return {
       count: result.length,
       offset: 0,

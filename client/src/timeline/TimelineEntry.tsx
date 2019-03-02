@@ -5,6 +5,7 @@ import { LinkChangeDisplay } from './LinkChangeDisplay';
 import { ProjectEnv } from '../models';
 import styled from 'styled-components';
 import { CommentDisplay } from './CommentDisplay';
+import { IssueCondensedDisplay } from '../issues/IssueCondensedDisplay';
 
 export function StateNameDisplay({ state }: { state: string }) {
   const env = React.useContext(ProjectEnv);
@@ -33,6 +34,10 @@ const TimelineEntryHeader = styled.header`
     font-weight: bold;
     color: ${props => props.theme.textNormal};
   }
+`;
+
+const TimelineIssueName = styled.span`
+  display: inline;
 `;
 
 const TimelineProperyList = styled.ul`
@@ -81,7 +86,12 @@ function customChange({ key, before, after }: CustomFieldChange) {
     </TimelinePropery>);
 }
 
-export function TimelineEntryDisplay({ change }: { change: TimelineEntry }) {
+interface Props {
+  change: TimelineEntry;
+  showIssue?: boolean;
+}
+
+export function TimelineEntryDisplay({ change, showIssue }: Props) {
   const {
     type,
     state,
@@ -105,6 +115,11 @@ export function TimelineEntryDisplay({ change }: { change: TimelineEntry }) {
         <AccountName id={change.by} />
         &nbsp;made changes&nbsp;
         <RelativeDate date={change.at} withPrefix={true} />
+        {showIssue && (
+          <TimelineIssueName>&nbsp;to{' '}
+            <IssueCondensedDisplay id={change.issue} />
+          </TimelineIssueName>
+        )}
         :
       </TimelineEntryHeader>}
       {anyNonCommentChange && <TimelineProperyList>

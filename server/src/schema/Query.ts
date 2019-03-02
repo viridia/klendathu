@@ -65,7 +65,7 @@ type Query {
   issueSearch(project: ID!, search: String!): [Issue!]!
 
   "Retrieve history of changes to an issue, or all issues within a project."
-  timeline(project: ID!, issue: ID, pagination: Pagination): PaginatedTimeline!
+  timeline(project: ID!, issue: ID, recent: Boolean, pagination: Pagination): PaginatedTimeline!
 
   "Retrieve history of comments to an issue, or all issues within a project."
   comments(project: ID!, issue: ID, pagination: Pagination): PaginatedTimeline!

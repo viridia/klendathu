@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as dateFormat from 'dateformat';
-import { differenceInCalendarDays } from 'date-fns';
+import { differenceInCalendarDays, differenceInWeeks, distanceInWordsToNow, format } from 'date-fns';
 
 export function humanAge(date: Date, brief = false, withPrefix = false): string {
   if (!date) {
@@ -63,6 +63,15 @@ export function humanAge(date: Date, brief = false, withPrefix = false): string 
     return `on ${dateFormat(date, 'isoDate')}`;
   } else {
     return dateFormat(date, 'isoDate');
+  }
+}
+
+export function relativeDay(time: Date) {
+  const now = new Date();
+  if (differenceInWeeks(now, time) < 1) {
+    return format(time, 'dddd');
+  } else {
+    return `${distanceInWordsToNow(time)} ago`;
   }
 }
 

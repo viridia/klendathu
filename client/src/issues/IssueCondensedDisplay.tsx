@@ -15,10 +15,10 @@ const IssueQuery = gql`
   ${fragments.issue}
 `;
 
-const IssueCondensedEl = styled.div`
+const IssueCondensedEl = styled.span`
   align-items: flex-start;
   color: ${props => props.theme.textNormal};
-  display: flex;
+  display: inline-flex;
   overflow-x: hidden;
 
   > .id {

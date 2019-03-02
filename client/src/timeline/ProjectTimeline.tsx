@@ -1,25 +1,27 @@
 import * as React from 'react';
-import { TimelineEntry, Subscription, Issue } from '../../../common/types/graphql';
-import { TimelineEntryDisplay, TimeLabel } from '../timeline';
+import { TimelineEntry, Subscription, Project } from '../../../common/types/graphql';
+import { TimelineEntryDisplay } from '../timeline';
 import { fragments, ErrorDisplay } from '../graphql';
 import { Query } from 'react-apollo';
-import { session } from '../models';
+import { session, ViewContext } from '../models';
 import { isSameDay } from 'date-fns';
+import { TimeLabel } from './TimeLabel';
 import gql from 'graphql-tag';
 import { relativeDay } from '../controls/RelativeDate';
+import styled from 'styled-components';
 
-const IssueTimelineQuery = gql`
-  query IssueTimelineQuery($project: ID!, $issue: ID!) {
-    timeline(project: $project, issue: $issue) {
+const ProjectTimelineQuery = gql`
+  query ProjectTimelineQuery($project: ID!) {
+    timeline(project: $project, recent: true) {
       count offset results { ...TimelineEntryFields }
     }
   }
   ${fragments.timelineEntry}
 `;
 
-const IssueTimelineSubscription = gql`
-  subscription IssueTimelineSubscription($project: ID!, $issue: ID!) {
-    timelineChanged(project: $project, issue: $issue) {
+const ProjectTimelineSubscription = gql`
+  subscription IssueTimelineSubscription($project: ID!) {
+    timelineChanged(project: $project) {
       action
       value { ...TimelineEntryFields }
     }
@@ -29,17 +31,34 @@ const IssueTimelineSubscription = gql`
 
 type TimelineChangeResult = Pick<Subscription, 'timelineChanged'>;
 
+const TimelineLayout = styled.section`
+  align-items: flex-start;
+  display: grid;
+  flex: 1;
+  gap: 8px;
+  grid-auto-flow: row;
+  grid-template-columns: [labels] auto [controls] 1fr;
+  justify-items: flex-start;
+  margin: 0 0 0 1rem;
+  padding: 0 0.5rem 1rem 0;
+  overflow-y: scroll;
+
+  > .fill {
+    justify-self: stretch;
+  }
+`;
+
 interface Props {
-  issue: Issue;
+  env: ViewContext;
 }
 
-export function IssueTimeline({ issue }: Props) {
+export function ProjectTimeline({ env }: Props) {
+  const { project } = env;
   return (
     <Query
-        query={IssueTimelineQuery}
+        query={ProjectTimelineQuery}
         variables={{
-          issue: issue.id,
-          project: issue.project,
+          project: project.id,
         }}
         fetchPolicy="cache-and-network"
     >
@@ -48,12 +67,11 @@ export function IssueTimeline({ issue }: Props) {
           return <ErrorDisplay error={error} />;
         }
         const { timeline } = data;
-        if (session.account && issue) {
+        if (session.account && project) {
           subscribeToMore<TimelineChangeResult>({
-            document: IssueTimelineSubscription,
+            document: ProjectTimelineSubscription,
             variables: {
-              issue: issue.id,
-              project: issue.project,
+              project: project.id,
             },
             updateQuery: (prev, { subscriptionData }) => {
               // TODO: be smarter about updating the cache.
@@ -71,7 +89,6 @@ export function IssueTimeline({ issue }: Props) {
 
         if (timeline && timeline.results && timeline.results.length > 0) {
           let prevTime: Date = null;
-          const now = new Date();
           const entries: JSX.Element[] = [];
 
           timeline.results.forEach((te: TimelineEntry) => {
@@ -79,10 +96,14 @@ export function IssueTimeline({ issue }: Props) {
               prevTime = te.at;
               entries.push(<TimeLabel key={`time_${te.id}`}>{relativeDay(te.at)}:</TimeLabel>);
             }
-            entries.push(<TimelineEntryDisplay key={te.id} change={te} />);
+            entries.push(<TimelineEntryDisplay key={te.id} change={te} showIssue={true} />);
           });
 
-          return entries;
+          return (
+            <TimelineLayout>
+              {entries}
+            </TimelineLayout>
+          );
         }
         return null;
       }}

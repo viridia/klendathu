@@ -1,11 +1,8 @@
 # TODO
 
-* Make autocompletes enter key submit form.
+* Project timeline
 * Workflow actions (test)
-  * Unit test for removeLinks
-  * Clone: target new issue
-  * Create Linked: target new issue
-  * Workflow inputs: return to apply dialog.
+  * Server unit test for removeLinks
 * Custom Props columns
   * Column edit.
 * Attachments

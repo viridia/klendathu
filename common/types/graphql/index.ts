@@ -826,6 +826,8 @@ export interface TimelineQueryArgs {
 
   issue?: Maybe<string>;
 
+  recent?: Maybe<boolean>;
+
   pagination?: Maybe<Pagination>;
 }
 export interface CommentsQueryArgs {

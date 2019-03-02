@@ -18,6 +18,7 @@ import { ViewContextProvider } from './ViewContextProvider';
 import { IssueEditView } from '../issues/IssueEditView';
 import { IssueDetailsView } from '../issues/IssueDetailsView';
 import { ErrorDialog } from '../graphql/ErrorDisplay';
+import { ProjectTimeline } from '../timeline/ProjectTimeline';
 
 const MainPageLayout = styled(Page)`
   display: grid;
@@ -108,7 +109,7 @@ export class MainPage extends React.Component<RouteComponentProps<{}>> {
                       <Route
                         path="/:owner/:name/issues"
                         exact={true}
-                        render={props => (<IssueListView {...props} env={this.viewContext}/>)}
+                        render={props => (<IssueListView {...props} env={this.viewContext} />)}
                       />
                       <Route
                         path="/:owner/:name/labels"
@@ -119,13 +120,13 @@ export class MainPage extends React.Component<RouteComponentProps<{}>> {
                         path="/:owner/:name/filters"
                         exact={true}
                         render={props => (<SavedFiltersView {...props} {...models}/>)}
-                      />
+                      /> */}
                       <Route
-                        path="/:owner/:name/history"
+                        path="/:owner/:name/timeline"
                         exact={true}
-                        render={props => (<HistoryListView {...props} {...models}/>)}
+                        render={props => (<ProjectTimeline {...props}  env={this.viewContext} />)}
                       />
-                      <Route
+                      {/* <Route
                         path="/:owner/:name/progress"
                         exact={true}
                         render={props => (<ProgressView {...props} {...models}/>)}
