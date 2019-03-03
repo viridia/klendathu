@@ -680,6 +680,10 @@ export interface Mutation {
   addPrefsFilter: ProjectPrefs;
   /** Remove a prefs filter. */
   removePrefsFilter: ProjectPrefs;
+  /** Changes a user's project role, and adds them to the project if they are not already a member. */
+  setProjectRole: Membership;
+  /** Remove a user from a project. */
+  removeProjectMember: Membership;
 }
 
 export interface DeletionResult {
@@ -695,6 +699,8 @@ export interface Subscription {
   projectChanged: ProjectChange;
   /** Watch the list of labels defined for a project. */
   labelChanged: LabelChange;
+  /** Watch for changes to project or organization memberships. */
+  membershipChanged: MembershipChange;
   /** Watch for changes to project prefs (current user). */
   prefsChanged: ProjectPrefsChange;
   /** Watch issues for a given project. */
@@ -714,7 +720,13 @@ export interface ProjectChange {
 export interface LabelChange {
   action: ChangeAction;
 
-  label: Label;
+  value: Label;
+}
+
+export interface MembershipChange {
+  action: ChangeAction;
+
+  value: Membership;
 }
 
 export interface ProjectPrefsChange {
@@ -793,7 +805,7 @@ export interface ProjectContextQueryArgs {
   name: string;
 }
 export interface ProjectMembersQueryArgs {
-  projectName: string;
+  project: string;
 }
 export interface TemplateQueryArgs {
   owner: string;
@@ -939,6 +951,18 @@ export interface RemovePrefsFilterMutationArgs {
 
   name: string;
 }
+export interface SetProjectRoleMutationArgs {
+  project: string;
+
+  account: string;
+
+  role: number;
+}
+export interface RemoveProjectMemberMutationArgs {
+  project: string;
+
+  account: string;
+}
 export interface ProjectsChangedSubscriptionArgs {
   owners: string[];
 }
@@ -947,6 +971,11 @@ export interface ProjectChangedSubscriptionArgs {
 }
 export interface LabelChangedSubscriptionArgs {
   project: string;
+}
+export interface MembershipChangedSubscriptionArgs {
+  project?: Maybe<string>;
+
+  organization?: Maybe<string>;
 }
 export interface PrefsChangedSubscriptionArgs {
   project: string;

@@ -61,5 +61,11 @@ type Mutation {
 
   "Remove a prefs filter."
   removePrefsFilter(project: ID!, name: String!): ProjectPrefs!
+
+  "Changes a user's project role, and adds them to the project if they are not already a member."
+  setProjectRole(project: ID!, account: ID!, role: Int!): Membership!
+
+  "Remove a user from a project."
+  removeProjectMember(project: ID!, account: ID!): Membership!
 }
 `;

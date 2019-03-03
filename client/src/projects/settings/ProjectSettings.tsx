@@ -4,15 +4,14 @@ import { Tab, TabBar } from '../../controls';
 import { Role } from '../../../../common/types/json';
 import { ProjectInfoEdit } from './ProjectInfoEdit';
 import { ViewContext } from '../../models';
-// import { ColumnSettings } from './columns/ColumnSettings';
-// import { ProjectMemberList } from './members/ProjectMemberList';
+import { ColumnSettings } from './columns/ColumnSettings';
+import { ProjectMembers } from './members/ProjectMembers';
 // import { ProjectMilestonesEdit } from './milestones/ProjectMilestonesEdit';
 // import { ProjectTemplateEdit } from './ProjectTemplateEdit';
 // import { WorkflowEdit } from './workflow/WorkflowEdit';
 
 interface Props extends RouteComponentProps<{ tab?: string }> {
   context: ViewContext;
-  // prefs: ObservableProjectPrefs;
   // milestones: MilestoneListQuery;
 }
 
@@ -43,8 +42,11 @@ export class ProjectSettings extends React.Component<Props> {
             path={`${locationPrefix}/info`}
             render={() => <ProjectInfoEdit {...this.props} />}
           />
-          <Route path={`${locationPrefix}/columns`} />
-          <Route path={`${locationPrefix}/members`} />
+          <Route
+            path={`${locationPrefix}/columns`}
+            render={() => <ColumnSettings env={this.props.context} />}
+          />
+          <Route path={`${locationPrefix}/members`} component={ProjectMembers} />
           <Route path={`${locationPrefix}/milestones`} />
           <Route path={`${locationPrefix}/templates`} />
           <Route path={`${locationPrefix}/workflow`} />
@@ -54,12 +56,6 @@ export class ProjectSettings extends React.Component<Props> {
     );
   }
 
-// <Tab eventKey="columns" title="Columns">
-//   <ColumnSettings {...this.props} />
-// </Tab>
-// <Tab eventKey="members" title="Members">
-//   <ProjectMemberList {...this.props} />
-// </Tab>
 // {project.role >= Role.DEVELOPER && (<Tab eventKey="milestones" title="Milestones">
 //   <ProjectMilestonesEdit {...this.props} />
 // </Tab>)}
@@ -69,5 +65,4 @@ export class ProjectSettings extends React.Component<Props> {
 // {project.role >= Role.MANAGER && (<Tab eventKey="workflow" title="Workflow">
 //   <WorkflowEdit {...this.props} />
 // </Tab>)}
-// </Tabs>
 }

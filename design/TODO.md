@@ -1,27 +1,18 @@
 # TODO
 
-* Project timeline
-* Workflow actions (test)
-  * Server unit test for removeLinks
-* Custom Props columns
-  * Column edit.
 * Attachments
 * Delete issues
 * Filters
   * Filter by custom fields
   * UI prefs in local storage
   * Saving filters
+* Workflow actions (test)
+  * Server unit test for removeLinks
 * GraphQL Batching
-* Better UI for entering linked issues - current process is cumbersome.
 * Project timeline
 * Better loading indicator
 * Syntax highlighting for code examples.
 * "Dark mode".
-* Template inheritance.
-* Timeline
-  * Show days in right column.
-  * Should allow supression of change entries.
-* Make user links local to the view
 * Sort issue searches by relevance
 * Preserve issue navigation list between page refreshes.
 * Better error reporting in issue create and issue edit.
@@ -38,6 +29,13 @@
 * Be smarter about updating the graphql subscription cache for timeline updates.
 * Use coverage reports to improve server unit tests.
 * Set up parallel tests in CircleCI
+* Timeline
+  * Should allow supression of change entries (just comments).
+* Better UI for entering linked issues - current process is cumbersome.
+* Template inheritance.
+* Make user links local to the view
+* Make subscription payloads more consistent - always use 'value' and publish helper.
+* Membership pages flashes on updates.
 
 # Major pieces
 
@@ -56,7 +54,6 @@
 * Label Delete
 * GitHub integration
 * Progress View
-* Changes View
 * Email Verification
 * Projects list in nav
 * Project Settings

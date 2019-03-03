@@ -79,7 +79,7 @@ export const mutations = {
         },
         {
           upsert: true,
-          // returnNewDocument: true,
+          returnOriginal: false,
         }) as any;
     signalPrefsChanged(result.value);
     return result.value;

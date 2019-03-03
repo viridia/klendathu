@@ -47,7 +47,7 @@ const LabelChangeSubscription = gql`
   subscription LabelChangeSubscription($project: ID!) {
     labelChanged(project: $project) {
       action
-      label { ...LabelFields }
+      value { ...LabelFields }
     }
   }
   ${fragments.label}

@@ -44,7 +44,7 @@ type Query {
   projects: [Project!]!
 
   "Return a list of all project members."
-  projectMembers(projectName: String!): [Membership!]!
+  projectMembers(project: ID!): [Membership!]!
 
   "Look up a template by name."
   template(owner: ID!, name: String!): JSONObject

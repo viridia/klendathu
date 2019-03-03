@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { TimelineEntry, Subscription, Project } from '../../../common/types/graphql';
+import { TimelineEntry, Subscription } from '../../../common/types/graphql';
 import { TimelineEntryDisplay } from '../timeline';
 import { fragments, ErrorDisplay } from '../graphql';
 import { Query } from 'react-apollo';

@@ -1,19 +1,10 @@
 import * as React from 'react';
-import { DropdownButton, MenuItem, RelationName, Button, RELATION_NAMES } from '../../controls';
+import { Button } from '../../controls';
 import { IssueSelector } from './IssueSelector';
 import { Relation, Issue } from '../../../../common/types/graphql';
 import { styled } from '../../style';
 import { ProjectEnv } from '../../models';
 import { RelationSelector } from './RelationSelector';
-
-const RELATIONS: Relation[] = [
-  Relation.Blocks,
-  Relation.BlockedBy,
-  Relation.Duplicate,
-  Relation.HasPart,
-  Relation.PartOf,
-  Relation.Related,
-];
 
 interface Props {
   issue: Issue;

@@ -15,13 +15,11 @@ import { AuthenticationError, UserInputError } from 'apollo-server-core';
 import { Errors, Role } from '../../../common/types/json';
 import { logger } from '../logger';
 import { getProjectAndRole } from '../db/role';
-import { pubsub } from './pubsub';
+import { pubsub, Channels, publish } from './pubsub';
 import { withFilter } from 'graphql-subscriptions';
 
-const LABEL_CHANGE = 'label-change';
-
 interface LabelRecordChange {
-  label: LabelRecord;
+  value: LabelRecord;
   action: ChangeAction;
 }
 
@@ -83,9 +81,9 @@ export const mutations = {
     };
 
     const result = await context.db.collection('labels').insertOne(record);
-    pubsub.publish(LABEL_CHANGE, {
+    publish(Channels.LABEL_CHANGE, {
       action: ChangeAction.Added,
-      label: result.ops[0],
+      value: result.ops[0],
     });
     return result.ops[0];
   },
@@ -125,9 +123,9 @@ export const mutations = {
 
     const result = await context.db.collection('labels')
         .findOneAndUpdate({ _id: id }, { $set: record });
-    pubsub.publish(LABEL_CHANGE, {
+    publish(Channels.LABEL_CHANGE, {
       action: ChangeAction.Changed,
-      label: result.value,
+      value: result.value,
     });
     return result.value;
   },
@@ -166,12 +164,12 @@ export const mutations = {
 export const subscriptions = {
   labelChanged: {
     subscribe: withFilter(
-      () => pubsub.asyncIterator([LABEL_CHANGE]),
+      () => pubsub.asyncIterator([Channels.LABEL_CHANGE]),
       (
-        { label }: LabelRecordChange,
+        { value }: LabelRecordChange,
         { project: id }: LabelChangedSubscriptionArgs,
         context: Context) => {
-        return context.user && label.project.equals(id);
+        return context.user && value.project.equals(id);
       }
     ),
     resolve: (payload: LabelRecordChange, args: any, context: Context) => {

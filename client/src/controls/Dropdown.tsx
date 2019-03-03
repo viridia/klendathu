@@ -70,6 +70,7 @@ export interface DropDownProps {
 
 export interface DropdownButtonProps {
   alignEnd?: boolean;
+  disabled?: boolean;
   drop?: 'up' | 'left' | 'right' | 'down';
   size?: ButtonSize;
   id?: string;
@@ -94,6 +95,7 @@ export class DropdownButton extends React.Component<DropdownButtonProps> {
   public render() {
     const {
       drop = 'down',
+      disabled,
       size,
       alignEnd = false,
       className,
@@ -116,6 +118,7 @@ export class DropdownButton extends React.Component<DropdownButtonProps> {
                 <DropdownButtonEl
                     kind={kind}
                     size={size}
+                    disabled={disabled}
                     className={className}
                     {...buttonProps as any}
                     onClick={(e: any) => { e.preventDefault(); toggle(e); }}

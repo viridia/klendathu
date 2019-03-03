@@ -16,7 +16,7 @@ type ProjectChange {
 
 type LabelChange {
   action: ChangeAction!
-  label: Label!
+  value: Label!
 }
 
 type ProjectPrefsChange {
@@ -34,6 +34,11 @@ type TimelineChange {
   value: TimelineEntry!
 }
 
+type MembershipChange {
+  action: ChangeAction!
+  value: Membership!
+}
+
 type Subscription {
   "Signal account details have changed. Not restricted; all users can see public account details."
   accountChanged: PublicAccount!
@@ -46,6 +51,9 @@ type Subscription {
 
   "Watch the list of labels defined for a project."
   labelChanged(project: ID!): LabelChange!
+
+  "Watch for changes to project or organization memberships."
+  membershipChanged(project: ID, organization: ID): MembershipChange!
 
   "Watch for changes to project prefs (current user)."
   prefsChanged(project: ID!): ProjectPrefsChange!

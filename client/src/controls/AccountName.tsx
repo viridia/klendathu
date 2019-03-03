@@ -5,12 +5,25 @@ import { NavLink } from './NavLink';
 import { History as H } from 'history';
 import { AccountQuery } from '../graphql';
 
+type DisplayOnly = 'display' | 'account';
+
 interface Props {
   id?: string;
   to?: H.LocationDescriptor;
+  only?: DisplayOnly;
 }
 
-export function AccountName({ id, to }: Props) {
+function formatAccountName(account: PublicAccount, only: DisplayOnly) {
+  if (only === 'display') {
+    return account.display || '';
+  } else if (only === 'account') {
+    return account.accountName || '';
+  } else {
+    return account.display || account.accountName;
+  }
+}
+
+export function AccountName({ id, to, only }: Props) {
   if (id === null || id === undefined) {
     return <span className="account-name unassigned">unassigned</span>;
   }
@@ -24,7 +37,7 @@ export function AccountName({ id, to }: Props) {
         } else {
           const account: PublicAccount = data.account;
           if (account && account.accountName) {
-            const text = account.display || account.accountName;
+            const text = formatAccountName(account, only);
             if (to) {
               return (
                 <NavLink className="account-name" to={to}>{text}</NavLink>

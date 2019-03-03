@@ -71,7 +71,6 @@ export function IssueTimeline({ issue }: Props) {
 
         if (timeline && timeline.results && timeline.results.length > 0) {
           let prevTime: Date = null;
-          const now = new Date();
           const entries: JSX.Element[] = [];
 
           timeline.results.forEach((te: TimelineEntry) => {

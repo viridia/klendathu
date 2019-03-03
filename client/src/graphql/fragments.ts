@@ -5,18 +5,27 @@ export const fragments = {
   fragment AccountFields on PublicAccount {
     id accountName type display photo
   }`,
+
   project: gql`
   fragment ProjectFields on Project {
     id name owner ownerName title description createdAt updatedAt template isPublic role
   }`,
+
+  membership: gql`
+  fragment MembershipFields on Membership {
+    id user project organization role createdAt updatedAt
+  }`,
+
   label: gql`
   fragment LabelFields on Label {
     id name color project creator created updated
   }`,
+
   projectPrefs: gql`
   fragment ProjectPrefsFields on ProjectPrefs {
     columns labels filters { name value view }
   }`,
+
   issue: gql`
   fragment IssueFields on Issue {
     id createdAt updatedAt type state project summary description
@@ -28,6 +37,7 @@ export const fragments = {
     position { x y }
     milestone
   }`,
+
   timelineEntry: gql`
   fragment TimelineEntryFields on TimelineEntry {
     id issue project by at

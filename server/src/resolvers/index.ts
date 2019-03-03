@@ -16,6 +16,7 @@ export const resolverMap = {
     ...accounts.queries,
     ...issueQueries.queries,
     ...labels.queries,
+    ...memberships.queries,
     ...projects.queries,
     ...projectPrefs.queries,
     ...templates.queries,
@@ -25,6 +26,7 @@ export const resolverMap = {
     ...accounts.mutations,
     ...issueMutations.mutations,
     ...labels.mutations,
+    ...memberships.mutations,
     ...projects.mutations,
     ...projectPrefs.mutations,
     ...templates.mutations,
@@ -32,6 +34,7 @@ export const resolverMap = {
   Subscription: {
     ...issueSubscriptions.subscriptions,
     ...labels.subscriptions,
+    ...memberships.subscriptions,
     ...projects.subscriptions,
     ...projectPrefs.subscriptions,
   },

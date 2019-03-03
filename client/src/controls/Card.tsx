@@ -33,3 +33,7 @@ export const Card = styled.section`
     border-top: 1px solid ${(props: ThemeProps) => props.theme.cardHeaderDividerColor};
   }
 `;
+
+export const CardTitle = styled.div`
+  font-weight: bold;
+`;
