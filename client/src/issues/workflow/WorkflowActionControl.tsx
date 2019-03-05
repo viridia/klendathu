@@ -113,8 +113,7 @@ export function WorkflowActionControl(props: Props) {
             );
           }
         } else if (effect.type === OperandType.LINK) {
-          const links = effect.value as ExecutableLinkEffect[];
-          return links.map((linkEffect, index) => (
+          return effect.value.map((linkEffect, index) => (
             <LinkEffectDisplay key={`${effect.key}_${index}`} link={linkEffect} />
           ));
         } else {

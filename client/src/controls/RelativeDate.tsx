@@ -1,6 +1,11 @@
 import * as React from 'react';
 import * as dateFormat from 'dateformat';
-import { differenceInCalendarDays, differenceInWeeks, distanceInWordsToNow, format } from 'date-fns';
+import {
+  differenceInCalendarDays,
+  differenceInWeeks,
+  distanceInWordsToNow,
+  format,
+} from 'date-fns';
 
 export function humanAge(date: Date, brief = false, withPrefix = false): string {
   if (!date) {

@@ -3,6 +3,21 @@ jobs:
   build:
     docker:
       - image: circleci/node:10.15
+    environment:
+      NODE_ENV: development
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run: npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+      - run: npm run build-client
+  test:
+    docker:
+      - image: circleci/node:10.15
       - image: circleci/mongo:4.0.5
         environment:
           MONGO_INITDB_ROOT_USERNAME: klendathu-admin
@@ -25,7 +40,15 @@ jobs:
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
-            - node_modules
-      - run: npm run build-client
+            - ./node_modules
+      - run: npm run lint-server
+      - run: npm run lint-client
       - run: npm run test-server
       - run: npm run test-client
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+      - test
