@@ -272,11 +272,13 @@ input UpdateIssueInput {
 
 "Query params for searching for issues via custom fields."
 input CustomSearchInput {
-  # Name of the custom field we are searching for.
+  "Name of the custom field we are searching for."
   name: String!
-  # Single values to search for. Default behavior is substring match.
+
+  "Single values to search for. Default behavior is substring match."
   value: String
-  # List of values we are searching for. Used for enum values.
+
+  "List of values we are searching for. Used for enum values."
   values: [String!]
 }
 

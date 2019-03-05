@@ -1,7 +1,6 @@
 # TODO
 
 * Package updates
-* Set up parallel tests in CircleCI
 * Enable issue grouping
 * Attachments
 * Delete issues
