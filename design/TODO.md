@@ -1,6 +1,5 @@
 # TODO
 
-* Package updates
 * Enable issue grouping
 * Attachments
 * Delete issues
@@ -58,7 +57,7 @@
   * Milestones
   * Templates
   * Workflow
-* Client unit tests
+* Client unit tests (coverage)
 * Enable Twitter auth
 * Export / backup database
 * Redis

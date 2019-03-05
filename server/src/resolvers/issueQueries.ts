@@ -181,17 +181,14 @@ export const queries = {
 
     if (query.custom) {
       for (const customSearch of query.custom) {
-        console.log(customSearch);
-        // TODO: Search by custom field
-      //   if (key.startsWith('custom.')) {
-      //     const fieldId = key.slice(7);
-      //     const pred = args[`pred.${fieldId}`] as Predicate || Predicate.CONTAINS;
-      //     const expr = stringPredicate(r.row('custom')(fieldId), pred, args[key]);
-      //     if (expr) {
-      //       // console.log(expr.toString());
-      //       filters.push(expr);
-      //     }
-      //   }
+        if (customSearch.pred === Predicate.In) {
+          filter[`custom.${customSearch.name}`] = { $in: customSearch.values };
+        } else if (customSearch.pred === Predicate.NotIn) {
+          filter[`custom.${customSearch.name}`] = { $not: { $in: customSearch.values } };
+        } else {
+          filter[`custom.${customSearch.name}`] =
+              stringPredicate(customSearch.pred, customSearch.value);
+        }
       }
     }
 
@@ -206,11 +203,15 @@ export const queries = {
         }
         if (key === 'id') {
           key = 'index';
+        } else if (key === 'owner') {
+          key = 'ownerSort';
+        } else if (key === 'reporter') {
+          key = 'reporterSort';
         }
         // TODO: Sort by custom field
-        // if (key.startsWith('custom.')) {
-        //   //
-        // }
+        if (key.startsWith('custom.')) {
+          //
+        }
         sort[key] = order;
       }
     } else {
@@ -226,7 +227,12 @@ export const queries = {
     // Generate numeric index from _id (for sorting).
     const result = await issues.aggregate([
       { $match: filter },
-      { $addFields: { index: { $toInt: { $arrayElemAt: [{ $split: [ '$_id', '.' ] }, 1] } } } },
+      { $addFields: {
+        // Add an 'index' field derived from the _id.
+        index: { $toInt: { $arrayElemAt: [{ $split: [ '$_id', '.' ] }, 1] } },
+        // Sort unassigned (null) owners last.
+        ownerSort: { $ifNull: ['$ownerSort', false] },
+      }},
       { $sort: sort },
     ]).toArray();
     return {

@@ -280,6 +280,9 @@ input CustomSearchInput {
 
   "List of values we are searching for. Used for enum values."
   values: [String!]
+
+  "Search predicate."
+  pred: Predicate
 }
 
 "Query params for searching for issues."

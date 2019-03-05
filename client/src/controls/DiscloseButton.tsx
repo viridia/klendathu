@@ -5,6 +5,7 @@ import classNames from 'classnames';
 import DiscloseIcon from '../svg-compiled/icons/IcPlayArrow';
 
 const DiscloseButtonEl = styled.button`
+  margin-top: 2px;
   margin-bottom: 0;
   margin-right: 4px;
   border: none;
@@ -12,6 +13,7 @@ const DiscloseButtonEl = styled.button`
   padding: 0;
   outline: none;
   transition: transform 0.5s ease;
+  transform-origin: 55% 45%;
   cursor: pointer;
 
   &.checked {

@@ -8,8 +8,9 @@ import {
   Query,
   ChangeAction,
   Predicate,
+  CustomSearchInput,
 } from '../../../common/types/graphql';
-import { observable, IReactionDisposer, autorun, action, ObservableSet } from 'mobx';
+import { observable, IReactionDisposer, autorun, action, ObservableSet, computed } from 'mobx';
 import { client } from '../graphql/client';
 import { GraphQLError } from 'graphql';
 import { coerceToString, coerceToStringArray } from '../lib/coerce';
@@ -37,6 +38,10 @@ const IssuesSubscription = gql`
   ${fragments.issue}
 `;
 
+function alphabeticalSort(a: string, b: string) {
+  return a.localeCompare(b);
+}
+
 function resolveAccountName(name: string): Promise<string> {
   if (name === 'none') {
     return Promise.resolve('none');
@@ -47,6 +52,21 @@ function resolveAccountName(name: string): Promise<string> {
   return queryAccount({ accountName: name }).then(({ data }) => {
     return data ? data.account.id : undefined;
   });
+}
+
+/** A group of issues having some property in common. */
+export interface IssueGroup {
+  /** what field we are grouping on. */
+  field: string;
+
+  /** Used in ordering the groups. */
+  sortKey: string;
+
+  /** Display value. */
+  value: string;
+
+  /** List of issues. */
+  issues: Issue[];
 }
 
 type IssuesQueryResult = Pick<Query, 'issues'>;
@@ -60,6 +80,7 @@ export class IssueQueryModel {
   @observable public errors: ReadonlyArray<GraphQLError> = null;
   @observable.shallow public list: Issue[] = [];
   @observable public sort = 'id';
+  @observable public group: string = '';
   @observable public descending = false;
   @observable public recentlyAdded = new Set<string>() as ObservableSet<string>;
 
@@ -87,6 +108,30 @@ export class IssueQueryModel {
       this.subscription.unsubscribe();
       this.subscription = null;
     }
+  }
+
+  @computed
+  public get grouped(): IssueGroup[] {
+    const groupMap = new Map<string, IssueGroup>();
+    let fieldName = this.group;
+    if (this.group === 'owner') {
+      fieldName = 'ownerSort';
+    } else if (this.group === 'reporter') {
+      fieldName = 'reporterSort';
+    }
+    for (const issue of this.list) {
+      const value = (issue as any)[this.group];
+      const sortKey = (issue as any)[fieldName];
+      const group = groupMap.get(sortKey);
+      if (!group) {
+        groupMap.set(sortKey, { field: this.group, sortKey, value, issues: [issue] });
+      } else {
+        group.issues.push(issue);
+      }
+    }
+    const keys = [...groupMap.keys()];
+    keys.sort(alphabeticalSort);
+    return keys.map(key => groupMap.get(key));
   }
 
   @action
@@ -144,15 +189,24 @@ export class IssueQueryModel {
             .map(l => `${this.projectId}.${l}`);
       }
 
-      // TODO: Custom fields
-      // this.group = queryParams.group;
-      // for (const key of Object.getOwnPropertyNames(this.searchParams)) {
-      //   if (key in descriptors || key.startsWith('custom.') || key.startsWith('pred.')) {
-      //     const desc = descriptors[key];
-      //     let value: any = this.searchParams[key];
-      //     issueQuery[key] = value;
-      //   }
-      // }
+      // Custom fields
+      for (const key of Object.getOwnPropertyNames(queryParams)) {
+        if (key.startsWith('custom.')) {
+          const name = key.slice(7);
+          const value = queryParams[key];
+          const predicate = queryParams[`pred.${name}`];
+          const cs: CustomSearchInput = {
+            name,
+            pred: predicate as Predicate,
+            values: coerceToStringArray(value),
+          };
+          if (!issueQuery.custom) {
+            issueQuery.custom = [cs];
+          } else {
+            issueQuery.custom.push(cs);
+          }
+        }
+      }
 
       const sort = coerceToString(queryParams.sort);
       if (sort) {
@@ -168,7 +222,11 @@ export class IssueQueryModel {
         this.descending = false;
       }
 
-      issueQuery.sort = sort ? [sort] : null;
+      issueQuery.sort = sort ? [sort] : [];
+      this.group = coerceToString(queryParams.group);
+      if (this.group) {
+        issueQuery.sort = [this.group, ...issueQuery.sort];
+      }
       this.issueQuery = issueQuery;
     });
   }

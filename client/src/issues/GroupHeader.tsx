@@ -1,16 +1,16 @@
 import * as React from 'react';
-import { IssueGroup } from '../../models';
 import { AccountName } from '../controls';
-import { Project } from '../../../common/types/graphql';
+import { ViewContext } from '../models';
+import { IssueGroup } from '../models/IssueQueryModel';
 
 interface Props {
-  project: Project;
+  env: ViewContext;
   group: IssueGroup;
 }
 
 export class GroupHeader extends React.Component<Props> {
   public render() {
-    const { group, project } = this.props;
+    const { group, env } = this.props;
     switch (group.field) {
       case 'owner':
         return (
@@ -28,7 +28,7 @@ export class GroupHeader extends React.Component<Props> {
         );
 
       case 'type': {
-        const typeInfo = project.template.types.find(t => t.id === group.value);
+        const typeInfo = env.template.types.find(t => t.id === group.value);
         return (
           <>
             <span className="title">Type: </span>
@@ -38,7 +38,7 @@ export class GroupHeader extends React.Component<Props> {
       }
 
       case 'state': {
-        const stateInfo = project.template.states.find(s => s.id === group.value);
+        const stateInfo = env.template.states.find(s => s.id === group.value);
         return (
           <>
             <span className="title">State: </span>

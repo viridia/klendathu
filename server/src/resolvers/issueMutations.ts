@@ -76,7 +76,7 @@ export const mutations = {
       reporter: context.user._id,
       reporterSort: context.user.accountName,
       owner: undefined,
-      ownerSort: '',
+      ownerSort: null,
       created: now,
       updated: now,
       cc: (input.cc || []).map(id => new ObjectID(id)),

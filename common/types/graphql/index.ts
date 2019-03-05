@@ -41,11 +41,14 @@ export interface IssueQueryParams {
 }
 /** Query params for searching for issues via custom fields. */
 export interface CustomSearchInput {
+  /** Name of the custom field we are searching for. */
   name: string;
-
+  /** Single values to search for. Default behavior is substring match. */
   value?: Maybe<string>;
-
+  /** List of values we are searching for. Used for enum values. */
   values?: Maybe<string[]>;
+  /** Search predicate. */
+  pred?: Maybe<Predicate>;
 }
 /** Pagination params. */
 export interface Pagination {

@@ -4,7 +4,7 @@ import { RouteComponentProps } from 'react-router-dom';
 import { FilterTerm, getDescriptor, ViewContext } from '../models';
 import { FilterTermEditor } from './FilterTermEditor';
 import { SaveFilterDialog } from './SaveFilterDialog';
-import { action, computed, IObservableArray, observable, autorun, IReactionDisposer } from 'mobx';
+import { action, computed, IObservableArray, observable, IReactionDisposer, reaction } from 'mobx';
 import { observer } from 'mobx-react';
 import { Spacer } from '../layout';
 import {
@@ -66,9 +66,11 @@ export class FilterParams extends React.Component<Props> {
 
   constructor(props: Props) {
     super(props);
-    this.disposer = autorun(() => {
-      this.parseQuery(location.search);
-    });
+    this.disposer = reaction(
+      () => location.search,
+      () => this.parseQuery(location.search),
+      { fireImmediately: true },
+    );
   }
 
   public componentWillUnmount() {
