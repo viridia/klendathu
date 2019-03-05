@@ -1,10 +1,8 @@
 # TODO
 
-* Enable issue grouping
 * Attachments
 * Delete issues
 * Filters
-  * Filter by custom fields
   * UI prefs in local storage
   * Saving filters
 * Workflow actions (test)
@@ -16,7 +14,6 @@
 * Preserve issue navigation list between page refreshes.
 * Better error reporting in issue create and issue edit.
 * Ability to embed inline attachments in markdown
-* Sorting by custom fields
 * UI options stored in local storage.
 * @mentions
 * Markdown preview
@@ -36,6 +33,7 @@
 * Make subscription payloads more consistent - always use 'value' and publish helper.
 * Membership pages flashes on updates.
 * Warn when navigating away on unsaved changes.
+* When grouping issues, make table columns the same width.
 
 # Major pieces
 

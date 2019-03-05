@@ -20,10 +20,19 @@ import {
 } from './columns';
 import { IssueListEntry } from './IssueListEntry';
 import { keyframes } from 'styled-components';
+import { Issue } from '../../../common/types/graphql';
+import { GroupHeader } from './GroupHeader';
 
 const highlightNew = (color: string) => keyframes`
   from {
     background-color: ${color};
+  }
+`;
+
+const IssueGroup = styled.section`
+  margin-bottom: .8rem;
+  &:last-child {
+    margin-bottom: 0;
   }
 `;
 
@@ -72,7 +81,10 @@ export class IssueList extends React.Component<Props> {
     if (errors) {
       return <ErrorListDisplay errors={errors} />;
     } else if (list && list.length > 0) {
-      return <IssueListCard>{this.renderIssues()}</IssueListCard>;
+      if (issues.group) {
+        return this.renderGroupedIssues();
+      }
+      return <IssueListCard>{this.renderIssues(issues.list)}</IssueListCard>;
     } else if (loading) {
       return <LoadingIndicator>Loading&hellip;</LoadingIndicator>;
     } else {
@@ -80,17 +92,25 @@ export class IssueList extends React.Component<Props> {
     }
   }
 
-  private renderIssues() {
-    return this.renderIssueTable();
+  private renderGroupedIssues() {
+    const { issues } = this.props.env;
+    return issues.grouped.map(group => (
+      <IssueGroup key={group.value}>
+        <GroupHeader group={group} />
+        <IssueListCard>
+          {this.renderIssues(group.issues)}
+        </IssueListCard>
+      </IssueGroup>
+    ));
   }
 
-  private renderIssueTable() {
-    const { issues, selection } = this.props.env;
+  private renderIssues(issueList: Issue[]) {
+    const { selection } = this.props.env;
     return (
       <IssueListViewTable>
         {this.renderTableHeader()}
         <TableBody>
-          {issues.list.map(issue => (
+          {issueList.map(issue => (
             <IssueListEntry
                 {...this.props}
                 key={issue.id}
