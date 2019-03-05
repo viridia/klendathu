@@ -1,5 +1,8 @@
 # TODO
 
+* Package updates
+* Set up parallel tests in CircleCI
+* Enable issue grouping
 * Attachments
 * Delete issues
 * Filters
@@ -9,11 +12,9 @@
 * Workflow actions (test)
   * Server unit test for removeLinks
 * GraphQL Batching
-* Project timeline
 * Better loading indicator
 * Syntax highlighting for code examples.
 * "Dark mode".
-* Sort issue searches by relevance
 * Preserve issue navigation list between page refreshes.
 * Better error reporting in issue create and issue edit.
 * Ability to embed inline attachments in markdown
@@ -21,6 +22,7 @@
 * UI options stored in local storage.
 * @mentions
 * Markdown preview
+* Sort issue searches by relevance
 * ErrorDisplay
   * Mini display for errors in menus and chips
 * Issue list flashes when switching projects.
@@ -28,7 +30,6 @@
 * Idea: if a change entry has *no* effect, then remove it from the timeline.
 * Be smarter about updating the graphql subscription cache for timeline updates.
 * Use coverage reports to improve server unit tests.
-* Set up parallel tests in CircleCI
 * Timeline
   * Should allow supression of change entries (just comments).
 * Better UI for entering linked issues - current process is cumbersome.
@@ -36,6 +37,7 @@
 * Make user links local to the view
 * Make subscription payloads more consistent - always use 'value' and publish helper.
 * Membership pages flashes on updates.
+* Warn when navigating away on unsaved changes.
 
 # Major pieces
 
@@ -46,8 +48,6 @@
 * Issue Compose
   * Attachments
   * Milestones
-* Issue Details
-  * Add workflow actions
 * Issue Delete
 * Issue Query
   * By Owner
@@ -55,16 +55,12 @@
 * GitHub integration
 * Progress View
 * Email Verification
-* Projects list in nav
 * Project Settings
-  * Columns
-  * Members
   * Milestones
   * Templates
   * Workflow
 * Client unit tests
 * Enable Twitter auth
-* Enable issue grouping
 * Export / backup database
 * Redis
 
@@ -81,7 +77,6 @@
 * Error boundaries
 * Get rid of explicit passing of ViewContext where possible.
 * Write Jest tests for all frontend components
-* Hot reloading with MobX?
 * Define Mongo table references in one place.
 
 # Issue Models

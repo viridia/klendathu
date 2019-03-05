@@ -53,7 +53,7 @@ interface Props {
 @observer
 export class ColumnSettings extends React.Component<Props> {
   @observable private busy = false;
-  @observable private visible = ['type', 'state', 'owner', 'updated'] as IObservableArray<string>;
+  @observable private visible = [] as IObservableArray<string>;
   @observable private original = [] as IObservableArray<string>;
 
   constructor(props: Props) {
