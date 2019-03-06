@@ -324,6 +324,8 @@ export interface Query {
   searchCustomFields: string[];
   /** Current user's preferences for a project. */
   projectPrefs: ProjectPrefs;
+  /** Retrieve list of commits for an issue, or all issues within a project. */
+  commits: PaginatedCommits;
 }
 
 /** Public information about a user or organization. */
@@ -440,7 +442,7 @@ export interface Filter {
 
 /** A label which can be attached to an issue. */
 export interface Label {
-  /** Database id for this label [account/project/id]. */
+  /** Database id for this label. */
   id: string;
   /** Text of the label. */
   name: string;
@@ -640,6 +642,36 @@ export interface LinkChange {
   before?: Maybe<Relation>;
   /** Relationship after the change. */
   after?: Maybe<Relation>;
+}
+
+/** Commit query result. */
+export interface PaginatedCommits {
+  /** Total number of results. */
+  count: number;
+  /** Current offset */
+  offset: number;
+  /** List of results. */
+  results: Commit[];
+}
+
+/** A commit from a third-party SCM provider. */
+export interface Commit {
+  /** Database id for this commit. */
+  id: string;
+  /** Name of the SCM provider. */
+  provider: string;
+  /** Issue that this commit is associated with. */
+  issue: string;
+  /** Unique ID of the commit. */
+  commit: string;
+  /** Whether this commit is still pending. */
+  pending: boolean;
+  /** Description of the commit. */
+  description: string;
+  /** URL pointing to a web page where commit details can be viewed. */
+  url?: Maybe<string>;
+  /** When the commit was last updated. */
+  updated: DateTime;
 }
 
 export interface Mutation {
@@ -861,6 +893,13 @@ export interface SearchCustomFieldsQueryArgs {
 }
 export interface ProjectPrefsQueryArgs {
   project: string;
+}
+export interface CommitsQueryArgs {
+  project: string;
+
+  issue?: Maybe<string>;
+
+  pagination?: Maybe<Pagination>;
 }
 export interface CreateUserAccountMutationArgs {
   input?: Maybe<AccountInput>;

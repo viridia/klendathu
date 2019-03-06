@@ -75,5 +75,8 @@ type Query {
 
   "Current user's preferences for a project."
   projectPrefs(project: ID!): ProjectPrefs!
+
+  "Retrieve list of commits for an issue, or all issues within a project."
+  commits(project: ID!, issue: ID, pagination: Pagination): PaginatedCommits!
 }
 `;

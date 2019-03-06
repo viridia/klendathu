@@ -12,7 +12,7 @@ input LabelInput {
 
 "A label which can be attached to an issue."
 type Label {
-  "Database id for this label [account/project/id]."
+  "Database id for this label."
   id: String!
 
   "Text of the label."

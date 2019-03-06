@@ -91,6 +91,23 @@ Issue List State:
     in the details view.
   * What would be ideal is a way to do the forward/back navigation on the server side.
 
+# GitHub integration
+
+* Ideally we shouldn't limit it to just GitHub. It should be pluggable.
+* API-wise, it looks like this:
+
+  * endpoint to receive hooks.
+  * Collection to store plugin configuration.
+  * database collection to store current scm status
+    * scm provider
+    * issue id
+    * id of commit
+    * url of commit page
+    * status
+      * pending
+      * merged
+      * closed
+
 # Templates
 
 * The hardest part is template scoping.
