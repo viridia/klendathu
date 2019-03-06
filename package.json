@@ -15,7 +15,7 @@
     "start": "nodemon -w ./server/src --ext ts --exec ts-node -- -P ./server/tsconfig.json ./server/src/index.ts",
     "test-client": "jest --config client/jest.config.js",
     "test-server": "LOG_LEVEL=warn jest --runInBand --config server/jest.config.js",
-    "test": "npm run test-server"
+    "test": "npm run test-server && npm run test-client"
   },
   "keywords": [
     "bug",

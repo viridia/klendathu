@@ -86,9 +86,6 @@ Issue List State:
 * Pagination
 * Whether or not we're fetching sub-issues and displaying a tree.
 
-* I don't want to build the column list every time we do a refresh.
-* So the column list has to be passed in from above.
-
 * Pagination:
   * There's a conflict between loading a single page of items, and wanting to do forward/back
     in the details view.

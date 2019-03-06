@@ -136,7 +136,7 @@ describe('issues', () => {
       expect(issue.reporter).toEqual(server.context.user._id.toHexString());
       expect(issue.reporterSort).toEqual(server.context.user.accountName);
       expect(issue.owner).toBeNull();
-      expect(issue.ownerSort).toEqual('');
+      expect(issue.ownerSort).toBeNull();
       expect(issue.custom).toBeArrayOfSize(0);
     });
 
@@ -259,7 +259,7 @@ describe('issues', () => {
         reporter: server.context.user._id.toHexString(),
         reporterSort: server.context.user.accountName,
         owner: null,
-        ownerSort: '',
+        ownerSort: null,
         custom: [],
       };
     });
@@ -313,7 +313,7 @@ describe('issues', () => {
         reporter: server.context.user._id.toHexString(),
         reporterSort: server.context.user.accountName,
         owner: null,
-        ownerSort: '',
+        ownerSort: null,
         custom: expect.toBeEmptyArray(),
       });
 
@@ -356,7 +356,7 @@ describe('issues', () => {
         reporter: server.context.user._id.toHexString(),
         reporterSort: server.context.user.accountName,
         owner: null,
-        ownerSort: '',
+        ownerSort: null,
         custom: expect.toBeEmptyArray(),
       });
 
@@ -390,7 +390,7 @@ describe('issues', () => {
         reporter: server.context.user._id.toHexString(),
         reporterSort: server.context.user.accountName,
         owner: null,
-        ownerSort: '',
+        ownerSort: null,
         custom: expect.toBeEmptyArray(),
       });
 
@@ -424,7 +424,7 @@ describe('issues', () => {
         reporter: server.context.user._id.toHexString(),
         reporterSort: server.context.user.accountName,
         owner: null,
-        ownerSort: '',
+        ownerSort: null,
         custom: expect.toBeEmptyArray(),
       });
 
