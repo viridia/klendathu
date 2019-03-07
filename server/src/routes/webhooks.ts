@@ -80,7 +80,7 @@ hookRouter.post(
 
     // TODO: Check secret
 
-    service.handleRequest(req, res, project, server.db);
+    service.handleRequest(req, res, project, webhook.secret, server.db);
   } else {
     res.status(404).json({ error: 'invalid-service' });
   }

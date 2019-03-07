@@ -12,5 +12,6 @@ export interface WebhookService extends WebhookServiceInfo {
     req: express.Request,
     res: express.Response,
     project: ProjectRecord,
+    secret: string,
     db: Db): void;
 }

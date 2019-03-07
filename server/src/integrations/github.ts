@@ -1,4 +1,5 @@
 import * as express from 'express';
+import * as crypto from 'crypto';
 import { URL } from 'url';
 import { registry } from './WebhookRegistry';
 import { WebhookService } from './WebhookService';
@@ -45,6 +46,11 @@ interface GitHubEvent {
   comment?: GitHubCommitComment;
 }
 
+function verifySignature(signature: string, data: string, secret: string) {
+  const computedSignature = crypto.createHmac('sha1', secret).update(data).digest('hex');
+  return Buffer.from(signature).equals(Buffer.from(`sha1=${computedSignature}`));
+}
+
 export class GitHubIntegration implements WebhookService {
   public serviceId = 'github';
   public serviceName = 'GitHub';
@@ -56,25 +62,34 @@ export class GitHubIntegration implements WebhookService {
   }
 
   public handleRequest(
-    req: express.Request,
-    res: express.Response,
-    project: ProjectRecord,
-    db: Db) {
-      const event = req.headers['X-GitHub-Event'];
-      const rawBody: string = (req as any).rawBody || '';
-      console.log('event', event);
-      console.log('raw body size', rawBody.length);
-      console.log('X-Hub-Signature', req.headers['X-Hub-Signature']);
-      if (req.body.commits) {
-        const commitEvent: GitHubPushEvent = req.body;
-        console.log('commit', req.params.project, JSON.stringify(commitEvent, null, 2));
-        res.end();
-      } else {
-        const ev: GitHubEvent = req.body;
-        console.log('event', req.params.project, JSON.stringify(ev, null, 2));
-        res.end();
-      }
+      req: express.Request,
+      res: express.Response,
+      project: ProjectRecord,
+      secret: string,
+      db: Db) {
+    const event = req.headers['X-GitHub-Event'].toString();
+    const signature = req.headers['X-Hub-Signature'].toString();
+    const rawBody: string = (req as any).rawBody || '';
+    console.log('event', event);
+    console.log('raw body size', rawBody.length);
+    console.log('X-Hub-Signature', req.headers['X-Hub-Signature']);
+    if (!verifySignature(signature, rawBody, secret)) {
+      console.log('invalid signature', event);
+      res.status(401).json({ error: 'invalid-signature' });
+      return;
     }
+    if (req.body.commits) {
+      const commitEvent: GitHubPushEvent = req.body;
+      console.log('commit', req.params.project, JSON.stringify(commitEvent, null, 2));
+      res.end();
+    } else {
+      const ev: GitHubEvent = req.body;
+      console.log('event', req.params.project, JSON.stringify(ev, null, 2));
+      res.end();
+    }
+  }
+
+
 }
 
 registry.add(new GitHubIntegration());
