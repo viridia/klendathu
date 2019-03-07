@@ -130,7 +130,7 @@
     "graphql-codegen-typescript-common": "0.18.0",
     "graphql-codegen-typescript-server": "0.18.0",
     "jest": "^24.1.0",
-    "jest-enzyme": "^7.0.1",
+    "jest-enzyme": "^7.0.2",
     "jest-junit": "^6.3.0",
     "jest-transform-stub": "^2.0.0",
     "jsdom": "^13.2.0",
