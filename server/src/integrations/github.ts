@@ -6,7 +6,7 @@ import { ProjectRecord } from '../db/types';
 import { Db, ObjectID } from 'mongodb';
 
 interface GitHubUser {
-  name: string,
+  name: string;
   email: string;
   username: string;
 }
@@ -60,13 +60,18 @@ export class GitHubIntegration implements WebhookService {
     res: express.Response,
     project: ProjectRecord,
     db: Db) {
+      const event = req.headers['X-GitHub-Event'];
+      const rawBody: string = (req as any).rawBody || '';
+      console.log('event', event);
+      console.log('raw body size', rawBody.length);
+      console.log('X-Hub-Signature', req.headers['X-Hub-Signature']);
       if (req.body.commits) {
         const commitEvent: GitHubPushEvent = req.body;
         console.log('commit', req.params.project, JSON.stringify(commitEvent, null, 2));
         res.end();
       } else {
-        const event: GitHubEvent = req.body;
-        console.log('event', req.params.project, JSON.stringify(event, null, 2));
+        const ev: GitHubEvent = req.body;
+        console.log('event', req.params.project, JSON.stringify(ev, null, 2));
         res.end();
       }
     }

@@ -48,7 +48,13 @@ import { ObjectID } from 'mongodb';
 
 // Router for /auth paths
 const hookRouter = express.Router();
-hookRouter.use(bodyParser.json());
+hookRouter.use(bodyParser.json({
+  limit: '10MB',
+  verify: (req, res, buf) => {
+    // Save raw body for signature verification
+    (req as any).rawBody = buf.toString();
+  },
+}));
 
 hookRouter.post(
     '/:service/:project',
