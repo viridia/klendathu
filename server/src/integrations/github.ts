@@ -63,9 +63,11 @@ export class GitHubIntegration implements WebhookService {
       if (req.body.commits) {
         const commitEvent: GitHubPushEvent = req.body;
         console.log('commit', req.params.project, JSON.stringify(commitEvent, null, 2));
+        res.end();
       } else {
         const event: GitHubEvent = req.body;
         console.log('event', req.params.project, JSON.stringify(event, null, 2));
+        res.end();
       }
     }
 }
