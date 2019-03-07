@@ -67,5 +67,14 @@ type Mutation {
 
   "Remove a user from a project."
   removeProjectMember(project: ID!, account: ID!): Membership!
+
+  "Add a new webhook."
+  addWebhook(input: WebhookInput!): Webhook!
+
+  "Edit an existing webhook."
+  updateWebhook(id: ID!, input: WebhookInput!): Webhook!
+
+  "Remove a webhook."
+  removeWebhook(id: ID!): Webhook!
 }
 `;

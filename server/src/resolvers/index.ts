@@ -10,6 +10,7 @@ import * as memberships from './memberships';
 import * as projects from './projects';
 import * as projectPrefs from './projectPrefs';
 import * as templates from './template';
+import * as webhooks from './webhooks';
 
 export const resolverMap = {
   Query: {
@@ -21,6 +22,7 @@ export const resolverMap = {
     ...projectPrefs.queries,
     ...templates.queries,
     ...timeline.queries,
+    ...webhooks.queries,
   },
   Mutation: {
     ...accounts.mutations,
@@ -30,6 +32,7 @@ export const resolverMap = {
     ...projects.mutations,
     ...projectPrefs.mutations,
     ...templates.mutations,
+    ...webhooks.mutations,
   },
   Subscription: {
     ...issueSubscriptions.subscriptions,
@@ -46,4 +49,5 @@ export const resolverMap = {
   ...projectPrefs.types,
   ...templates.types,
   ...timeline.types,
+  ...webhooks.types,
 };

@@ -2,7 +2,6 @@ import { gql } from 'apollo-server-express';
 import { Account } from './Account';
 import { Commit } from './Commit';
 import { Issue } from './Issue';
-import { Timeline } from './Timeline';
 import { Label } from './Label';
 import { Membership } from './Membership';
 import { Milestone } from './Milestone';
@@ -11,6 +10,8 @@ import { Project } from './Project';
 import { ProjectPrefs } from './ProjectPrefs';
 import { Query } from './Query';
 import { Subscription } from './Subscription';
+import { Timeline } from './Timeline';
+import { Webhook } from './Webhook';
 
 export const Root = gql`
 "Date and time"
@@ -28,7 +29,6 @@ export const typeDefs = [
   Account,
   Commit,
   Issue,
-  Timeline,
   Label,
   Membership,
   Milestone,
@@ -37,5 +37,7 @@ export const typeDefs = [
   ProjectPrefs,
   Query,
   Subscription,
+  Timeline,
+  Webhook,
   Root,
 ];

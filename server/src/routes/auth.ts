@@ -24,15 +24,8 @@ const jwtOpts = {
 };
 
 function makeCallbackUrl(pathname: string, next?: string): string {
-  const url = new URL(`http://placeholder`);
-  if (process.env.KDT_CLIENT_HTTPS && process.env.KDT_CLIENT_HTTPS !== 'false') {
-    url.protocol = 'https';
-  }
-  url.hostname = process.env.KDT_CLIENT_HOSTNAME;
+  const url = new URL(process.env.PUBLIC_URL);
   url.pathname = pathname;
-  if (process.env.KDT_CLIENT_PORT && process.env.KDT_CLIENT_PORT !== '80') {
-    url.port = process.env.KDT_CLIENT_PORT;
-  }
   if (next) {
     url.search = `next=${encodeURIComponent(next)}`;
   }
@@ -40,15 +33,8 @@ function makeCallbackUrl(pathname: string, next?: string): string {
 }
 
 function makeSessionUrl(session: SessionState, next?: string): string {
-  const url = new URL(next || 'http://placeholder');
-  if (process.env.KDT_CLIENT_HTTPS && process.env.KDT_CLIENT_HTTPS !== 'false') {
-    url.protocol = 'https';
-  }
-  url.hostname = process.env.KDT_CLIENT_HOSTNAME;
+  const url = new URL(next || process.env.PUBLIC_URL);
   // url.pathname = pathname;
-  if (process.env.KDT_CLIENT_PORT && process.env.KDT_CLIENT_PORT !== '80') {
-    url.port = process.env.KDT_CLIENT_PORT;
-  }
   const query: any = {
     token: jwt.encode(session, jwtOpts.secretOrKey),
   };

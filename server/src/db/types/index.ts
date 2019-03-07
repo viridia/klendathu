@@ -9,3 +9,4 @@ export { MilestoneRecord } from './MilestoneRecord';
 export { ProjectPrefsRecord } from './ProjectPrefsRecord';
 export { ProjectRecord, AugmentedProjectRecord } from './ProjectRecord';
 export { TemplateRecord } from './TemplateRecord';
+export { WebhookRecord } from './WebhookRecord';

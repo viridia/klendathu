@@ -6,6 +6,7 @@ import { ProjectInfoEdit } from './ProjectInfoEdit';
 import { ViewContext } from '../../models';
 import { ColumnSettings } from './columns/ColumnSettings';
 import { ProjectMembers } from './members/ProjectMembers';
+import { WebhookSettings } from './webhooks/WebhookSettings';
 // import { ProjectMilestonesEdit } from './milestones/ProjectMilestonesEdit';
 // import { ProjectTemplateEdit } from './ProjectTemplateEdit';
 // import { WorkflowEdit } from './workflow/WorkflowEdit';
@@ -36,6 +37,8 @@ export class ProjectSettings extends React.Component<Props> {
               <Tab to={`${locationPrefix}/templates`}>Templates</Tab>}
           {project.role >= Role.MANAGER &&
               <Tab to={`${locationPrefix}/workflow`}>Workflow</Tab>}
+          {project.role >= Role.MANAGER &&
+              <Tab to={`${locationPrefix}/webhooks`}>Webhooks</Tab>}
         </TabBar>
         <Switch>
           <Route
@@ -50,6 +53,10 @@ export class ProjectSettings extends React.Component<Props> {
           <Route path={`${locationPrefix}/milestones`} />
           <Route path={`${locationPrefix}/templates`} />
           <Route path={`${locationPrefix}/workflow`} />
+          <Route
+            path={`${locationPrefix}/webhooks`}
+            render={() => <WebhookSettings env={this.props.context} />}
+          />
           <Redirect path={`${locationPrefix}/`} to={`${locationPrefix}/info`} />
         </Switch>
       </React.Fragment>

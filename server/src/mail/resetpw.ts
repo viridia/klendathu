@@ -6,9 +6,7 @@ import { AccountRecord } from '../db/types';
 
 export function sendResetPassword(account: AccountRecord): Promise<any> {
   const email = process.env.OVERRIDE_EMAIL_ADDR || account.email;
-  const resetUrl = new URL(process.env.KDT_CLIENT_HTTPS === 'true' ? 'https://p' : 'http://p');
-  resetUrl.hostname = process.env.KDT_CLIENT_HOSTNAME;
-  resetUrl.port = process.env.KDT_CLIENT_PORT;
+  const resetUrl = new URL(process.env.PUBLIC_URL);
   resetUrl.pathname = `/account/reset`;
   resetUrl.search = qs.stringify({
     email: account.email,

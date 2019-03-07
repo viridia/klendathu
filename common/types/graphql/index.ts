@@ -202,6 +202,15 @@ export interface FilterInput {
   /** Which view this was (issues, progress, etc.). */
   view?: Maybe<string>;
 }
+/** Used to create a webhook. */
+export interface WebhookInput {
+  /** Which hook processor to use. */
+  serviceId: string;
+  /** ID of the project associated with this commit. */
+  project: string;
+  /** Secret key for this webhook. */
+  secret?: Maybe<string>;
+}
 /** Input for milestone */
 export interface MilestoneInput {
   /** Title of this milestone */
@@ -324,8 +333,14 @@ export interface Query {
   searchCustomFields: string[];
   /** Current user's preferences for a project. */
   projectPrefs: ProjectPrefs;
+  /** Retrieve a single commit, by id. */
+  commit?: Maybe<Commit>;
   /** Retrieve list of commits for an issue, or all issues within a project. */
   commits: PaginatedCommits;
+  /** Retrieve list of webhooks. */
+  webhooks: Webhook[];
+  /** List of available webhook processors. */
+  webhookServices: WebhookServiceInfo[];
 }
 
 /** Public information about a user or organization. */
@@ -598,6 +613,8 @@ export interface TimelineEntry {
   custom?: Maybe<CustomFieldChange[]>;
   /** Changes to the list of linked issues. */
   linked?: Maybe<LinkChange[]>;
+  /** One or more commits were merged. ID refers to commit record. */
+  commits?: Maybe<string[]>;
 }
 
 /** A change to a string field. */
@@ -644,6 +661,42 @@ export interface LinkChange {
   after?: Maybe<Relation>;
 }
 
+/** A commit from a third-party SCM provider. Might not have a 1:1 mapping to SCM commits. */
+export interface Commit {
+  /** Database id for this commit. */
+  id: string;
+  /** Name of the SCM provider. */
+  provider: string;
+  /** Array of issues associated with this commit. */
+  issue: string[];
+  /** Unique ID of the commit. */
+  commit: string;
+  /** Identity of user making the change. */
+  user?: Maybe<Committer>;
+  /** If the user making the commit is registered on this system, this will be their account id. */
+  userAccount?: Maybe<string>;
+  /** Whether this commit is still pending. */
+  pending: boolean;
+  /** The commit message. */
+  message: string;
+  /** URL pointing to a web page where commit details can be viewed. */
+  url?: Maybe<string>;
+  /** When the commit was created. */
+  created: DateTime;
+  /** When the commit was last updated. */
+  updated: DateTime;
+}
+
+/** Information about the creator of a commit. Might not correlate to any known account. */
+export interface Committer {
+  /** Display name of the committer, if available. */
+  name?: Maybe<string>;
+  /** Username name of the committer, if available. */
+  username?: Maybe<string>;
+  /** Email of the committer, if available. */
+  email?: Maybe<string>;
+}
+
 /** Commit query result. */
 export interface PaginatedCommits {
   /** Total number of results. */
@@ -654,24 +707,32 @@ export interface PaginatedCommits {
   results: Commit[];
 }
 
-/** A commit from a third-party SCM provider. */
-export interface Commit {
-  /** Database id for this commit. */
+/** Configuration for a webhook. */
+export interface Webhook {
+  /** Database id for this webhook. */
   id: string;
-  /** Name of the SCM provider. */
-  provider: string;
-  /** Issue that this commit is associated with. */
-  issue: string;
-  /** Unique ID of the commit. */
-  commit: string;
-  /** Whether this commit is still pending. */
-  pending: boolean;
-  /** Description of the commit. */
-  description: string;
-  /** URL pointing to a web page where commit details can be viewed. */
-  url?: Maybe<string>;
-  /** When the commit was last updated. */
-  updated: DateTime;
+  /** Hook service ID. */
+  serviceId: string;
+  /** Hook service name. */
+  serviceName: string;
+  /** ID of the project associated with this commit. */
+  project: string;
+  /** Secret key for this webhook. */
+  secret?: Maybe<string>;
+  /** Hook URL. */
+  url: string;
+  /** When the webhook was created. */
+  createdAt: DateTime;
+  /** When the webhook was last updated. */
+  updatedAt: DateTime;
+}
+
+/** Types of available webhooks. */
+export interface WebhookServiceInfo {
+  /** ID of hook service. */
+  serviceId: string;
+  /** Name of hook service. */
+  serviceName: string;
 }
 
 export interface Mutation {
@@ -719,6 +780,12 @@ export interface Mutation {
   setProjectRole: Membership;
   /** Remove a user from a project. */
   removeProjectMember: Membership;
+  /** Add a new webhook. */
+  addWebhook: Webhook;
+  /** Edit an existing webhook. */
+  updateWebhook: Webhook;
+  /** Remove a webhook. */
+  removeWebhook: Webhook;
 }
 
 export interface DeletionResult {
@@ -894,12 +961,18 @@ export interface SearchCustomFieldsQueryArgs {
 export interface ProjectPrefsQueryArgs {
   project: string;
 }
+export interface CommitQueryArgs {
+  id: string;
+}
 export interface CommitsQueryArgs {
   project: string;
 
   issue?: Maybe<string>;
 
   pagination?: Maybe<Pagination>;
+}
+export interface WebhooksQueryArgs {
+  project: string;
 }
 export interface CreateUserAccountMutationArgs {
   input?: Maybe<AccountInput>;
@@ -1004,6 +1077,17 @@ export interface RemoveProjectMemberMutationArgs {
   project: string;
 
   account: string;
+}
+export interface AddWebhookMutationArgs {
+  input: WebhookInput;
+}
+export interface UpdateWebhookMutationArgs {
+  id: string;
+
+  input: WebhookInput;
+}
+export interface RemoveWebhookMutationArgs {
+  id: string;
 }
 export interface ProjectsChangedSubscriptionArgs {
   owners: string[];

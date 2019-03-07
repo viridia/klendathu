@@ -52,4 +52,9 @@ export const fragments = {
     linked { to before after }
     commentBody commentUpdated commentRemoved
   }`,
+
+  webhook: gql`
+  fragment WebhookFields on Webhook {
+    id serviceId serviceName url project secret createdAt updatedAt
+  }`,
 };

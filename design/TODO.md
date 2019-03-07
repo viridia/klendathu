@@ -108,6 +108,11 @@ Issue List State:
       * merged
       * closed
 
+  * Setting up hooks:
+    * The client won't have knowledge of specific hooks.
+    * So it has to request a url from the backend.
+    * Also needs a place to enter a secret.
+
 # Templates
 
 * The hardest part is template scoping.

@@ -1,7 +1,20 @@
 import { gql } from 'apollo-server-express';
 
 export const Commit = gql`
-"A commit from a third-party SCM provider."
+
+"Information about the creator of a commit. Might not correlate to any known account."
+type Committer {
+  "Display name of the committer, if available."
+  name: String
+
+  "Username name of the committer, if available."
+  username: String
+
+  "Email of the committer, if available."
+  email: String
+}
+
+"A commit from a third-party SCM provider. Might not have a 1:1 mapping to SCM commits."
 type Commit {
   "Database id for this commit."
   id: ID!
@@ -9,20 +22,29 @@ type Commit {
   "Name of the SCM provider."
   provider: String!
 
-  "Issue that this commit is associated with."
-  issue: ID!
+  "Array of issues associated with this commit."
+  issue: [ID!]!
 
   "Unique ID of the commit."
   commit: ID!
 
+  "Identity of user making the change."
+  user: Committer
+
+  "If the user making the commit is registered on this system, this will be their account id."
+  userAccount: ID
+
   "Whether this commit is still pending."
   pending: Boolean!
 
-  "Description of the commit."
-  description: ID!
+  "The commit message."
+  message: ID!
 
   "URL pointing to a web page where commit details can be viewed."
   url: String
+
+  "When the commit was created."
+  created: DateTime!
 
   "When the commit was last updated."
   updated: DateTime!
