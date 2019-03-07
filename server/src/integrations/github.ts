@@ -89,8 +89,6 @@ export class GitHubIntegration implements WebhookService {
       res.end();
     }
   }
-
-
 }
 
 registry.add(new GitHubIntegration());
