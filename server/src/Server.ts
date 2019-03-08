@@ -76,8 +76,9 @@ export class Server {
     }
 
     // Start HTTP listener
-    this.httpServer = this.app.listen({ port: 4000 }, () => {
-      logger.info(`Started listening on localhost:4000`);
+    const port = Number(process.env.SERVER_PORT || 4000);
+    this.httpServer = this.app.listen({ port }, () => {
+      logger.info(`Started listening on port ${port}`);
     });
 
     this.apollo.installSubscriptionHandlers(this.httpServer);

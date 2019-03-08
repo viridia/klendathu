@@ -42,7 +42,7 @@ interface GitHubPushEvent {
 }
 
 interface GitHubEvent {
-  action: 'created';
+  action: 'closed' | 'created' | 'opened';
   comment?: GitHubCommitComment;
 }
 
@@ -56,7 +56,7 @@ export class GitHubIntegration implements WebhookService {
   public serviceName = 'GitHub';
 
   public createUrl(projectId: ObjectID): string {
-    const url = new URL(process.env.PUBLIC_URL);
+    const url = new URL(process.env.WEBHOOK_URL || process.env.PUBLIC_URL);
     url.pathname = `/hook/${this.serviceId}/${projectId}`;
     return url.toString();
   }
