@@ -42,7 +42,7 @@ interface GitHubPushEvent {
 }
 
 interface GitHubEvent {
-  action: 'created';
+  action: 'closed' | 'created' | 'opened';
   comment?: GitHubCommitComment;
 }
 
@@ -56,7 +56,7 @@ export class GitHubIntegration implements WebhookService {
   public serviceName = 'GitHub';
 
   public createUrl(projectId: ObjectID): string {
-    const url = new URL(process.env.PUBLIC_URL);
+    const url = new URL(process.env.WEBHOOK_URL || process.env.PUBLIC_URL);
     url.pathname = `/hook/${this.serviceId}/${projectId}`;
     return url.toString();
   }
@@ -67,12 +67,13 @@ export class GitHubIntegration implements WebhookService {
       project: ProjectRecord,
       secret: string,
       db: Db) {
-    const event = req.headers['X-GitHub-Event'].toString();
-    const signature = req.headers['X-Hub-Signature'].toString();
+    console.log(Object.getOwnPropertyNames(req.headers));
+    const event = req.headers['x-github-event'].toString();
+    const signature = req.headers['x-hub-signature'].toString();
     const rawBody: string = (req as any).rawBody || '';
     console.log('event', event);
     console.log('raw body size', rawBody.length);
-    console.log('X-Hub-Signature', req.headers['X-Hub-Signature']);
+    console.log('signature', signature);
     if (!verifySignature(signature, rawBody, secret)) {
       console.log('invalid signature', event);
       res.status(401).json({ error: 'invalid-signature' });
@@ -88,8 +89,6 @@ export class GitHubIntegration implements WebhookService {
       res.end();
     }
   }
-
-
 }
 
 registry.add(new GitHubIntegration());
