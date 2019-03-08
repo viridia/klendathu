@@ -1,6 +1,6 @@
 export { AccountRecord } from './AccountRecord';
 export { AttachmentRecord } from './AttachmentRecord';
-export { TimelineEntryRecord } from './TimelineEntryRecord';
+export { Committer, CommitRecord } from './CommitRecord';
 export { IssueLinkRecord } from './IssueLinkRecord';
 export { IssueRecord, CustomValues, CustomData } from './IssueRecord';
 export { LabelRecord } from './LabelRecord';
@@ -9,4 +9,5 @@ export { MilestoneRecord } from './MilestoneRecord';
 export { ProjectPrefsRecord } from './ProjectPrefsRecord';
 export { ProjectRecord, AugmentedProjectRecord } from './ProjectRecord';
 export { TemplateRecord } from './TemplateRecord';
+export { TimelineEntryRecord } from './TimelineEntryRecord';
 export { WebhookRecord } from './WebhookRecord';

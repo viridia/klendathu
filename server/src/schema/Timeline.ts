@@ -107,7 +107,7 @@ type TimelineEntry {
   "Changes to the list of linked issues."
   linked: [LinkChange!]
 
-  "One or more commits were merged. ID refers to commit record."
+  "One or more commits were submitted. ID refers to commit record."
   commits: [ID!]
 }
 
