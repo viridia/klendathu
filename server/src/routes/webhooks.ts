@@ -5,6 +5,7 @@ import { handleAsyncErrors } from './errors';
 import { registry } from '../integrations';
 import { ProjectRecord, WebhookRecord } from '../db/types';
 import { ObjectID } from 'mongodb';
+import { logger } from '../logger';
 
 // export interface GitHubUser {
 //   name: string,
@@ -64,6 +65,7 @@ hookRouter.post(
     const projects = server.db.collection<ProjectRecord>('projects');
     const project = await projects.findOne({ _id: new ObjectID(req.params.project) });
     if (!project) {
+      logger.error('Webhook error: invalid project', { url: req.url });
       res.status(404).json({ error: 'invalid-project' });
       return;
     }
@@ -74,6 +76,7 @@ hookRouter.post(
       serviceId: service.serviceId,
     });
     if (!webhook) {
+      logger.error('Webhook error: invalid webhook', { url: req.url });
       res.status(404).json({ error: 'invalid-webhook' });
       return;
     }
@@ -82,6 +85,7 @@ hookRouter.post(
 
     service.handleRequest(req, res, project, webhook.secret, server.db);
   } else {
+    logger.error('Webhook error: invalid service', { url: req.url });
     res.status(404).json({ error: 'invalid-service' });
   }
 }));
