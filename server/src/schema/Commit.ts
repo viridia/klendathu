@@ -23,7 +23,7 @@ type Commit {
   serviceId: String!
 
   "Array of issues associated with this commit."
-  issue: [ID!]!
+  issues: [ID!]!
 
   "Unique ID of the commit."
   commit: ID!

@@ -3,7 +3,7 @@ import * as crypto from 'crypto';
 import { URL } from 'url';
 import { registry } from './WebhookRegistry';
 import { WebhookService } from './WebhookService';
-import { ProjectRecord } from '../db/types';
+import { ProjectRecord, CommitRecord } from '../db/types';
 import { Db, ObjectID } from 'mongodb';
 import { logger } from '../logger';
 import { escapeRegExp } from '../db/helpers';
@@ -83,9 +83,9 @@ function verifySignature(signature: string, data: string, secret: string) {
 }
 
 const BASE_URL = escapeRegExp(process.env.PUBLIC_URL);
-const URL_RE = new RegExp(`^${BASE_URL}/([\w_\\-\\.]+)/([\w_\\-\\.]+)/(\d+)`, 'mg');
+const URL_RE = new RegExp(`^${BASE_URL}/([\\w_\\-\\.]+)/([\\w_\\-\\.]+)/(\\d+)`, 'mg');
 
-function scanForLinks(message: string) {
+function scanForIssueLinks(message: string, pr: ProjectRecord, out: Set<string>) {
   const re = new RegExp(URL_RE);
   while (true) {
     const m = re.exec(message);
@@ -93,7 +93,9 @@ function scanForLinks(message: string) {
       break;
     }
     const [, account, project, issue] = m;
-    console.log(account, project, issue);
+    if (account === pr.ownerName && pr._id.equals(project)) {
+      out.add(`${pr._id}.${issue}`);
+    }
   }
 }
 
@@ -132,25 +134,69 @@ export class GitHubIntegration implements WebhookService {
       const ev: GitHubEvent = req.body;
       switch (event) {
         case GHEvent.PULL_REQUEST:
-          if (ev.action === 'opened') {
-            console.log('scanning for links in PR.');
-            scanForLinks(ev.pull_request.title);
-            scanForLinks(ev.pull_request.body);
+          if (ev.action === 'opened' || ev.action === 'synchronize' || ev.action === 'edited') {
             // Opened a pull request
-          } else if (ev.action === 'edited') {
-            // Edited a pull request
-          } else if (ev.action === 'closed') {
-            if (ev.pull_request.merged) {
-              // Merged a pull request
-            } else {
-              // Closed a pull request
+            const issues = new Set<string>();
+            console.log('scanning for links in PR.');
+            scanForIssueLinks(ev.pull_request.title, project, issues);
+            scanForIssueLinks(ev.pull_request.body, project, issues);
+            if (issues.size > 0) {
+              this.updateCommit(db, ev, issues);
             }
+          } else if (ev.action === 'closed') {
+            this.closeCommit(db, ev);
           }
           break;
       }
       // console.log('event', JSON.stringify(ev, null, 2));
     }
     res.end();
+  }
+
+  private async updateCommit(db: Db, ev: GitHubEvent, issues: Set<string>) {
+    const pr = ev.pull_request;
+    // TODO: we need to resolve the user id, if possible.
+
+    const commits = db.collection<CommitRecord>('commits');
+    // Use url as primary key
+    await commits.findOneAndUpdate({
+      url: pr.html_url,
+    }, {
+      $set: {
+        updated: new Date(pr.updated_at),
+        submitted: pr.merged,
+        message: pr.title,
+      },
+      $addToSet: {
+        issues: Array.from(issues),
+      },
+      $setOnInsert: {
+        serviceId: this.serviceId,
+        commit: String(pr.number),
+        url: pr.html_url,
+        user: {
+          username: pr.user.login,
+        },
+        created: new Date(pr.created_at),
+      }
+    }, {
+      upsert: true,
+    });
+
+    // TODO: Update issue history
+  }
+
+  private async closeCommit(db: Db, ev: GitHubEvent) {
+    const pr = ev.pull_request;
+    const commits = db.collection<CommitRecord>('commits');
+    await commits.findOneAndUpdate({
+      url: pr.html_url,
+    }, {
+      $set: {
+        updated: new Date(pr.updated_at),
+        submitted: pr.merged,
+      },
+    });
   }
 }
 

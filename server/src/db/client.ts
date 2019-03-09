@@ -7,12 +7,9 @@ function sleep(ms: number) {
 }
 
 async function waitForConnection(): Promise<MongoClient> {
-  logger.debug(`Connection to MongoDB at ${process.env.DB_HOST}.`);
+  logger.debug(`Connecting to ${process.env.DB_HOST}.`);
   let retries = 0;
   let error: any = null;
-  // logger.debug(`DB_NAME ${process.env.DB_HOST}`);
-  // logger.debug(`DB_USER ${process.env.DB_USER}`);
-  // logger.debug(`DB_PASSWORD ${process.env.DB_PASSWORD}`);
   while (retries < 4) {
     try {
       return await MongoClient.connect(process.env.DB_HOST, {
@@ -39,8 +36,8 @@ export async function createClient(): Promise<MongoClient> {
   logger.info(`Connected to ${dbUrl}`);
   await ensureCollections(db, [
     'accounts',
+    'commits',
     'issues',
-    'timeline',
     'issueLinks',
     'labels',
     'memberships',
@@ -48,12 +45,19 @@ export async function createClient(): Promise<MongoClient> {
     'projects',
     'projectPrefs',
     'templates',
+    'timeline',
+    'webhooks',
   ]);
+  db.collection('accounts').createIndex({ accountName: 1 });
+  db.collection('commits').createIndex({ url: 1 });
   db.collection('issues').createIndex({ type: 1 });
   db.collection('issues').createIndex({ state: 1 });
   db.collection('issues').createIndex({ ownerSort: 1 });
   db.collection('issues').createIndex({ reporterSort: 1 });
   db.collection('issues').createIndex({ created: 1 });
   db.collection('issues').createIndex({ update: 1 });
+  db.collection('issueLinks').createIndex({ from: 1 });
+  db.collection('issueLinks').createIndex({ to: 1 });
+  db.collection('labels').createIndex({ project: 1 });
   return client;
 }

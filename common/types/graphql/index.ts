@@ -614,7 +614,9 @@ export interface TimelineEntry {
   /** Changes to the list of linked issues. */
   linked?: Maybe<LinkChange[]>;
   /** One or more commits were submitted. ID refers to commit record. */
-  commits?: Maybe<string[]>;
+  commitCreated?: Maybe<string[]>;
+  /** One or more commits were submitted. ID refers to commit record. */
+  commitSubmitted?: Maybe<string[]>;
 }
 
 /** A change to a string field. */
@@ -668,7 +670,7 @@ export interface Commit {
   /** Name of the SCM provider. */
   serviceId: string;
   /** Array of issues associated with this commit. */
-  issue: string[];
+  issues: string[];
   /** Unique ID of the commit. */
   commit: string;
   /** Identity of user making the change. */
