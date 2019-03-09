@@ -87,6 +87,8 @@ const URL_RE = new RegExp(`^${BASE_URL}/([\\w_\\-\\.]+)/([\\w_\\-\\.]+)/(\\d+)`,
 
 function scanForIssueLinks(message: string, pr: ProjectRecord, out: Set<string>) {
   const re = new RegExp(URL_RE);
+  console.log('message:', message);
+  console.log('re:', re);
   while (true) {
     const m = re.exec(message);
     if (!m) {
