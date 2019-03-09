@@ -22,6 +22,9 @@ type Commit {
   "Name of the SCM provider."
   serviceId: String!
 
+  "Project associated with this commit."
+  project: ID!
+
   "Array of issues associated with this commit."
   issues: [ID!]!
 

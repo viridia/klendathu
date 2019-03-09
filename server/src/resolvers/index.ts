@@ -1,5 +1,6 @@
 export { Context } from './Context';
 import * as accounts from './account';
+import * as commits from './commits';
 import * as issueTypes from './issueTypes';
 import * as issueMutations from './issueMutations';
 import * as issueQueries from './issueQueries';
@@ -15,6 +16,7 @@ import * as webhooks from './webhooks';
 export const resolverMap = {
   Query: {
     ...accounts.queries,
+    ...commits.queries,
     ...issueQueries.queries,
     ...labels.queries,
     ...memberships.queries,
@@ -42,6 +44,7 @@ export const resolverMap = {
     ...projectPrefs.subscriptions,
   },
   ...accounts.types,
+  ...commits.types,
   ...issueTypes.types,
   ...labels.types,
   ...memberships.types,

@@ -20,7 +20,7 @@ import {
 } from '../controls';
 import { Role, IssueType, DataType } from '../../../common/types/json';
 import { ViewContext } from '../models';
-import { IssueTypeDisplay, IssueNavigator } from './details';
+import { IssueTypeDisplay, IssueNavigator, IssueCommits } from './details';
 import { Spacer } from '../layout';
 import { idToIndex } from '../lib/idToIndex';
 import { IssueTimeline } from './IssueTimeline';
@@ -272,6 +272,7 @@ export class IssueDetails extends React.Component<Props> {
                   </>
                 )}
 
+                <IssueCommits issue={issue} />
                 <IssueTimeline issue={issue} />
 
                 <CommentGroup>

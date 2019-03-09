@@ -9,6 +9,7 @@ export interface Committer {
 export interface CommitRecord {
   _id?: string;
   serviceId: string;
+  project: ObjectID;
   issues: string[];
   commit: string;
   user: Committer;
