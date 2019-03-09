@@ -7,46 +7,6 @@ import { ProjectRecord, WebhookRecord } from '../db/types';
 import { ObjectID } from 'mongodb';
 import { logger } from '../logger';
 
-// export interface GitHubUser {
-//   name: string,
-//   email: string;
-//   username: string;
-// }
-
-// export interface GitHubCommit {
-//   id: string;
-//   message: string;
-//   timestamp: string;
-//   url: string;
-//   author: GitHubUser;
-//   committer: GitHubUser;
-//   // [ { id: '62c61fc2b7311878b65de9287d0786f80ce1aa9f',
-//   // tree_id: '1182939f19cfd2d3747ec2d6237bd5837f87c3ce',
-//   // distinct: true,
-//   // added: [Array],
-//   // removed: [],
-//   // modified: [Array] } ],
-// }
-
-// export interface GitHubCommitComment {
-//   url: string;
-//   id: number;
-//   body: string;
-//   commit_id: string;
-//   user: {
-//     login: string;
-//   };
-// }
-
-// export interface GitHubPushEvent {
-//   commits: GitHubCommit[];
-// }
-
-// export interface GitHubEvent {
-//   action: 'created';
-//   comment?: GitHubCommitComment;
-// }
-
 // Router for /auth paths
 const hookRouter = express.Router();
 hookRouter.use(bodyParser.json({
@@ -92,7 +52,7 @@ hookRouter.post(
 
 // Catch-all hook handler
 hookRouter.post('/', handleAsyncErrors(async (req, res) => {
-  console.log(req.body);
+  logger.error('Webhook error: invalid hook url', { url: req.url });
 }));
 
 server.app.use('/hook', hookRouter);

@@ -20,10 +20,10 @@ type Commit {
   id: ID!
 
   "Name of the SCM provider."
-  provider: String!
+  serviceId: String!
 
   "Array of issues associated with this commit."
-  issue: [ID!]!
+  issues: [ID!]!
 
   "Unique ID of the commit."
   commit: ID!
@@ -34,8 +34,8 @@ type Commit {
   "If the user making the commit is registered on this system, this will be their account id."
   userAccount: ID
 
-  "Whether this commit is still pending."
-  pending: Boolean!
+  "Whether this commit is still pending or has been submitted."
+  submitted: Boolean!
 
   "The commit message."
   message: ID!
@@ -44,10 +44,10 @@ type Commit {
   url: String
 
   "When the commit was created."
-  created: DateTime!
+  createdAt: DateTime!
 
   "When the commit was last updated."
-  updated: DateTime!
+  updatedAt: DateTime!
 }
 
 "Commit query result."

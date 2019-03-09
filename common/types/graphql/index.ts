@@ -613,8 +613,10 @@ export interface TimelineEntry {
   custom?: Maybe<CustomFieldChange[]>;
   /** Changes to the list of linked issues. */
   linked?: Maybe<LinkChange[]>;
-  /** One or more commits were merged. ID refers to commit record. */
-  commits?: Maybe<string[]>;
+  /** One or more commits were submitted. ID refers to commit record. */
+  commitCreated?: Maybe<string[]>;
+  /** One or more commits were submitted. ID refers to commit record. */
+  commitSubmitted?: Maybe<string[]>;
 }
 
 /** A change to a string field. */
@@ -666,25 +668,25 @@ export interface Commit {
   /** Database id for this commit. */
   id: string;
   /** Name of the SCM provider. */
-  provider: string;
+  serviceId: string;
   /** Array of issues associated with this commit. */
-  issue: string[];
+  issues: string[];
   /** Unique ID of the commit. */
   commit: string;
   /** Identity of user making the change. */
   user?: Maybe<Committer>;
   /** If the user making the commit is registered on this system, this will be their account id. */
   userAccount?: Maybe<string>;
-  /** Whether this commit is still pending. */
-  pending: boolean;
+  /** Whether this commit is still pending or has been submitted. */
+  submitted: boolean;
   /** The commit message. */
   message: string;
   /** URL pointing to a web page where commit details can be viewed. */
   url?: Maybe<string>;
   /** When the commit was created. */
-  created: DateTime;
+  createdAt: DateTime;
   /** When the commit was last updated. */
-  updated: DateTime;
+  updatedAt: DateTime;
 }
 
 /** Information about the creator of a commit. Might not correlate to any known account. */
