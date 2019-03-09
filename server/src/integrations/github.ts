@@ -82,7 +82,7 @@ function verifySignature(signature: string, data: string, secret: string) {
   return Buffer.from(signature).equals(Buffer.from(`sha1=${computedSignature}`));
 }
 
-const BASE_URL = escapeRegExp(process.env.PUBLIC_URL);
+const BASE_URL = escapeRegExp(process.env.PUBLIC_URL || '');
 const URL_RE = new RegExp(`^${BASE_URL}/([\\w_\\-\\.]+)/([\\w_\\-\\.]+)/(\\d+)`, 'mg');
 
 function scanForIssueLinks(message: string, pr: ProjectRecord, out: Set<string>) {
@@ -140,6 +140,7 @@ export class GitHubIntegration implements WebhookService {
             console.log('scanning for links in PR.');
             scanForIssueLinks(ev.pull_request.title, project, issues);
             scanForIssueLinks(ev.pull_request.body, project, issues);
+            console.log('issues found: ', issues.size);
             if (issues.size > 0) {
               this.updateCommit(db, ev, issues);
             }
