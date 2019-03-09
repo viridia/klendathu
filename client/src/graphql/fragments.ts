@@ -6,9 +6,16 @@ export const fragments = {
     id accountName type display photo
   }`,
 
-  project: gql`
-  fragment ProjectFields on Project {
-    id name owner ownerName title description createdAt updatedAt template isPublic role
+  commit: gql`
+  fragment CommitFields on Commit {
+    id serviceId issues commit
+    user { name username email }
+    userAccount submitted message url createdAt updatedAt
+  }`,
+
+  label: gql`
+  fragment LabelFields on Label {
+    id name color project creator created updated
   }`,
 
   membership: gql`
@@ -16,9 +23,9 @@ export const fragments = {
     id user project organization role createdAt updatedAt
   }`,
 
-  label: gql`
-  fragment LabelFields on Label {
-    id name color project creator created updated
+  project: gql`
+  fragment ProjectFields on Project {
+    id name owner ownerName title description createdAt updatedAt template isPublic role
   }`,
 
   projectPrefs: gql`
