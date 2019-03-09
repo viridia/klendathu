@@ -34,6 +34,7 @@
 * Membership pages flashes on updates.
 * Warn when navigating away on unsaved changes.
 * When grouping issues, make table columns the same width.
+* GitHub - handled closed commits. (just delete)
 
 # Major pieces
 
@@ -48,7 +49,6 @@
 * Issue Query
   * By Owner
 * Label Delete
-* GitHub integration
 * Progress View
 * Email Verification
 * Project Settings

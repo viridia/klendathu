@@ -26,7 +26,7 @@ export const queries = {
       count: results.length,
       offset: 0,
       results,
-    }
+    };
   },
 };
 
