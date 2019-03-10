@@ -1,6 +1,6 @@
 import * as React from 'react';
 import classNames from 'classnames';
-import { styled, ThemeProps } from '../style';
+import { styled } from '../style';
 
 export const ValidationMsg = styled.div`
   font-size: 90%;
@@ -26,8 +26,8 @@ const InputContainer = styled.div`
 
   > .text-input-content {
     align-items: center;
-    background-color: ${(props: ThemeProps) => props.theme.inputBgColor};
-    border: 1px solid ${(props: ThemeProps) => props.theme.inputBorderColor};
+    background-color: ${props => props.theme.inputBgColor};
+    border: 1px solid ${props => props.theme.inputBorderColor};
     border-radius: 3px;
     display: flex;
     flex-direction: row;
@@ -37,7 +37,7 @@ const InputContainer = styled.div`
     }
 
     &:focus-within {
-      box-shadow: 0 0 0 3px ${(props: ThemeProps) => props.theme.focusColor};
+      box-shadow: 0 0 0 3px ${props => props.theme.focusColor};
       z-index: 1;
     }
 
@@ -126,15 +126,15 @@ const TextAreaImpl = ({
 
 /** Textarea input form control. */
 export const TextArea = styled(TextAreaImpl)`
-  background-color: ${(props: ThemeProps) => props.theme.inputBgColor};
-  border: 1px solid ${(props: ThemeProps) => props.theme.inputBorderColor};
+  background-color: ${props => props.theme.inputBgColor};
+  border: 1px solid ${props => props.theme.inputBorderColor};
   border-radius: 3px;
   outline: none;
   padding: 6px;
   resize: none;
 
   &:focus {
-    box-shadow: 0 0 0 3px ${(props: ThemeProps) => props.theme.focusColor};
+    box-shadow: 0 0 0 3px ${props => props.theme.focusColor};
     z-index: 1;
   }
 

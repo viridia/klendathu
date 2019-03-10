@@ -84,10 +84,13 @@ export interface ThemeInterface {
   cardBgColor: string;
   cardBorderColor: string;
   cardShadowColor: string;
-
   cardHeaderBgColor: string;
   cardBgColorAltRow: string;
   cardHeaderDividerColor: string;
+
+  // Draggable cards
+  cardInnerBgColor: string;
+  cardInnerBorderColor: string;
 
   // Comment Blocks
   commentBgColor: string;

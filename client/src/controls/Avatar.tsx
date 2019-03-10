@@ -58,6 +58,8 @@ export function Avatar({ id, accountName, small }: Props) {
           return <AvatarImg className={classNames('avatar', 'loading', { small })} />;
         } else if (error) {
           return <AvatarImg className={classNames('avatar', 'error', { small })} />;
+        } else if (!data || !data.account) {
+          return <AvatarImg className={classNames('avatar', 'error', { small })} />;
         } else {
           const account: PublicAccount = data.account;
           if (account.photo) {

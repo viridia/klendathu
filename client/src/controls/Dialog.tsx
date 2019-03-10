@@ -1,6 +1,6 @@
 import * as React from 'react';
 import classNames from 'classnames';
-import { styled, ThemeProps } from '../style';
+import { styled } from '../style';
 import { Modal } from 'react-overlays';
 import { CSSTransition } from 'react-transition-group';
 import { darken, lighten } from 'polished';
@@ -28,11 +28,11 @@ const CloseButton = styled.button`
   justify-content: center;
   height: 32px;
   > svg {
-    fill: ${(props: ThemeProps) => props.theme.dialogHeaderTextColor};
+    fill: ${props => props.theme.dialogHeaderTextColor};
   }
 
   &:hover > svg {
-    fill: ${(props: ThemeProps) => lighten(0.2, props.theme.dialogHeaderTextColor)};
+    fill: ${props => lighten(0.2, props.theme.dialogHeaderTextColor)};
   }
 `;
 
@@ -54,9 +54,9 @@ function HeaderImpl({ children, className, hasClose }: HeaderProps) {
 
 const Header = styled(HeaderImpl)`
   align-items: center;
-  background-color: ${(props: ThemeProps) => props.theme.dialogHeaderBgColor};
+  background-color: ${props => props.theme.dialogHeaderBgColor};
   border-radius: 6px 6px 0 0;
-  color: ${(props: ThemeProps) => props.theme.dialogHeaderTextColor};
+  color: ${props => props.theme.dialogHeaderTextColor};
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -78,7 +78,7 @@ const Body = styled.section`
 
 // Footer component
 const Footer = styled.footer`
-  border-top: 1px solid ${(props: ThemeProps) => darken(0.1, props.theme.dialogBgColor)};
+  border-top: 1px solid ${props => darken(0.1, props.theme.dialogBgColor)};
   display: flex;
   flex-direction: row;
   padding: 8px;
@@ -97,7 +97,7 @@ const Backdrop = styled.div`
   left: 0;
   /* z-index: 6; */
   opacity: 0;
-  background-color: ${(props: ThemeProps) => props.theme.dialogBackdropColor};
+  background-color: ${props => props.theme.dialogBackdropColor};
   transition: opacity .3s ease;
 
   &.dialog-appear-active, &.dialog-enter, &.dialog-enter-done {
@@ -120,10 +120,10 @@ const ModalFrameEl = styled.div`
 `;
 
 const DialogEl = styled.div`
-  background-color: ${(props: ThemeProps) => props.theme.dialogBgColor};
-  border: ${(props: ThemeProps) => props.theme.dialogBorder};
+  background-color: ${props => props.theme.dialogBgColor};
+  border: ${props => props.theme.dialogBorder};
   border-radius: 6px;
-  box-shadow: ${(props: ThemeProps) => props.theme.dialogShadow};
+  box-shadow: ${props => props.theme.dialogShadow};
   display: flex;
   flex-direction: column;
   max-height: 95%;

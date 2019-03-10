@@ -19,6 +19,7 @@ import { IssueEditView } from '../issues/IssueEditView';
 import { IssueDetailsView } from '../issues/IssueDetailsView';
 import { ErrorDialog } from '../graphql/ErrorDisplay';
 import { ProjectTimeline } from '../timeline/ProjectTimeline';
+import { ProgressView } from '../progress/ProgressView';
 
 const MainPageLayout = styled(Page)`
   display: grid;
@@ -124,14 +125,14 @@ export class MainPage extends React.Component<RouteComponentProps<{}>> {
                       <Route
                         path="/:owner/:name/timeline"
                         exact={true}
-                        render={props => (<ProjectTimeline {...props}  env={this.viewContext} />)}
-                      />
-                      {/* <Route
-                        path="/:owner/:name/progress"
-                        exact={true}
-                        render={props => (<ProgressView {...props} {...models}/>)}
+                        render={props => (<ProjectTimeline {...props} env={this.viewContext} />)}
                       />
                       <Route
+                        path="/:owner/:name/progress"
+                        exact={true}
+                        render={props => (<ProgressView {...props} env={this.viewContext}/>)}
+                      />
+                      {/* <Route
                         path="/:owner/:name/dependencies"
                         exact={true}
                         render={props => (<DependenciesView {...props} {...models}/>)}

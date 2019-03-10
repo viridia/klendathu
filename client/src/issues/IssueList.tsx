@@ -3,7 +3,7 @@ import * as qs from 'qs';
 import { RouteComponentProps } from 'react-router';
 import { ErrorListDisplay } from '../graphql/ErrorDisplay';
 import { ViewContext } from '../models';
-import { LoadingIndicator, Card, CheckBox, ColumnSort } from '../controls';
+import { LoadingIndicator, CheckBox, ColumnSort } from '../controls';
 import { observer } from 'mobx-react';
 import { computed, action } from 'mobx';
 import { EmptyList, Table, TableHead, TableBody } from '../layout';
@@ -29,18 +29,7 @@ const highlightNew = (color: string) => keyframes`
   }
 `;
 
-const IssueGroup = styled.section`
-  margin-bottom: .8rem;
-  &:last-child {
-    margin-bottom: 0;
-  }
-`;
-
-const IssueListCard = styled(Card)`
-  flex-shrink: 0;
-`;
-
-const IssueListViewTable = styled(Table)`
+const IssueListTable = styled(Table)`
   tr.added {
     animation: ${props => highlightNew(props.theme.buttonColors.secondary.bg)} 1s ease-in;
   }
@@ -51,6 +40,21 @@ const IssueListViewTable = styled(Table)`
 
   .selected {
     text-align: center;
+  }
+`;
+
+const IssueListTableHeader = styled(TableHead)`
+  border: 1px solid ${props => props.theme.cardBorderColor};
+  background-color: ${props => props.theme.cardBgColor};
+`;
+
+const IssueListTableBody = styled(TableBody)`
+  background-color: ${props => props.theme.cardBgColor};
+  border: 1px solid ${props => props.theme.cardBorderColor};
+  box-shadow: 0px 2px 3px 0 ${props => props.theme.cardShadowColor};
+
+  > tr:first-child {
+    box-shadow: inset 0px 2px 3px 0 ${props => props.theme.cardShadowColor};
   }
 `;
 
@@ -84,7 +88,12 @@ export class IssueList extends React.Component<Props> {
       if (issues.group) {
         return this.renderGroupedIssues();
       }
-      return <IssueListCard>{this.renderIssues(issues.list)}</IssueListCard>;
+      return (
+        <IssueListTable>
+          {this.renderTableHeader()}
+          {this.renderIssues(issues.list)}
+        </IssueListTable>
+      );
     } else if (loading) {
       return <LoadingIndicator>Loading&hellip;</LoadingIndicator>;
     } else {
@@ -94,39 +103,43 @@ export class IssueList extends React.Component<Props> {
 
   private renderGroupedIssues() {
     const { issues } = this.props.env;
-    return issues.grouped.map(group => (
-      <IssueGroup key={group.value}>
-        <GroupHeader group={group} />
-        <IssueListCard>
-          {this.renderIssues(group.issues)}
-        </IssueListCard>
-      </IssueGroup>
-    ));
+    return (
+      <IssueListTable>
+        {issues.grouped.map(group => (
+          <React.Fragment key={group.value}>
+            <thead>
+              <tr>
+                <GroupHeader group={group} />
+              </tr>
+            </thead>
+            {this.renderTableHeader()}
+            {this.renderIssues(group.issues)}
+          </React.Fragment>
+        ))}
+      </IssueListTable>
+    );
   }
 
   private renderIssues(issueList: Issue[]) {
     const { selection } = this.props.env;
     return (
-      <IssueListViewTable>
-        {this.renderTableHeader()}
-        <TableBody>
-          {issueList.map(issue => (
-            <IssueListEntry
-                {...this.props}
-                key={issue.id}
-                issue={issue}
-                columnRenderers={this.columnRenderers}
-                selection={selection}
-            />))}
-        </TableBody>
-      </IssueListViewTable>
+      <IssueListTableBody>
+        {issueList.map(issue => (
+          <IssueListEntry
+              {...this.props}
+              key={issue.id}
+              issue={issue}
+              columnRenderers={this.columnRenderers}
+              selection={selection}
+          />))}
+      </IssueListTableBody>
     );
   }
 
   private renderTableHeader() {
     const { project, issues, selection } = this.props.env;
     return (
-      <TableHead>
+      <IssueListTableHeader>
         <tr>
           {project.role >= Role.UPDATER && (<th className="selected">
             <CheckBox
@@ -181,7 +194,7 @@ export class IssueList extends React.Component<Props> {
             </section>
           </th>
         </tr>
-      </TableHead>
+      </IssueListTableHeader>
     );
   }
 

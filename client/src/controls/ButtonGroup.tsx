@@ -1,6 +1,6 @@
 import * as React from 'react';
 import classNames from 'classnames';
-import { styled, ThemeProps } from '../style';
+import { styled } from '../style';
 
 export interface ButtonGroupProps {
   children?: React.ReactNode;
@@ -19,7 +19,7 @@ function ButtonGroupImpl({ children, className, vertical, ...attrs }: ButtonGrou
 export const ButtonGroup = styled(ButtonGroupImpl)`
   align-items: center;
   border: none;
-  background-color: ${(props: ThemeProps) => props.theme.buttonColors.default.bg};
+  background-color: ${props => props.theme.buttonColors.default.bg};
   display: inline-flex;
   flex-direction: row;
 

@@ -6,6 +6,83 @@ import bind from 'bind-decorator';
 import { Issue } from '../../../common/types/graphql';
 import { LabelName, Avatar, AccountName } from '../controls';
 import { ViewContext } from '../models';
+import { styled } from '../style';
+import { idToIndex } from '../lib/idToIndex';
+
+const IssueCardDiv = styled.div`
+  display: flex;
+  flex-direction: column;
+  border: 1px solid ${props => props.theme.cardInnerBorderColor};
+  border-radius: 5px;
+  background-color: ${props => props.theme.cardInnerBgColor};
+  box-shadow: 0px 2px 3px 0 ${props => props.theme.cardShadowColor};
+  cursor: move;
+  margin-bottom: .5rem;
+  overflow: hidden;
+  padding: 4px;
+  width: 12rem;
+  min-height: 6rem;
+  text-align: left;
+  user-select: none;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+`;
+
+const IssueCardHeader = styled.header`
+  align-items: center;
+  border-bottom: 1px solid ${props => props.theme.cardHeaderDividerColor};
+  display: flex;
+  flex-direction: row;
+  padding-bottom: 4px;
+
+  .index {
+    font-weight: bold;
+    margin-right: 4px;
+  }
+
+  .type {
+    padding: 2px 4px;
+    font-size: .8rem;
+    font-weight: bold;
+    border-radius: 3px;
+  }
+`;
+
+const IssueCardBody = styled.div`
+  margin-top: 2px;
+  flex: 1;
+  font-size: 1rem;
+  font-weight: bold;
+
+  .summary {
+    margin-right: 4px;
+
+    &.large { font-size: 1rem; }
+    &.medium { font-size: .8rem; }
+    &.small { font-size: .6rem; }
+  }
+
+  .label-name {
+    margin-right: auto;
+    margin-left: 0;
+    margin-bottom: 3px;
+  }
+`;
+
+const IssueCardFooter = styled.footer`
+  display: flex;
+  align-items: center;
+  margin-top: 4px;
+  .avatar {
+    margin-right: 4px;
+  }
+  .unassigned {
+    font-style: italic;
+    color: ${props => props.theme.textMuted};
+  }
+`;
 
 interface Props extends RouteComponentProps<{}> {
   env: ViewContext;
@@ -17,26 +94,26 @@ interface Props extends RouteComponentProps<{}> {
 export class IssueCard extends React.Component<Props> {
   public render() {
     const { issue, env } = this.props;
-    const index = issue.id.split('/', 4)[2];
+    const index = idToIndex(issue.id);
     return (
-      <div className="issue-card" draggable={true} onDragStart={this.onDragStart}>
-        <header>
+      <IssueCardDiv draggable={true} onDragStart={this.onDragStart}>
+        <IssueCardHeader>
           #<span className="index">{index}</span>
           {this.renderIssueType()}
-        </header>
-        <div className="body">
+        </IssueCardHeader>
+        <IssueCardBody>
           <span className={classNames('summary', this.summarySize)}>
             {issue.summary}
           </span>
           {issue.labels
             .filter(l => env.visibleLabels.has(l))
-            .map(l => <LabelName id={l} key={l} />)}
-      </div>
-        <footer>
-          <Avatar id={issue.owner} />
+            .map(l => <LabelName id={l} key={l} small={true} />)}
+        </IssueCardBody>
+        <IssueCardFooter>
+          <Avatar id={issue.owner} small={true} />
           <AccountName id={issue.owner} />
-        </footer>
-      </div>
+        </IssueCardFooter>
+      </IssueCardDiv>
     );
   }
 

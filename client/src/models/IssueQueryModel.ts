@@ -39,6 +39,11 @@ const IssuesSubscription = gql`
 `;
 
 function alphabeticalSort(a: string, b: string) {
+  if (a === null) {
+    return a === b ? 0 : 1;
+  } else if (b === null) {
+    return -1;
+  }
   return a.localeCompare(b);
 }
 

@@ -1,5 +1,6 @@
 # TODO
 
+* Progress View
 * Attachments
 * Delete issues
 * Filters
@@ -35,6 +36,7 @@
 * Warn when navigating away on unsaved changes.
 * When grouping issues, make table columns the same width.
 * GitHub - handled closed commits. (just delete)
+* Commits - check user role.
 
 # Major pieces
 
@@ -49,7 +51,6 @@
 * Issue Query
   * By Owner
 * Label Delete
-* Progress View
 * Email Verification
 * Project Settings
   * Milestones

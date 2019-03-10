@@ -96,6 +96,10 @@ export const themeDefault: ThemeInterface = {
   cardHeaderBgColor: dye(0.88, primary),
   cardHeaderDividerColor: transparentize(0.8, dye(0.1, diluted)),
 
+  // Draggable cards
+  cardInnerBgColor: dye(0.98, primary),
+  cardInnerBorderColor: dye(0.85, primary),
+
   // Comment blocks
   commentBgColor: dye(1.0, primary),
   commentBorderColor: dye(0.85, diluted),

@@ -4,8 +4,14 @@ import { ProjectEnv } from '../models';
 import { IssueGroup } from '../models/IssueQueryModel';
 import { styled } from '../style';
 
-const GroupHeaderEl = styled.header`
-  margin-bottom: .8rem;
+const GroupHeaderEl = styled.th`
+  font-weight: normal;
+  padding: .5rem 0;
+  text-align: left;
+
+  thead:first-child & {
+    padding-top: 0;
+  }
 
   > .unassigned {
     font-style: italic;
@@ -26,14 +32,15 @@ export function GroupHeader({ group }: Props) {
   switch (group.field) {
     case 'owner':
       return (
-        <GroupHeaderEl>
+        <GroupHeaderEl colSpan={100}>
           <GroupTitle>Owner: </GroupTitle>
           <AccountName id={group.value} />
         </GroupHeaderEl>
       );
+
     case 'reporter':
       return (
-        <GroupHeaderEl>
+        <GroupHeaderEl colSpan={100}>
           <GroupTitle>Reporter: </GroupTitle>
           <AccountName id={group.value} />
         </GroupHeaderEl>
@@ -42,7 +49,7 @@ export function GroupHeader({ group }: Props) {
     case 'type': {
       const typeInfo = env.template.types.find(t => t.id === group.value);
       return (
-        <GroupHeaderEl>
+        <GroupHeaderEl colSpan={100}>
           <GroupTitle>Type: </GroupTitle>
           <span className="value">{typeInfo ? typeInfo.caption : group.value}</span>
         </GroupHeaderEl>
@@ -52,7 +59,7 @@ export function GroupHeader({ group }: Props) {
     case 'state': {
       const stateInfo = env.template.states.find(s => s.id === group.value);
       return (
-        <GroupHeaderEl>
+        <GroupHeaderEl colSpan={100}>
           <GroupTitle>State: </GroupTitle>
           <span className="value">{stateInfo ? stateInfo.caption : group.value}</span>
         </GroupHeaderEl>

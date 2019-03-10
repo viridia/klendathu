@@ -26,11 +26,9 @@ export const Table = styled.table`
 export const TableHead = styled.thead`
   box-shadow: 0px 3px 2px 0 ${props => props.theme.cardShadowColor};
 
-  > tr {
-    > th {
-      padding: 6px 1rem;
-      border-right: 1px solid ${props => props.theme.cardHeaderDividerColor};
-    }
+  > tr > th {
+    padding: 6px 1rem;
+    border-right: 1px solid ${props => props.theme.cardHeaderDividerColor};
   }
 `;
 
@@ -43,12 +41,16 @@ export const TableBody = styled.tbody`
   }
 
   > tr:first-child > td {
-    padding-top: 6px;
     border-top: 1px solid ${props => props.theme.cardHeaderDividerColor};
+    padding-top: 6px;
   }
 
   > tr:last-child > td {
     padding-bottom: 3px;
+  }
+
+  > tr > td:last-child {
+    border-right: 1px solid ${props => props.theme.cardHeaderDividerColor};
   }
 `;
 

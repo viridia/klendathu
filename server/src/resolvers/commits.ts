@@ -7,7 +7,7 @@ import { PaginatedResult } from './helpers';
 export const queries = {
   commit(_: any, { id }: CommitQueryArgs, context: Context): Promise<CommitRecord> {
     const commits = context.db.collection<CommitRecord>('commits');
-    // TODO: Check user role?
+    // TODO: Check user role? We do know the project.
     return commits.findOne({ _id: id });
   },
 

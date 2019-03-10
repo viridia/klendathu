@@ -1,10 +1,10 @@
-import { styled, ThemeProps } from '../style';
+import { styled } from '../style';
 
 export const Card = styled.section`
   align-items: stretch;
-  background-color: ${(props: ThemeProps) => props.theme.cardBgColor};
-  border: 1px solid ${(props: ThemeProps) => props.theme.cardBorderColor};
-  box-shadow: 0px 2px 3px 0 ${(props: ThemeProps) => props.theme.cardShadowColor};
+  background-color: ${props => props.theme.cardBgColor};
+  border: 1px solid ${props => props.theme.cardBorderColor};
+  box-shadow: 0px 2px 3px 0 ${props => props.theme.cardShadowColor};
   display: flex;
   flex-direction: column;
   margin-bottom: 8px;
@@ -15,7 +15,7 @@ export const Card = styled.section`
 
   > header, > footer {
     align-items: center;
-    background-color: ${(props: ThemeProps) => props.theme.cardHeaderBgColor};
+    background-color: ${props => props.theme.cardHeaderBgColor};
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -24,13 +24,13 @@ export const Card = styled.section`
   }
 
   > header {
-    border-bottom: 1px solid ${(props: ThemeProps) => props.theme.cardHeaderDividerColor};
-    box-shadow: 0px 2px 2px 0 ${(props: ThemeProps) => props.theme.cardShadowColor};
+    border-bottom: 1px solid ${props => props.theme.cardHeaderDividerColor};
+    box-shadow: 0px 2px 2px 0 ${props => props.theme.cardShadowColor};
     font-weight: bold;
   }
 
   > footer {
-    border-top: 1px solid ${(props: ThemeProps) => props.theme.cardHeaderDividerColor};
+    border-top: 1px solid ${props => props.theme.cardHeaderDividerColor};
   }
 `;
 
