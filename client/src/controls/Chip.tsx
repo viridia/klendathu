@@ -3,18 +3,19 @@ import { styled } from '../style';
 import { transparentize } from 'polished';
 import { contrastingColor } from '../lib/contrastingColor';
 import classNames from 'classnames';
+import { ButtonSize } from './Button';
 
 interface Props {
   children: React.ReactNode;
   className?: string;
   color?: string;
-  small?: boolean;
+  size?: ButtonSize;
   onClose?: () => void;
 }
 
-function ChipImpl({ children, className, onClose }: Props) {
+function ChipImpl({ children, className, onClose, size }: Props) {
   return (
-    <span className={classNames('chip', className)}>
+    <span className={classNames('chip', className, size)}>
       {onClose && <button className="close" onClick={onClose}>&#x2715;</button>}
       <span className="title">{children}</span>
     </span>
@@ -24,23 +25,38 @@ function ChipImpl({ children, className, onClose }: Props) {
 export const Chip = styled(ChipImpl).attrs(props => ({
   titleColor: contrastingColor(props.color),
   hoverColor: transparentize(0.4, contrastingColor(props.color)),
-  height: props.small ? '21px' : '24px',
-  borderRadius: props.small ? '10px' : '12px',
-  fontSize: props.small ? '75%' : '85%',
 }))`
   display: inline-flex;
   align-items: center;
   background-color: ${props => props.color};
-  border-radius: ${props => props.borderRadius};
+  border-radius: 12px;
   color: ${props => props.titleColor};
-  font-size: ${props => props.fontSize};
+  font-size: 85%;
   flex-direction: row;
-  height: ${props => props.height};
+  height: 24px;
   overflow: hidden;
   margin-right: 3px;
   padding: 0 5px;
   user-select: none;
   white-space: nowrap;
+
+  &.small {
+    height: 21px;
+    font-size: 75%;
+    border-radius: 10px;
+  }
+
+  &.smaller {
+    height: 18px;
+    font-size: 70%;
+    border-radius: 9px;
+  }
+
+  &.mini {
+    height: 16px;
+    font-size: 65%;
+    border-radius: 8px;
+  }
 
   .title {
     margin-right: 4px;

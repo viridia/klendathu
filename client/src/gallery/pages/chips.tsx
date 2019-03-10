@@ -20,12 +20,12 @@ function Chips() {
       </div>
       <header>Chips (small)</header>
       <div>
-        <Chip small={true}>Hello</Chip>
-        <Chip small={true} onClose={onClose}>Hello</Chip>
-        <Chip small={true} color="#ff0">Yellow</Chip>
-        <Chip small={true} onClose={onClose} color="#fff">White</Chip>
-        <Chip small={true} onClose={onClose} color="#000">Black</Chip>
-        <Chip small={true} onClose={onClose} color="lightblue">Light Blue</Chip>
+        <Chip size="small">Hello</Chip>
+        <Chip size="small" onClose={onClose}>Hello</Chip>
+        <Chip size="small" color="#ff0">Yellow</Chip>
+        <Chip size="small" onClose={onClose} color="#fff">White</Chip>
+        <Chip size="small" onClose={onClose} color="#000">Black</Chip>
+        <Chip size="small" onClose={onClose} color="lightblue">Light Blue</Chip>
       </div>
     </React.Fragment>
   );

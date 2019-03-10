@@ -99,7 +99,7 @@ export class IssueListEntry extends React.Component<Props> {
             <span className="summary">{issue.summary}</span>
             {issue.labels
               .filter(l => context.visibleLabels.has(l))
-              .map(l => <LabelName small={true} id={l} key={l} />)}
+              .map(l => <LabelName size="small" id={l} key={l} />)}
           </NavLink>
         </TitleCell>
       </tr>

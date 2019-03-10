@@ -1,6 +1,8 @@
 # TODO
 
 * Progress View
+  * Finish dragging
+  * No need to show issue owner if that is the group type.
 * Attachments
 * Delete issues
 * Filters

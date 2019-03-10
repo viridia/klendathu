@@ -56,12 +56,29 @@ const IssueCardBody = styled.div`
   font-size: 1rem;
   font-weight: bold;
 
+  &.large {
+    line-height: 1rem;
+    > .summary {
+      font-size: 1rem;
+    }
+  }
+  &.medium {
+    line-height: .9rem;
+    > .summary {
+      font-size: .9rem;
+    }
+  }
+  &.small {
+    line-height: .7rem;
+    > .summary {
+      font-size: .7rem;
+    }
+  }
+
   .summary {
     margin-right: 4px;
-
-    &.large { font-size: 1rem; }
-    &.medium { font-size: .8rem; }
-    &.small { font-size: .6rem; }
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .label-name {
@@ -101,13 +118,13 @@ export class IssueCard extends React.Component<Props> {
           #<span className="index">{index}</span>
           {this.renderIssueType()}
         </IssueCardHeader>
-        <IssueCardBody>
-          <span className={classNames('summary', this.summarySize)}>
+        <IssueCardBody className={this.summarySize}>
+          <span className="summary">
             {issue.summary}
           </span>
           {issue.labels
             .filter(l => env.visibleLabels.has(l))
-            .map(l => <LabelName id={l} key={l} small={true} />)}
+            .map(l => <LabelName id={l} key={l} size="smaller" />)}
         </IssueCardBody>
         <IssueCardFooter>
           <Avatar id={issue.owner} small={true} />

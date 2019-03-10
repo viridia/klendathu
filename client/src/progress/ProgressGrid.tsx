@@ -24,7 +24,6 @@ const ProgressGridTable = styled.table`
 const StateHeader = styled.thead`
   background-color: ${props => props.theme.cardHeaderBgColor};
   border: 1px solid ${props => props.theme.cardBorderColor};
-  box-shadow: 0px 3px 2px 0 ${props => props.theme.cardShadowColor};
   th {
     border-right: 2px dashed ${props => props.theme.cardHeaderDividerColor};
     text-align: center;
@@ -41,16 +40,20 @@ const StateHeader = styled.thead`
 `;
 
 const ProgressGridTableBody = styled.tbody`
-  background-color: ${props => props.theme.cardBgColor};
-  border: 1px solid ${props => props.theme.cardHeaderDividerColor};
+  border: 1px solid ${props => props.theme.cardBorderColor};
   box-shadow: 0px 2px 2px 0 ${props => props.theme.cardShadowColor};
+
+  tr {
+    background-color: ${props => props.theme.cardBgColor};
+    box-shadow: inset 0px 3px 2px 0 ${props => props.theme.cardShadowColor};
+  }
 
   td {
     border-right: 2px dashed ${props => props.theme.cardHeaderDividerColor};
     text-align: center;
 
     vertical-align: top;
-    padding: 6px 4px 4px 4px;
+    padding: 7px 6px 6px 6px;
 
     &:last-child {
       border-right: 1px solid ${props => props.theme.cardBorderColor};
@@ -77,16 +80,6 @@ interface Props extends RouteComponentProps<{}> {
 export class ProgressGrid extends React.Component<Props> {
   @observable private dragState: string = null;
   @observable private dragGroup: string = undefined;
-
-  // public componentWillMount() {
-  //   const { location, issues, project } = this.props;
-  //   issues.setFromQuery(project, qs.parse(location.search, { ignoreQueryPrefix: true }));
-  // }
-
-  // public componentWillReceiveProps(nextProps: Props) {
-  //   const { location, issues, project } = nextProps;
-  //   issues.setFromQuery(project, qs.parse(location.search, { ignoreQueryPrefix: true }));
-  // }
 
   public render() {
     return (
@@ -147,12 +140,12 @@ export class ProgressGrid extends React.Component<Props> {
       <ProgressGridTableBody key={`${group ? group.sortKey : 'progress'}-body`}>
         <tr>
           {template.states.map(st => {
-            const ilist = issuesByState.get(st.id);
-            const alist = issuesByState.has(st.id);
+            const ilist = issues.filter(iss => iss.state === st.id);
+            const nonEmptyList = issuesByState.has(st.id);
             return (
               <td
                   className={classNames({
-                    collapsed: !alist,
+                    collapsed: !nonEmptyList,
                     dragOver: st.id === this.dragState && groupId === this.dragGroup,
                   })}
                   data-state={st.id}
@@ -162,7 +155,7 @@ export class ProgressGrid extends React.Component<Props> {
                   onDragLeave={this.onDragLeave}
                   onDrop={this.onDrop}
               >
-                {!alist
+                {!nonEmptyList
                   ? <ProgressColumnLabel>{st.caption}</ProgressColumnLabel>
                   : ilist && ilist.map(i =>
                       <IssueCard {...this.props} key={i.id} issue={i} group={groupId} />)}

@@ -3,6 +3,7 @@ import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
 import { Label } from '../../../common/types/graphql';
 import { Chip } from './Chip';
+import { ButtonSize } from './Button';
 
 const LabelQuery = gql`
   query LabelQuery($id: ID!) {
@@ -14,11 +15,11 @@ interface Props {
   id: string;
   className?: string;
   textOnly?: boolean;
-  small?: boolean;
+  size?: ButtonSize;
   onClose?: () => void;
 }
 
-export function LabelName({ id, textOnly, className, small, onClose }: Props) {
+export function LabelName({ id, textOnly, className, size, onClose }: Props) {
   return (
     <Query query={LabelQuery} variables={{ id }} >
       {({ loading, error, data }) => {
@@ -30,12 +31,12 @@ export function LabelName({ id, textOnly, className, small, onClose }: Props) {
             if (textOnly) {
               return <span className={className}>{label.name}</span>;
             }
-            return <Chip color={label.color} small={small} onClose={onClose}>{label.name}</Chip>;
+            return <Chip color={label.color} size={size} onClose={onClose}>{label.name}</Chip>;
           } else {
             if (textOnly) {
               return <span className={className}>unknown-label</span>;
             }
-            return <Chip small={small} onClose={onClose}>unknown-label</Chip>;
+            return <Chip size={size} onClose={onClose}>unknown-label</Chip>;
           }
         }
       }}
