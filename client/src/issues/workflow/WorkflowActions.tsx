@@ -3,32 +3,16 @@ import * as H from 'history';
 import * as qs from 'qs';
 import { computed, action, observable, ObservableMap } from 'mobx';
 import { Workflow } from '../../../../common/types/json';
-import { Issue, TimelineEntry, Mutation, UpdateIssueInput } from '../../../../common/types/graphql';
+import { Issue, TimelineEntry, UpdateIssueInput } from '../../../../common/types/graphql';
 import { ViewContext, OperandType, defaultOperandValue } from '../../models';
-import { fragments } from '../../graphql';
-import { client } from '../../graphql/client';
+import { updateIssue } from '../../graphql';
 import { observer } from 'mobx-react';
 import { ExecutableAction, ExecutableLinkEffect } from './ExecutableAction';
 import { WorkflowActionControl } from './WorkflowActionControl';
 import { ActionEnv } from './ActionEnv';
 import { WorkflowInputsDialog } from './WorkflowInputsDialog';
 import styled from 'styled-components';
-import gql from 'graphql-tag';
 import { idToIndex } from '../../lib/idToIndex';
-
-const UpdateIssueMutation = gql`
-  mutation UpdateIssueMutation($id: ID!, $input: UpdateIssueInput!) {
-    updateIssue(id: $id, input: $input) {
-      ...IssueFields
-      ownerAccount { ...AccountFields }
-      ccAccounts { ...AccountFields }
-    }
-  }
-  ${fragments.account}
-  ${fragments.issue}
-`;
-
-type UpdateIssueMutationResult = Pick<Mutation, 'updateIssue'>;
 
 const WorkflowActionsLayout = styled.section`
   display: flex;
@@ -170,13 +154,7 @@ export class WorkflowActions extends React.Component<Props> {
       update[eff.key] = eff.value as string;
     });
 
-    return client.mutate<UpdateIssueMutationResult>({
-      mutation: UpdateIssueMutation,
-      variables: {
-        id: issue.id,
-        input: update,
-      }
-    }).catch(error => {
+    return updateIssue({ id: issue.id, input: update }).catch(error => {
       env.mutationError = error;
     });
   }

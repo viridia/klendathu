@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { observer } from 'mobx-react';
-import classNames from 'classnames';
 import bind from 'bind-decorator';
 import { Issue } from '../../../common/types/graphql';
 import { LabelName, Avatar, AccountName } from '../controls';

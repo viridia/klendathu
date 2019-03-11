@@ -47,25 +47,8 @@ export class WebhookSettings extends React.Component<Props> {
 
   @action.bound
   private onAdd(e: any) {
-  //   const { env } = this.props;
     e.preventDefault();
     this.openAdd = true;
-  //   client.mutate<SetPrefsColumnsMutationResult>({
-  //     mutation: SetPrefsColumnsMutation,
-  //     variables: {
-  //       project: env.project.id,
-  //       columns: this.visible.slice(),
-  //     }
-  //   }).then(({ data, errors }) => {
-  //     this.busy = false;
-  //     if (errors) {
-  //       decodeErrorAsException(errors);
-  //     }
-  //     return data.setPrefColumns;
-  //   }, error => {
-  //     env.mutationError = error;
-  //     this.busy = false;
-  //   });
   }
 
   @action.bound
@@ -85,26 +68,4 @@ export class WebhookSettings extends React.Component<Props> {
   private onCloseAdd() {
     this.openAdd = false;
   }
-  // @bind
-  // private onSave(e: any) {
-  //   const { env } = this.props;
-  //   e.preventDefault();
-  //   this.busy = true;
-  //   client.mutate<SetPrefsColumnsMutationResult>({
-  //     mutation: SetPrefsColumnsMutation,
-  //     variables: {
-  //       project: env.project.id,
-  //       columns: this.visible.slice(),
-  //     }
-  //   }).then(({ data, errors }) => {
-  //     this.busy = false;
-  //     if (errors) {
-  //       decodeErrorAsException(errors);
-  //     }
-  //     return data.setPrefColumns;
-  //   }, error => {
-  //     env.mutationError = error;
-  //     this.busy = false;
-  //   });
-  // }
 }

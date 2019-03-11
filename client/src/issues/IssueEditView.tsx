@@ -5,33 +5,14 @@ import { toast } from 'react-toastify';
 import { ViewContext } from '../models';
 import { IssueInput, Issue, Project } from '../../../common/types/graphql';
 import gql from 'graphql-tag';
-import { fragments, ErrorDisplay } from '../graphql';
+import { fragments, ErrorDisplay, updateIssue, newIssue } from '../graphql';
 import { Query } from 'react-apollo';
-import { client, decodeErrorAsException } from '../graphql/client';
+import { decodeErrorAsException } from '../graphql/client';
 import { idToIndex } from '../lib/idToIndex';
 
 const IssueQuery = gql`
   query IssueQuery($id: ID!) {
     issue(id: $id) {
-      ...IssueFields
-      ownerAccount { ...AccountFields }
-      ccAccounts { ...AccountFields }
-    }
-  }
-  ${fragments.account}
-  ${fragments.issue}
-`;
-
-const NewIssueMutation = gql`
-  mutation NewIssueMutation($project: ID!, $input: IssueInput!) {
-    newIssue(project: $project, input: $input) { ...IssueFields }
-  }
-  ${fragments.issue}
-`;
-
-const UpdateIssueMutation = gql`
-  mutation UpdateIssueMutation($id: ID!, $input: UpdateIssueInput!) {
-    updateIssue(id: $id, input: $input) {
       ...IssueFields
       ownerAccount { ...AccountFields }
       ccAccounts { ...AccountFields }
@@ -48,10 +29,7 @@ interface Props extends RouteComponentProps<{ project: string; id: string }> {
 }
 
 function saveIssue(issue: Issue, input: IssueInput) {
-  return client.mutate<{ updateIssue: Issue }>({
-      mutation: UpdateIssueMutation,
-      variables: { id: issue.id, input }
-  }).then(({ data, errors }) => {
+  return updateIssue({ id: issue.id, input }).then(({ data, errors }) => {
     if (errors) {
       // TODO: more information
       toast.error('Issue update failed.');
@@ -65,10 +43,7 @@ function saveIssue(issue: Issue, input: IssueInput) {
 }
 
 function createIssue(project: Project, input: IssueInput): Promise<Issue> {
-  return client.mutate<{ newIssue: Issue }>({
-    mutation: NewIssueMutation,
-    variables: { project: project.id, input }
-  }).then(({ data, errors }) => {
+  return newIssue({ project: project.id, input }).then(({ data, errors }) => {
     if (errors) {
       // TODO: more information
       toast.error('Issue creation failed.');

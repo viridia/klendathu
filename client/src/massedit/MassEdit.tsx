@@ -6,34 +6,10 @@ import { toast } from 'react-toastify';
 import { Collapse } from '../controls/Collapse';
 import { Button, Card } from '../controls';
 import { ViewContext } from '../models';
-import { UpdateIssueInput, Mutation } from '../../../common/types/graphql';
+import { UpdateIssueInput } from '../../../common/types/graphql';
 import bind from 'bind-decorator';
 import { styled } from '../style';
-import gql from 'graphql-tag';
-import { fragments } from '../graphql';
-import { client } from '../graphql/client';
-
-const UpdateIssueMutation = gql`
-  mutation UpdateIssueMutation($id: ID!, $input: UpdateIssueInput!) {
-    updateIssue(id: $id, input: $input) {
-      ...IssueFields
-    }
-  }
-  ${fragments.issue}
-`;
-
-type UpdateIssueMutationResult = Pick<Mutation, 'updateIssue'>;
-
-const DeleteIssueMutation = gql`
-  mutation DeleteIssueMutation($id: ID!) {
-    deleteIssue(id: $id) {
-      ...IssueFields
-    }
-  }
-  ${fragments.issue}
-`;
-
-type DeleteIssueMutationResult = Pick<Mutation, 'deleteIssue'>;
+import { updateIssue, deleteIssue } from '../graphql';
 
 const MassEditCard = styled(Card)`
   background-color: ${props => props.theme.massEditBgColor};
@@ -131,19 +107,11 @@ export class MassEdit extends React.Component<Props> {
         }
       });
       if (deleted) {
-        promises.push(client.mutate<DeleteIssueMutationResult>({
-          mutation: DeleteIssueMutation,
-          variables: {
-            id: issueId,
-          }
-        }));
+        promises.push(deleteIssue({ id: issueId }));
       } else {
-        promises.push(client.mutate<UpdateIssueMutationResult>({
-          mutation: UpdateIssueMutation,
-          variables: {
-            id: issueId,
-            input: updates,
-          }
+        promises.push(updateIssue({
+          id: issueId,
+          input: updates,
         }));
       }
     });

@@ -9,6 +9,7 @@ import classNames from 'classnames';
 import { Issue } from '../../../common/types/graphql';
 import { IssueGroup } from '../models/IssueQueryModel';
 import { styled } from '../style';
+import { updateIssue } from '../graphql';
 
 const ProgressGridSection = styled.section`
   overflow: auto;
@@ -205,8 +206,9 @@ export class ProgressGrid extends React.Component<Props> {
         if (type.startsWith('issue/')) {
           const [, issueId] = type.split('/', 2);
           const issue = this.byId.get(issueId);
-          console.log(issue);
-          // updateIssue(issue.id, { state: this.dragState });
+          updateIssue({ id: issue.id, input: { state: this.dragState } }).catch(error => {
+            this.props.env.mutationError = error;
+          });
           break;
         }
       }

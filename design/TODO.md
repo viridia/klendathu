@@ -1,10 +1,8 @@
 # TODO
 
-* Progress View
-  * Finish dragging
-  * No need to show issue owner if that is the group type.
 * Attachments
 * Delete issues
+* Centralize graphql queries and mutations
 * Filters
   * UI prefs in local storage
   * Saving filters
@@ -39,6 +37,9 @@
 * When grouping issues, make table columns the same width.
 * GitHub - handled closed commits. (just delete)
 * Commits - check user role.
+* Webhooks: finish 'edit' and 'remove'.
+* Progress View
+  * No need to show issue owner if that is the group type.
 
 # Major pieces
 
@@ -93,28 +94,6 @@ Issue List State:
   * There's a conflict between loading a single page of items, and wanting to do forward/back
     in the details view.
   * What would be ideal is a way to do the forward/back navigation on the server side.
-
-# GitHub integration
-
-* Ideally we shouldn't limit it to just GitHub. It should be pluggable.
-* API-wise, it looks like this:
-
-  * endpoint to receive hooks.
-  * Collection to store plugin configuration.
-  * database collection to store current scm status
-    * scm provider
-    * issue id
-    * id of commit
-    * url of commit page
-    * status
-      * pending
-      * merged
-      * closed
-
-  * Setting up hooks:
-    * The client won't have knowledge of specific hooks.
-    * So it has to request a url from the backend.
-    * Also needs a place to enter a secret.
 
 # Templates
 
