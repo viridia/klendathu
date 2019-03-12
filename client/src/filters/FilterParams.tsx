@@ -53,6 +53,8 @@ const FilterParamsHeader = styled.header`
 
 interface Props extends RouteComponentProps<{}> {
   env: ViewContext;
+  view: string;
+  search: string;
 }
 
 @observer
@@ -67,8 +69,8 @@ export class FilterParams extends React.Component<Props> {
   constructor(props: Props) {
     super(props);
     this.disposer = reaction(
-      () => location.search,
-      () => this.parseQuery(location.search),
+      () => this.props.search,
+      () => this.parseQuery(this.props.search),
       { fireImmediately: true },
     );
   }
@@ -163,8 +165,9 @@ export class FilterParams extends React.Component<Props> {
           </FilterTermEditor>
           {this.showSaveDialog &&
             <SaveFilterDialog
-                project={env.project}
-                filter={this.queryString}
+                env={env}
+                view={this.props.view}
+                queryString={this.queryString}
                 onHide={this.onCloseSaveDialog}
             />}
         </FilterTermList>

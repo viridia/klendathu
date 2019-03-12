@@ -1,6 +1,7 @@
 # TODO
 
 * Attachments
+* Milestones
 * Delete issues
 * Centralize graphql queries and mutations
 * Filters

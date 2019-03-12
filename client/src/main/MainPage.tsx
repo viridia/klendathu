@@ -20,6 +20,7 @@ import { IssueDetailsView } from '../issues/IssueDetailsView';
 import { ErrorDialog } from '../graphql/ErrorDisplay';
 import { ProjectTimeline } from '../timeline/ProjectTimeline';
 import { ProgressView } from '../progress/ProgressView';
+import { FilterListView } from '../filters/FilterListView';
 
 const MainPageLayout = styled(Page)`
   display: grid;
@@ -117,11 +118,11 @@ export class MainPage extends React.Component<RouteComponentProps<{}>> {
                         exact={true}
                         render={() => (<LabelListView context={this.viewContext} />)}
                       />
-                      {/* <Route
+                      <Route
                         path="/:owner/:name/filters"
                         exact={true}
-                        render={props => (<SavedFiltersView {...props} {...models}/>)}
-                      /> */}
+                        render={props => (<FilterListView {...props} env={this.viewContext} />)}
+                      />
                       <Route
                         path="/:owner/:name/timeline"
                         exact={true}

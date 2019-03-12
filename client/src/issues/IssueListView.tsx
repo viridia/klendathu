@@ -25,7 +25,7 @@ export function IssueListView(props: Props) {
   });
   return (
     <React.Fragment>
-      <FilterParams {...props} env={env} />
+      <FilterParams {...props} env={env} view="issues" search={location.search} />
       <MassEdit {...props} env={env} />
       <IssueList {...props} />
     </React.Fragment>

@@ -24,7 +24,7 @@ export function ProgressView(props: Props) {
   });
   return (
     <React.Fragment>
-      <FilterParams {...props} env={env} />
+      <FilterParams {...props} env={env} view="progress" search={location.search} />
       <ProgressGrid {...props} />
     </React.Fragment>
   );

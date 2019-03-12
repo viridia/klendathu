@@ -5,6 +5,8 @@ import {
   UpdateIssueMutationArgs,
   DeleteIssueMutationArgs,
   NewIssueMutationArgs,
+  AddPrefsFilterMutationArgs,
+  RemovePrefsFilterMutationArgs,
 } from '../../../common/types/graphql';
 import { client } from './client';
 
@@ -54,11 +56,37 @@ const DeleteIssueMutation = gql`
   ${fragments.issue}
 `;
 
-type DeleteIssueMutationResult = Pick<Mutation, 'deleteIssue'>;
-
 export function deleteIssue({ id }: DeleteIssueMutationArgs) {
-  return client.mutate<DeleteIssueMutationResult>({
+  return client.mutate<Pick<Mutation, 'deleteIssue'>>({
     mutation: DeleteIssueMutation,
     variables: { id }
+  });
+}
+
+const AddPrefsFilterMutation = gql`
+  mutation AddPrefsFilterMutation($project: ID!, $input: FilterInput!) {
+    addPrefsFilter(project: $project, input: $input) { ...ProjectPrefsFields }
+  }
+  ${fragments.projectPrefs}
+`;
+
+export function addPrefsFilter({ project, input }: AddPrefsFilterMutationArgs) {
+  return client.mutate<Pick<Mutation, 'addPrefsFilter'>>({
+    mutation: AddPrefsFilterMutation,
+    variables: { project, input }
+  });
+}
+
+const RemovePrefsFilterMutation = gql`
+  mutation RemovePrefsFilterMutation($project: ID!, $name: String!) {
+    removePrefsFilter(project: $project, name: $name) { ...ProjectPrefsFields }
+  }
+  ${fragments.projectPrefs}
+`;
+
+export function removePrefsFilter({ project, name }: RemovePrefsFilterMutationArgs) {
+  return client.mutate<Pick<Mutation, 'removePrefsFilter'>>({
+    mutation: RemovePrefsFilterMutation,
+    variables: { project, name }
   });
 }

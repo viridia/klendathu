@@ -1,14 +1,16 @@
 import * as React from 'react';
+import * as qs from 'qs';
 import { ProjectPrefs, PublicAccount, Project } from '../../../common/types/graphql';
-import { LabelName, QueryLink } from '../controls';
+import { QueryLink } from '../controls';
 import styled from 'styled-components';
 
-const LabelList = styled.ul`
+const FilterList = styled.ul`
   margin: 0;
   padding-left: 30px;
   > li {
     margin: 4px 0;
     > a {
+      color: ${props => props.theme.leftNavTextColor};
       text-decoration: none;
       &:hover {
         text-decoration: underline;
@@ -27,22 +29,30 @@ interface Props {
   prefs: ProjectPrefs;
 }
 
-export function LabelLinks({ prefs, account, project }: Props) {
+function parseFilterString(query: string): any {
+  try {
+    return qs.parse(query, { ignoreQueryPrefix: true });
+  } catch (e) {
+    return {};
+  }
+}
+
+export function FilterLinks({ prefs, account, project }: Props) {
   if (!account || !project) {
     return null;
   }
   return (
-    <LabelList>
-      {prefs.labels.map(labelId => (
-        <li key={labelId}>
+    <FilterList>
+      {prefs.filters.map(filter => (
+        <li key={filter.name}>
           <QueryLink
-              to={`/${account.accountName}/${project.name}/issues`}
-              query={{ label: labelId.split('.', 2)[1] }}
+              to={`/${account.accountName}/${project.name}/${filter.view}`}
+              query={parseFilterString(filter.value)}
           >
-            <LabelName id={labelId} size="small" />
+            <span>{filter.name}</span>
           </QueryLink>
         </li>
       ))}
-    </LabelList>
+    </FilterList>
   );
 }

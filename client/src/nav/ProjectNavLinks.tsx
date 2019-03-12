@@ -4,7 +4,7 @@ import { LeftNavLink } from './LeftNavLink';
 import LabelIcon from '../svg-compiled/icons/IcLabel';
 import ListIcon from '../svg-compiled/icons/IcList';
 import PersonIcon from '../svg-compiled/icons/IcPerson';
-// import BookmarkIcon from '../svg-compiled/icons/IcBookmark';
+import BookmarkIcon from '../svg-compiled/icons/IcBookmark';
 import SettingsIcon from '../svg-compiled/icons/IcSettings';
 import DependenciesIcon from '../svg-compiled/icons/IcGantt';
 import ProgressIcon from '../svg-compiled/icons/IcProgress';
@@ -12,6 +12,7 @@ import HistoryIcon from '../svg-compiled/icons/IcHistory';
 import { LabelLinks } from './LabelLinks';
 import { ViewContext } from '../models';
 import { observer } from 'mobx-react';
+import { FilterLinks } from './FilterLinkts';
 
 interface Props {
   context: ViewContext;
@@ -41,6 +42,10 @@ function ProjectNavLinksImpl(props: Props) {
         <LabelIcon /> Labels
       </LeftNavLink>}
       {prefs && <LabelLinks prefs={prefs} project={project} account={account} />}
+      {prefs && <LeftNavLink to={`${prefix}/filters`}>
+        <BookmarkIcon /> Filters
+      </LeftNavLink>}
+      {prefs && <FilterLinks prefs={prefs} project={project} account={account} />}
       <LeftNavLink to={`${prefix}/progress`}>
         <ProgressIcon /> Progress
       </LeftNavLink>

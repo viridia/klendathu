@@ -35,14 +35,16 @@ const UpdateLabelMutation = gql`
 
 const AddPrefsLabelMutation = gql`
   mutation AddPrefsLabelMutation($project: ID!, $label: ID!) {
-    addPrefsLabel(project: $project, label: $label) { labels }
+    addPrefsLabel(project: $project, label: $label) { ...ProjectPrefsFields }
   }
+  ${fragments.projectPrefs}
 `;
 
 const RemovePrefsLabelMutation = gql`
   mutation RemovePrefsLabelMutation($project: ID!, $label: ID!) {
-    removePrefsLabel(project: $project, label: $label) { labels }
+    removePrefsLabel(project: $project, label: $label) { ...ProjectPrefsFields }
   }
+  ${fragments.projectPrefs}
 `;
 
 const ColorTable = styled.div`
