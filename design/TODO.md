@@ -4,9 +4,6 @@
 * Milestones
 * Delete issues
 * Centralize graphql queries and mutations
-* Filters
-  * UI prefs in local storage
-  * Saving filters
 * Workflow actions (test)
   * Server unit test for removeLinks
 * GraphQL Batching
@@ -20,6 +17,8 @@
 * @mentions
 * Markdown preview
 * Sort issue searches by relevance
+* Filters
+  * UI prefs in local storage (like expansion)
 * ErrorDisplay
   * Mini display for errors in menus and chips
 * Issue list flashes when switching projects.

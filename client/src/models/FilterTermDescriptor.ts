@@ -163,10 +163,7 @@ export const descriptors: { [type: string]: FilterTermDescriptor } = {
     },
     parseQuery(query, term, env) {
       const { project } = env;
-      term.value = [];
-      if (typeof query.label === 'string') {
-        term.value = coerceToStringArray(query.label).map(n => `${project.id}.${n}`);
-      }
+      term.value = coerceToStringArray(query.label).map(n => `${project.id}.${n}`);
     }
   },
 };
