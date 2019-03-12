@@ -12,7 +12,7 @@ import HistoryIcon from '../svg-compiled/icons/IcHistory';
 import { LabelLinks } from './LabelLinks';
 import { ViewContext } from '../models';
 import { observer } from 'mobx-react';
-import { FilterLinks } from './FilterLinkts';
+import { FilterLinks } from './FilterLinks';
 
 interface Props {
   context: ViewContext;
@@ -36,7 +36,7 @@ function ProjectNavLinksImpl(props: Props) {
           to={`${prefix}/issues`}
           query={{ owner: 'me', state: 'open' }}
       >
-        <PersonIcon /> My Issues
+        <PersonIcon /> My Open Issues
       </LeftNavLink>
       {prefs && <LeftNavLink to={`${prefix}/labels`}>
         <LabelIcon /> Labels

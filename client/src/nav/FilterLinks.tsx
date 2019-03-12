@@ -48,6 +48,7 @@ export function FilterLinks({ prefs, account, project }: Props) {
           <QueryLink
               to={`/${account.accountName}/${project.name}/${filter.view}`}
               query={parseFilterString(filter.value)}
+              strict={true}
           >
             <span>{filter.name}</span>
           </QueryLink>

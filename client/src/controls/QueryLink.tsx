@@ -4,16 +4,17 @@ import classNames from 'classnames';
 import { Link, Route } from 'react-router-dom';
 
 /** Link which renders in active state when all query parameters match. */
-export function QueryLink({ to, query = {}, className, children }: {
+export function QueryLink({ to, query = {}, strict, className, children }: {
   to: string,
   query?: { [key: string]: any },
+  strict?: boolean,
   className?: string,
   children: React.ReactNode,
 }) {
   return (
     <Route
         path={to}
-        children={({ match, history, location }) => {
+        children={({ match, location }) => {
           let active = !!match;
           if (match) {
             const q = qs.parse(location.search.slice(1));
@@ -21,6 +22,13 @@ export function QueryLink({ to, query = {}, className, children }: {
               if (q[key] !== query[key]) {
                 active = false;
                 break;
+              }
+            }
+            if (active && strict) {
+              for (const key of Object.getOwnPropertyNames(q)) {
+                if (!(key in query)) {
+                  active = false;
+                }
               }
             }
           }

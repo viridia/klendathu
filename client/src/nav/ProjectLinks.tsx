@@ -45,6 +45,7 @@ export function ProjectLinks() {
                 <li key={project.id}>
                   <QueryLink
                       to={`/${project.ownerName}/${project.name}`}
+                      strict={true}
                   >
                     {project.ownerName}/{project.name}
                   </QueryLink>
