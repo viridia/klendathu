@@ -40,6 +40,9 @@
 * Webhooks: finish 'edit' and 'remove'.
 * Progress View
   * No need to show issue owner if that is the group type.
+* Show attachments full size (media viewer)
+* Search by relative date (last 2 weeks)
+* Issue Grouping by custom field.
 
 # Major pieces
 
@@ -64,7 +67,7 @@
 * Export / backup database
 * Redis
 
-# Components
+# Controls
 
 * HelpBlocks for forms (CreateProject dialog)
 * Dropdown (non-button)
@@ -78,6 +81,7 @@
 * Get rid of explicit passing of ViewContext where possible.
 * Write Jest tests for all frontend components
 * Define Mongo table references in one place.
+* Move client queries and mutations to /graphql directory.
 
 # Issue Models
 

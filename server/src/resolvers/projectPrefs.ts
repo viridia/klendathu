@@ -47,7 +47,7 @@ export const queries = {
         project: new ObjectID(project),
       };
     }
-    const prefs = await context.db.collection('projectPrefs')
+    const prefs = await context.projectPrefs
       .findOne<ProjectPrefsRecord>({ user: context.user._id, project: new ObjectID(project) });
     if (!prefs) {
       return {
@@ -70,17 +70,16 @@ export const mutations = {
     }
 
     const pid = new ObjectID(project);
-    const result = await context.db.collection('projectPrefs')
-      .findOneAndUpdate(
-        { user: context.user._id, project: pid },
-        {
-          $setOnInsert: { user: context.user._id, project: pid },
-          $set: { columns },
-        },
-        {
-          upsert: true,
-          returnOriginal: false,
-        }) as any;
+    const result = await context.projectPrefs.findOneAndUpdate(
+      { user: context.user._id, project: pid },
+      {
+        $setOnInsert: { user: context.user._id, project: pid },
+        $set: { columns },
+      },
+      {
+        upsert: true,
+        returnOriginal: false,
+      });
     signalPrefsChanged(result.value);
     return result.value;
   },
@@ -94,17 +93,16 @@ export const mutations = {
     }
 
     const pid = new ObjectID(project);
-    const result = await context.db.collection<ProjectPrefsRecord>('projectPrefs')
-      .findOneAndUpdate(
-        { user: context.user._id, project: pid },
-        {
-          $setOnInsert: { user: context.user._id, project: pid },
-          $addToSet: { labels: label },
-        },
-        {
-          upsert: true,
-          returnOriginal: false,
-        }) as any;
+    const result = await context.projectPrefs.findOneAndUpdate(
+      { user: context.user._id, project: pid },
+      {
+        $setOnInsert: { user: context.user._id, project: pid },
+        $addToSet: { labels: label },
+      },
+      {
+        upsert: true,
+        returnOriginal: false,
+      }) as any;
     signalPrefsChanged(result.value);
     return result.value;
   },
@@ -118,17 +116,16 @@ export const mutations = {
     }
 
     const pid = new ObjectID(project);
-    const result = await context.db.collection('projectPrefs')
-      .findOneAndUpdate(
-        { user: context.user._id, project: pid },
-        {
-          $setOnInsert: { user: context.user._id, project: pid },
-          $pull: { labels: label },
-        },
-        {
-          upsert: true,
-          returnOriginal: false,
-        }) as any;
+    const result = await context.projectPrefs.findOneAndUpdate(
+      { user: context.user._id, project: pid },
+      {
+        $setOnInsert: { user: context.user._id, project: pid },
+        $pull: { labels: label },
+      },
+      {
+        upsert: true,
+        returnOriginal: false,
+      });
     signalPrefsChanged(result.value);
     return result.value;
   },
@@ -142,17 +139,16 @@ export const mutations = {
     }
 
     const pid = new ObjectID(project);
-    const result = await context.db.collection('projectPrefs')
-      .findOneAndUpdate(
-        { user: context.user._id, project: pid },
-        {
-          $setOnInsert: { user: context.user._id, project: pid },
-          $push: { filters: input },
-        },
-        {
-          upsert: true,
-          returnOriginal: false,
-        }) as any;
+    const result = await context.projectPrefs.findOneAndUpdate(
+      { user: context.user._id, project: pid },
+      {
+        $setOnInsert: { user: context.user._id, project: pid },
+        $push: { filters: input },
+      },
+      {
+        upsert: true,
+        returnOriginal: false,
+      });
     signalPrefsChanged(result.value);
     return result.value;
   },
@@ -166,17 +162,16 @@ export const mutations = {
     }
 
     const pid = new ObjectID(project);
-    const result = await context.db.collection('projectPrefs')
-      .findOneAndUpdate(
-        { user: context.user._id, project: pid },
-        {
-          $setOnInsert: { user: context.user._id, project: pid },
-          $pull: { filters: { name } },
-        },
-        {
-          upsert: true,
-          returnOriginal: false,
-        }) as any;
+    const result = await context.projectPrefs.findOneAndUpdate(
+      { user: context.user._id, project: pid },
+      {
+        $setOnInsert: { user: context.user._id, project: pid },
+        $pull: { filters: { name } },
+      },
+      {
+        upsert: true,
+        returnOriginal: false,
+      });
     signalPrefsChanged(result.value);
     return result.value;
   },

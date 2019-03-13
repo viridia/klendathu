@@ -15,18 +15,14 @@ import { AuthenticationError, UserInputError } from 'apollo-server-core';
 import { Errors, Role } from '../../../common/types/json';
 import { logger } from '../logger';
 import { getProjectAndRole } from '../db/role';
-import { pubsub, Channels, publish } from './pubsub';
+import { pubsub, Channels, publish, RecordChange } from './pubsub';
 import { withFilter } from 'graphql-subscriptions';
 
-interface LabelRecordChange {
-  value: LabelRecord;
-  action: ChangeAction;
-}
+type LabelRecordChange = RecordChange<LabelRecord>;
 
 export const queries = {
   label(_: any, { id }: LabelQueryArgs, context: Context): Promise<LabelRecord> {
-    const labels = context.db.collection('labels');
-    return labels.findOne({ _id: id });
+    return context.labels.findOne({ _id: id });
   },
 
   async labels(
@@ -38,7 +34,7 @@ export const queries = {
       const pattern = `(?i)\\b${escapeRegExp(search)}`;
       query.name = { $regex: pattern };
     }
-    return context.db.collection('labels').find<LabelRecord>(query).toArray();
+    return context.labels.find(query).toArray();
   },
 };
 
@@ -65,7 +61,7 @@ export const mutations = {
     }
 
     // Compute next issue id.
-    const p = await context.db.collection('projects').findOneAndUpdate(
+    const p = await context.projects.findOneAndUpdate(
       { _id: pr._id },
       { $inc: { labelIdCounter: 1 } });
 
@@ -80,7 +76,7 @@ export const mutations = {
       updated: now,
     };
 
-    const result = await context.db.collection('labels').insertOne(record);
+    const result = await context.labels.insertOne(record);
     publish(Channels.LABEL_CHANGE, {
       action: ChangeAction.Added,
       value: result.ops[0],
@@ -97,7 +93,7 @@ export const mutations = {
     }
 
     const user = context.user.accountName;
-    const label = await context.db.collection('labels').findOne<LabelRecord>({ _id: id });
+    const label = await context.labels.findOne({ _id: id });
     if (!label) {
       logger.error('Attempt to update non-existent label:', { user, id });
       throw new UserInputError(Errors.NOT_FOUND);
@@ -121,8 +117,7 @@ export const mutations = {
       updated: now,
     };
 
-    const result = await context.db.collection('labels')
-        .findOneAndUpdate({ _id: id }, { $set: record });
+    const result = await context.labels.findOneAndUpdate({ _id: id }, { $set: record });
     publish(Channels.LABEL_CHANGE, {
       action: ChangeAction.Changed,
       value: result.value,
@@ -138,7 +133,7 @@ export const mutations = {
       throw new AuthenticationError(Errors.UNAUTHORIZED);
     }
     const user = context.user.accountName;
-    const label = await context.db.collection('labels').findOne<LabelRecord>({ _id: id });
+    const label = await context.labels.findOne({ _id: id });
     if (!label) {
       logger.error('Attempt to delete non-existent label:', { user, id });
       throw new UserInputError(Errors.NOT_FOUND);

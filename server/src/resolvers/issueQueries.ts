@@ -50,7 +50,7 @@ export const queries = {
       { id }: IssueQueryArgs,
       context: Context): Promise<IssueRecord> {
     const user = context.user ? context.user.accountName : null;
-    const issue = await context.db.collection('issues').findOne<IssueRecord>({ _id: id });
+    const issue = await context.issues.findOne({ _id: id });
     if (!issue) {
       logger.error('Attempt to fetch non-existent issue:', { user, id });
       throw new UserInputError(Errors.NOT_FOUND);
@@ -76,7 +76,6 @@ export const queries = {
       context: Context): Promise<PaginatedIssueRecords> {
 
     const user = context.user ? context.user.accountName : null;
-    const issues = context.db.collection<IssueRecord>('issues');
     const { project, role } = await getProjectAndRole(
         context.db, context.user, new ObjectID(query.project));
     if (!project) {
@@ -225,7 +224,7 @@ export const queries = {
     // console.log(filter);
     // console.log(sort);
     // Generate numeric index from _id (for sorting).
-    const result = await issues.aggregate([
+    const result = await context.issues.aggregate([
       { $match: filter },
       { $addFields: {
         // Add an 'index' field derived from the _id.
@@ -262,8 +261,7 @@ export const queries = {
       logger.error('Insufficient permissions to update project:', { user, project });
       throw new UserInputError(Errors.FORBIDDEN);
     }
-    const issues = context.db.collection<IssueRecord>('issues');
-    console.log(pr, issues);
+    console.log(pr, context.issues);
     // TODO: Implement
     // if (args.accountName) {
     //   return accounts.findOne({ accountName: args.accountName });
@@ -277,8 +275,7 @@ export const queries = {
       _: any,
       { project, field, search }: SearchCustomFieldsQueryArgs,
       context: Context): Promise<IssueRecord[]> {
-    const issues = context.db.collection<IssueRecord>('issues');
-    console.log(issues);
+    console.log(context.issues);
     // TODO: Implement
     // if (args.accountName) {
     //   return accounts.findOne({ accountName: args.accountName });

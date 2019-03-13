@@ -7,9 +7,10 @@ export interface RecordChange<T> {
 }
 
 export enum Channels {
-  LABEL_CHANGE = 'label-change',
   ISSUE_CHANGE = 'issue-change',
+  LABEL_CHANGE = 'label-change',
   MEMBERSHIP_CHANGE = 'membership-change',
+  MILESTONE_CHANGE = 'milestone-change',
   TIMELINE_CHANGE = 'timeline-change',
 }
 

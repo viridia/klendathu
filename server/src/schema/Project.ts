@@ -64,7 +64,8 @@ type ProjectContext {
   "Current user's project preferences"
   prefs: ProjectPrefs!
 
-  # Milestones
+  "List of project milestones"
+  milestones: [Milestone!]!
 
   "Templates for this project"
   template: JSONObject!

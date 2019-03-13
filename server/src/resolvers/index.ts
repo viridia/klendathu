@@ -8,6 +8,7 @@ import * as issueSubscriptions from './issueSubscriptions';
 import * as timeline from './timeline';
 import * as labels from './labels';
 import * as memberships from './memberships';
+import * as milestones from './milestones';
 import * as projects from './projects';
 import * as projectPrefs from './projectPrefs';
 import * as templates from './template';
@@ -20,6 +21,7 @@ export const resolverMap = {
     ...issueQueries.queries,
     ...labels.queries,
     ...memberships.queries,
+    ...milestones.queries,
     ...projects.queries,
     ...projectPrefs.queries,
     ...templates.queries,
@@ -31,6 +33,7 @@ export const resolverMap = {
     ...issueMutations.mutations,
     ...labels.mutations,
     ...memberships.mutations,
+    ...milestones.mutations,
     ...projects.mutations,
     ...projectPrefs.mutations,
     ...templates.mutations,
@@ -40,6 +43,7 @@ export const resolverMap = {
     ...issueSubscriptions.subscriptions,
     ...labels.subscriptions,
     ...memberships.subscriptions,
+    ...milestones.subscriptions,
     ...projects.subscriptions,
     ...projectPrefs.subscriptions,
   },
@@ -48,6 +52,7 @@ export const resolverMap = {
   ...issueTypes.types,
   ...labels.types,
   ...memberships.types,
+  ...milestones.types,
   ...projects.types,
   ...projectPrefs.types,
   ...templates.types,

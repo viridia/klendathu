@@ -16,18 +16,17 @@ export const types = {
       }));
     },
     reporterAccount(row: IssueRecord, _: any, context: Context): Promise<AccountRecord> {
-      return context.db.collection<AccountRecord>('accounts').findOne({ _id: row.reporter });
+      return context.accounts.findOne({ _id: row.reporter });
     },
     ownerAccount(row: IssueRecord, _: any, context: Context): Promise<AccountRecord> {
       if (row.owner) {
-        return context.db.collection<AccountRecord>('accounts').findOne({ _id: row.owner });
+        return context.accounts.findOne({ _id: row.owner });
       }
       return null;
     },
     async ccAccounts(row: IssueRecord, _: any, context: Context): Promise<AccountRecord[]> {
       if (row.cc && row.cc.length > 0) {
-        return context.db.collection<AccountRecord>('accounts')
-            .find({ _id: { $in: row.cc } }).toArray();
+        return context.accounts.find({ _id: { $in: row.cc } }).toArray();
       }
       return [];
     },

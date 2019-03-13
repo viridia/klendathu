@@ -3,7 +3,6 @@ import {
   MembershipRecord,
   AccountRecord,
   AugmentedProjectRecord,
-  ProjectPrefsRecord,
 } from '../db/types';
 import {
   CreateProjectMutationArgs,
@@ -45,21 +44,20 @@ interface ProjectAndAccount {
 export const queries = {
   async project(_: any, args: ProjectQueryArgs, context: Context): Promise<AugmentedProjectRecord> {
     const user = context.user ? context.user.accountName : null;
-    const projects = context.db.collection('projects');
     const query = args.id
         ? { _id: new ObjectID(args.id) }
         : { owner: args.owner, name: args.name };
 
     // Look up project
-    const project = await projects.findOne<ProjectRecord>(query);
+    const project = await context.projects.findOne<ProjectRecord>(query);
     if (!project) {
       logger.error('Attempt to fetch non-existent project:', { user, ...args });
       throw new UserInputError(Errors.NOT_FOUND, { object: 'project' });
     }
 
     // Look up user membership
-    const membership = context.user ? await context.db.collection('memberships')
-        .findOne<MembershipRecord>({ user: context.user._id, project: project._id }) : null;
+    const membership = context.user ? await context.memberships
+        .findOne({ user: context.user._id, project: project._id }) : null;
     let role = Role.NONE;
     if (membership) {
       // Set role.
@@ -77,9 +75,8 @@ export const queries = {
     if (!context.user) {
       return [];
     }
-    const memberships = context.db.collection('memberships');
     // TODO: include organization matches
-    const projectMemberships = await memberships.aggregate<ProjectJoinResult>([
+    const projectMemberships = await context.memberships.aggregate<ProjectJoinResult>([
       { $match: { user: context.user._id, project: { $exists: true } } },
       {
         $lookup: {
@@ -106,16 +103,14 @@ export const queries = {
       { owner, name }: ProjectContextQueryArgs,
       context: Context): Promise<ProjectAndAccount> {
     const user = context.user ? context.user.accountName : null;
-    const account = await context.db.collection('accounts')
-        .findOne<AccountRecord>({ accountName: owner });
+    const account = await context.accounts.findOne({ accountName: owner });
     if (!account) {
       logger.error('Attempt to fetch non-existent account:', { user, owner });
       throw new UserInputError(Errors.NOT_FOUND, { object: 'account' });
     }
 
     // Look up project
-    const projects = context.db.collection('projects');
-    const project = await projects.findOne<ProjectRecord>({ owner: account._id, name });
+    const project = await context.projects.findOne({ owner: account._id, name });
     if (!project) {
       logger.error('Attempt to fetch non-existent project:', { user, owner, name });
       throw new UserInputError(Errors.NOT_FOUND, { object: 'project' });
@@ -127,7 +122,7 @@ export const queries = {
       return null;
     }
 
-    // const members = await context.db.collection('memberships').find<MembershipRecord>({
+    // const members = await context.memberships.find<MembershipRecord>({
     //   project: project._id,
     // }).toArray();
 
@@ -149,8 +144,7 @@ export const mutations = {
     }
 
     // Lookup the owner name
-    const accountRecord = await context.db.collection('accounts')
-        .findOne<AccountRecord>({ _id: new ObjectID(owner) });
+    const accountRecord = await context.accounts.findOne({ _id: new ObjectID(owner) });
     if (!accountRecord) {
       logger.error(
           'Attempt to create project under non-existent name:',
@@ -186,8 +180,7 @@ export const mutations = {
       throw new UserInputError(Errors.TEXT_INVALID_CHARS, { field: 'name' });
     }
 
-    const projects = context.db.collection('projects');
-    const existing = await projects.findOne<ProjectRecord>({ owner: accountRecord._id, name });
+    const existing = await context.projects.findOne({ owner: accountRecord._id, name });
     if (existing) {
       logger.error(
           'A project with that name already exists.',
@@ -210,9 +203,8 @@ export const mutations = {
       labelIdCounter: 1,
     };
 
-    const result = await projects.insertOne(record);
+    const result = await context.projects.insertOne(record);
     const projectId: ObjectID = result.insertedId;
-    const memberships = context.db.collection('memberships');
     const membershipRecord: MembershipRecord = {
       user: context.user._id,
       project: projectId,
@@ -221,7 +213,7 @@ export const mutations = {
       updated: now,
     };
 
-    await memberships.insertOne(membershipRecord);
+    await context.memberships.insertOne(membershipRecord);
     pubsub.publish(PROJECT_CHANGE, {
       action: ChangeAction.Added,
       project: {
@@ -270,8 +262,7 @@ export const mutations = {
       update.isPublic = input.isPublic;
     }
 
-    const result = await context.db.collection('projects')
-        .updateOne({ _id: project._id }, { $set: update });
+    const result = await context.projects.updateOne({ _id: project._id }, { $set: update });
 
     if (result.modifiedCount === 1) {
       const updatedProject = { ...project, ...update };
@@ -306,15 +297,15 @@ export const mutations = {
       throw new UserInputError(Errors.FORBIDDEN);
     }
 
-    const result = await context.db.collection('projects').deleteOne({ _id: project._id });
+    const result = await context.projects.deleteOne({ _id: project._id });
     if (result.deletedCount === 1) {
       await Promise.all([
-        context.db.collection('issues').deleteMany({ project: project._id }),
-        context.db.collection('labels').deleteMany({ project: project._id }),
+        context.issues.deleteMany({ project: project._id }),
+        context.labels.deleteMany({ project: project._id }),
         context.db.collection('issueLinks').deleteMany({ project: project._id }),
-        context.db.collection('timeline').deleteMany({ project: project._id }),
-        context.db.collection('memberships').deleteMany({ project: project._id }),
-        context.db.collection('projectPrefs').deleteMany({ project: project._id }),
+        context.timeline.deleteMany({ project: project._id }),
+        context.memberships.deleteMany({ project: project._id }),
+        context.projectPrefs.deleteMany({ project: project._id }),
       ]);
       pubsub.publish(PROJECT_CHANGE, { action: ChangeAction.Removed, project });
       return { id: project._id };
@@ -379,10 +370,10 @@ export const subscriptions = {
 
 export const types = {
   Project: {
-    id: (pr: ProjectRecord) => pr._id.toHexString(),
-    owner: (pr: ProjectRecord) => pr.owner.toHexString(),
-    createdAt: (pr: ProjectRecord) => pr.created,
-    updatedAt: (pr: ProjectRecord) => pr.updated,
+    id: (row: ProjectRecord) => row._id.toHexString(),
+    owner: (row: ProjectRecord) => row.owner.toHexString(),
+    createdAt: (row: ProjectRecord) => row.created,
+    updatedAt: (row: ProjectRecord) => row.updated,
   },
   ProjectContext: {
     template: async (pc: ProjectAndAccount) => {
@@ -399,8 +390,7 @@ export const types = {
           project,
         };
       }
-      const prefs = await context.db.collection('projectPrefs')
-        .findOne<ProjectPrefsRecord>({ user: context.user._id, project });
+      const prefs = await context.projectPrefs.findOne({ user: context.user._id, project });
       if (!prefs) {
         return {
           user: context.user._id,

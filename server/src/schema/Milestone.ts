@@ -56,5 +56,41 @@ type Milestone {
 
   "Planned end date of milestone"
   endDate: DateTime
+
+  "When this milestone was created."
+  createdAt: DateTime!
+
+  "When this milestone was last updated."
+  updatedAt: DateTime!
+
+  "User that created this milestone."
+  creator: ID!
+}
+
+"Query params for searching for issues."
+input MilestoneQueryInput {
+  "Text search string."
+  search: String
+
+  "Query term that restricts the issue search to a set of types."
+  status: [MilestoneStatus!]
+
+  "Include milestones after this date"
+  dateRangeStart: DateTime
+
+  "Include milestones before this date"
+  dateRangeEnd: DateTime
+}
+
+"Milestones query result."
+type PaginatedMilestones {
+  "Total number of results."
+  count: Int!
+
+  "Current offset"
+  offset: Int!
+
+  "List of results."
+  results: [Milestone!]!
 }
 `;

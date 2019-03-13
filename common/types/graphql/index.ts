@@ -57,6 +57,17 @@ export interface Pagination {
   /** Offset of starting document */
   offset?: Maybe<number>;
 }
+/** Query params for searching for issues. */
+export interface MilestoneQueryInput {
+  /** Text search string. */
+  search?: Maybe<string>;
+  /** Query term that restricts the issue search to a set of types. */
+  status?: Maybe<MilestoneStatus[]>;
+  /** Include milestones after this date */
+  dateRangeStart?: Maybe<DateTime>;
+  /** Include milestones before this date */
+  dateRangeEnd?: Maybe<DateTime>;
+}
 /** Data type for creating or updating an account. */
 export interface AccountInput {
   /** Unique, user-visible account name of the account being changed. */
@@ -193,6 +204,19 @@ export interface UpdateIssueInput {
   /** Mass edit: remove link. */
   removeLinks?: Maybe<string[]>;
 }
+/** Input for milestone */
+export interface MilestoneInput {
+  /** Title of this milestone */
+  name: string;
+  /** Current status */
+  status: MilestoneStatus;
+  /** Milestone description */
+  description: string;
+  /** Planned start date of milestone */
+  startDate?: Maybe<DateTime>;
+  /** Planned end date of milestone */
+  endDate?: Maybe<DateTime>;
+}
 /** Used for setting filters. */
 export interface FilterInput {
   /** Name of this filter. */
@@ -211,23 +235,17 @@ export interface WebhookInput {
   /** Secret key for this webhook. */
   secret?: Maybe<string>;
 }
-/** Input for milestone */
-export interface MilestoneInput {
-  /** Title of this milestone */
-  name: string;
-  /** Current status */
-  status: MilestoneStatus;
-  /** Milestone description */
-  description: string;
-  /** Planned start date of milestone */
-  startDate?: Maybe<DateTime>;
-  /** Planned end date of milestone */
-  endDate?: Maybe<DateTime>;
-}
 /** Type of account: user account or organizational account. */
 export enum AccountType {
   User = "USER",
   Organization = "ORGANIZATION"
+}
+/** Status of a milestone */
+export enum MilestoneStatus {
+  Pending = "PENDING",
+  Active = "ACTIVE",
+  Concluded = "CONCLUDED",
+  Timeless = "TIMELESS"
 }
 /** Relation between two issues */
 export enum Relation {
@@ -267,13 +285,6 @@ export enum ChangeAction {
 export enum CacheControlScope {
   Public = "PUBLIC",
   Private = "PRIVATE"
-}
-/** Status of a milestone */
-export enum MilestoneStatus {
-  Pending = "PENDING",
-  Active = "ACTIVE",
-  Concluded = "CONCLUDED",
-  Timeless = "TIMELESS"
 }
 
 /** Date and time */
@@ -327,6 +338,8 @@ export interface Query {
   issueSearch: Issue[];
   /** Retrieve history of changes to an issue, or all issues within a project. */
   timeline: PaginatedTimeline;
+  /** Retrieve milestones for a project */
+  milestones: PaginatedMilestones;
   /** Retrieve history of comments to an issue, or all issues within a project. */
   comments: PaginatedTimeline;
   /** Search custom field text, used for auto completion. */
@@ -427,6 +440,8 @@ export interface ProjectContext {
   account: PublicAccount;
   /** Current user's project preferences */
   prefs: ProjectPrefs;
+  /** List of project milestones */
+  milestones: Milestone[];
   /** Templates for this project */
   template: JsonObject;
 }
@@ -453,6 +468,30 @@ export interface Filter {
   value: string;
   /** Which view this was (issues, progress, etc.). */
   view?: Maybe<string>;
+}
+
+/** Project milestone */
+export interface Milestone {
+  /** ID of this milestone */
+  id: string;
+  /** Project milestone is part of */
+  project: string;
+  /** Title of this milestone */
+  name: string;
+  /** Current status */
+  status: MilestoneStatus;
+  /** Milestone description */
+  description: string;
+  /** Planned start date of milestone */
+  startDate?: Maybe<DateTime>;
+  /** Planned end date of milestone */
+  endDate?: Maybe<DateTime>;
+  /** When this milestone was created. */
+  createdAt: DateTime;
+  /** When this milestone was last updated. */
+  updatedAt: DateTime;
+  /** User that created this milestone. */
+  creator: string;
 }
 
 /** A label which can be attached to an issue. */
@@ -659,6 +698,16 @@ export interface LinkChange {
   after?: Maybe<Relation>;
 }
 
+/** Milestones query result. */
+export interface PaginatedMilestones {
+  /** Total number of results. */
+  count: number;
+  /** Current offset */
+  offset: number;
+  /** List of results. */
+  results: Milestone[];
+}
+
 /** A commit from a third-party SCM provider. Might not have a 1:1 mapping to SCM commits. */
 export interface Commit {
   /** Database id for this commit. */
@@ -766,6 +815,12 @@ export interface Mutation {
   addComment: TimelineEntry;
   /** Make an incremental change to an issue (mass edit). */
   editIssue: Issue;
+  /** Create a new project milestone. */
+  newMilestone: Milestone;
+  /** Update an existing project milestone. */
+  updateMilestone: Milestone;
+  /** Delete a project milestone. */
+  deleteMilestone: Milestone;
   /** Set current user's preferences for visible columns. */
   setPrefColumns: ProjectPrefs;
   /** Add a label to the set of visible labels. */
@@ -803,6 +858,8 @@ export interface Subscription {
   labelChanged: LabelChange;
   /** Watch for changes to project or organization memberships. */
   membershipChanged: MembershipChange;
+  /** Watch the list of milestones defined for a project. */
+  milestoneChanged: MilestoneChange;
   /** Watch for changes to project prefs (current user). */
   prefsChanged: ProjectPrefsChange;
   /** Watch issues for a given project. */
@@ -831,6 +888,12 @@ export interface MembershipChange {
   value: Membership;
 }
 
+export interface MilestoneChange {
+  action: ChangeAction;
+
+  value: Milestone;
+}
+
 export interface ProjectPrefsChange {
   action: ChangeAction;
 
@@ -857,24 +920,6 @@ export interface IssueArc {
   from: string;
   /** Type of the relation. */
   relation: Relation;
-}
-
-/** Project milestone */
-export interface Milestone {
-  /** ID of this milestone */
-  id: string;
-  /** Project milestone is part of */
-  project: string;
-  /** Title of this milestone */
-  name: string;
-  /** Current status */
-  status: MilestoneStatus;
-  /** Milestone description */
-  description: string;
-  /** Planned start date of milestone */
-  startDate?: Maybe<DateTime>;
-  /** Planned end date of milestone */
-  endDate?: Maybe<DateTime>;
 }
 
 // ====================================================
@@ -941,6 +986,13 @@ export interface TimelineQueryArgs {
   issue?: Maybe<string>;
 
   recent?: Maybe<boolean>;
+
+  pagination?: Maybe<Pagination>;
+}
+export interface MilestonesQueryArgs {
+  project: string;
+
+  input?: Maybe<MilestoneQueryInput>;
 
   pagination?: Maybe<Pagination>;
 }
@@ -1041,6 +1093,19 @@ export interface EditIssueMutationArgs {
 
   input: UpdateIssueInput;
 }
+export interface NewMilestoneMutationArgs {
+  project: string;
+
+  input: MilestoneInput;
+}
+export interface UpdateMilestoneMutationArgs {
+  id: string;
+
+  input: MilestoneInput;
+}
+export interface DeleteMilestoneMutationArgs {
+  id: string;
+}
 export interface SetPrefColumnsMutationArgs {
   project: string;
 
@@ -1102,6 +1167,9 @@ export interface MembershipChangedSubscriptionArgs {
   project?: Maybe<string>;
 
   organization?: Maybe<string>;
+}
+export interface MilestoneChangedSubscriptionArgs {
+  project: string;
 }
 export interface PrefsChangedSubscriptionArgs {
   project: string;

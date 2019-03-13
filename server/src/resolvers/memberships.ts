@@ -1,4 +1,4 @@
-import { MembershipRecord, AccountRecord } from '../db/types';
+import { MembershipRecord } from '../db/types';
 import {
   ProjectMembersQueryArgs,
   SetProjectRoleMutationArgs,
@@ -27,7 +27,7 @@ export const queries = {
       { project }: ProjectMembersQueryArgs,
       context: Context): Promise<MembershipRecord[]> {
     const query: any = { project: new ObjectID(project) };
-    return context.db.collection<MembershipRecord>('memberships').find(query).toArray();
+    return context.memberships.find(query).toArray();
   },
 };
 
@@ -53,10 +53,7 @@ export const mutations = {
       throw new UserInputError(Errors.FORBIDDEN);
     }
 
-    const memberships = context.db.collection<MembershipRecord>('memberships');
-    const accounts = context.db.collection<AccountRecord>('accounts');
-
-    const acc = await accounts.findOne({ _id: new ObjectID(account) });
+    const acc = await context.accounts.findOne({ _id: new ObjectID(account) });
     if (!acc) {
       logger.error('Attempt to add non-existent member to project:', { user, account, project });
       throw new UserInputError(Errors.NOT_FOUND);
@@ -68,14 +65,14 @@ export const mutations = {
     }
 
     const now = new Date();
-    const m = await memberships.findOne({ project: pr._id, user: acc._id });
+    const m = await context.memberships.findOne({ project: pr._id, user: acc._id });
     if (m) {
       if (role < m.role) {
         logger.error('Cannot set access for higher-ranked project member:', { user, project });
         throw new UserInputError(Errors.FORBIDDEN);
       }
 
-      const result = await memberships.findOneAndUpdate(
+      const result = await context.memberships.findOneAndUpdate(
         { project: pr._id, user: acc._id },
         { $set: { role: newRole, updated: now }},
         { returnOriginal: false });
@@ -92,7 +89,7 @@ export const mutations = {
         created: now,
         updated: now,
       };
-      const result = await memberships.insertOne(record);
+      const result = await context.memberships.insertOne(record);
       publish(Channels.MEMBERSHIP_CHANGE, {
         action: ChangeAction.Added,
         value: result.ops[0],
@@ -109,7 +106,6 @@ export const mutations = {
       throw new AuthenticationError(Errors.UNAUTHORIZED);
     }
     const user = context.user.accountName;
-    const memberships = context.db.collection<MembershipRecord>('memberships');
 
     const { project: pr, role } = await getProjectAndRole(
         context.db, context.user, new ObjectID(project));
@@ -119,7 +115,7 @@ export const mutations = {
     }
 
     const membership =
-        await memberships.findOne({ user: new ObjectID(account), project: pr._id });
+        await context.memberships.findOne({ user: new ObjectID(account), project: pr._id });
     if (!membership) {
       logger.error(
           'Attempt to remove non-existent project membership:', { user, project, account });
@@ -131,7 +127,7 @@ export const mutations = {
       throw new UserInputError(Errors.FORBIDDEN);
     }
 
-    const result = await memberships.findOneAndDelete(
+    const result = await context.memberships.findOneAndDelete(
       { project: pr._id, user: membership.user });
     publish(Channels.MEMBERSHIP_CHANGE, {
       action: ChangeAction.Removed,

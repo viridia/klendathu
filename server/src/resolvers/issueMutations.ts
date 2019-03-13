@@ -6,7 +6,6 @@ import {
   IssueRecord,
   CustomValues,
   CustomData,
-  ProjectRecord,
 } from '../db/types';
 import {
   NewIssueMutationArgs,
@@ -45,9 +44,6 @@ export const mutations = {
     }
 
     const user = context.user.accountName;
-    const issues = context.db.collection<IssueRecord>('issues');
-    const projects = context.db.collection<ProjectRecord>('projects');
-    const timeline = context.db.collection<TimelineEntryRecord>('timeline');
     const { project: pr, role } =
         await getProjectAndRole(context.db, context.user, new ObjectID(project));
     if (!project) {
@@ -61,7 +57,7 @@ export const mutations = {
     }
 
     // Compute next issue id.
-    const p = await projects.findOneAndUpdate(
+    const p = await context.projects.findOneAndUpdate(
       { _id: pr._id },
       { $inc: { issueIdCounter: 1 } });
 
@@ -91,7 +87,7 @@ export const mutations = {
         record.owner = context.user._id;
         record.ownerSort = context.user.accountName;
       } else {
-        const owner = await context.db.collection('accounts')
+        const owner = await context.accounts
           .findOne<AccountRecord>({ _id: new ObjectID(input.owner) });
         if (!owner) {
           throw new UserInputError(Errors.NOT_FOUND, { field: 'owner' });
@@ -110,14 +106,14 @@ export const mutations = {
       updated: now,
     }));
 
-    const result = await issues.insertOne(record);
+    const result = await context.issues.insertOne(record);
     const row: IssueRecord = result.ops[0];
     const linkedIssuesToUpdate: IssueRecord[] = [];
     if (result.insertedCount === 1) {
       if (input.linked && input.linked.length > 0) {
         const linksToInsert: IssueLinkRecord[] = [];
         for (const link of input.linked) {
-          const target = await issues.findOne({ _id: new ObjectID(link.to) });
+          const target = await context.issues.findOne({ _id: new ObjectID(link.to) });
           if (target) {
             linksToInsert.push({
               from: row._id,
@@ -141,7 +137,7 @@ export const mutations = {
       }
 
       if (timelineRecordsToInsert.length > 0) {
-        const res = await timeline.insertMany(timelineRecordsToInsert);
+        const res = await context.timeline.insertMany(timelineRecordsToInsert);
         res.ops.forEach(changeRow => {
           publish(Channels.TIMELINE_CHANGE, {
             action: ChangeAction.Added,
@@ -176,10 +172,8 @@ export const mutations = {
     }
     const user = context.user.accountName;
 
-    const issues = context.db.collection<IssueRecord>('issues');
     const issueLinks = context.db.collection<IssueLinkRecord>('issueLinks');
-    const timeline = context.db.collection<TimelineEntryRecord>('timeline');
-    const issue = await issues.findOne({ _id: id });
+    const issue = await context.issues.findOne({ _id: id });
     if (!issue) {
       logger.error('Attempt to update non-existent issue:', { user, id });
       throw new UserInputError(Errors.NOT_FOUND);
@@ -199,7 +193,7 @@ export const mutations = {
     // Ensure that all of the issues we are linking to actually exist.
     if (input.linked) {
       const linkedIssueIds = new Set(input.linked.map(link => link.to));
-      const linkedIssues = await issues
+      const linkedIssues = await context.issues
           .find({ _id: { $in: Array.from(linkedIssueIds) } }).toArray();
       for (const link of linkedIssues) {
         linkedIssueIds.delete(link._id);
@@ -268,8 +262,7 @@ export const mutations = {
     if ('owner' in input) {
       let ownerRecord: AccountRecord = null;
       if (input.owner) {
-        ownerRecord = await context.db.collection<AccountRecord>('accounts')
-            .findOne({ _id: new ObjectID(input.owner) });
+        ownerRecord = await context.accounts.findOne({ _id: new ObjectID(input.owner) });
         if (!ownerRecord) {
           logger.error(
             'Attempt to set non-existent owner:',
@@ -632,7 +625,7 @@ export const mutations = {
     // Mutate the issue record.
     let returnValue: IssueRecord = issue;
     if (change.at) {
-      const result = await issues.findOneAndUpdate({ _id: issue._id }, update, {
+      const result = await context.issues.findOneAndUpdate({ _id: issue._id }, update, {
         returnOriginal: false,
       });
       returnValue = result.value;
@@ -641,7 +634,7 @@ export const mutations = {
     // Update the timeline records
     if (change.at) {
       // See if we can coalesce with a recent change
-      const recentChanges = await timeline.find({
+      const recentChanges = await context.timeline.find({
         project: project._id,
         issue: issue._id,
         by: change.by,
@@ -716,9 +709,12 @@ export const mutations = {
           // commentUpdated?: Date;
           // commentRemoved?: Date;
 
-          const chgRes = await timeline.findOneAndUpdate({ _id: recent._id }, updateRecent, {
-            returnOriginal: false,
-          });
+          const chgRes = await context.timeline.findOneAndUpdate(
+            { _id: recent._id },
+            updateRecent,
+            {
+              returnOriginal: false,
+            });
           coalesced = !!chgRes.ok;
           if (coalesced) {
             publish(Channels.TIMELINE_CHANGE, {
@@ -738,7 +734,7 @@ export const mutations = {
     await Promise.all(promises);
 
     if (timelineRecordsToInsert.length > 0) {
-      const timelineResults = await timeline.insertMany(timelineRecordsToInsert);
+      const timelineResults = await context.timeline.insertMany(timelineRecordsToInsert);
       timelineResults.ops.forEach(changeRow => {
         publish(Channels.TIMELINE_CHANGE, {
           action: ChangeAction.Added,
@@ -764,7 +760,7 @@ export const mutations = {
     }
     const user = context.user.accountName;
 
-    const issue = await context.db.collection('issues').findOne<IssueRecord>({ _id: id });
+    const issue = await context.issues.findOne({ _id: id });
     if (!issue) {
       logger.error('Attempt to delete non-existent issue:', { user, id });
       throw new UserInputError(Errors.NOT_FOUND);
@@ -794,9 +790,7 @@ export const mutations = {
       throw new AuthenticationError(Errors.UNAUTHORIZED);
     }
     const user = context.user.accountName;
-    const issues = context.db.collection<IssueRecord>('issues');
-    const timeline = context.db.collection<TimelineEntryRecord>('timeline');
-    const issue = await issues.findOne({ _id: id });
+    const issue = await context.issues.findOne({ _id: id });
     if (!issue) {
       logger.error('Attempt to comment on non-existent issue:', { user, id });
       throw new UserInputError(Errors.NOT_FOUND);
@@ -822,7 +816,7 @@ export const mutations = {
       commentBody: body,
     };
 
-    const result = await timeline.insertOne(record);
+    const result = await context.timeline.insertOne(record);
     publish(Channels.TIMELINE_CHANGE, {
       action: ChangeAction.Added,
       value: result.ops[0],

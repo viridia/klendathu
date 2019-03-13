@@ -14,17 +14,15 @@ import { Errors } from '../../../common/types/json';
 // User profile query
 export const queries = {
   account(_: any, args: AccountQueryArgs, context: Context): Promise<AccountRecord> {
-    const accounts = context.db.collection('accounts');
     if (args.accountName) {
-      return accounts.findOne({ accountName: args.accountName });
+      return context.accounts.findOne({ accountName: args.accountName });
     } else if (args.id) {
-      return accounts.findOne({ _id: new ObjectID(args.id) });
+      return context.accounts.findOne({ _id: new ObjectID(args.id) });
     }
   },
 
   async accounts(_: any, args: AccountsQueryArgs, context: Context): Promise<AccountRecord[]> {
     // TODO: get project role?
-    const accounts = context.db.collection('accounts');
     const query: any = {};
     if (args.token) {
       // Empty token matches nothing
@@ -41,7 +39,7 @@ export const queries = {
     if (args.type) {
       query.type = args.type;
     }
-    return accounts.find(query).sort({ display: 1, accountName: 1 }).toArray();
+    return context.accounts.find(query).sort({ display: 1, accountName: 1 }).toArray();
   },
 
   // Information about the current user.
@@ -83,15 +81,14 @@ export const mutations = {
 
     // TODO: Uhhhh...permissions?
 
-    const accounts = context.db.collection('accounts');
     const account =
-        await accounts.findOne<AccountRecord>({ accountName: input.accountName });
+        await context.accounts.findOne<AccountRecord>({ accountName: input.accountName });
     if (account && account._id !== context.user._id) {
       // Duplicate name
       throw new UserInputError(Errors.CONFLICT, { field: 'accountName' });
     } else {
       // Update the database
-      const result = await accounts.updateOne(
+      const result = await context.accounts.updateOne(
         { _id: context.user._id },
         { $set: { display: input.display, accountName: input.accountName }});
       if (result.modifiedCount === 1) {

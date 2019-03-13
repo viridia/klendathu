@@ -25,18 +25,10 @@ export class Server {
           const m = connectionParams.Authorization.match(/Bearer\s+(.*)/);
           if (m) {
             const user = await decodeAuthToken(this.db, m[1]);
-            return {
-              db: this.db,
-              client: this.client,
-              user,
-            };
+            return new Context(this.db, user);
           }
         }
-        return {
-          db: this.db,
-          client: this.client,
-          user: null,
-        };
+        return new Context(this.db, null);
       },
       // onDisconnect: (websocket, context) => {
       //   console.log(context);
@@ -91,15 +83,11 @@ export class Server {
   }
 
   private getContext(
-      { req, connection }: { req: express.Request, connection: any }): Context {
+    { req, connection }: { req: express.Request, connection: any }): Context {
     if (connection) {
       return connection.context;
     }
-    return {
-      db: this.db,
-      client: this.client,
-      user: (req as any).user,
-    };
+    return new Context(this.db, (req as any).user);
   }
 }
 

@@ -47,6 +47,15 @@ type Mutation {
   "Make an incremental change to an issue (mass edit)."
   editIssue(issue: ID!, input: UpdateIssueInput!): Issue!
 
+  "Create a new project milestone."
+  newMilestone(project: ID!, input: MilestoneInput!): Milestone!
+
+  "Update an existing project milestone."
+  updateMilestone(id: ID!, input: MilestoneInput!): Milestone!
+
+  "Delete a project milestone."
+  deleteMilestone(id: ID!): Milestone!
+
   "Set current user's preferences for visible columns."
   setPrefColumns(project: ID!, columns: [String!]!): ProjectPrefs!
 

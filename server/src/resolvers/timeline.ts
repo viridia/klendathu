@@ -20,7 +20,6 @@ export const queries = {
       context: Context): Promise<PaginatedIssueChangeRecords> {
 
     const user = context.user ? context.user.accountName : null;
-    const timeline = context.db.collection<TimelineEntryRecord>('timeline');
     const { project, role } = await getProjectAndRole(
         context.db, context.user, new ObjectID(pid));
     if (!project) {
@@ -46,7 +45,7 @@ export const queries = {
     //   filter.isPublic = true;
     // }
 
-    const result = await timeline.find(filter).sort({ at: recent ? -1 : 1 }).toArray();
+    const result = await context.timeline.find(filter).sort({ at: recent ? -1 : 1 }).toArray();
     return {
       count: result.length,
       offset: 0,
@@ -60,7 +59,6 @@ export const queries = {
       context: Context): Promise<PaginatedIssueChangeRecords> {
 
     const user = context.user ? context.user.accountName : null;
-    const timeline = context.db.collection<TimelineEntryRecord>('timeline');
     const { project, role } = await getProjectAndRole(
         context.db, context.user, new ObjectID(pid));
     if (!project) {
@@ -87,7 +85,7 @@ export const queries = {
     //   filter.isPublic = true;
     // }
 
-    const result = await timeline.find(filter).sort({ at: 1 }).toArray();
+    const result = await context.timeline.find(filter).sort({ at: 1 }).toArray();
     return {
       count: result.length,
       offset: 0,

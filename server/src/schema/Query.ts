@@ -67,6 +67,12 @@ type Query {
   "Retrieve history of changes to an issue, or all issues within a project."
   timeline(project: ID!, issue: ID, recent: Boolean, pagination: Pagination): PaginatedTimeline!
 
+  "Retrieve milestones for a project"
+  milestones(
+    project: ID!,
+    input: MilestoneQueryInput,
+    pagination: Pagination): PaginatedMilestones!
+
   "Retrieve history of comments to an issue, or all issues within a project."
   comments(project: ID!, issue: ID, pagination: Pagination): PaginatedTimeline!
 
