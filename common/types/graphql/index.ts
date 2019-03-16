@@ -819,6 +819,10 @@ export interface Bucket {
   key?: Maybe<string>;
   /** Bucket size */
   count: number;
+  /** Denormalized account name (for user stats) */
+  accountName?: Maybe<string>;
+  /** Denormalized account display name (for user stats) */
+  accountDisplay?: Maybe<string>;
 }
 
 export interface Mutation {

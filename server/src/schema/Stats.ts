@@ -30,6 +30,12 @@ type Bucket {
 
   "Bucket size"
   count: Int!
+
+  "Denormalized account name (for user stats)"
+  accountName: String
+
+  "Denormalized account display name (for user stats)"
+  accountDisplay: String
 }
 
 "Issue statistics."

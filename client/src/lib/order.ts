@@ -18,3 +18,16 @@ export function orderBy<T>(comparators: Array<Comparator<T>>): Comparator<T> {
 export function localeCompareProperty<T>(propName: string): Comparator<T> {
   return (a: any, b: any): number => ('' + a[propName]).localeCompare(b[propName]);
 }
+
+/** Property comparator */
+export function numberCompareProperty<T>(propName: string): Comparator<T> {
+  return (a: any, b: any): number => {
+    if (a[propName] < b[propName]) {
+      return -1;
+    }
+    if (a[propName] > b[propName]) {
+      return 1;
+    }
+    return 0;
+  };
+}

@@ -24,6 +24,7 @@
   "author": "Talin <viridia@gmail.com>",
   "license": "Apache-2.0",
   "dependencies": {
+    "@nivo/bar": "^0.52.1",
     "@nivo/pie": "^0.52.1",
     "apollo": "^2.5.3",
     "apollo-boost": "^0.3.1",

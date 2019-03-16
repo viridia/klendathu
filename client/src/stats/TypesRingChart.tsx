@@ -1,11 +1,10 @@
 import * as React from 'react';
 import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
-import { Pie, PieDatum } from '@nivo/pie';
+import { PieDatum, ResponsivePie } from '@nivo/pie';
 import { Bucket } from '../../../common/types/graphql';
 import { ProjectEnv } from '../models';
 import { parseToHsl, hsl } from 'polished';
-import { Card } from '../controls';
 
 const TypeStatsQuery = gql`
   query TypeStatsQuery($project: ID!, $filter: StatsFilter) {
@@ -48,13 +47,12 @@ export function TypesRingChart(props: {}) {
           });
 
           return (
-            <Card>
-              <header>Issue types</header>
-              <Pie
-                  width={430}
-                  height={320}
+            <section style={{ width: '100%', height: '320px', position: 'relative' }}>
+              <ResponsivePie
                   innerRadius={0.5}
                   colorBy={(bk: any) => bk.color}
+                  padAngle={1}
+                  cornerRadius={3}
                   margin={{
                     top: 40,
                     right: 80,
@@ -65,7 +63,7 @@ export function TypesRingChart(props: {}) {
                   borderColor="inherit:darker(0.6)"
                   data={sortedBuckets}
               />
-            </Card>
+            </section>
           );
         } else {
           return <div className="chart no-data" />;

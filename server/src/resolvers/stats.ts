@@ -1,5 +1,5 @@
 import { Context } from './Context';
-import { ProjectRecord } from '../db/types';
+import { ProjectRecord, AccountRecord } from '../db/types';
 import { UserInputError } from 'apollo-server-core';
 import { Errors, Role } from '../../../common/types/json';
 import { getProjectAndRole } from '../db/role';
@@ -117,7 +117,21 @@ export const types = {
       return context.db.collection('issues').aggregate([
         { $match: query },
         { $group: { _id: '$owner', count: { $sum: 1 } } },
-        { $project: { key: '$_id', count: '$count' } },
+        {
+          $lookup: {
+            from: 'accounts',
+            localField: '_id',
+            foreignField: '_id',
+            as: 'accounts',
+          }
+        },
+        {
+          $project: {
+            key: '$_id',
+            count: '$count',
+            accounts: '$accounts',
+          },
+        },
       ]).toArray();
     },
 
@@ -133,4 +147,13 @@ export const types = {
       ]).toArray();
     },
   },
+
+  Bucket: {
+    accountName(row: Bucket & { accounts: AccountRecord[] }) {
+      return row.accounts.length > 0 ? row.accounts[0].accountName : null;
+    },
+    accountDisplay(row: Bucket & { accounts: AccountRecord[] }) {
+      return row.accounts.length > 0 ? row.accounts[0].display : null;
+    },
+  }
 };

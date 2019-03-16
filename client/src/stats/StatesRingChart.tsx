@@ -1,11 +1,10 @@
 import * as React from 'react';
 import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
-import { Pie, PieDatum } from '@nivo/pie';
+import { PieDatum, ResponsivePie } from '@nivo/pie';
 import { Bucket } from '../../../common/types/graphql';
 import { ProjectEnv } from '../models';
 import { parseToHsl, hsl } from 'polished';
-import { Card } from '../controls';
 
 const StateStatsQuery = gql`
   query StateStatsQuery($project: ID!, $filter: StatsFilter) {
@@ -17,7 +16,7 @@ interface Props {
   open?: boolean;
 }
 
-export function StatesRingChart(props: Props) {
+export function StatesRingChart({ open }: Props) {
   const env = React.useContext(ProjectEnv);
   const { project, template } = env;
   return (
@@ -41,6 +40,9 @@ export function StatesRingChart(props: Props) {
           const sortedBuckets: PieDatum[] = [];
           template.states.forEach(st => {
             const bk = bucketMap.get(st.id);
+            if (open !== undefined && st.closed === open) {
+              return;
+            }
             if (bk) {
               sortedBuckets.push({
                 id: st.caption,
@@ -57,13 +59,12 @@ export function StatesRingChart(props: Props) {
           });
 
           return (
-            <Card>
-              <header>Issue states</header>
-              <Pie
-                  width={430}
-                  height={320}
+            <section style={{ width: '100%', height: '320px', position: 'relative' }}>
+              <ResponsivePie
                   innerRadius={0.5}
                   colorBy={(bk: any) => bk.color}
+                  padAngle={1}
+                  cornerRadius={3}
                   margin={{
                     top: 40,
                     right: 80,
@@ -74,7 +75,7 @@ export function StatesRingChart(props: Props) {
                   borderColor="inherit:darker(0.6)"
                   data={sortedBuckets}
               />
-            </Card>
+            </section>
           );
         } else {
           return <div className="chart no-data" />;

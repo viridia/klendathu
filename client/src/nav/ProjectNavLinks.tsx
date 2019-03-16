@@ -9,6 +9,7 @@ import SettingsIcon from '../svg-compiled/icons/IcSettings';
 import DependenciesIcon from '../svg-compiled/icons/IcGantt';
 import ProgressIcon from '../svg-compiled/icons/IcProgress';
 import HistoryIcon from '../svg-compiled/icons/IcHistory';
+import PieChartIcon from '../svg-compiled/icons/IcPieChart';
 import { LabelLinks } from './LabelLinks';
 import { ViewContext } from '../models';
 import { observer } from 'mobx-react';
@@ -26,6 +27,7 @@ function ProjectNavLinksImpl(props: Props) {
   const prefix = `/${account.accountName}/${project.name}`;
   return (
     <>
+      <LeftNavLink to={prefix} exact={true}><PieChartIcon /> Dashboard</LeftNavLink>
       <LeftNavLink
           to={`${prefix}/issues`}
           query={{ owner: undefined, label: undefined, type: undefined, state: undefined }}
