@@ -21,6 +21,7 @@ import { ErrorDialog } from '../graphql/ErrorDisplay';
 import { ProjectTimeline } from '../timeline/ProjectTimeline';
 import { ProgressView } from '../progress/ProgressView';
 import { FilterListView } from '../filters/FilterListView';
+import { Dashboard } from '../dashboard/Dashboard';
 
 const MainPageLayout = styled(Page)`
   display: grid;
@@ -144,6 +145,7 @@ export class MainPage extends React.Component<RouteComponentProps<{}>> {
                           render={props => (
                               <ProjectSettings {...props} context={this.viewContext} />)}
                       />
+                      <Route component={Dashboard} />
                     </Switch>
                   )}
                 </ViewContextProvider>}
