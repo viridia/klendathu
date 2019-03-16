@@ -10,7 +10,7 @@ export async function getProjectRole(
   }
 
   if (!user) {
-    return project.isPublic ? Role.NONE : Role.VIEWER;
+    return project.isPublic ? Role.VIEWER : Role.NONE;
   }
 
   // Lookup either membership in the project, or membership in the organization that owns

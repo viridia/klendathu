@@ -68,6 +68,21 @@ export interface MilestoneQueryInput {
   /** Include milestones before this date */
   dateRangeEnd?: Maybe<DateTime>;
 }
+/** Query params for searching for issues. */
+export interface StatsFilter {
+  /** Query term that restricts the stats to a set of types. */
+  type?: Maybe<string[]>;
+  /** Query term that restricts the stats to a set of states. */
+  state?: Maybe<string[]>;
+  /** Query term that restricts the stats to a set of owners. */
+  owner?: Maybe<string[]>;
+  /** Query term that restricts the stats to a set of reporters. */
+  reporter?: Maybe<string[]>;
+  /** Query term that restricts the stats to a set of label ids. */
+  labels?: Maybe<string[]>;
+  /** Query term that searches custom fields */
+  custom?: Maybe<CustomSearchInput[]>;
+}
 /** Data type for creating or updating an account. */
 export interface AccountInput {
   /** Unique, user-visible account name of the account being changed. */
@@ -354,6 +369,8 @@ export interface Query {
   webhooks: Webhook[];
   /** List of available webhook processors. */
   webhookServices: WebhookServiceInfo[];
+  /** Retrieve statistics. */
+  stats: Stats;
 }
 
 /** Public information about a user or organization. */
@@ -784,6 +801,26 @@ export interface WebhookServiceInfo {
   serviceName: string;
 }
 
+/** Issue statistics. */
+export interface Stats {
+  /** Stats broken down by type */
+  types: Bucket[];
+  /** Stats broken down by state */
+  states: Bucket[];
+  /** Stats broken down by owner */
+  owners: Bucket[];
+  /** Stats broken down by reporter */
+  reporters: Bucket[];
+}
+
+/** Bucket containing count of items in a group. */
+export interface Bucket {
+  /** Bucket key */
+  key?: Maybe<string>;
+  /** Bucket size */
+  count: number;
+}
+
 export interface Mutation {
   /** Create a user account */
   createUserAccount?: Maybe<Account>;
@@ -1025,6 +1062,21 @@ export interface CommitsQueryArgs {
 }
 export interface WebhooksQueryArgs {
   project: string;
+}
+export interface StatsQueryArgs {
+  project: string;
+}
+export interface TypesStatsArgs {
+  filter?: Maybe<StatsFilter>;
+}
+export interface StatesStatsArgs {
+  filter?: Maybe<StatsFilter>;
+}
+export interface OwnersStatsArgs {
+  filter?: Maybe<StatsFilter>;
+}
+export interface ReportersStatsArgs {
+  filter?: Maybe<StatsFilter>;
 }
 export interface CreateUserAccountMutationArgs {
   input?: Maybe<AccountInput>;

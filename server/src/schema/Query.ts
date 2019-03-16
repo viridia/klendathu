@@ -93,5 +93,8 @@ type Query {
 
   "List of available webhook processors."
   webhookServices: [WebhookServiceInfo!]!
+
+  "Retrieve statistics."
+  stats(project: ID!): Stats!
 }
 `;

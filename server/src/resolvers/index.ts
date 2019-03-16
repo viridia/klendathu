@@ -11,6 +11,7 @@ import * as memberships from './memberships';
 import * as milestones from './milestones';
 import * as projects from './projects';
 import * as projectPrefs from './projectPrefs';
+import * as stats from './stats';
 import * as templates from './template';
 import * as webhooks from './webhooks';
 
@@ -24,6 +25,7 @@ export const resolverMap = {
     ...milestones.queries,
     ...projects.queries,
     ...projectPrefs.queries,
+    ...stats.queries,
     ...templates.queries,
     ...timeline.queries,
     ...webhooks.queries,
@@ -55,6 +57,7 @@ export const resolverMap = {
   ...milestones.types,
   ...projects.types,
   ...projectPrefs.types,
+  ...stats.types,
   ...templates.types,
   ...timeline.types,
   ...webhooks.types,

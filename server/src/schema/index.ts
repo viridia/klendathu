@@ -9,6 +9,7 @@ import { Mutation } from './Mutation';
 import { Project } from './Project';
 import { ProjectPrefs } from './ProjectPrefs';
 import { Query } from './Query';
+import { Stats } from './Stats';
 import { Subscription } from './Subscription';
 import { Timeline } from './Timeline';
 import { Webhook } from './Webhook';
@@ -36,6 +37,7 @@ export const typeDefs = [
   Project,
   ProjectPrefs,
   Query,
+  Stats,
   Subscription,
   Timeline,
   Webhook,
