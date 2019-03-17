@@ -7,6 +7,7 @@
   * Progress
   * Number of issues
   * Delete
+* Issue Child items
 * Delete issues
 * Centralize graphql queries and mutations
 * Workflow actions (test)
@@ -58,11 +59,10 @@
   * Milestones
 * Issue Delete
 * Issue Query
-  * By Owner
+  * By Time
 * Label Delete
 * Email Verification
 * Project Settings
-  * Milestones
   * Templates
   * Workflow
 * Client unit tests (coverage)
@@ -77,13 +77,13 @@
 * Spinner
 * Switch
 * Loading indicator
+* Progress bar
 
 # Cleanups / Technical Debt
 
 * Error boundaries
 * Get rid of explicit passing of ViewContext where possible.
 * Write Jest tests for all frontend components
-* Define Mongo table references in one place.
 * Move client queries and mutations to /graphql directory.
 
 # Issue Models
@@ -102,7 +102,7 @@ Issue List State:
     in the details view.
   * What would be ideal is a way to do the forward/back navigation on the server side.
 
-# Templates
+# Shared Templates
 
 * The hardest part is template scoping.
   * We want templates to be sharable
@@ -113,3 +113,38 @@ Issue List State:
   * OK so every account has a "default" template
     * Accounts can create additional templates or edit the default
     * Templates can extend, which includes all of the issue types and states
+
+# Notification preferences
+
+* Email notification preferences:
+  * What issues should generate a notification?
+    * All issues
+    * Only issues where I am mentioned (owner, reporter or CC)
+    * Issues containing any of the following labels:
+
+  * What kinds of changes should generate a notification:
+    * Any change
+    * Only changes to issue test (summary, description, comments)
+
+  * How often should I be notified:
+    * Immediately when there is a change.
+    * No more than once per hour (summary digest)
+    * No more than once per day (summary digest)
+
+  * How should I be notified:
+    * Email
+
+## Algorithm:
+
+- for each user:
+  - for each project:
+    - retrieve the last date that we sent a notification.
+    - query the project timeline for all changes after that
+    - filter the timeline by notification preferences.
+    - generate an email from the timeline
+    - update the datestamp
+
+Note: It might be better to do this as a separate process. (eventually)
+
+What happens if the worker crashes?
+What happens if there are multiple workers?

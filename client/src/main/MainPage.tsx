@@ -111,11 +111,7 @@ export class MainPage extends React.Component<RouteComponentProps<{}>> {
                         path="/:owner/:name/:id(\d+)"
                         render={props => <IssueDetailsView {...props} env={this.viewContext} />}
                       />
-                      <Route
-                        path="/:owner/:name/issues"
-                        exact={true}
-                        render={props => (<IssueListView {...props} env={this.viewContext} />)}
-                      />
+                      <Route path="/:owner/:name/issues" exact={true} component={IssueListView} />
                       <Route
                         path="/:owner/:name/labels"
                         exact={true}
@@ -131,11 +127,7 @@ export class MainPage extends React.Component<RouteComponentProps<{}>> {
                         exact={true}
                         render={props => (<ProjectTimeline {...props} env={this.viewContext} />)}
                       />
-                      <Route
-                        path="/:owner/:name/progress"
-                        exact={true}
-                        render={props => (<ProgressView {...props} env={this.viewContext}/>)}
-                      />
+                      <Route path="/:owner/:name/progress" exact={true} component={ProgressView} />
                       {/* <Route
                         path="/:owner/:name/dependencies"
                         exact={true}
