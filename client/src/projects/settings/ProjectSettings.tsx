@@ -38,22 +38,22 @@ export function ProjectSettings(props: RouteComponentProps<{ tab?: string }>) {
       <Switch>
         <Route
           path={`${locationPrefix}/info`}
-          render={() => <ProjectInfoEdit {...this.props} />}
+          render={() => <ProjectInfoEdit {...props} env={env} />}
         />
         <Route
           path={`${locationPrefix}/columns`}
-          render={() => <ColumnSettings env={this.props.context} />}
+          render={() => <ColumnSettings env={env} />}
         />
         <Route path={`${locationPrefix}/members`} component={ProjectMembers} />
         <Route
             path={`${locationPrefix}/milestones`}
-            render={() => <MilestoneListView env={this.props.context} />}
+            render={() => <MilestoneListView env={env} />}
         />
         <Route path={`${locationPrefix}/templates`} />
         <Route path={`${locationPrefix}/workflow`} />
         <Route
           path={`${locationPrefix}/webhooks`}
-          render={() => <WebhookSettings env={this.props.context} />}
+          render={() => <WebhookSettings env={env} />}
         />
         <Redirect path={`${locationPrefix}/`} to={`${locationPrefix}/info`} />
       </Switch>

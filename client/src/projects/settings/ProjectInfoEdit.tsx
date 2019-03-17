@@ -45,7 +45,7 @@ const ProjectTitle = styled.span`
 `;
 
 interface Props extends RouteComponentProps<{}> {
-  context: ViewContext;
+  env: ViewContext;
 }
 
 @observer
@@ -61,13 +61,13 @@ export class ProjectInfoEdit extends React.Component<Props> {
   }
 
   public componentWillReceiveProps(nextProps: Props) {
-    if (nextProps.context.project !== this.props.context.project) {
+    if (nextProps.env.project !== this.props.env.project) {
       this.reset(nextProps);
     }
   }
 
   public render() {
-    const { project } = this.props.context;
+    const { project } = this.props.env;
     const modified =
         project.title !== this.title ||
         project.description !== this.description ||
@@ -180,7 +180,7 @@ export class ProjectInfoEdit extends React.Component<Props> {
 
   @action.bound
   private onSave(e: any) {
-    const { project } = this.props.context;
+    const { project } = this.props.env;
     e.preventDefault();
     e.stopPropagation();
 
@@ -229,7 +229,7 @@ export class ProjectInfoEdit extends React.Component<Props> {
   @action.bound
   private onConfirmDelete(e: any) {
     const { history } = this.props;
-    const { project } = this.props.context;
+    const { project } = this.props.env;
     e.preventDefault();
     e.stopPropagation();
 
@@ -260,7 +260,7 @@ export class ProjectInfoEdit extends React.Component<Props> {
   }
 
   private reset(props: Props) {
-    const { project } = props.context;
+    const { project } = props.env;
     this.title = project.title;
     this.description = project.description;
     this.isPublic = project.isPublic;
