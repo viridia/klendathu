@@ -12,13 +12,22 @@ const OwnerStatsQuery = gql`
   }
 `;
 
-export function OwnerBarChart(props: {}) {
+interface Props {
+  open?: boolean;
+}
+
+export function OwnerBarChart(props: Props) {
   const env = React.useContext(ProjectEnv);
   const { project } = env;
   return (
     <Query
         query={OwnerStatsQuery}
-        variables={{ project: project.id }}
+        variables={{
+          project: project.id,
+          filter: {
+            state: Array.from(env.openStates),
+          },
+        }}
     >
       {({ loading, error, data }) => {
         if (loading) {
@@ -32,7 +41,7 @@ export function OwnerBarChart(props: {}) {
             label: bk.accountDisplay || 'unassigned',
             value: bk.count,
           }));
-          sortedBuckets.sort(numberCompareProperty('count')).reverse().slice(10);
+          sortedBuckets.sort(numberCompareProperty('value')).slice(10);
 
           return (
             <section style={{ width: '100%', height: `${32 * sortedBuckets.length}px` }}>
@@ -42,7 +51,15 @@ export function OwnerBarChart(props: {}) {
                 animate={false}
                 enableLabel={true}
                 enableGridX={true}
-                colors="dark2"
+                colorBy={(dat: any) => {
+                  console.log(dat);
+                  if (dat.data.id === '') {
+                    return '#aa66cc';
+                  } else {
+                    return '#884488';
+                  }
+                }}
+                labelTextColor="white"
                 margin={{
                   left: 150,
                   right: 10,

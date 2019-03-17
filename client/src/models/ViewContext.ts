@@ -120,6 +120,15 @@ export class ViewContext {
   }
 
   @computed
+  public get openStates(): Set<string> {
+    if (this.template) {
+      return new Set(this.template.states.filter(st => !st.closed).map(st => st.id);
+    } else {
+      return new Set();
+    }
+  }
+
+  @computed
   public get fields(): Map<string, FieldType> {
     if (this.template) {
       const result = new Map<string, FieldType>();
