@@ -2,6 +2,11 @@
 
 * Attachments
 * Milestones
+  * Compose view
+  * Column
+  * Progress
+  * Number of issues
+  * Delete
 * Delete issues
 * Centralize graphql queries and mutations
 * Workflow actions (test)
@@ -43,13 +48,11 @@
 * Show attachments full size (media viewer)
 * Search by relative date (last 2 weeks)
 * Issue Grouping by custom field.
+* Dashboard time line.
 
 # Major pieces
 
-* Dashboard view
-  * Figure out what content to put there.
-  * Summary of issues: open / closed / etc.
-  * Some sort of sparkline or graph.
+* Cron job
 * Issue Compose
   * Attachments
   * Milestones

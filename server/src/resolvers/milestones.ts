@@ -38,7 +38,7 @@ export const queries = {
     if (input.dateRangeEnd) {
       query.startDate = { $ge: input.dateRangeEnd };
     }
-    return context.milestones.find(query).toArray();
+    return context.milestones.find(query).sort({ startDate: 1 }).toArray();
   },
 };
 
@@ -94,7 +94,7 @@ export const mutations = {
     }
 
     const user = context.user.accountName;
-    const milestone = await context.milestones.findOne({ _id: id });
+    const milestone = await context.milestones.findOne({ _id: new ObjectID(id) });
     if (!milestone) {
       logger.error('Attempt to update non-existent milestone:', { user, id });
       throw new UserInputError(Errors.NOT_FOUND);
@@ -136,7 +136,11 @@ export const mutations = {
       record.$set.endDate = input.endDate;
     }
 
-    const result = await context.milestones.findOneAndUpdate({ _id: id }, { $set: record });
+    const result = await context.milestones.findOneAndUpdate(
+      { _id: milestone._id },
+      record,
+      { returnOriginal: false }
+    );
     publish(Channels.MILESTONE_CHANGE, {
       action: ChangeAction.Changed,
       value: result.value,
@@ -152,7 +156,7 @@ export const mutations = {
       throw new AuthenticationError(Errors.UNAUTHORIZED);
     }
     const user = context.user.accountName;
-    const milestone = await context.milestones.findOne({ _id: id });
+    const milestone = await context.milestones.findOne({ _id: new ObjectID(id) });
     if (!milestone) {
       logger.error('Attempt to delete non-existent milestone:', { user, id });
       throw new UserInputError(Errors.NOT_FOUND);
@@ -169,6 +173,11 @@ export const mutations = {
       throw new UserInputError(Errors.FORBIDDEN);
     }
 
+    // publish(Channels.MILESTONE_CHANGE, {
+    //   action: ChangeAction.Removed,
+    //   value: project,
+    // });
+
     // TODO: Implement
     // We need to remove this milestone from all issues in the project.
     return null;
@@ -181,9 +190,9 @@ export const subscriptions = {
       () => pubsub.asyncIterator([Channels.MILESTONE_CHANGE]),
       (
         { value }: MilestoneRecordChange,
-        { project: id }: MilestoneChangedSubscriptionArgs,
+        { project }: MilestoneChangedSubscriptionArgs,
         context: Context) => {
-        return context.user && value.project.equals(id);
+        return context.user && value.project.equals(project);
       }
     ),
     resolve: (payload: MilestoneRecordChange) => {

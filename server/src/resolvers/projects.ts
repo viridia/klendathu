@@ -19,21 +19,16 @@ import { UserInputError, AuthenticationError } from 'apollo-server-core';
 import { Errors, Role } from '../../../common/types/json';
 import { logger } from '../logger';
 import { ObjectID } from 'mongodb';
-import { pubsub } from './pubsub';
+import { pubsub, Channels, RecordChange, publish } from './pubsub';
 import { withFilter } from 'graphql-subscriptions';
 import { getProjectRole, getProjectAndRole } from '../db/role';
 
 const software = require('../templates/software.json'); // tslint:disable-line
 
-const PROJECT_CHANGE = 'project-change';
+type ProjectRecordChange = RecordChange<ProjectRecord>;
 
 interface ProjectJoinResult extends MembershipRecord {
   projectRecord: ProjectRecord[];
-}
-
-interface ProjectRecordChange {
-  project: ProjectRecord;
-  action: ChangeAction;
 }
 
 interface ProjectAndAccount {
@@ -214,9 +209,9 @@ export const mutations = {
     };
 
     await context.memberships.insertOne(membershipRecord);
-    pubsub.publish(PROJECT_CHANGE, {
+    publish(Channels.PROJECT_CHANGE, {
       action: ChangeAction.Added,
-      project: {
+      value: {
         _id: result.insertedId,
         ...record,
       },
@@ -266,9 +261,9 @@ export const mutations = {
 
     if (result.modifiedCount === 1) {
       const updatedProject = { ...project, ...update };
-      pubsub.publish(PROJECT_CHANGE, {
+      publish(Channels.PROJECT_CHANGE, {
         action: ChangeAction.Changed,
-        project: updatedProject,
+        value: updatedProject,
       });
       return updatedProject;
     }
@@ -307,7 +302,7 @@ export const mutations = {
         context.memberships.deleteMany({ project: project._id }),
         context.projectPrefs.deleteMany({ project: project._id }),
       ]);
-      pubsub.publish(PROJECT_CHANGE, { action: ChangeAction.Removed, project });
+      publish(Channels.PROJECT_CHANGE, { action: ChangeAction.Removed, value: project });
       return { id: project._id };
     }
 
@@ -319,9 +314,9 @@ export const mutations = {
 export const subscriptions = {
   projectsChanged: {
     subscribe: withFilter(
-      () => pubsub.asyncIterator([PROJECT_CHANGE]),
+      () => pubsub.asyncIterator([Channels.PROJECT_CHANGE]),
       (
-        { project }: ProjectRecordChange,
+        { value: project }: ProjectRecordChange,
         { owners }: ProjectsChangedSubscriptionArgs,
         context: Context
       ) => {
@@ -346,13 +341,13 @@ export const subscriptions = {
   },
   projectChanged: {
     subscribe: withFilter(
-      () => pubsub.asyncIterator([PROJECT_CHANGE]),
+      () => pubsub.asyncIterator([Channels.PROJECT_CHANGE]),
       (
-        { project }: ProjectRecordChange,
+        { value: project }: ProjectRecordChange,
         { project: id }: ProjectChangedSubscriptionArgs,
         context: Context
       ) => {
-
+        console.log('project changed');
         if (!project._id.equals(id)) {
           return false;
         }
@@ -399,5 +394,8 @@ export const types = {
       }
       return prefs;
     },
+    milestones: (pc: ProjectAndAccount, args: any, context: Context) => {
+      return context.milestones.find({ project: pc.project._id }).toArray();
+    }
   }
 };

@@ -7,13 +7,12 @@ import { ViewContext } from '../../models';
 import { ColumnSettings } from './columns/ColumnSettings';
 import { ProjectMembers } from './members/ProjectMembers';
 import { WebhookSettings } from './webhooks/WebhookSettings';
-// import { ProjectMilestonesEdit } from './milestones/ProjectMilestonesEdit';
+import { MilestoneListView } from './milestones/MilestoneListView';
 // import { ProjectTemplateEdit } from './ProjectTemplateEdit';
 // import { WorkflowEdit } from './workflow/WorkflowEdit';
 
 interface Props extends RouteComponentProps<{ tab?: string }> {
   context: ViewContext;
-  // milestones: MilestoneListQuery;
 }
 
 // TODO: finish
@@ -50,7 +49,10 @@ export class ProjectSettings extends React.Component<Props> {
             render={() => <ColumnSettings env={this.props.context} />}
           />
           <Route path={`${locationPrefix}/members`} component={ProjectMembers} />
-          <Route path={`${locationPrefix}/milestones`} />
+          <Route
+              path={`${locationPrefix}/milestones`}
+              render={() => <MilestoneListView env={this.props.context} />}
+          />
           <Route path={`${locationPrefix}/templates`} />
           <Route path={`${locationPrefix}/workflow`} />
           <Route
@@ -63,9 +65,6 @@ export class ProjectSettings extends React.Component<Props> {
     );
   }
 
-// {project.role >= Role.DEVELOPER && (<Tab eventKey="milestones" title="Milestones">
-//   <ProjectMilestonesEdit {...this.props} />
-// </Tab>)}
 // {project.role >= Role.MANAGER && (<Tab eventKey="templates" title="Issue Templates">
 //   {/*<ProjectTemplateEdit {...this.props} />*/}
 // </Tab>)}

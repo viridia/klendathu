@@ -23,6 +23,8 @@ import { ProgressView } from '../progress/ProgressView';
 import { FilterListView } from '../filters/FilterListView';
 import { Dashboard } from '../dashboard/Dashboard';
 
+import 'react-datepicker/dist/react-datepicker.css'; // tslint:disable-line
+
 const MainPageLayout = styled(Page)`
   display: grid;
   grid-template-rows: 2.6rem 1fr;

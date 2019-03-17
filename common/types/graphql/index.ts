@@ -914,7 +914,7 @@ export interface Subscription {
 export interface ProjectChange {
   action: ChangeAction;
 
-  project: Project;
+  value: Project;
 }
 
 export interface LabelChange {
@@ -938,7 +938,7 @@ export interface MilestoneChange {
 export interface ProjectPrefsChange {
   action: ChangeAction;
 
-  prefs: ProjectPrefs;
+  value: ProjectPrefs;
 }
 
 export interface IssueChange {

@@ -5,6 +5,8 @@ import {
   ProjectPrefs,
   ProjectContext,
   Subscription,
+  Milestone,
+  MilestoneStatus,
 } from '../../../common/types/graphql';
 import {
   Template,
@@ -15,7 +17,7 @@ import {
 } from '../../../common/types/json';
 import { observable, ObservableSet, computed, action, autorun, IReactionDisposer } from 'mobx';
 import gql from 'graphql-tag';
-import { fragments } from '../graphql';
+import { fragments, updateQueryResults } from '../graphql';
 import { client } from '../graphql/client';
 import bind from 'bind-decorator';
 import { IssueQueryModel } from './IssueQueryModel';
@@ -29,12 +31,14 @@ const ProjectContextQuery = gql`
       project { ...ProjectFields }
       account { ...AccountFields }
       prefs { ...ProjectPrefsFields }
+      milestones { ...MilestoneFields }
       template
     }
   }
   ${fragments.project}
   ${fragments.account}
   ${fragments.projectPrefs}
+  ${fragments.milestone}
 `;
 
 interface ProjectContextQueryResult {
@@ -45,13 +49,47 @@ const PrefsChangeSubscription = gql`
   subscription PrefsChangeSubscription($project: ID!) {
     prefsChanged(project: $project) {
       action
-      prefs { ...ProjectPrefsFields }
+      value { ...ProjectPrefsFields }
     }
   }
   ${fragments.projectPrefs}
 `;
 
+const MilestoneChangeSubscription = gql`
+  subscription MilestoneChangeSubscription($project: ID!) {
+    milestoneChanged(project: $project) {
+      action
+      value { ...MilestoneFields }
+    }
+  }
+  ${fragments.milestone}
+`;
+
 type PrefsChangeResult = Pick<Subscription, 'prefsChanged'>;
+type MilestoneChangeResult = Pick<Subscription, 'milestoneChanged'>;
+
+const statusOrder = {
+  [MilestoneStatus.Active]: 0,
+  [MilestoneStatus.Pending]: 1,
+  [MilestoneStatus.Timeless]: 2,
+  [MilestoneStatus.Concluded]: 3,
+};
+
+function compareMilestones(m0: Milestone, m1: Milestone) {
+  const s0 = statusOrder[m0.status];
+  const s1 = statusOrder[m1.status];
+  if (s0 < s1) {
+    return -1;
+  } else if (s0 > s1) {
+    return 1;
+  } else if (m0.startDate < m1.startDate) {
+    return -1;
+  } else if (m0.startDate > m1.startDate) {
+    return 1;
+  } else {
+    return 0;
+  }
+}
 
 /** A class that maintains references to all of the project-global objects used in the
     UI, including the project, template, prefs, labels and so on.
@@ -65,13 +103,14 @@ export class ViewContext {
   @observable public account: PublicAccount = null;
   @observable public template: Template = null;
   @observable public prefs: ProjectPrefs = null;
+  @observable public milestones: Milestone[] = [];
   @observable public selection = new ObservableSet();
   @observable public mutationError: Error = null;
   public issues = new IssueQueryModel();
 
   private disposer: IReactionDisposer;
   private subscription: any;
-  private unsubscribeHandle: () => any;
+  private unsubscribeHandles: Array<() => any> = [];
 
   constructor() {
     this.disposer = autorun(this.runQuery);
@@ -83,10 +122,8 @@ export class ViewContext {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
-    if (this.unsubscribeHandle) {
-      this.unsubscribeHandle();
-      this.unsubscribeHandle = null;
-    }
+    this.unsubscribeHandles.forEach(handle => handle());
+    this.unsubscribeHandles = [];
   }
 
   @action.bound
@@ -122,7 +159,7 @@ export class ViewContext {
   @computed
   public get openStates(): Set<string> {
     if (this.template) {
-      return new Set(this.template.states.filter(st => !st.closed).map(st => st.id);
+      return new Set(this.template.states.filter(st => !st.closed).map(st => st.id));
     } else {
       return new Set();
     }
@@ -182,6 +219,13 @@ export class ViewContext {
     return iType;
   }
 
+  @computed
+  public get sortedMilestones(): Milestone[] {
+    const sorted = [...this.milestones];
+    sorted.sort(compareMilestones);
+    return sorted;
+  }
+
   @bind
   private runQuery() {
     if (this.subscription) {
@@ -189,16 +233,15 @@ export class ViewContext {
       this.subscription = null;
     }
 
-    if (this.unsubscribeHandle) {
-      this.unsubscribeHandle();
-      this.unsubscribeHandle = null;
-    }
+    this.unsubscribeHandles.forEach(handle => handle());
+    this.unsubscribeHandles = [];
 
     if (!this.projectName || !this.accountName) {
       this.project = null;
       this.account = null;
       this.template = null;
       this.prefs = null;
+      this.milestones = [];
       return;
     }
 
@@ -215,25 +258,39 @@ export class ViewContext {
       this.loading = loading;
       this.error = errors ? { graphQLErrors: errors } : null;
       if (!this.loading && !this.error) {
-        if (this.unsubscribeHandle) {
-          this.unsubscribeHandle();
-          this.unsubscribeHandle = null;
-        }
-
-        this.unsubscribeHandle = queryResult.subscribeToMore<PrefsChangeResult>({
-          document: PrefsChangeSubscription,
-          variables: {
-            project: data.projectContext.project.id,
-          } as any,
-          updateQuery: (prev, { subscriptionData }) => {
-            return {
-              projectContext: {
-                ...prev.projectContext,
-                prefs: subscriptionData.data.prefsChanged.prefs,
-              }
-            };
-          },
-        });
+        this.unsubscribeHandles.forEach(handle => handle());
+        this.unsubscribeHandles = [
+          queryResult.subscribeToMore<PrefsChangeResult>({
+            document: PrefsChangeSubscription,
+            variables: {
+              project: data.projectContext.project.id,
+            } as any,
+            updateQuery: (prev, { subscriptionData }) => {
+              return {
+                projectContext: {
+                  ...prev.projectContext,
+                  prefs: subscriptionData.data.prefsChanged.value,
+                }
+              };
+            },
+          }),
+          queryResult.subscribeToMore<MilestoneChangeResult>({
+            document: MilestoneChangeSubscription,
+            variables: {
+              project: data.projectContext.project.id,
+            } as any,
+            updateQuery: (prev, { subscriptionData }) => {
+              return {
+                projectContext: {
+                  ...prev.projectContext,
+                  milestones: updateQueryResults(
+                    prev.projectContext.milestones,
+                    subscriptionData.data.milestoneChanged),
+                }
+              };
+            },
+          })
+        ];
 
         this.update(data.projectContext);
       }
@@ -247,6 +304,7 @@ export class ViewContext {
     this.project = context.project;
     this.account = context.account;
     this.template = context.template;
+    this.milestones = context.milestones;
     this.prefs = context.prefs;
   }
 }

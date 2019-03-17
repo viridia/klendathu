@@ -1,4 +1,5 @@
 export { ErrorDisplay, ErrorListDisplay } from './ErrorDisplay';
+export { updateQueryResults } from './helpers';
 export { fragments } from './fragments';
 export {
   deleteIssue,

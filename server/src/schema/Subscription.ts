@@ -11,7 +11,7 @@ enum ChangeAction {
 
 type ProjectChange {
   action: ChangeAction!
-  project: Project!
+  value: Project!
 }
 
 type LabelChange {
@@ -21,7 +21,7 @@ type LabelChange {
 
 type ProjectPrefsChange {
   action: ChangeAction!
-  prefs: ProjectPrefs!
+  value: ProjectPrefs!
 }
 
 type IssueChange {

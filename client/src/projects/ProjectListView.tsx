@@ -32,7 +32,7 @@ const projectsSubscription = gql`
   subscription ProjectsSubscription($owners: [ID!]!) {
     projectsChanged(owners: $owners) {
       action
-      project { ...ProjectFields }
+      value { ...ProjectFields }
     }
   }
   ${fragments.project}

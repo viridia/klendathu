@@ -11,6 +11,8 @@ export enum Channels {
   LABEL_CHANGE = 'label-change',
   MEMBERSHIP_CHANGE = 'membership-change',
   MILESTONE_CHANGE = 'milestone-change',
+  PREFS_CHANGE = 'prefs-change',
+  PROJECT_CHANGE = 'project-change',
   TIMELINE_CHANGE = 'timeline-change',
 }
 

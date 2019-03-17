@@ -23,6 +23,11 @@ export const fragments = {
     id user project organization role createdAt updatedAt
   }`,
 
+  milestone: gql`
+  fragment MilestoneFields on Milestone {
+    id project name status description startDate endDate createdAt updatedAt creator
+  }`,
+
   project: gql`
   fragment ProjectFields on Project {
     id name owner ownerName title description createdAt updatedAt template isPublic role

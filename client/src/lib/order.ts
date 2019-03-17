@@ -15,12 +15,12 @@ export function orderBy<T>(comparators: Array<Comparator<T>>): Comparator<T> {
 }
 
 /** Property comparator */
-export function localeCompareProperty<T>(propName: string): Comparator<T> {
+export function localeCompareProperty<T, K extends keyof T>(propName: K): Comparator<T> {
   return (a: any, b: any): number => ('' + a[propName]).localeCompare(b[propName]);
 }
 
 /** Property comparator */
-export function numberCompareProperty<T>(propName: string): Comparator<T> {
+export function numberCompareProperty<T, K extends keyof T>(propName: K): Comparator<T> {
   return (a: any, b: any): number => {
     if (a[propName] < b[propName]) {
       return -1;
