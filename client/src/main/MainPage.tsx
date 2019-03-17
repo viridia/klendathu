@@ -94,23 +94,14 @@ export class MainPage extends React.Component<RouteComponentProps<{}>> {
                 p => <ViewContextProvider {...p} env={this.viewContext}>
                   {() => (
                     <Switch>
-                      <Route
-                        path="/:owner/:name/new"
-                        render={props => <IssueCreateView {...props} env={this.viewContext} />}
-                      />
+                      <Route path="/:owner/:name/new" component={IssueCreateView} />
                       <Route
                         path="/:owner/:name/clone/:id"
                         render={props =>
-                          <IssueEditView {...props} env={this.viewContext} clone={true} />}
+                          <IssueEditView {...props} clone={true} />}
                       />
-                      <Route
-                        path="/:owner/:name/edit/:id"
-                        render={props => <IssueEditView {...props} env={this.viewContext} />}
-                      />
-                      <Route
-                        path="/:owner/:name/:id(\d+)"
-                        render={props => <IssueDetailsView {...props} env={this.viewContext} />}
-                      />
+                      <Route path="/:owner/:name/edit/:id" component={IssueEditView} />
+                      <Route path="/:owner/:name/:id(\d+)" component={IssueDetailsView} />
                       <Route path="/:owner/:name/issues" exact={true} component={IssueListView} />
                       <Route
                         path="/:owner/:name/labels"
@@ -136,8 +127,7 @@ export class MainPage extends React.Component<RouteComponentProps<{}>> {
                       <Route
                           path="/:owner/:name/settings/:tab?"
                           exact={true}
-                          render={props => (
-                              <ProjectSettings {...props} context={this.viewContext} />)}
+                          component={ProjectSettings}
                       />
                       <Route component={Dashboard} />
                     </Switch>

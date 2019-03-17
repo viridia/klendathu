@@ -151,8 +151,6 @@ const IssueLinkGroup = styled.div`
 
 interface Props extends RouteComponentProps<{}> {
   env: ViewContext;
-  // milestones: MilestoneListQuery;
-  // milestones?: any;
   issue?: Issue;
   onSave: (input: IssueInput) => Promise<any>;
 }

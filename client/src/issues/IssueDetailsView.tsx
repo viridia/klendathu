@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { Subscription, Mutation } from '../../../common/types/graphql';
-import { ViewContext, session } from '../models';
+import { session, ProjectEnv } from '../models';
 import { Query } from 'react-apollo';
 import { fragments, ErrorDisplay } from '../graphql';
 import { IssueDetails } from './IssueDetails';
@@ -33,16 +33,15 @@ const AddCommentMutation = gql`
   ${fragments.timelineEntry}
 `;
 
-export interface IssueProviderProps extends RouteComponentProps<{ project: string, id: string }> {
-  env: ViewContext;
-}
+export interface IssueProviderProps extends RouteComponentProps<{ project: string, id: string }> {}
 
 type IssueChangeResult = Pick<Subscription, 'issueChanged'>;
 type AddCommentResult = Pick<Mutation, 'addComment'>;
 
 export const IssueDetailsView = (props: IssueProviderProps) => {
   const { id } = props.match.params;
-  const { project } = props.env;
+  const env = React.useContext(ProjectEnv);
+  const { project } = env;
   if (!project) {
     return null;
   }
@@ -57,7 +56,7 @@ export const IssueDetailsView = (props: IssueProviderProps) => {
     }).then(() => {
       toast.success('Comment posted.');
     }, error => {
-      props.env.mutationError = error;
+      env.mutationError = error;
       toast.error('Error posting comment.');
       console.log(error);
     });
@@ -94,6 +93,7 @@ export const IssueDetailsView = (props: IssueProviderProps) => {
           return (
             <IssueDetails
                 {...props}
+                env={env}
                 issue={issue}
                 loading={loading}
                 onAddComment={addComment}

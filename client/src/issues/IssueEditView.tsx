@@ -2,7 +2,7 @@ import * as React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { IssueCompose } from './IssueCompose';
 import { toast } from 'react-toastify';
-import { ViewContext } from '../models';
+import { ProjectEnv } from '../models';
 import { IssueInput, Issue, Project } from '../../../common/types/graphql';
 import gql from 'graphql-tag';
 import { fragments, ErrorDisplay, updateIssue, newIssue } from '../graphql';
@@ -23,7 +23,6 @@ const IssueQuery = gql`
 `;
 
 interface Props extends RouteComponentProps<{ project: string; id: string }> {
-  env: ViewContext;
   clone?: boolean;
   // milestones: MilestoneListQuery;
 }
@@ -57,10 +56,10 @@ function createIssue(project: Project, input: IssueInput): Promise<Issue> {
 }
 
 export function IssueEditView(props: Props) {
-  const context = props.env;
+  const env = React.useContext(ProjectEnv);
   const id = props.match.params.id;
   return (
-    <Query query={IssueQuery} variables={{ id: `${context.project.id}.${id}` }}>
+    <Query query={IssueQuery} variables={{ id: `${env.project.id}.${id}` }}>
       {({ loading, error, data }) => {
         if (loading) {
           return null;
@@ -69,13 +68,13 @@ export function IssueEditView(props: Props) {
         } else {
           const onSave = (input: IssueInput): Promise<Issue> => {
             if (props.clone) {
-              return createIssue(context.project, input);
+              return createIssue(env.project, input);
             } else {
               return saveIssue(data.issue, input);
             }
           };
 
-          return <IssueCompose {...props} issue={data.issue} onSave={onSave} />;
+          return <IssueCompose {...props} env={env} issue={data.issue} onSave={onSave} />;
         }
       }}
     </Query>

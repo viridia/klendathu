@@ -3,16 +3,12 @@ import { RouteComponentProps } from 'react-router-dom';
 import { IssueCompose } from './IssueCompose';
 import { toast } from 'react-toastify';
 import { IssueInput, Issue } from '../../../common/types/graphql';
-import { ViewContext, ProjectEnv } from '../models';
+import { ProjectEnv } from '../models';
 import { newIssue } from '../graphql';
 import { decodeErrorAsException } from '../graphql/client';
 import { idToIndex } from '../lib/idToIndex';
 
-interface Props extends RouteComponentProps<{}> {
-  env: ViewContext;
-}
-
-export function IssueCreateView(props: Props) {
+export function IssueCreateView(props: RouteComponentProps<{}>) {
   const env = React.useContext(ProjectEnv);
   const onSave = (input: IssueInput): Promise<Issue> => {
     const { project } = env;
@@ -29,5 +25,5 @@ export function IssueCreateView(props: Props) {
     });
   };
 
-  return <IssueCompose {...props} onSave={onSave} />;
+  return <IssueCompose {...props} env={env} onSave={onSave} />;
 }
