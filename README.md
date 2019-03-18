@@ -4,13 +4,37 @@
 
 Klendathu is an open-source bug tracking and project management application.
 
-# Some early screenshots
+## Features
+
+Klendathu has been designed from the ground up to be a fast, versatile workflow management
+system for developers and managers who want to work fast:
+
+  * Lightning fast, responsive UI. No more waiting for page loads!
+  * Data updates in real time (powered via GraphQL subscriptions).
+  * Flexible issue templates and customizable workflows.
+  * Powerful query builder and bulk editing of issues.
+  * Markdown formatting support in issue descriptions and comments.
+  * View recent changes with the timeline view.
+  * Highly-customizable list views, choose which columns or labels you want to see.
+  * Simple and fast UI for workflow transitions.
+  * Supports both ledger and "Kanban" progress views.
+  * "Enterprise" features such as permissions and roles.
+  * Multi-user, multi-tenant account model.
+  * Projects and issues can be public or private.
+  * Social login via Github, Google or Twitter.
+  * Milestone management for Agile workflows.
+  * Stats and metrics.
+  * Themeing support.
+  * Comprehensive API (also powered by GraphQL).
+  * Entirely open-source.
+
+## Some early screenshots
 
 ![Image Summary List](./docs/screenshots/k4_1.png)
 
 ![Image Details](./docs/screenshots/k4_2.png)
 
-# Running locally
+## Running locally
 
 ```sh
 npm install
@@ -20,13 +44,13 @@ CLIENT_PROXY=true npm start
 
 Then browse to http://localhost:4000.
 
-# Running integration tests
+## Running integration tests
 
 ```sh
 npm test
 ```
 
-# Frameworks, languages and technologies used:
+## Frameworks, languages and technologies used:
 
 * TypeScript
 * React.js
@@ -39,3 +63,8 @@ npm test
 * Passport.js
 * Styled-components
 * Jest
+
+# About the name:
+
+"Klendathu" is the name of the Bug homeworld from _Starship Troopers_. You'll find several
+references to characters from both the book and the movie embedded in the unit test source code.

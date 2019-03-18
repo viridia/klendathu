@@ -13,12 +13,13 @@ interface Props extends RouteComponentProps<{}> {}
  */
 export function ProgressView(props: Props) {
   const env = React.useContext(ProjectEnv);
+  const { location } = props;
   React.useEffect(() => {
     env.issues.setQueryArgs(
       env.project,
       env.states,
       qs.parse(location.search, { ignoreQueryPrefix: true }));
-  });
+  }, [location]);
   return (
     <React.Fragment>
       <FilterParams {...props} env={env} view="progress" search={location.search} />
