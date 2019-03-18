@@ -17,6 +17,7 @@ import {
   UserColumnRenderer,
   DateColumnRenderer,
   CustomColumnRenderer,
+  MilestoneColumnRenderer,
 } from './columns';
 import { IssueListEntry } from './IssueListEntry';
 import { keyframes } from 'styled-components';
@@ -235,6 +236,9 @@ export class IssueList extends React.Component<Props> {
     columnRenderers.set('updated', new DateColumnRenderer('Updated', 'updated', 'updated pad'));
     columnRenderers.set('state', new StateColumnRenderer(template));
     columnRenderers.set('type', new TypeColumnRenderer(template));
+    if (this.props.env.milestones.length > 0) {
+      columnRenderers.set('milestone', new MilestoneColumnRenderer(this.props.env));
+    }
     for (const type of template.types) {
       if (type.fields) {
         for (const field of type.fields) {

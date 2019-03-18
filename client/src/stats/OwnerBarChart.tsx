@@ -52,7 +52,6 @@ export function OwnerBarChart(props: Props) {
                 enableLabel={true}
                 enableGridX={true}
                 colorBy={(dat: any) => {
-                  console.log(dat);
                   if (dat.data.id === '') {
                     return '#aa66cc';
                   } else {

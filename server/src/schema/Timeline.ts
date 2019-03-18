@@ -89,6 +89,9 @@ type TimelineEntry {
   "Changes to the list of issue labels."
   labels: IDListChange
 
+  "Change to assigned milestone."
+  milestone: StringChange
+
   "Changes to the issue attachment list."
   attachments: IDListChange
 

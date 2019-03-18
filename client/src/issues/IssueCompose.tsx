@@ -1,12 +1,7 @@
 import * as React from 'react';
 import * as qs from 'qs';
-// import { Milestone } from 'klendathu-json-types';
-// import { MilestoneListQuery } from '../../models';
-// import { MilestoneSelector } from './input';
-// import { displayErrorToast } from '../common/displayErrorToast';
 // import { getFileInfoList } from '../../network/requests';
 // import { UploadAttachments } from '../files/UploadAttachments';
-// import { toast } from 'react-toastify';
 
 import {
   Relation,
@@ -16,6 +11,7 @@ import {
   PublicAccount,
   CustomFieldInput,
   IssueLink,
+  Milestone,
 } from '../../../common/types/graphql';
 import { RouteComponentProps } from 'react-router';
 import {
@@ -50,6 +46,7 @@ import { IssueLinkEdit } from './input/IssueLinkEdit';
 import styled from 'styled-components';
 import ArrowUpIcon from '../svg-compiled/icons/IcArrowUpward';
 import { Spacer } from '../layout';
+import { MilestoneSelector } from './input/MilestoneSelector';
 
 const IssueComposeLayout = styled(Card)`
   flex: 1;
@@ -166,7 +163,7 @@ export class IssueCompose extends React.Component<Props> {
   @observable private owner: PublicAccount = null;
   @observable.shallow private cc = [] as IObservableArray<PublicAccount>;
   @observable.shallow private labels = [] as IObservableArray<string>;
-  // @observable private milestone: string = '';
+  @observable private milestone: string = '';
   @observable private issueLinkMap = new ObservableMap<string, Relation>();
   @observable private custom = new Map<string, string | number | boolean>();
   @observable private comments = [] as IObservableArray<string>;
@@ -189,7 +186,7 @@ export class IssueCompose extends React.Component<Props> {
 
   public render() {
     const { location, issue } = this.props;
-    const { account, project, template } = this.props.env;
+    const { account, project, template, milestones } = this.props.env;
     if (!template) {
       return null;
     }
@@ -276,22 +273,16 @@ export class IssueCompose extends React.Component<Props> {
               />
             </LabelEditGroup>
 
-            <FormLabel>Milestone:</FormLabel>
-
-            {/* {milestones && (<tr>
-              <th className="header"><ControlLabel>Milestone:</ControlLabel></th>
-              <td>
-                <div className="ac-multi-group">
-                  <MilestoneSelector
-                      className="milestones ac-multi"
-                      project={this.props.project}
-                      milestones={milestones}
-                      selection={this.milestone}
-                      onSelectionChange={this.onChangeMilestone}
-                  />
-                </div>
-              </td>
-            </tr>)} */}
+            {milestones.length && (
+              <React.Fragment>
+                <FormLabel>Milestone:</FormLabel>
+                <MilestoneSelector
+                    env={this.props.env}
+                    selection={this.milestone}
+                    onSelectionChange={this.onChangeMilestone}
+                />
+              </React.Fragment>
+            )}
 
             {this.renderTemplateFields()}
 
@@ -442,10 +433,10 @@ export class IssueCompose extends React.Component<Props> {
     this.labels.replace(labels);
   }
 
-  // @action.bound
-  // private onChangeMilestone(milestone: Milestone) {
-  //   this.milestone = milestone ? milestone.id : null;
-  // }
+  @action.bound
+  private onChangeMilestone(milestone: Milestone) {
+    this.milestone = milestone ? milestone.id : null;
+  }
 
   @action.bound
   private onChangeCustomField(id: string, value: any) {
@@ -503,7 +494,7 @@ export class IssueCompose extends React.Component<Props> {
       owner: this.owner ? this.owner.id : undefined,
       cc: this.cc.map(cc => cc.id),
       labels: this.labels,
-    //   milestone: this.milestone,
+      milestone: this.milestone,
       linked,
       custom,
       comments: toJS(this.comments),
@@ -518,6 +509,7 @@ export class IssueCompose extends React.Component<Props> {
       }
     }, error => {
       // TODO: Do a better job
+      this.props.env.mutationError = error;
       console.error('save returned error');
       console.error(JSON.stringify(error, null, 2));
     //   switch (error.code) {
@@ -543,7 +535,7 @@ export class IssueCompose extends React.Component<Props> {
       this.owner = issue.ownerAccount;
       this.cc.replace(issue.ccAccounts);
       this.labels.replace(issue.labels);
-    //     this.milestone = issue.milestone;
+      this.milestone = issue.milestone;
       this.custom.clear();
       for (const { key, value } of issue.custom) {
         this.custom.set(key, value);
@@ -566,7 +558,7 @@ export class IssueCompose extends React.Component<Props> {
       this.owner = null;
       this.cc.replace([]);
       this.labels.replace([]);
-    //   this.milestone = '';
+      this.milestone = '';
       this.custom.clear();
       this.issueLinkMap.clear();
       this.comments.clear();

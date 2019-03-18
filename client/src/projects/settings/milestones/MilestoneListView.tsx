@@ -19,24 +19,25 @@ import { format } from 'date-fns';
 import { EditMilestoneDialog } from './EditMilestoneDialog';
 import { DeleteMilestoneDialog } from './DeleteMilestoneDialog';
 import styled from 'styled-components';
+import { MilestoneColors } from '../../../style/milestoneColors';
 
 const MilestoneStatusDisplay = styled.div`
   padding: 4px;
 
   &.active {
-    background-color: #eea;
+    background-color: ${MilestoneColors.ACTIVE};
   }
 
   &.timeless {
-    background-color: #dcd;
+    background-color: ${MilestoneColors.TIMELESS};
   }
 
   &.pending {
-    background-color: #aea;
+    background-color: ${MilestoneColors.PENDING};
   }
 
   &.concluded {
-    background-color: #ccf;
+    background-color: ${MilestoneColors.CONCLUDED};
   }
 `;
 

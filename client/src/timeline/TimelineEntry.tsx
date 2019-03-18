@@ -15,6 +15,16 @@ export function StateNameDisplay({ state }: { state: string }) {
   );
 }
 
+export function MilestoneNameDisplay({ milestone }: { milestone: string }) {
+  const env = React.useContext(ProjectEnv);
+  const m = env.getMilestone(milestone);
+  if (m) {
+    return <span className="milestone">{m.name}</span>;
+  } else {
+    return <span className="unassigned">none</span>;
+  }
+}
+
 const TimelineEntryLayout = styled.section`
   justify-self: stretch;
   grid-column: controls;
@@ -51,7 +61,7 @@ const TimelinePropery = styled.li`
   margin: 0;
   line-height: 1.1rem;
 
-  .state, .type, .field-name, .custom-value, .attachment {
+  .state, .type, .field-name, .custom-value, .attachment, .milestone {
     font-weight: bold;
     color: ${props => props.theme.textAccented};
   }
@@ -100,6 +110,7 @@ export function TimelineEntryDisplay({ change, showIssue }: Props) {
     owner,
     cc,
     labels,
+    milestone,
     attachments,
     linked,
     custom,
@@ -108,7 +119,7 @@ export function TimelineEntryDisplay({ change, showIssue }: Props) {
   // display a change header. Thus is a side-effect of the fact that the timeline contains
   // both comments and change history records.
   const anyNonCommentChange = type || state || summary || description || owner || cc || labels
-      || attachments || linked || custom;
+      || milestone || attachments || linked || custom;
   return (
     <TimelineEntryLayout>
       {anyNonCommentChange && <TimelineEntryHeader>
@@ -175,6 +186,13 @@ export function TimelineEntryDisplay({ change, showIssue }: Props) {
           (<TimelinePropery key={a}>
             removed file <span className="attachment" />
           </TimelinePropery>))}
+        {milestone && (
+          <TimelinePropery>
+            milestone:{' '}
+            <MilestoneNameDisplay milestone={milestone.before} />
+              {' '}to{' '}
+              <MilestoneNameDisplay milestone={milestone.after} />
+          </TimelinePropery>)}
         {linked && linked.map(LinkChangeDisplay)}
         {custom && custom.map(customChange)}
         {/* {change.comments && change.comments.updated === 1 &&

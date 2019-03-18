@@ -60,6 +60,7 @@ export const fragments = {
     owner { before after }
     cc { added removed }
     labels { added removed }
+    milestone { before after }
     custom { key before after }
     linked { to before after }
     commentBody commentUpdated commentRemoved

@@ -76,6 +76,7 @@ export const mutations = {
       created: now,
       updated: now,
       cc: (input.cc || []).map(id => new ObjectID(id)),
+      milestone: input.milestone,
       labels: (input.labels || []),
       custom: input.custom ? customArrayToMap(input.custom) : {},
       attachments: input.attachments || [],
@@ -252,12 +253,11 @@ export const mutations = {
       change.at = now;
     }
 
-    // TODO: Implement
-    // if ('milestone' in input && input.milestone !== issue.milestone) {
-    //   record.milestone = input.milestone;
-    //   change.milestone = { before: issue.milestone, after: input.milestone };
-    //   change.at = record.updated;
-    // }
+    if ('milestone' in input && input.milestone !== issue.milestone) {
+      update.$set.milestone = input.milestone;
+      change.milestone = { before: issue.milestone, after: input.milestone };
+      change.at = now;
+    }
 
     if ('owner' in input) {
       let ownerRecord: AccountRecord = null;
@@ -689,6 +689,12 @@ export const mutations = {
             updateRecent.$set.labels = {
               added: [...(recent.labels ? recent.labels.added : []), ...change.labels.added],
               removed: [...(recent.labels ? recent.labels.removed : []), ...change.labels.removed],
+            };
+          }
+          if (change.milestone) {
+            updateRecent.$set.milestone = {
+              before: recent.milestone ? recent.milestone.before : change.milestone.before,
+              after: change.milestone.after,
             };
           }
 

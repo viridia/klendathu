@@ -2,7 +2,7 @@ import * as React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { IssueCompose } from './IssueCompose';
 import { toast } from 'react-toastify';
-import { ProjectEnv } from '../models';
+import { ProjectEnv, ViewContext } from '../models';
 import { IssueInput, Issue, Project } from '../../../common/types/graphql';
 import gql from 'graphql-tag';
 import { fragments, ErrorDisplay, updateIssue, newIssue } from '../graphql';
@@ -27,13 +27,12 @@ interface Props extends RouteComponentProps<{ project: string; id: string }> {
   // milestones: MilestoneListQuery;
 }
 
-function saveIssue(issue: Issue, input: IssueInput) {
+function saveIssue(issue: Issue, input: IssueInput, env: ViewContext) {
   return updateIssue({ id: issue.id, input }).then(({ data, errors }) => {
     if (errors) {
+      env.error = errors[0];
       // TODO: more information
       toast.error('Issue update failed.');
-      // TODO: An error UI.
-      decodeErrorAsException(errors);
     } else {
       toast.success(`Issue #${idToIndex(data.updateIssue.id)} updated.`);
       return data.updateIssue;
@@ -41,13 +40,12 @@ function saveIssue(issue: Issue, input: IssueInput) {
   });
 }
 
-function createIssue(project: Project, input: IssueInput): Promise<Issue> {
+function createIssue(project: Project, input: IssueInput, env: ViewContext): Promise<Issue> {
   return newIssue({ project: project.id, input }).then(({ data, errors }) => {
     if (errors) {
       // TODO: more information
+      env.error = errors[0];
       toast.error('Issue creation failed.');
-      // TODO: An error UI.
-      decodeErrorAsException(errors);
     } else {
       toast.success(`Issue #${idToIndex(data.newIssue.id)} created.`);
       return data.newIssue;
@@ -68,9 +66,9 @@ export function IssueEditView(props: Props) {
         } else {
           const onSave = (input: IssueInput): Promise<Issue> => {
             if (props.clone) {
-              return createIssue(env.project, input);
+              return createIssue(env.project, input, env);
             } else {
-              return saveIssue(data.issue, input);
+              return saveIssue(data.issue, input, env);
             }
           };
 

@@ -657,6 +657,8 @@ export interface TimelineEntry {
   cc?: Maybe<IdListChange>;
   /** Changes to the list of issue labels. */
   labels?: Maybe<IdListChange>;
+  /** Change to assigned milestone. */
+  milestone?: Maybe<StringChange>;
   /** Changes to the issue attachment list. */
   attachments?: Maybe<IdListChange>;
   /** If this change is a comment, then this holds the body of the comment. */

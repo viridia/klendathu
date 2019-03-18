@@ -226,6 +226,10 @@ export class ViewContext {
     return sorted;
   }
 
+  public getMilestone(id: string): Milestone {
+    return this.milestones.find(m => m.id === id);
+  }
+
   @bind
   private runQuery() {
     if (this.subscription) {

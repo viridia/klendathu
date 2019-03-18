@@ -1,23 +1,20 @@
 import * as React from 'react';
 import { AbstractColumnRenderer } from './AbstractColumnRenderer';
 import { Issue } from '../../../../common/types/graphql';
-import { Template } from '../../../../common/types/json';
+import { ViewContext } from '../../models';
 
 export class MilestoneColumnRenderer extends AbstractColumnRenderer {
-  private template: Template;
-
-  constructor(template: Template) {
+  constructor(private env: ViewContext) {
     super('Milestone', 'milestone', 'milestone pad');
-    this.template = template;
   }
 
   public render(issue: Issue) {
-    const stateInfo = this.template.states.find(s => s.id === issue.state);
-    if (!stateInfo) {
-      return <td className="milestone pad" key="milestone">{issue.state}</td>;
+    const m = this.env.getMilestone(issue.milestone);
+    if (!m) {
+      return <td className="milestone center pad" key="milestone">--</td>;
     }
     return (
-      <td className="milestone pad" key="milestone">{stateInfo.caption}</td>
+      <td className="milestone center pad" key="milestone">{m.name}</td>
     );
   }
 }

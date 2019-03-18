@@ -6,11 +6,11 @@ Klendathu is an open-source bug tracking and project management application.
 
 ## Features
 
-Klendathu has been designed from the ground up to be a fast, versatile workflow management
+Klendathu has been designed from the ground up to be an efficient, versatile project management
 system for developers and managers who want to work fast:
 
   * Lightning fast, responsive UI. No more waiting for page loads!
-  * Data updates in real time (powered via GraphQL subscriptions).
+  * Data views update in real time (powered via GraphQL subscriptions).
   * Flexible issue templates and customizable workflows.
   * Powerful query builder and bulk editing of issues.
   * Markdown formatting support in issue descriptions and comments.
