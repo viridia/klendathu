@@ -7,7 +7,6 @@ import { IssueInput, Issue, Project } from '../../../common/types/graphql';
 import gql from 'graphql-tag';
 import { fragments, ErrorDisplay, updateIssue, newIssue } from '../graphql';
 import { Query } from 'react-apollo';
-import { decodeErrorAsException } from '../graphql/client';
 import { idToIndex } from '../lib/idToIndex';
 
 const IssueQuery = gql`

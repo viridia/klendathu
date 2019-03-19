@@ -273,7 +273,7 @@ export class IssueCompose extends React.Component<Props> {
               />
             </LabelEditGroup>
 
-            {milestones.length && (
+            {milestones.length > 0 && (
               <React.Fragment>
                 <FormLabel>Milestone:</FormLabel>
                 <MilestoneSelector

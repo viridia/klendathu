@@ -22,7 +22,7 @@ type AddWebhookMutationResult = Pick<Mutation, 'addWebhook'>;
 interface Props {
   env: ViewContext;
   open: boolean;
-  onHide: () => void;
+  onClose: () => void;
 }
 
 @observer
@@ -32,14 +32,14 @@ export class AddWebhookDialog extends React.Component<Props> {
   @observable private busy = false;
 
   public render() {
-    const { env, open, onHide } = this.props;
+    const { env, open, onClose } = this.props;
     const { project } = env;
     console.log(project.id);
     return (
       <Dialog
           open={open}
           onShow={this.onShow}
-          onClose={onHide}
+          onClose={onClose}
           className="add-member"
       >
         <Dialog.Header hasClose={true}>Create Incoming Webhook</Dialog.Header>
@@ -52,7 +52,7 @@ export class AddWebhookDialog extends React.Component<Props> {
           </Form>
         </Dialog.Body>
         <Dialog.Footer>
-          <Button onClick={onHide}>Cancel</Button>
+          <Button onClick={onClose}>Cancel</Button>
           <Button
               onClick={this.onAddWebhook}
               disabled={this.serviceId === null || this.busy}
@@ -81,7 +81,7 @@ export class AddWebhookDialog extends React.Component<Props> {
 
   @action.bound
   private onAddWebhook() {
-    const { onHide, env } = this.props;
+    const { onClose, env } = this.props;
     this.busy = true;
     const input: WebhookInput = {
       project: env.project.id,
@@ -95,7 +95,7 @@ export class AddWebhookDialog extends React.Component<Props> {
       }
     }).then(({ data, errors }) => {
       this.busy = false;
-      onHide();
+      onClose();
       if (errors) {
         decodeErrorAsException(errors);
       }
@@ -103,7 +103,7 @@ export class AddWebhookDialog extends React.Component<Props> {
     }, error => {
       env.mutationError = error;
       this.busy = false;
-      onHide();
+      onClose();
     });
   }
 }

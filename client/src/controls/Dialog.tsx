@@ -28,6 +28,7 @@ const CloseButton = styled.button`
   justify-content: center;
   height: 32px;
   > svg {
+    height: 24px;
     fill: ${props => props.theme.dialogHeaderTextColor};
   }
 

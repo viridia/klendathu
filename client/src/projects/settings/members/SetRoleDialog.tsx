@@ -31,7 +31,7 @@ interface Props {
   user?: string;
   env: ViewContext;
   open: boolean;
-  onHide: () => void;
+  onClose: () => void;
 }
 
 @observer
@@ -40,12 +40,12 @@ export class SetRoleDialog extends React.Component<Props> {
   @observable private busy = false;
 
   public render() {
-    const { env, user, open, onHide } = this.props;
+    const { env, user, open, onClose } = this.props;
     const { project } = env;
     return (
       <Dialog
           open={open}
-          onClose={onHide}
+          onClose={onClose}
           className="set-role"
           style={{ minWidth: '25rem' }}
       >
@@ -63,7 +63,7 @@ export class SetRoleDialog extends React.Component<Props> {
           </Form>
         </Dialog.Body>
         <Dialog.Footer>
-          <Button onClick={onHide}>Cancel</Button>
+          <Button onClick={onClose}>Cancel</Button>
           <Button
               onClick={this.onSubmit}
               disabled={this.role === null || this.busy}
@@ -82,7 +82,7 @@ export class SetRoleDialog extends React.Component<Props> {
 
   @bind
   private onSubmit() {
-    const { onHide, user, env } = this.props;
+    const { onClose, user, env } = this.props;
     this.busy = true;
     client.mutate<SetRoleMutationResult>({
       mutation: SetRoleMutation,
@@ -93,7 +93,7 @@ export class SetRoleDialog extends React.Component<Props> {
       }
     }).then(({ data, errors }) => {
       this.busy = false;
-      onHide();
+      onClose();
       if (errors) {
         decodeErrorAsException(errors);
       }
@@ -101,7 +101,7 @@ export class SetRoleDialog extends React.Component<Props> {
     }, error => {
       env.mutationError = error;
       this.busy = false;
-      onHide();
+      onClose();
     });
   }
 }

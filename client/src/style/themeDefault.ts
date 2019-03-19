@@ -60,6 +60,12 @@ export const themeDefault: ThemeInterface = {
     },
   },
 
+  // Progress Bars
+  progressTrackColor: dye(0.8, diluted),
+  progressThumbColor: dye(0.6, primary),
+  progressThumbAltColor: dye(0.65, primary),
+  progressTextColor: '#222',
+
   // Tabs
   tabTextColor: dye(0.4, diluted),
   tabBgColor: 'transparent',

@@ -22,7 +22,7 @@ interface Props {
   user?: string;
   env: ViewContext;
   open: boolean;
-  onHide: () => void;
+  onClose: () => void;
 }
 
 @observer
@@ -30,11 +30,11 @@ export class RemoveMemberDialog extends React.Component<Props> {
   @observable private busy = false;
 
   public render() {
-    const { open, onHide, user } = this.props;
+    const { open, onClose, user } = this.props;
     return (
       <Dialog
           open={open}
-          onClose={onHide}
+          onClose={onClose}
           className="set-role"
           style={{ minWidth: '25rem' }}
       >
@@ -42,7 +42,7 @@ export class RemoveMemberDialog extends React.Component<Props> {
           <span>Remove <AccountName id={user} /> from project?</span>
         </Dialog.Header>
         <Dialog.Footer>
-          <Button onClick={onHide}>Cancel</Button>
+          <Button onClick={onClose}>Cancel</Button>
           <Button
               onClick={this.onSubmit}
               disabled={this.busy}
@@ -56,7 +56,7 @@ export class RemoveMemberDialog extends React.Component<Props> {
 
   @bind
   private onSubmit() {
-    const { onHide, env, user } = this.props;
+    const { onClose, env, user } = this.props;
     this.busy = true;
     client.mutate<RemoveMemberMutationResult>({
       mutation: RemoveMemberMutation,
@@ -66,7 +66,7 @@ export class RemoveMemberDialog extends React.Component<Props> {
       }
     }).then(({ data, errors }) => {
       this.busy = false;
-      onHide();
+      onClose();
       if (errors) {
         decodeErrorAsException(errors);
       }
@@ -74,7 +74,7 @@ export class RemoveMemberDialog extends React.Component<Props> {
     }, error => {
       env.mutationError = error;
       this.busy = false;
-      onHide();
+      onClose();
     });
   }
 }

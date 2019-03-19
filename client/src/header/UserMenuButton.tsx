@@ -20,7 +20,7 @@ export class UserMenuButton extends React.Component<RouteComponentProps<{}>> {
           alignEnd={true}
       >
         <NavContainer to={{ pathname: '/' }} exact={true}>
-          <MenuItem disabled={!name}>Dashboard</MenuItem>
+          <MenuItem disabled={!name}>Projects</MenuItem>
         </NavContainer>
         <NavContainer to={{ pathname: '/settings/account' }}>
           <MenuItem disabled={!name}>Settings</MenuItem>

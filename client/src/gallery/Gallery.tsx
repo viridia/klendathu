@@ -14,6 +14,7 @@ import './pages/colors';
 import './pages/dialogs';
 import './pages/dropdowns';
 import './pages/forms';
+import './pages/progress';
 import './pages/tabs';
 import './pages/toggles';
 

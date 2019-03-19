@@ -168,7 +168,7 @@ export class FilterParams extends React.Component<Props> {
                 env={env}
                 view={this.props.view}
                 queryString={this.queryString}
-                onHide={this.onCloseSaveDialog}
+                onClose={this.onCloseSaveDialog}
             />}
         </FilterTermList>
       </Collapse>

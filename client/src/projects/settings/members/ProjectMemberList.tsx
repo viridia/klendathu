@@ -35,18 +35,18 @@ export class ProjectMemberList extends React.Component<Props> {
     const { project } = env;
     return (
       <SettingsPane>
-        <AddMemberDialog env={env} open={this.showAddMember} onHide={this.onHideAddMember}/>
+        <AddMemberDialog env={env} open={this.showAddMember} onClose={this.onHideAddMember}/>
         <SetRoleDialog
             user={this.setRoleUser}
             env={env}
             open={!!this.setRoleUser}
-            onHide={this.onHideSetRole}
+            onClose={this.onHideSetRole}
         />
         <RemoveMemberDialog
             user={this.removeMemberUser}
             env={env}
             open={!!this.removeMemberUser}
-            onHide={this.onHideRemoveMember}
+            onClose={this.onHideRemoveMember}
         />
         <header>
           <CardTitle>Project members</CardTitle>

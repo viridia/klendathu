@@ -33,7 +33,7 @@ const BodyLayout = styled.section`
 interface Props {
   env: ViewContext;
   open: boolean;
-  onHide: () => void;
+  onClose: () => void;
 }
 
 @observer
@@ -43,13 +43,13 @@ export class AddMemberDialog extends React.Component<Props> {
   @observable private busy = false;
 
   public render() {
-    const { env, open, onHide } = this.props;
+    const { env, open, onClose } = this.props;
     const { project } = env;
     return (
       <Dialog
           open={open}
           onShow={this.onShow}
-          onClose={onHide}
+          onClose={onClose}
           className="add-member"
       >
         <Dialog.Header hasClose={true}>Add Project Member</Dialog.Header>
@@ -66,7 +66,7 @@ export class AddMemberDialog extends React.Component<Props> {
           </BodyLayout>
         </Dialog.Body>
         <Dialog.Footer>
-          <Button onClick={onHide}>Cancel</Button>
+          <Button onClick={onClose}>Cancel</Button>
           <Button
               onClick={this.onAddMember}
               disabled={this.user === null || this.role === null || this.busy}
@@ -96,7 +96,7 @@ export class AddMemberDialog extends React.Component<Props> {
 
   @action.bound
   private onAddMember() {
-    const { onHide, env } = this.props;
+    const { onClose, env } = this.props;
     this.busy = true;
     client.mutate<AddMemberMutationResult>({
       mutation: AddMemberMutation,
@@ -107,7 +107,7 @@ export class AddMemberDialog extends React.Component<Props> {
       }
     }).then(({ data, errors }) => {
       this.busy = false;
-      onHide();
+      onClose();
       if (errors) {
         decodeErrorAsException(errors);
       }
@@ -115,7 +115,7 @@ export class AddMemberDialog extends React.Component<Props> {
     }, error => {
       env.mutationError = error;
       this.busy = false;
-      onHide();
+      onClose();
     });
   }
 }

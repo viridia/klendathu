@@ -29,10 +29,11 @@ interface Props {
 
 export function GroupHeader({ group }: Props) {
   const env = React.useContext(ProjectEnv);
+  const numColumns = 100; // TODO: Calculate.
   switch (group.field) {
     case 'owner':
       return (
-        <GroupHeaderEl colSpan={100}>
+        <GroupHeaderEl colSpan={numColumns}>
           <GroupTitle>Owner: </GroupTitle>
           <AccountName id={group.value} />
         </GroupHeaderEl>
@@ -40,7 +41,7 @@ export function GroupHeader({ group }: Props) {
 
     case 'reporter':
       return (
-        <GroupHeaderEl colSpan={100}>
+        <GroupHeaderEl colSpan={numColumns}>
           <GroupTitle>Reporter: </GroupTitle>
           <AccountName id={group.value} />
         </GroupHeaderEl>
@@ -49,7 +50,7 @@ export function GroupHeader({ group }: Props) {
     case 'type': {
       const typeInfo = env.template.types.find(t => t.id === group.value);
       return (
-        <GroupHeaderEl colSpan={100}>
+        <GroupHeaderEl colSpan={numColumns}>
           <GroupTitle>Type: </GroupTitle>
           <span className="value">{typeInfo ? typeInfo.caption : group.value}</span>
         </GroupHeaderEl>
@@ -59,7 +60,7 @@ export function GroupHeader({ group }: Props) {
     case 'state': {
       const stateInfo = env.template.states.find(s => s.id === group.value);
       return (
-        <GroupHeaderEl colSpan={100}>
+        <GroupHeaderEl colSpan={numColumns}>
           <GroupTitle>State: </GroupTitle>
           <span className="value">{stateInfo ? stateInfo.caption : group.value}</span>
         </GroupHeaderEl>

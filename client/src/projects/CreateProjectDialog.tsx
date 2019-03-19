@@ -32,7 +32,7 @@ const createProjectMutation = gql`
 
 interface Props {
   show: boolean;
-  onHide: () => void;
+  onClose: () => void;
 }
 
 @observer
@@ -49,7 +49,7 @@ export class CreateProjectDialog extends React.Component<Props> {
     return (
       <Dialog
           open={this.props.show}
-          onClose={this.props.onHide}
+          onClose={this.props.onClose}
       >
         <Dialog.Header hasClose={true}>
           Create Project
@@ -93,7 +93,7 @@ export class CreateProjectDialog extends React.Component<Props> {
           </Form>
         </Dialog.Body>
         <Dialog.Footer>
-          <Button onClick={this.props.onHide}>Cancel</Button>
+          <Button onClick={this.props.onClose}>Cancel</Button>
           <Button
               onClick={this.onCreate}
               disabled={this.projectName.length === 0 || this.busy}
@@ -128,7 +128,7 @@ export class CreateProjectDialog extends React.Component<Props> {
       // console.log(result);
       this.busy = false;
       this.clearForm();
-      this.props.onHide();
+      this.props.onClose();
     }, error => {
       this.busy = false;
       const [code, field] = decodeError(error);

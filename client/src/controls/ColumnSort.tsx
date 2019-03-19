@@ -6,6 +6,7 @@ const ColumnSortEl = styled.button`
   background-color: transparent;
   border: none;
   box-shadow: none;
+  color: ${props => props.theme.textNormal};
   cursor: pointer;
   font-weight: bold;
   outline: none;

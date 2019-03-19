@@ -5,6 +5,12 @@ export const GlobalStyle = createGlobalStyle`
     font-family: 'Ubuntu', sans-serif;
   }
 
+  /* For Firefox */
+  input, textarea {
+    background-color: #fff;
+    color: #222;
+  }
+
   ::-webkit-scrollbar {
     background-color: transparent;
     width: 8px;

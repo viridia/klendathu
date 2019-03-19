@@ -41,7 +41,7 @@ export class WebhookSettings extends React.Component<Props> {
           </Button>
         </header>
         <WebhooksList onShowDelete={this.onShowDelete} onShowEdit={this.onShowEdit} />
-        <AddWebhookDialog env={env} open={this.openAdd} onHide={this.onCloseAdd} />
+        <AddWebhookDialog env={env} open={this.openAdd} onClose={this.onCloseAdd} />
       </SettingsPane>);
   }
 

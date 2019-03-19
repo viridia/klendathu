@@ -48,6 +48,12 @@ export interface ThemeInterface {
     alternate: ButtonColors;
   };
 
+  // Progress Bars
+  progressTrackColor: string;
+  progressThumbColor: string;
+  progressThumbAltColor: string;
+  progressTextColor: string;
+
   // Tabs
   tabTextColor: string;
   tabBgColor: string;

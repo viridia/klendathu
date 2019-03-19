@@ -2,11 +2,11 @@
 
 * Attachments
 * Milestones
-  * Compose view
-  * Column
   * Progress
   * Number of issues
   * Delete
+* Edit comment
+* Redo screenshots in README
 * Issue Child items
 * Delete issues
 * Centralize graphql queries and mutations
@@ -24,11 +24,12 @@
 * Markdown preview
 * Sort issue searches by relevance
 * Filters
-  * UI prefs in local storage (like expansion)
+  * UI prefs in local storage (like filter expansion)
 * ErrorDisplay
   * Mini display for errors in menus and chips
 * Issue list flashes when switching projects.
 * Idea: a global mobx time observer, which can be used to keep relative dates up to date.
+  * mobx-utils has this.
 * Idea: if a change entry has *no* effect, then remove it from the timeline.
 * Be smarter about updating the graphql subscription cache for timeline updates.
 * Use coverage reports to improve server unit tests.
@@ -50,6 +51,7 @@
 * Search by relative date (last 2 weeks)
 * Issue Grouping by custom field.
 * Dashboard time line.
+* Idea: implicit operations via comments.
 
 # Major pieces
 

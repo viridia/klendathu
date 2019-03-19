@@ -31,6 +31,8 @@ const highlightNew = (color: string) => keyframes`
 `;
 
 const IssueListTable = styled(Table)`
+  width: 100%; /* For FF. */
+
   tr.added {
     animation: ${props => highlightNew(props.theme.buttonColors.secondary.bg)} 1s ease-in;
   }

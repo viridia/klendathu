@@ -10,7 +10,7 @@ interface Props {
   env: ViewContext;
   queryString: string;
   view: string;
-  onHide: () => void;
+  onClose: () => void;
 }
 
 @observer
@@ -32,7 +32,7 @@ export class SaveFilterDialog extends React.Component<Props> {
     return (
       <Dialog
           open={true}
-          onClose={this.props.onHide}
+          onClose={this.props.onClose}
       >
         <Dialog.Header hasClose={true}>Create Filter</Dialog.Header>
         <Dialog.Body>
@@ -50,7 +50,7 @@ export class SaveFilterDialog extends React.Component<Props> {
           </Form>
         </Dialog.Body>
         <Dialog.Footer>
-          <Button onClick={this.props.onHide}>Cancel</Button>
+          <Button onClick={this.props.onClose}>Cancel</Button>
           <Button
               onClick={this.onSave}
               disabled={this.filterName.length === 0 || this.busy}
@@ -76,10 +76,10 @@ export class SaveFilterDialog extends React.Component<Props> {
       }
     }).then(() => {
       this.busy = false;
-      this.props.onHide();
+      this.props.onClose();
     }, error => {
       this.props.env.mutationError = error;
-      this.props.onHide();
+      this.props.onClose();
     });
   }
 

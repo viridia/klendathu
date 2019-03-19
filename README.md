@@ -36,6 +36,9 @@ system for developers and managers who want to work fast:
 
 ## Running locally
 
+You'll need to set up a `.env` file with the appropriate credentials, this is not checked
+in to github. The `.env-sample` file can be used as a template.
+
 ```sh
 npm install
 docker-compose up db db-admin imaginary
@@ -64,7 +67,7 @@ npm test
 * Styled-components
 * Jest
 
-# About the name:
+## About the name
 
-"Klendathu" is the name of the Bug homeworld from _Starship Troopers_. You'll find several
+"Klendathu" is the name of the Bug homeworld from _Starship Troopers_. You'll find numerous
 references to characters from both the book and the movie embedded in the unit test source code.

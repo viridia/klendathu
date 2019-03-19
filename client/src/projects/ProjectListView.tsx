@@ -69,6 +69,8 @@ const ProjectCard = styled(Card)`
   }
 
   > .owner {
+    display: flex;
+    align-items: center;
     align-self: center;
     justify-self: center;
     grid-area: owner;
@@ -181,7 +183,7 @@ export class ProjectListView extends React.Component<{}> {
             }
           }}
         </Query>
-        <CreateProjectDialog show={this.openCreate} onHide={this.onCloseCreate} />
+        <CreateProjectDialog show={this.openCreate} onClose={this.onCloseCreate} />
       </>
     );
   }
