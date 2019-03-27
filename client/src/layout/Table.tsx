@@ -57,6 +57,7 @@ export const TableBody = styled.tbody`
 export const TableRow = styled.tr``;
 
 export const ActionButtonCell = styled.td`
+  white-space: nowrap;
   &.right > * {
     margin-right: .3rem;
   }

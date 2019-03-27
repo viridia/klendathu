@@ -12,12 +12,10 @@ export interface ButtonColors {
 }
 
 export interface ThemeInterface {
-
   // General
   primaryColor: string;
   dilutedColor: string;
   focusColor: string;
-  altColor: string;
 
   // Text colors
   textNormal: string;
@@ -44,14 +42,11 @@ export interface ThemeInterface {
     default: ButtonColors;
     action: ButtonColors;
     primary: ButtonColors;
-    secondary: ButtonColors;
-    alternate: ButtonColors;
   };
 
   // Progress Bars
   progressTrackColor: string;
   progressThumbColor: string;
-  progressThumbAltColor: string;
   progressTextColor: string;
 
   // Tabs
@@ -106,12 +101,6 @@ export interface ThemeInterface {
   // Filters
   filterParamsBgColor: string;
   filterParamsHeaderBgColor: string;
-
-  // Mass edit
-  massEditBgColor: string;
-  massEditHeaderBgColor: string;
-  massEditBorderColor: string;
-  massEdithadowColor: string;
 }
 
 export interface ThemeProps {

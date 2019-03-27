@@ -31,28 +31,24 @@ function Buttons() {
         <Button>Default</Button>
         <Button kind="primary">Primary</Button>
         <Button kind="action">Action</Button>
-        <Button kind="secondary">Secondary</Button>
       </DisplayGroup>
       <header>Disabled Buttons</header>
       <DisplayGroup className="row">
         <Button disabled={true}>Default</Button>
         <Button kind="primary" disabled={true}>Primary</Button>
         <Button kind="action" disabled={true}>Action</Button>
-        <Button kind="secondary" disabled={true}>Secondary</Button>
       </DisplayGroup>
       <header>Small Buttons</header>
       <DisplayGroup className="row">
         <Button size="small">Default</Button>
         <Button kind="primary" size="small">Primary</Button>
         <Button kind="action" size="small">Action</Button>
-        <Button kind="secondary" size="small">Secondary</Button>
       </DisplayGroup>
       <header>Buttons With Icons</header>
       <DisplayGroup className="row">
         <Button><IconAddBox /> Default</Button>
         <Button kind="primary"><IconAddBox /> Primary</Button>
         <Button kind="action"><IconAddBox /> Action</Button>
-        <Button kind="secondary"><IconAddBox /> Secondary</Button>
       </DisplayGroup>
       <header>Button Groups</header>
       <DisplayGroup className="column">
@@ -67,7 +63,7 @@ function Buttons() {
         <LinkButton href="https://www.google.com">Google</LinkButton>
         <LinkButton href="https://www.github.com" kind="primary">GitHub</LinkButton>
         <LinkButton href="https://www.twitter.com" kind="action">Twitter</LinkButton>
-        <LinkButton href="https://www.medium.com" kind="secondary" disabled={true}>
+        <LinkButton href="https://www.medium.com" kind="action" disabled={true}>
           Medium
         </LinkButton>
       </DisplayGroup>

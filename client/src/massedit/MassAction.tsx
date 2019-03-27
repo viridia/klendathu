@@ -134,7 +134,6 @@ export class MassAction extends React.Component<Props> {
         <DropdownButton
             className="action-type"
             size="small"
-            kind="alternate"
             title={caption}
             onSelect={this.onSelectActionType}
         >
@@ -144,7 +143,6 @@ export class MassAction extends React.Component<Props> {
           {action && (
             <EditOperand
                 type={action.type}
-                kind="alternate"
                 value={action.value}
                 customField={action.customField}
                 onChange={this.onChangeValue}

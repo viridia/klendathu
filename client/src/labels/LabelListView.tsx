@@ -215,7 +215,7 @@ export class LabelListView extends React.Component<Props> {
         <td className="created center"><RelativeDate date={label.created} /></td>
         {project.role >= Role.DEVELOPER && (<ActionButtonCell className="right">
           <Button
-              kind="secondary"
+              kind="default"
               className="small"
               data-label={label.id}
               onClick={e => this.onShowUpdate(label)}

@@ -142,7 +142,7 @@ export class ProjectInfoEdit extends React.Component<Props> {
             />
           </Dialog.Body>
           <Dialog.Footer>
-            <Button kind="secondary" onClick={this.onHideDelete}>Cancel</Button>
+            <Button kind="default" onClick={this.onHideDelete}>Cancel</Button>
             <Button
                 kind="action"
                 onClick={this.onConfirmDelete}

@@ -94,7 +94,7 @@ export class RegisterForm extends React.Component<RouteComponentProps<{}>> {
           <ButtonRow>
             <NavLink to={{ ...this.props.location, pathname: '/account/login' }}>Sign In</NavLink>
             <NavContainer to={next || { pathname: '/' }}>
-              <Button kind="secondary">Cancel</Button>
+              <Button kind="default">Cancel</Button>
             </NavContainer>
             <Button kind="action" type="submit" disabled={!canSubmit}>
               Create Account

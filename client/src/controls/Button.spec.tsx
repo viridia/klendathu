@@ -29,11 +29,6 @@ describe('controls.Button', () => {
     expect(wrapper.find('button')).toHaveClassName('primary');
   });
 
-  test('kind.secondary', () => {
-    const wrapper = mount(<Button theme={themeDefault} kind="secondary">Caption</Button>);
-    expect(wrapper.find('button')).toHaveClassName('secondary');
-  });
-
   test('size.small', () => {
     const wrapper = mount(<Button theme={themeDefault} size="small">Caption</Button>);
     expect(wrapper.find('button')).toHaveClassName('small');

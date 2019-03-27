@@ -8,15 +8,15 @@ import { Button, Card } from '../controls';
 import { ViewContext } from '../models';
 import { UpdateIssueInput } from '../../../common/types/graphql';
 import bind from 'bind-decorator';
-import { styled } from '../style';
+import { styled, ThemeProvider, themeAlt } from '../style';
 import { updateIssue, deleteIssue } from '../graphql';
 
 const MassEditCard = styled(Card)`
-  background-color: ${props => props.theme.massEditBgColor};
+  background-color: ${props => props.theme.cardBgColor};
   flex-shrink: 0;
   && {
     margin-bottom: 12px;
-    border-color: ${props => props.theme.massEditBorderColor};
+    border-color: ${props => props.theme.cardBorderColor};
   }
   .expand-exit-done & {
     box-shadow: none;
@@ -24,7 +24,7 @@ const MassEditCard = styled(Card)`
 `;
 
 const MassEditHeader = styled.header`
-  && { background-color: ${props => props.theme.massEditHeaderBgColor}; }
+  && { background-color: ${props => props.theme.cardHeaderBgColor}; }
 `;
 
 const MassEditActionList = styled.section`
@@ -42,39 +42,41 @@ export class MassEdit extends React.Component<Props> {
   public render() {
     const { env } = this.props;
     return (
-      <Collapse expanded={env.selection.size > 0}>
-        <MassEditCard>
-          <MassEditHeader>
-            <div className="title">
-              Mass Edit ({env.selection.size} issues selected)
-            </div>
-            <Button
-                kind="alternate"
-                size="small"
-                disabled={this.actions.length === 0}
-                onClick={this.onSave}
-            >
-              Apply Changes
-            </Button>
-          </MassEditHeader>
-          <MassEditActionList>
-            {this.actions.map((action, index) => (
+      <ThemeProvider theme={themeAlt}>
+        <Collapse expanded={env.selection.size > 0}>
+          <MassEditCard>
+            <MassEditHeader>
+              <div className="title">
+                Mass Edit ({env.selection.size} issues selected)
+              </div>
+              <Button
+                  size="small"
+                  disabled={this.actions.length === 0}
+                  onClick={this.onSave}
+              >
+                Apply Changes
+              </Button>
+            </MassEditHeader>
+            <MassEditActionList>
+              {this.actions.map((action, index) => (
+                <MassAction
+                    index={index}
+                    key={index}
+                    action={action}
+                    env={env}
+                    onRemove={this.onRemoveAction}
+                    onChange={this.onChangeAction}
+                />))}
               <MassAction
-                  index={index}
-                  key={index}
-                  action={action}
                   env={env}
                   onRemove={this.onRemoveAction}
                   onChange={this.onChangeAction}
-              />))}
-            <MassAction
-                env={env}
-                onRemove={this.onRemoveAction}
-                onChange={this.onChangeAction}
-            />
-          </MassEditActionList>
-        </MassEditCard>
-      </Collapse>);
+              />
+            </MassEditActionList>
+          </MassEditCard>
+        </Collapse>
+      </ThemeProvider>
+    );
   }
 
   @bind

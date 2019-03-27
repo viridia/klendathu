@@ -68,7 +68,7 @@ export function WebhooksList({ onShowEdit, onShowDelete }: Props) {
                     <td className="pad center"><RelativeDate date={wh.createdAt} /></td>
                     <ActionButtonCell className="right">
                       <Button
-                          kind="secondary"
+                          kind="default"
                           className="small"
                           onClick={e => onShowEdit(wh)}
                       >

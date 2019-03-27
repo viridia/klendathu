@@ -2,6 +2,7 @@ import * as React from 'react';
 import { styled } from '../style';
 import { ButtonSize } from './Button';
 import classNames from 'classnames';
+import { darken } from 'polished';
 
 const ProgressTrack = styled.div`
   align-items: center;
@@ -33,8 +34,8 @@ const ProgressThumb = styled.div`
     -45deg,
     ${props => props.theme.progressThumbColor},
     ${props => props.theme.progressThumbColor} 10px,
-    ${props => props.theme.progressThumbAltColor} 10px,
-    ${props => props.theme.progressThumbAltColor} 20px
+    ${props => darken(.05, props.theme.progressThumbColor)} 10px,
+    ${props => darken(.05, props.theme.progressThumbColor)} 20px
   );
   background-attachment: fixed;
   position: absolute;

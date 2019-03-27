@@ -41,6 +41,11 @@ const MilestoneStatusDisplay = styled.div`
   }
 `;
 
+const MilestoneProgress = styled(ProgressBar)`
+  min-width: 10rem;
+  width: 100%;
+`;
+
 interface Props {
   env: ViewContext;
 }
@@ -114,7 +119,7 @@ export class MilestoneListView extends React.Component<Props> {
         </td>
         <td className="completion center pad">
           {milestone.status !== MilestoneStatus.Timeless &&
-            <ProgressBar value={50} />
+            <MilestoneProgress value={50}>0 / 0</MilestoneProgress>
           }
         </td>
         <ActionButtonCell className="right">

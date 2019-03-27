@@ -1,5 +1,4 @@
 import * as React from 'react';
-import * as dateFormat from 'dateformat';
 import {
   differenceInCalendarDays,
   differenceInWeeks,
@@ -65,9 +64,9 @@ export function humanAge(date: Date, brief = false, withPrefix = false): string 
     return `${days} days ago`;
   }
   if (withPrefix) {
-    return `on ${dateFormat(date, 'isoDate')}`;
+    return `on ${format(date, 'YYYY-MM-DD')}`;
   } else {
-    return dateFormat(date, 'isoDate');
+    return format(date, 'YYYY-MM-DD');
   }
 }
 
@@ -85,8 +84,7 @@ export function RelativeDate(
         { date: Date | string, brief?: boolean, withPrefix?: boolean }) {
   const d = typeof date === 'string' ? new Date(date) : date;
   return (
-    // Not sure why dateformat no longer has a default export. ??
-    <span className="date" title={(dateFormat as any).default(date, 'mmm dS, yyyy h:MM TT')}>
+    <span className="date" title={format(date, 'MMM Do, YYYY H:mm:ss')}>
       {humanAge(d, brief, withPrefix)}
     </span>
   );

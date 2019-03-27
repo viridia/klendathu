@@ -29,7 +29,7 @@ class Dialogs extends React.Component<{}, { open: boolean }> {
             An example of some body text for this dialog.
           </Dialog.Body>
           <Dialog.Footer>
-            <Button kind="secondary" onClick={this.onClose}>
+            <Button kind="default" onClick={this.onClose}>
               Cancel
             </Button>
             <Button kind="primary" autoFocus={true} onClick={this.onClose}>
