@@ -1,9 +1,8 @@
 import * as React from 'react';
 import { roleNames } from './RoleName';
 import { observer } from 'mobx-react';
-import { DropdownButton } from './Dropdown';
 import { Role } from '../../../common/types/json';
-import { MenuItem } from './Menu';
+import { DropdownButton, MenuItem } from 'skyhook-ui';
 
 const roles: Role[] = [
   Role.VIEWER,

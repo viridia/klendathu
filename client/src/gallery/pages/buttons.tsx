@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { styled } from '../../style';
 import { register } from '../registry';
-import { Button, ButtonGroup, LinkButton, NavLink, NavContainer } from '../../controls';
+import { Button, ButtonGroup } from 'skyhook-ui';
+import { LinkButton, NavLink, NavContainer } from '../../controls';
 import IconAddBox from '../../svg-compiled/icons/IcAddBox';
 
 const DisplayGroup = styled.section`
@@ -29,26 +30,26 @@ function Buttons() {
       <header>Buttons</header>
       <DisplayGroup className="row">
         <Button>Default</Button>
-        <Button kind="primary">Primary</Button>
-        <Button kind="action">Action</Button>
+        <Button variant="primary">Primary</Button>
+        <Button variant="action">Action</Button>
       </DisplayGroup>
       <header>Disabled Buttons</header>
       <DisplayGroup className="row">
         <Button disabled={true}>Default</Button>
-        <Button kind="primary" disabled={true}>Primary</Button>
-        <Button kind="action" disabled={true}>Action</Button>
+        <Button variant="primary" disabled={true}>Primary</Button>
+        <Button variant="action" disabled={true}>Action</Button>
       </DisplayGroup>
       <header>Small Buttons</header>
       <DisplayGroup className="row">
         <Button size="small">Default</Button>
-        <Button kind="primary" size="small">Primary</Button>
-        <Button kind="action" size="small">Action</Button>
+        <Button variant="primary" size="small">Primary</Button>
+        <Button variant="action" size="small">Action</Button>
       </DisplayGroup>
       <header>Buttons With Icons</header>
       <DisplayGroup className="row">
         <Button><IconAddBox /> Default</Button>
-        <Button kind="primary"><IconAddBox /> Primary</Button>
-        <Button kind="action"><IconAddBox /> Action</Button>
+        <Button variant="primary"><IconAddBox /> Primary</Button>
+        <Button variant="action"><IconAddBox /> Action</Button>
       </DisplayGroup>
       <header>Button Groups</header>
       <DisplayGroup className="column">
@@ -61,9 +62,9 @@ function Buttons() {
       <header>LinkButton</header>
       <DisplayGroup className="row">
         <LinkButton href="https://www.google.com">Google</LinkButton>
-        <LinkButton href="https://www.github.com" kind="primary">GitHub</LinkButton>
-        <LinkButton href="https://www.twitter.com" kind="action">Twitter</LinkButton>
-        <LinkButton href="https://www.medium.com" kind="action" disabled={true}>
+        <LinkButton href="https://www.github.com" variant="primary">GitHub</LinkButton>
+        <LinkButton href="https://www.twitter.com" variant="action">Twitter</LinkButton>
+        <LinkButton href="https://www.medium.com" variant="action" disabled={true}>
           Medium
         </LinkButton>
       </DisplayGroup>
@@ -75,13 +76,13 @@ function Buttons() {
       <header>NavLinkContainer</header>
       <DisplayGroup className="row">
         <NavContainer to="/buttons">
-          <Button kind="primary">Buttons</Button>
+          <Button variant="primary">Buttons</Button>
         </NavContainer>
         <NavContainer to="/cards">
-          <Button kind="primary">Cards</Button>
+          <Button variant="primary">Cards</Button>
         </NavContainer>
         <NavContainer to="/toggle" disabled={true}>
-          <Button kind="primary">Toggle</Button>
+          <Button variant="primary">Toggle</Button>
         </NavContainer>
       </DisplayGroup>
     </React.Fragment>

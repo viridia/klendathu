@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { OperandType } from '../../models/OperandType';
 import { FieldType } from '../../../../common/types/json';
-import { TextInput, MenuItem, DropdownButton, UserAutocomplete, ButtonStyle } from '../../controls';
+import { UserAutocomplete } from '../../controls';
 import { StateSetEditor } from './StateSetEditor';
 import { TypeSetEditor } from './TypeSetEditor';
 import { LabelSelector } from './LabelSelector';
@@ -9,11 +9,12 @@ import { EnumSetEditor } from './EnumSetEditor';
 import { ProjectEnv } from '../../models';
 import { Observer } from 'mobx-react-lite';
 import { RelationSelector } from './RelationSelector';
+import { DropdownButton, ButtonVariant, MenuItem, TextInput } from 'skyhook-ui';
 
 interface Props {
   type: OperandType;
   value: any;
-  kind?: ButtonStyle;
+  kind?: ButtonVariant;
   customField: FieldType;
   onChange: (value: any) => void;
 }

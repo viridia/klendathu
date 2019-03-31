@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { register } from '../registry';
-import { Chip } from '../../controls';
+import { Chip } from 'skyhook-ui';
 
 function onClose() {
   console.info('close clicked');

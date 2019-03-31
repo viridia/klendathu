@@ -3,12 +3,12 @@ import { action } from 'mobx';
 import { observer } from 'mobx-react';
 import { Predicate } from '../../../common/types/graphql';
 import { FilterTerm } from '../models/FilterTerm';
-import { MenuItem, DropdownButton, DismissButton } from '../controls';
 import { descriptors, getDescriptor } from '../models/FilterTermDescriptor';
 import { OperandType, defaultOperandValue } from '../models/OperandType';
 import { EditOperand } from '../issues/input/EditOperand';
 import { ViewContext } from '../models';
 import styled from 'styled-components';
+import { DismissButton, DropdownButton, MenuItem } from 'skyhook-ui';
 
 type PredicateList = Array<[Predicate, string]>;
 

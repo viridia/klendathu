@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { action, IObservableArray, observable, observe, runInAction } from 'mobx';
 import { observer } from 'mobx-react';
 import styled from 'styled-components';
-import { MenuItem, MenuDivider, Menu } from './Menu';
+import { Menu, MenuItem, MenuDivider } from 'skyhook-ui';
 
 export type SearchCallback<S> = (suggestion: S[], suffixActions?: any[]) => void;
 

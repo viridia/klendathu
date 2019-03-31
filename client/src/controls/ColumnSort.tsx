@@ -1,6 +1,6 @@
 import bind from 'bind-decorator';
 import * as React from 'react';
-import styled from 'styled-components';
+import { styled } from '../style';
 
 const ColumnSortEl = styled.button`
   background-color: transparent;
@@ -17,7 +17,7 @@ const ColumnSortEl = styled.button`
   > .sort {
     display: inline-block;
     width: 12px;
-    color: ${props => props.theme.buttonColors.primary.bg};
+    color: ${props => props.theme.button.primary.bgColor};
     margin-right: 4px;
   }
 `;

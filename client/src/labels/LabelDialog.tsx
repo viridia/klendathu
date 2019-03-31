@@ -2,14 +2,10 @@ import * as React from 'react';
 import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { Label, Project } from '../../../common/types/graphql';
+import { Button, Chip, Form, FormLabel, TextInput } from 'skyhook-ui';
 import {
-  Button,
   Dialog,
-  Form,
-  TextInput,
   CheckBox,
-  FormLabel,
-  Chip,
 } from '../controls';
 import { client, decodeErrorAsException } from '../graphql/client';
 import classNames from 'classnames';
@@ -151,7 +147,7 @@ export class LabelDialog extends React.Component<Props> {
           <Button
               onClick={this.onSubmit}
               disabled={this.labelName.length < 3 || this.busy}
-              kind="primary"
+              variant="primary"
           >
             {label ? 'Save' : 'Create'}
           </Button>

@@ -34,7 +34,7 @@ const IssueListTable = styled(Table)`
   width: 100%; /* For FF. */
 
   tr.added {
-    animation: ${props => highlightNew(props.theme.buttonColors.action.bg)} 1s ease-in;
+    animation: ${props => highlightNew(props.theme.button.action.bgColor)} 1s ease-in;
   }
 
   th {

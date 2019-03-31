@@ -7,7 +7,8 @@ import { createUserAccount } from '../network/requests';
 import { RequestError } from '../network';
 import { observer } from 'mobx-react';
 import { styled } from '../style';
-import { Card, Form, TextInput, FormLabel, Button, NavLink, NavContainer } from '../controls';
+import { Button, Form, FormLabel, TextInput } from 'skyhook-ui';
+import { Card, NavLink, NavContainer } from '../controls';
 
 const RegisterCard = styled(Card)`
   align-items: stretch;
@@ -94,9 +95,9 @@ export class RegisterForm extends React.Component<RouteComponentProps<{}>> {
           <ButtonRow>
             <NavLink to={{ ...this.props.location, pathname: '/account/login' }}>Sign In</NavLink>
             <NavContainer to={next || { pathname: '/' }}>
-              <Button kind="default">Cancel</Button>
+              <Button variant="default">Cancel</Button>
             </NavContainer>
-            <Button kind="action" type="submit" disabled={!canSubmit}>
+            <Button variant="action" type="submit" disabled={!canSubmit}>
               Create Account
             </Button>
           </ButtonRow>

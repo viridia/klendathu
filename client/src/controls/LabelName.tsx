@@ -2,8 +2,7 @@ import * as React from 'react';
 import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
 import { Label } from '../../../common/types/graphql';
-import { Chip } from './Chip';
-import { ButtonSize } from './Button';
+import { Chip, SizeVariant } from 'skyhook-ui';
 
 const LabelQuery = gql`
   query LabelQuery($id: ID!) {
@@ -15,7 +14,7 @@ interface Props {
   id: string;
   className?: string;
   textOnly?: boolean;
-  size?: ButtonSize;
+  size?: SizeVariant;
   onClose?: () => void;
 }
 

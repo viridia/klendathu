@@ -8,15 +8,12 @@ import {
   Dialog,
   AccountName,
   RoleSelector,
-  Button,
-  FormLabel,
-  Form,
-  FormControlGroup,
 } from '../../../controls';
 import { client, decodeErrorAsException } from '../../../graphql/client';
 import gql from 'graphql-tag';
 import { fragments } from '../../../graphql';
 import { Mutation } from '../../../../../common/types/graphql';
+import { Button, Form, FormLabel, FormControlGroup } from 'skyhook-ui';
 
 const SetRoleMutation = gql`
   mutation SetRoleMutation($project: ID!, $account: ID!, $role: Int!) {
@@ -67,7 +64,7 @@ export class SetRoleDialog extends React.Component<Props> {
           <Button
               onClick={this.onSubmit}
               disabled={this.role === null || this.busy}
-              kind="primary"
+              variant="primary"
           >
             Set Role
           </Button>

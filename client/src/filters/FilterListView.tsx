@@ -2,7 +2,8 @@ import * as React from 'react';
 import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { Filter } from '../../../common/types/graphql';
-import { Dialog, Button, Card } from '../controls';
+import { Button } from 'skyhook-ui';
+import { Dialog, Card } from '../controls';
 import { Role } from '../../../common/types/json';
 import {
   ModeContent,
@@ -71,7 +72,7 @@ export class FilterListView extends React.Component<Props> {
             </Dialog.Body>
             <Dialog.Footer>
               <Button onClick={this.onHideDelete}>Cancel</Button>
-              <Button kind="primary" onClick={this.onDeleteFilter} disabled={this.busy}>
+              <Button variant="primary" onClick={this.onDeleteFilter} disabled={this.busy}>
                 Delete
               </Button>
             </Dialog.Footer>
@@ -123,7 +124,7 @@ export class FilterListView extends React.Component<Props> {
         <td className="para center">{filter.value}</td>
         {project.role >= Role.DEVELOPER && (<ActionButtonCell className="right">
           <Button
-              kind="action"
+              variant="action"
               className="small"
               data-filter={filter.name}
               onClick={e => this.onShowDelete(filter)}

@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { NavContainer, Button } from '../controls';
+import { Button } from 'skyhook-ui';
+import { NavContainer } from '../controls';
 import { session } from '../models';
 
 export class SignInLink extends React.Component<{}> {
@@ -7,7 +8,7 @@ export class SignInLink extends React.Component<{}> {
     if (!session.isLoggedIn) {
       return (
         <NavContainer to="/account/login">
-          <Button kind="action">Sign In</Button>
+          <Button variant="action">Sign In</Button>
         </NavContainer>
       );
     }

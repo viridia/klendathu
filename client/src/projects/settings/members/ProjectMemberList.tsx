@@ -7,7 +7,8 @@ import { observer } from 'mobx-react';
 import { ViewContext, session } from '../../../models';
 import { Membership } from '../../../../../common/types/graphql';
 import { Role } from '../../../../../common/types/json';
-import { AccountName, RoleName, Button, CardTitle } from '../../../controls';
+import { Button } from 'skyhook-ui';
+import { AccountName, RoleName, CardTitle } from '../../../controls';
 import {
   SettingsPane,
   Spacer,
@@ -52,7 +53,7 @@ export class ProjectMemberList extends React.Component<Props> {
           <CardTitle>Project members</CardTitle>
           <Spacer/>
           {project.role >= Role.DEVELOPER &&
-            <Button kind="primary" onClick={this.onShowAddMember}>Add Member</Button>}
+            <Button variant="primary" onClick={this.onShowAddMember}>Add Member</Button>}
         </header>
         <Table className="fullwidth project-member-list">
           <TableHead>
@@ -87,7 +88,7 @@ export class ProjectMemberList extends React.Component<Props> {
           {project.role >= Role.MANAGER && (
             <Button
                 size="smaller"
-                kind="action"
+                variant="action"
                 disabled={disabled}
                 onClick={() => { this.onShowSetRole(member.user); }}
             >
@@ -97,7 +98,7 @@ export class ProjectMemberList extends React.Component<Props> {
           {project.role >= Role.MANAGER && (
             <Button
                 size="smaller"
-                kind="action"
+                variant="action"
                 disabled={disabled}
                 onClick={() => { this.onShowRemoveMember(member.user); }}
             >

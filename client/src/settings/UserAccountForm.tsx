@@ -3,7 +3,8 @@ import { request, session } from '../models';
 import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { toast } from 'react-toastify';
-import { Form, FormLabel, TextInput, Button, PhotoSelect, FormControlGroup } from '../controls';
+import { Button, TextInput, Form, FormLabel, FormControlGroup } from 'skyhook-ui';
+import { PhotoSelect } from '../controls';
 import { SettingsPane, SettingsPaneContent } from '../layout/SettingsPane';
 import { styled } from '../style';
 
@@ -57,7 +58,7 @@ export class UserAccountForm extends React.Component<{}> {
                   autoFocus={true}
               />
               <FormControlGroup>
-                <Button kind="primary" onClick={this.onClickSave}>
+                <Button variant="primary" onClick={this.onClickSave}>
                   Save
                 </Button>
               </FormControlGroup>

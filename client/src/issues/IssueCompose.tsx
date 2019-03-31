@@ -15,16 +15,18 @@ import {
 } from '../../../common/types/graphql';
 import { RouteComponentProps } from 'react-router';
 import {
-  AutoNavigate,
-  CheckBox,
   Button,
-  NavContainer,
-  Card,
-  Form,
-  FormLabel,
   TextInput,
   TextArea,
+  FormLabel,
+  AutoNavigate,
   FormControlGroup,
+  Form,
+} from 'skyhook-ui';
+import {
+  CheckBox,
+  NavContainer,
+  Card,
   UserAutocomplete,
   ActionLink,
 } from '../controls';
@@ -333,11 +335,11 @@ export class IssueCompose extends React.Component<Props> {
             <Button>Cancel</Button>
           </NavContainer>
           {issue ? (
-            <Button kind="primary" disabled={!canSave} onClick={this.onSubmit}>
+            <Button variant="primary" disabled={!canSave} onClick={this.onSubmit}>
               Save
             </Button>
           ) : (
-            <Button kind="primary" disabled={!canSave} onClick={this.onSubmit}>
+            <Button variant="primary" disabled={!canSave} onClick={this.onSubmit}>
               Create
             </Button>
           )}

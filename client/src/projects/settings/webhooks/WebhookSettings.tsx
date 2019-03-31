@@ -2,7 +2,8 @@ import * as React from 'react';
 import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { ViewContext } from '../../../models';
-import { CardTitle, Button } from '../../../controls';
+import { Button } from 'skyhook-ui';
+import { CardTitle } from '../../../controls';
 import { SettingsPane, Spacer } from '../../../layout';
 import { AddWebhookDialog } from './AddWebhookDialog';
 import { WebhooksList } from './WebhooksList';
@@ -36,7 +37,7 @@ export class WebhookSettings extends React.Component<Props> {
         <header>
           <CardTitle>Webhooks configuration</CardTitle>
           <Spacer />
-          <Button kind="action" onClick={this.onAdd}>
+          <Button variant="action" onClick={this.onAdd}>
             Add Hook&hellip;
           </Button>
         </header>

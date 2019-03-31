@@ -1,6 +1,7 @@
 // tslint:disable:max-classes-per-file
 import * as React from 'react';
-import { Button, Dialog, Autocomplete, SearchCallback } from '../../controls';
+import { Button } from 'skyhook-ui';
+import { Dialog, Autocomplete, SearchCallback } from '../../controls';
 import { observer } from 'mobx-react';
 import { observable, action } from 'mobx';
 import classNames from 'classnames';
@@ -127,7 +128,7 @@ export class MilestoneSelector extends React.Component<Props> {
           </Dialog.Body>
           <Dialog.Footer>
             <Button onClick={this.onHideDialog}>Cancel</Button>
-            <Button kind="primary" onClick={this.onSelectMilestone}>Select</Button>
+            <Button variant="primary" onClick={this.onSelectMilestone}>Select</Button>
           </Dialog.Footer>
         </Dialog>
       </MilestoneSelectorLayout>);

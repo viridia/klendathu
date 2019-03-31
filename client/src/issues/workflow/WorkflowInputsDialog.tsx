@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Button, Dialog, Form, FormLabel, FormControlGroup, AutoNavigate } from '../../controls';
+import { Button, FormControlGroup, Form, AutoNavigate, FormLabel } from 'skyhook-ui';
+import { Dialog } from '../../controls';
 import { observer } from 'mobx-react';
 import { ExecutableInput } from './ExecutableAction';
 import bind from 'bind-decorator';
@@ -48,8 +49,8 @@ export class WorkflowInputsDialog extends React.Component<Props> {
           </Form>
         </Dialog.Body>
         <Dialog.Footer>
-          <Button kind="default" onClick={onClose}>Cancel</Button>
-          <Button kind="primary" onClick={this.onApply} disabled={disabled}>Apply</Button>
+          <Button variant="default" onClick={onClose}>Cancel</Button>
+          <Button variant="primary" onClick={this.onApply} disabled={disabled}>Apply</Button>
         </Dialog.Footer>
       </Dialog>
     );

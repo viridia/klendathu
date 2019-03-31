@@ -2,7 +2,8 @@ import * as React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { session } from '../models';
 import { observer} from 'mobx-react';
-import { MenuItem, DropdownButton, NavContainer, MenuDivider } from '../controls';
+import { NavContainer } from '../controls';
+import { DropdownButton, MenuItem, MenuDivider } from 'skyhook-ui';
 import bind from 'bind-decorator';
 
 @observer

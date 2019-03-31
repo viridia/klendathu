@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { register } from '../registry';
-import { Menu, MenuItem, DropdownButton } from '../../controls';
+import { Menu, MenuItem } from '../../controls';
 import { styled } from '../../style';
+import { DropdownButton } from 'skyhook-ui';
 
 const MenuPreview = styled.div`
   margin-bottom: 120px;

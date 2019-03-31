@@ -2,7 +2,7 @@ import bind from 'bind-decorator';
 import * as React from 'react';
 import { Autocomplete } from './Autocomplete';
 import { PublicAccount, AccountType } from '../../../common/types/graphql';
-import { Chip } from './Chip';
+import { Chip } from 'skyhook-ui';
 import { queryAccounts } from '../graphql';
 
 interface Props {

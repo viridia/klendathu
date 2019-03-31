@@ -2,9 +2,9 @@ import * as React from 'react';
 import { action, autorun, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { client } from '../graphql/client';
-import { FormLabel, TextInput } from '../controls';
 import gql from 'graphql-tag';
 import { Account } from '../../../common/types/graphql';
+import { FormLabel, TextInput } from 'skyhook-ui';
 
 const accountNameQuery = gql`
   query AccountNameQuery($accountName: String) {

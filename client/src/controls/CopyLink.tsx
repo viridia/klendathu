@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as copy from 'copy-to-clipboard';
 
 import LinkIcon from '../svg-compiled/icons/IcLink';
-import { Button } from './Button';
+import { Button } from 'skyhook-ui';
 
 interface Props {
   url: string;
@@ -18,7 +18,7 @@ export function CopyLink(props: Props) {
 
   return (
     <Button
-        kind="default"
+        variant="default"
         className="copy-link"
         title={title || 'Copy link to clipboard'}
         onClick={onClick}

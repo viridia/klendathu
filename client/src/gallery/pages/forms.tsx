@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { register } from '../registry';
-import { Card, Form, FormLabel, TextInput, TextArea, AutoNavigate } from '../../controls';
+import { Card } from '../../controls';
+import { TextInput, TextArea, Form, AutoNavigate, FormLabel } from 'skyhook-ui';
 
 function Forms() {
   return (

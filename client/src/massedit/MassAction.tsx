@@ -3,11 +3,11 @@ import { defaultOperandValue, OperandType, ViewContext } from '../models';
 import { observer } from 'mobx-react';
 
 import { FieldType } from '../../../common/types/json';
-import { DropdownButton, MenuItem, DismissButton } from '../controls';
 import { EditOperand } from '../issues/input/EditOperand';
 import { UpdateIssueInput, PublicAccount } from '../../../common/types/graphql';
 import bind from 'bind-decorator';
 import styled from 'styled-components';
+import { DismissButton, DropdownButton, MenuItem } from 'skyhook-ui';
 
 const MassActionLayout = styled.section`
   align-items: center;

@@ -2,17 +2,17 @@ import * as React from 'react';
 import classNames from 'classnames';
 import { styled } from '../style';
 import { darken } from 'polished';
-import { ButtonStyle } from './Button';
+import { ButtonVariant } from 'skyhook-ui';
 
 export interface LinkButtonProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   small?: boolean;
-  kind?: ButtonStyle;
+  variant?: ButtonVariant;
   disabled?: boolean;
 }
 
-function LinkButtonImpl({ children, className, kind, small, ...attrs }: LinkButtonProps) {
+function LinkButtonImpl({ children, className, variant, small, ...attrs }: LinkButtonProps) {
   return (
-    <a className={classNames(className, kind, { small })} {...attrs}>
+    <a className={classNames(className, variant, { small })} {...attrs}>
       {children}
     </a>
   );
@@ -21,11 +21,11 @@ function LinkButtonImpl({ children, className, kind, small, ...attrs }: LinkButt
 /** Looks like a button, but is actually an anchor tag. */
 export const LinkButton = styled(LinkButtonImpl)`
   align-items: center;
-  border: ${props => props.theme.buttonColors[props.kind].border
-      ? `1px solid ${props.theme.buttonColors[props.kind].border}` : 'none'};
+  border: ${props => props.theme.button[props.variant].borderColor
+      ? `1px solid ${props.theme.button[props.variant].borderColor}` : 'none'};
   border-radius: 4px;
-  background-color: ${props => props.theme.buttonColors[props.kind].bg};
-  color: ${props => props.theme.buttonColors[props.kind].text};
+  background-color: ${props => props.theme.button[props.variant].bgColor};
+  color: ${props => props.theme.button[props.variant].textColor};
   display: inline-flex;
   padding: 0 12px;
   height: 32px;
@@ -43,11 +43,11 @@ export const LinkButton = styled(LinkButtonImpl)`
   }
 
   &:hover:not([disabled]) {
-    background-color: ${props => darken(0.05, props.theme.buttonColors[props.kind].bg)};
+    background-color: ${props => darken(0.05, props.theme.button[props.variant].bgColor)};
   }
 
   &:active:not([disabled]) {
-    background-color: ${props => darken(0.15, props.theme.buttonColors[props.kind].bg)};
+    background-color: ${props => darken(0.15, props.theme.button[props.variant].bgColor)};
   }
 
   &.small {
@@ -58,8 +58,8 @@ export const LinkButton = styled(LinkButtonImpl)`
   > svg {
     margin-right: 4px;
     margin-left: -5px;
-    fill: ${props => props.theme.buttonColors[props.kind].text};
+    fill: ${props => props.theme.button[props.variant].textColor};
   }
 `;
 
-LinkButton.defaultProps = { kind: 'default' };
+LinkButton.defaultProps = { variant: 'default' };

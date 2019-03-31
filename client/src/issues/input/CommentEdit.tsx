@@ -2,8 +2,8 @@ import bind from 'bind-decorator';
 import * as React from 'react';
 import { observable } from 'mobx';
 import { observer } from 'mobx-react';
-import { TextArea, Button } from '../../controls';
 import styled from 'styled-components';
+import { Button, TextArea } from 'skyhook-ui';
 
 interface Props {
   disabled?: boolean;

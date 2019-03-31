@@ -2,14 +2,9 @@ import * as React from 'react';
 import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { ProjectInput } from '../../../../common/types/graphql';
+import { Button, TextInput, TextArea, Form, FormLabel, FormControlGroup } from 'skyhook-ui';
 import {
-  Button,
-  FormLabel,
-  TextInput,
-  TextArea,
   CheckBox,
-  Form,
-  FormControlGroup,
   Dialog,
 } from '../../controls';
 import { Role, Errors } from '../../../../common/types/json';
@@ -79,7 +74,7 @@ export class ProjectInfoEdit extends React.Component<Props> {
           <ProjectTitle>{project.title} [{project.ownerName}/{project.name}]</ProjectTitle>
           <Spacer />
           <Button
-              kind="action"
+              variant="action"
               onClick={this.onShowDelete}
           >
             Delete Project
@@ -120,7 +115,7 @@ export class ProjectInfoEdit extends React.Component<Props> {
               </tr>*/}
             <FormControlGroup>
               <Button
-                  kind="primary"
+                  variant="primary"
                   type="submit"
                   disabled={!modified || project.role < Role.MANAGER}
               >
@@ -142,9 +137,9 @@ export class ProjectInfoEdit extends React.Component<Props> {
             />
           </Dialog.Body>
           <Dialog.Footer>
-            <Button kind="default" onClick={this.onHideDelete}>Cancel</Button>
+            <Button variant="default" onClick={this.onHideDelete}>Cancel</Button>
             <Button
-                kind="action"
+                variant="action"
                 onClick={this.onConfirmDelete}
                 disabled={this.confirmName !== `${project.ownerName}/${project.name}`}
             >

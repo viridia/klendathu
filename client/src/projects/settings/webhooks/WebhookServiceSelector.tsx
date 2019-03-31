@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { Query } from 'react-apollo';
 import gql from 'graphql-tag';
-import { DropdownButton, MenuItem } from '../../../controls';
 import { WebhookServiceInfo } from '../../../../../common/types/graphql';
 import { ProjectEnv } from '../../../models';
 import { styled } from '../../../style';
+import { DropdownButton, MenuItem } from 'skyhook-ui';
 
 const WebhookServicesQuery = gql`
   query WebhookServicesQuery {

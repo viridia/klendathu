@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { register } from '../registry';
-import { Autocomplete, SearchCallback, Chip } from '../../controls';
+import { Chip } from 'skyhook-ui';
+import { Autocomplete, SearchCallback } from '../../controls';
 
 const { useState } = React;
 

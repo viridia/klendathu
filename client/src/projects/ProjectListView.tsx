@@ -2,8 +2,8 @@ import * as React from 'react';
 import { CreateProjectDialog } from './CreateProjectDialog';
 import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
+import { Button } from 'skyhook-ui';
 import {
-  Button,
   Card,
   RelativeDate,
   AccountName,
@@ -114,7 +114,7 @@ export class ProjectListView extends React.Component<{}> {
         <header>
           Project List
           {session.isLoggedIn && session.accountName &&
-            <Button kind="primary" onClick={this.onClickAddProject}>
+            <Button variant="primary" onClick={this.onClickAddProject}>
               <AddBoxIcon />
               <span>New Project&hellip;</span>
             </Button>

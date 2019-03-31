@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { RadioButton, FormLabel } from '../../controls';
+import { RadioButton } from '../../controls';
 import { ProjectEnv } from '../../models';
 import { WorkflowState, Workflow } from '../../../../common/types/json';
 import styled from 'styled-components';
 import { Observer } from 'mobx-react-lite';
+import { FormLabel } from 'skyhook-ui';
 
 interface Props {
   state: string;

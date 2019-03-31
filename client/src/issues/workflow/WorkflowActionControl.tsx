@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { AccountName, Button, RELATION_NAMES } from '../../controls';
+import { Button } from 'skyhook-ui';
+import { AccountName, RELATION_NAMES } from '../../controls';
 import { Issue } from '../../../../common/types/graphql';
 import { ExecutableAction, ExecutableLinkEffect } from './ExecutableAction';
 import { ActionEnv } from './ActionEnv';
@@ -75,7 +76,7 @@ export function WorkflowActionControl(props: Props) {
   }
   return (
     <WorkflowActionEl>
-      <Button kind="default" onClick={() => onExec(execAction)}>{execAction.caption}</Button>
+      <Button variant="default" onClick={() => onExec(execAction)}>{execAction.caption}</Button>
       {execAction.target && execAction.target !== 'self' && (
         <WorkflowEffect className="effect">
           target: <span className="value">{execAction.target}</span>

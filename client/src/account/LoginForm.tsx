@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Errors } from '../../../common/types/json';
-import { Card, Form, TextInput, FormLabel, LinkButton, Button, AutoNavigate } from '../controls';
+import { Button, Form, AutoNavigate, FormLabel, TextInput } from 'skyhook-ui';
+import { Card, LinkButton } from '../controls';
 import { RouteComponentProps, NavLink } from 'react-router-dom';
 import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
@@ -141,7 +142,7 @@ export class LoginForm extends React.Component<RouteComponentProps<{}>> {
             <NavLink to={{ ...this.props.location, pathname: '/account/register' }}>
               Create Account
             </NavLink>
-            <Button kind="action" type="submit" disabled={!canSubmit}>Sign In</Button>
+            <Button variant="action" type="submit" disabled={!canSubmit}>Sign In</Button>
           </ButtonRow>
         </Form>
         <Divider />

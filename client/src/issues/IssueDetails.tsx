@@ -7,15 +7,12 @@ import { observer } from 'mobx-react';
 import { Issue, CustomField, Relation } from '../../../common/types/graphql';
 import {
   Dialog,
-  Button,
   NavContainer,
-  ButtonGroup,
   AccountName,
   RelativeDate,
   CopyLink,
   LabelName,
   Card,
-  FormLabel,
   MarkdownText,
 } from '../controls';
 import { Role, IssueType, DataType } from '../../../common/types/json';
@@ -28,6 +25,7 @@ import styled from 'styled-components';
 import ArrowUpIcon from '../svg-compiled/icons/IcArrowUpward';
 import { WorkflowActionsView } from './workflow/WorkflowActionsView';
 import { LocationState } from 'history';
+import { Button, ButtonGroup, FormLabel } from 'skyhook-ui';
 
 const IssueDetailsLayout = styled(Card)`
   flex: 1 0 0;
@@ -141,7 +139,7 @@ export class IssueDetails extends React.Component<Props> {
           </Dialog.Body>
           <Dialog.Footer>
             <Button onClick={this.onCancelDelete}>Cancel</Button>
-            <Button onClick={this.onConfirmDelete} disabled={this.busy} kind="primary">
+            <Button onClick={this.onConfirmDelete} disabled={this.busy} variant="primary">
               Delete
             </Button>
           </Dialog.Footer>
@@ -181,7 +179,7 @@ export class IssueDetails extends React.Component<Props> {
           </NavContainer>
           <Button
               title="Delete issue"
-              kind="default"
+              variant="default"
               disabled={project.role < Role.MANAGER}
               onClick={this.onDeleteIssue}
           >

@@ -5,8 +5,9 @@ import { fragments, ErrorDisplay } from '../../../graphql';
 import { Query } from 'react-apollo';
 import { Webhook } from '../../../../../common/types/graphql';
 import { EmptyList, TableHead, Table, TableBody, ActionButtonCell } from '../../../layout';
-import { Button, RelativeDate } from '../../../controls';
+import { RelativeDate } from '../../../controls';
 import { styled } from '../../../style';
+import { Button } from 'skyhook-ui';
 
 const WebhooksQuery = gql`
   query WebhooksQuery($project: ID!) {
@@ -68,14 +69,14 @@ export function WebhooksList({ onShowEdit, onShowDelete }: Props) {
                     <td className="pad center"><RelativeDate date={wh.createdAt} /></td>
                     <ActionButtonCell className="right">
                       <Button
-                          kind="default"
+                          variant="default"
                           className="small"
                           onClick={e => onShowEdit(wh)}
                       >
                         Edit
                       </Button>
                       <Button
-                          kind="action"
+                          variant="action"
                           className="small"
                           onClick={e => onShowDelete(wh)}
                       >

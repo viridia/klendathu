@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { MilestoneStatus } from '../../../../../common/types/graphql';
-import { DropdownButton, MenuItem } from '../../../controls';
+import { MenuItem } from '../../../controls';
 import { styled } from '../../../style';
+import { DropdownButton } from 'skyhook-ui';
 
 const states: MilestoneStatus[] = [
   MilestoneStatus.Active,

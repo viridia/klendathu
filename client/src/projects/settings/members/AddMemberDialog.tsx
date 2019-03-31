@@ -3,13 +3,14 @@ import { observable, action } from 'mobx';
 import { observer } from 'mobx-react';
 import { ViewContext } from '../../../models';
 import { Role } from '../../../../../common/types/json';
-import { Dialog, UserAutocomplete, Button, RoleSelector } from '../../../controls';
+import { Dialog, UserAutocomplete, RoleSelector } from '../../../controls';
 import { PublicAccount, Mutation } from '../../../../../common/types/graphql';
 import { fragments } from '../../../graphql';
 import gql from 'graphql-tag';
 import styled from 'styled-components';
 import { client } from '../../../graphql/client';
 import { decodeErrorAsException } from '../../../graphql/__mocks__/client';
+import { Button } from 'skyhook-ui';
 
 const AddMemberMutation = gql`
   mutation AddMemberMutation($project: ID!, $account: ID!, $role: Int!) {
@@ -70,7 +71,7 @@ export class AddMemberDialog extends React.Component<Props> {
           <Button
               onClick={this.onAddMember}
               disabled={this.user === null || this.role === null || this.busy}
-              kind="primary"
+              variant="primary"
           >
             Add
           </Button>

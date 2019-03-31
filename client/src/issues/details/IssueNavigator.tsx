@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { ProjectEnv } from '../../models';
 import { Issue } from '../../../../common/types/graphql';
-import { ButtonGroup, NavContainer, Button } from '../../controls';
+import { NavContainer } from '../../controls';
 
 import ArrowBackIcon from '../../svg-compiled/icons/IcArrowBack';
 import ArrowForwardIcon from '../../svg-compiled/icons/IcArrowForward';
 import { LocationState } from 'history';
 import { RouteComponentProps } from 'react-router';
+import { ButtonGroup, Button } from 'skyhook-ui';
 
 interface Props extends RouteComponentProps<{}, LocationState> {
   issue: Issue;

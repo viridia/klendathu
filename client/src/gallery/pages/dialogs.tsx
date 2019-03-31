@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { styled } from '../../style';
 import { register } from '../registry';
-import { Button, Dialog } from '../../controls';
+import { Button } from 'skyhook-ui';
+import { Dialog } from '../../controls';
 import bind from 'bind-decorator';
 
 const Row = styled.section`
@@ -29,10 +30,10 @@ class Dialogs extends React.Component<{}, { open: boolean }> {
             An example of some body text for this dialog.
           </Dialog.Body>
           <Dialog.Footer>
-            <Button kind="default" onClick={this.onClose}>
+            <Button variant="default" onClick={this.onClose}>
               Cancel
             </Button>
-            <Button kind="primary" autoFocus={true} onClick={this.onClose}>
+            <Button variant="primary" autoFocus={true} onClick={this.onClose}>
               Done
             </Button>
           </Dialog.Footer>

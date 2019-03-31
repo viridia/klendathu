@@ -1,9 +1,10 @@
 import * as React from 'react';
 import { IssueCondensedDisplay } from '../IssueCondensedDisplay';
 import { Observer } from 'mobx-react-lite';
-import { RelationName, DismissButton } from '../../controls';
+import { RelationName } from '../../controls';
 import { Relation } from '../../../../common/types/graphql';
 import styled from 'styled-components';
+import { DismissButton } from 'skyhook-ui';
 
 const IssueLinksEl = styled.ul`
   margin: 0 0 0 14px;

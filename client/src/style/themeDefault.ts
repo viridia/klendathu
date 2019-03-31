@@ -1,19 +1,21 @@
 import { ThemeInterface, dye } from './theme';
 import { desaturate, transparentize } from 'polished';
 
-// const text = '#222';
 const primary = '#9c27b0';
 const alt = '#4727c0';
 const diluted = desaturate(0.2, primary);
 const muted = desaturate(0.35, primary);
+const textNormal = '#222';
 
 export const themeDefault: ThemeInterface = {
+  pageColor: '#222',
   primaryColor: primary,
   dilutedColor: diluted,
   focusColor: transparentize(0.7, primary),
+  shadowColor: transparentize(0.3, '#000'),
 
   // Text colors
-  textNormal: '#222',
+  textNormal,
   textAccented: dye(0.3, primary),
   textMuted: muted,
   textExtraMuted: dye(0.6, muted),
@@ -32,25 +34,6 @@ export const themeDefault: ThemeInterface = {
   leftNavBgColor: dye(0.8, muted),
   leftNavTextColor: dye(0.2, diluted),
 
-  // Button styles
-  buttonColors: {
-    default: {
-      bg: dye(0.9, primary),
-      text: dye(0.2, primary),
-      border: dye(0.7, muted),
-    },
-    action: {
-      bg: dye(0.57, primary),
-      text: dye(0.9, primary),
-      border: dye(0.43, primary),
-    },
-    primary: {
-      bg: dye(0.7, primary),
-      text: dye(0.1, primary),
-      border: dye(0.63, primary),
-    },
-  },
-
   // Progress Bars
   progressTrackColor: dye(0.8, diluted),
   progressThumbColor: dye(0.7, primary),
@@ -63,26 +46,6 @@ export const themeDefault: ThemeInterface = {
   tabActiveTextColor: dye(0.3, primary),
   tabActiveBgColor: dye(0.85, primary),
   tabActiveBorderColor: dye(0.3, primary),
-
-  // Dialogs
-  dialogBackdropColor: dye(0.1, primary),
-  dialogBgColor: dye(0.9, primary),
-  dialogBorder: `1px solid ${dye(0.7, muted)}`,
-  dialogHeaderBgColor: dye(0.8, primary),
-  dialogHeaderTextColor: dye(0.1, primary),
-  dialogShadow: `1px 2px 6px 6px ${dye(0.1, transparentize(0.9, muted))}`,
-
-  // Menus
-  menuBgColor: dye(1.0, primary),
-  menuTextColor: '#222',
-  menuBorderColor: dye(0.7, diluted),
-  menuActiveBgColor: dye(0.5, primary),
-  menuActiveTextColor: dye(0.9, primary),
-  menuHoverBgColor: dye(0.95, diluted),
-  menuHoverTextColor: '#222',
-  menuFocusBgColor: dye(0.9, diluted),
-  menuFocusTextColor: '#000',
-  menuDividerColor: dye(0.9, muted),
 
   // Cards
   cardBgColor: dye(0.95, primary),
@@ -108,27 +71,91 @@ export const themeDefault: ThemeInterface = {
   // Filters
   filterParamsBgColor: dye(0.85, diluted),
   filterParamsHeaderBgColor: dye(0.75, diluted),
+
+  // Buttons
+  button: {
+    default: {
+      bgColor: dye(0.9, primary),
+      borderColor: dye(0.7, muted),
+      textColor: dye(0.2, primary),
+    },
+    action: {
+      bgColor: dye(0.57, primary),
+      borderColor: dye(0.43, primary),
+      textColor: dye(0.9, primary),
+    },
+    primary: {
+      bgColor: dye(0.7, primary),
+      borderColor: dye(0.63, primary),
+      textColor: dye(0.1, primary),
+    },
+    radio: null,
+    roundCorners: true,
+  },
+
+  dialog: {
+    backdropColor: dye(0.1, primary),
+    bgColor: dye(0.9, primary),
+    borderColor: dye(0.7, muted),
+    headerBgColor: dye(0.8, primary),
+    headerTextColor: dye(0.1, primary),
+  },
+
+  // Dialogs
+  dialogBackdropColor: dye(0.1, primary),
+  dialogBgColor: dye(0.9, primary),
+  dialogBorder: `1px solid ${dye(0.7, muted)}`,
+  dialogHeaderBgColor: dye(0.8, primary),
+  dialogHeaderTextColor: dye(0.1, primary),
+  dialogShadow: `1px 2px 6px 6px ${dye(0.1, transparentize(0.9, muted))}`,
+
+  menu: {
+    bgColor: dye(1.0, primary),
+    textColor: textNormal,
+    borderColor: dye(0.7, diluted),
+    focusBgColor: dye(0.9, diluted),
+    focusTextColor: textNormal,
+    hoverBgColor: dye(0.95, diluted),
+    hoverTextColor: textNormal,
+    dividerColor: dye(0.9, muted),
+  },
+
+  progress: {
+    textColor: textNormal,
+    thumbColor: dye(0.7, primary),
+    trackColor: dye(0.8, diluted),
+  },
+
+  textField: {
+    bgColor: '#fff',
+    borderColor: dye(0.85, diluted),
+    textColor: textNormal,
+  },
+
+  toggle: null,
 };
 
 /** Alternate theme for Mass edit panel */
 export const themeAlt: ThemeInterface = {
   ...themeDefault,
-  buttonColors: {
+  button: {
     default: {
-      bg: dye(0.9, alt),
-      text: dye(0.2, alt),
-      border: dye(0.7, desaturate(0.4, alt)),
+      bgColor: dye(0.9, alt),
+      borderColor: dye(0.7, desaturate(0.4, alt)),
+      textColor: dye(0.2, alt),
     },
     action: {
-      bg: dye(0.57, alt),
-      text: dye(0.9, alt),
-      border: dye(0.43, alt),
+      bgColor: dye(0.57, alt),
+      borderColor: dye(0.43, alt),
+      textColor: dye(0.9, alt),
     },
     primary: {
-      bg: dye(0.7, alt),
-      text: dye(0.1, alt),
-      border: dye(0.63, alt),
+      bgColor: dye(0.7, alt),
+      borderColor: dye(0.63, alt),
+      textColor: dye(0.1, alt),
     },
+    radio: null,
+    roundCorners: true,
   },
 
   // Cards

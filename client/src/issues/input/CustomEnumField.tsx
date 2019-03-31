@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { MenuItem, DropdownButton } from '../../controls';
 import { FieldType } from '../../../../common/types/json';
+import { DropdownButton, MenuItem } from 'skyhook-ui';
 
 interface Props {
   field: FieldType;

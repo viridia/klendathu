@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { DropdownButton, MenuItem, RelationName, RELATION_NAMES } from '../../controls';
+import { RelationName, RELATION_NAMES } from '../../controls';
 import { Relation } from '../../../../common/types/graphql';
+import { DropdownButton, MenuItem } from 'skyhook-ui';
 
 const RELATIONS: Relation[] = [
   Relation.Blocks,

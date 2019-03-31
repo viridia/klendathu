@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
-import { Dialog, Form, FormLabel, TextInput, Button } from '../controls';
+import { Dialog } from '../controls';
 import AddBoxIcon from '../svg-compiled/icons/IcAddBox';
 import { addPrefsFilter } from '../graphql/mutations';
 import { ViewContext } from '../models';
+import { Button, Form, FormLabel, TextInput } from 'skyhook-ui';
 
 interface Props {
   env: ViewContext;
@@ -54,7 +55,7 @@ export class SaveFilterDialog extends React.Component<Props> {
           <Button
               onClick={this.onSave}
               disabled={this.filterName.length === 0 || this.busy}
-              kind="primary"
+              variant="primary"
           >
             <AddBoxIcon />
             Save

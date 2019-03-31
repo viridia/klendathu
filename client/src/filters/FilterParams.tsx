@@ -8,17 +8,20 @@ import { action, computed, IObservableArray, observable, IReactionDisposer, reac
 import { observer } from 'mobx-react';
 import { Spacer } from '../layout';
 import {
-  DropdownButton,
-  Button, Form,
-  TextInput,
-  MenuItem,
   Card,
-  DiscloseButton,
-  DismissButton,
 } from '../controls';
 import bind from 'bind-decorator';
 import styled from 'styled-components';
 import { Collapse } from '../controls/Collapse';
+import {
+  DiscloseButton,
+  DismissButton,
+  Button,
+  DropdownButton,
+  MenuItem,
+  Form,
+  TextInput,
+} from 'skyhook-ui';
 
 interface GroupTerm {
   caption: string;
@@ -139,7 +142,7 @@ export class FilterParams extends React.Component<Props> {
               ))}
             </DropdownButton>
             <Button
-                kind="default"
+                variant="default"
                 size="small"
                 onClick={this.onClearFilter}
                 disabled={this.terms.length === 0}
@@ -147,7 +150,7 @@ export class FilterParams extends React.Component<Props> {
               Clear
             </Button>
             <Button
-                kind="default"
+                variant="default"
                 size="small"
                 onClick={this.onSaveFilter}
                 disabled={this.terms.length === 0}
@@ -155,7 +158,7 @@ export class FilterParams extends React.Component<Props> {
               Save Filter As&hellip;
             </Button>
             <Button
-                kind="primary"
+                variant="primary"
                 size="small"
                 onClick={this.onApplyFilter}
                 disabled={location.search === this.queryString}

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { mount } from 'enzyme';
-import { Chip } from './Chip';
 import { themeDefault } from '../style';
+import { Chip } from 'skyhook-ui';
 
 describe('controls.Chip', () => {
   test('render', () => {

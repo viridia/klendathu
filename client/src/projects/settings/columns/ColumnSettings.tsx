@@ -4,7 +4,8 @@ import { ColumnList } from './ColumnList';
 import { computed, IObservableArray, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { ViewContext } from '../../../models';
-import { Button, CardTitle } from '../../../controls';
+import { Button } from 'skyhook-ui';
+import { CardTitle } from '../../../controls';
 import { SettingsPane, Spacer } from '../../../layout';
 import { styled } from '../../../style';
 import { fragments } from '../../../graphql';
@@ -76,7 +77,7 @@ export class ColumnSettings extends React.Component<Props> {
         <header>
           <CardTitle>Issue List Columns</CardTitle>
           <Spacer />
-          <Button kind="primary" onClick={this.onSave} disabled={!canSave}>
+          <Button variant="primary" onClick={this.onSave} disabled={!canSave}>
             Save
           </Button>
         </header>

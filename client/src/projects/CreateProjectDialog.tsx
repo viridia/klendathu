@@ -2,15 +2,17 @@ import bind from 'bind-decorator';
 import * as React from 'react';
 import {
   Dialog,
-  AutoNavigate,
-  FormLabel,
-  FormControlGroup,
-  TextInput,
-  Button,
   CheckBox,
-  TextArea,
-  Form,
 } from '../controls';
+import {
+  Button,
+  TextArea,
+  FormLabel,
+  Form,
+  TextInput,
+  FormControlGroup,
+  AutoNavigate,
+} from 'skyhook-ui';
 import { session } from '../models';
 import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
@@ -97,7 +99,7 @@ export class CreateProjectDialog extends React.Component<Props> {
           <Button
               onClick={this.onCreate}
               disabled={this.projectName.length === 0 || this.busy}
-              kind="primary"
+              variant="primary"
           >
             <AddBoxIcon />
             Create Project

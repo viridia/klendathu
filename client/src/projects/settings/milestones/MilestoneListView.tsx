@@ -3,7 +3,8 @@ import { observer } from 'mobx-react';
 import { ViewContext } from '../../../models';
 import { Milestone, MilestoneStatus } from '../../../../../common/types/graphql';
 import { Role } from '../../../../../common/types/json';
-import { Button, CardTitle, ProgressBar } from '../../../controls';
+import { Button, ProgressBar } from 'skyhook-ui';
+import { CardTitle } from '../../../controls';
 import {
   SettingsPane,
   Spacer,
@@ -76,7 +77,7 @@ export class MilestoneListView extends React.Component<Props> {
           <CardTitle>Milestones</CardTitle>
           <Spacer/>
           {project.role >= Role.MANAGER &&
-            <Button kind="primary" onClick={this.onShowAdd}>Add&hellip;</Button>}
+            <Button variant="primary" onClick={this.onShowAdd}>Add&hellip;</Button>}
         </header>
         <Table className="fullwidth project-milestone-list">
           <TableHead>

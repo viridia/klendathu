@@ -3,7 +3,8 @@ import { LabelDialog } from './LabelDialog';
 import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { Label } from '../../../common/types/graphql';
-import { Dialog, Button, CheckBox, RelativeDate, AccountName, Card, Chip } from '../controls';
+import { Button, Chip } from 'skyhook-ui';
+import { Dialog, CheckBox, RelativeDate, AccountName, Card } from '../controls';
 import { Role } from '../../../common/types/json';
 import { Query } from 'react-apollo';
 import gql from 'graphql-tag';
@@ -117,7 +118,7 @@ export class LabelListView extends React.Component<Props> {
             </Dialog.Body>
             <Dialog.Footer>
               <Button onClick={this.onHideDelete}>Cancel</Button>
-              <Button kind="primary" onClick={this.onDeleteLabel} disabled={this.busy}>
+              <Button variant="primary" onClick={this.onDeleteLabel} disabled={this.busy}>
                 Delete
               </Button>
             </Dialog.Footer>
@@ -127,7 +128,7 @@ export class LabelListView extends React.Component<Props> {
           <ModeContentTitle>Labels</ModeContentTitle>
           <Spacer />
           {project.role >= Role.DEVELOPER &&
-              <Button kind="primary" onClick={this.onShowCreate}>New Label</Button>}
+              <Button variant="primary" onClick={this.onShowCreate}>New Label</Button>}
         </ModeContentHeader>
         {this.renderLabels()}
       </ModeContent>
@@ -215,7 +216,7 @@ export class LabelListView extends React.Component<Props> {
         <td className="created center"><RelativeDate date={label.created} /></td>
         {project.role >= Role.DEVELOPER && (<ActionButtonCell className="right">
           <Button
-              kind="default"
+              variant="default"
               className="small"
               data-label={label.id}
               onClick={e => this.onShowUpdate(label)}
@@ -223,7 +224,7 @@ export class LabelListView extends React.Component<Props> {
             Edit
           </Button>
           <Button
-              kind="action"
+              variant="action"
               className="small"
               data-label={label.id}
               onClick={e => this.onShowDelete(label)}

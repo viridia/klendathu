@@ -4,7 +4,8 @@ import { UsernameEditor } from './UsernameEditor';
 import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { session } from '../models';
-import { Dialog, Form, FormLabel, TextInput, Button, AutoNavigate } from '../controls';
+import { Button, Form, AutoNavigate, FormLabel, TextInput } from 'skyhook-ui';
+import { Dialog } from '../controls';
 import { client, decodeError } from '../graphql/client';
 import { styled } from '../style';
 import gql from 'graphql-tag';
@@ -91,11 +92,11 @@ export class SetupAccountDialog extends React.Component<{}> {
           </SetupAccountForm>
         </Dialog.Body>
         <Dialog.Footer>
-          <Button kind="default" onClick={this.onClickCancel}>
+          <Button variant="default" onClick={this.onClickCancel}>
             Cancel
           </Button>
           <Button
-              kind="primary"
+              variant="primary"
               disabled={this.busy || !this.available || this.displayName.length < 1}
               onClick={this.onClickSave}
           >

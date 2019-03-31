@@ -2,13 +2,14 @@ import * as React from 'react';
 import { observable, action } from 'mobx';
 import { observer } from 'mobx-react';
 import { ViewContext } from '../../../models';
-import { Dialog, Button, Form, FormLabel, TextInput } from '../../../controls';
+import { Dialog } from '../../../controls';
 import { Mutation, WebhookInput } from '../../../../../common/types/graphql';
 import { fragments } from '../../../graphql';
 import gql from 'graphql-tag';
 import { client } from '../../../graphql/client';
 import { decodeErrorAsException } from '../../../graphql/__mocks__/client';
 import { WebhookServiceSelector } from './WebhookServiceSelector';
+import { Button, Form, FormLabel, TextInput } from 'skyhook-ui';
 
 const AddWebhookMutation = gql`
   mutation AddWebhookMutation($input: WebhookInput!) {
@@ -56,7 +57,7 @@ export class AddWebhookDialog extends React.Component<Props> {
           <Button
               onClick={this.onAddWebhook}
               disabled={this.serviceId === null || this.busy}
-              kind="primary"
+              variant="primary"
           >
             Add
           </Button>

@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { Button } from '../../controls';
 import { IssueSelector } from './IssueSelector';
 import { Relation, Issue } from '../../../../common/types/graphql';
 import { styled } from '../../style';
 import { ProjectEnv } from '../../models';
 import { RelationSelector } from './RelationSelector';
+import { Button } from 'skyhook-ui';
 
 interface Props {
   issue: Issue;

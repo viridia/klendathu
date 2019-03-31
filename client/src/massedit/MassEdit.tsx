@@ -4,12 +4,13 @@ import { IObservableArray, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { toast } from 'react-toastify';
 import { Collapse } from '../controls/Collapse';
-import { Button, Card } from '../controls';
+import { Card } from '../controls';
 import { ViewContext } from '../models';
 import { UpdateIssueInput } from '../../../common/types/graphql';
 import bind from 'bind-decorator';
 import { styled, ThemeProvider, themeAlt } from '../style';
 import { updateIssue, deleteIssue } from '../graphql';
+import { Button } from 'skyhook-ui';
 
 const MassEditCard = styled(Card)`
   background-color: ${props => props.theme.cardBgColor};

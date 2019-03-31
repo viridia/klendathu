@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { mount } from 'enzyme';
-import { Button } from './Button';
 import { themeDefault } from '../style';
+import { Button } from 'skyhook-ui';
 
 describe('controls.Button', () => {
   test('render', () => {
@@ -14,18 +14,18 @@ describe('controls.Button', () => {
     expect(wrapper.find('button')).not.toHaveClassName('mini');
   });
 
-  test('kind.default', () => {
+  test('variant.default', () => {
     const wrapper = mount(<Button theme={themeDefault}>Caption</Button>);
     expect(wrapper.find('button')).toHaveClassName('default');
   });
 
-  test('kind.action', () => {
-    const wrapper = mount(<Button theme={themeDefault} kind="action">Caption</Button>);
+  test('variant.action', () => {
+    const wrapper = mount(<Button theme={themeDefault} variant="action">Caption</Button>);
     expect(wrapper.find('button')).toHaveClassName('action');
   });
 
-  test('kind.primary', () => {
-    const wrapper = mount(<Button theme={themeDefault} kind="primary">Caption</Button>);
+  test('variant.primary', () => {
+    const wrapper = mount(<Button theme={themeDefault} variant="primary">Caption</Button>);
     expect(wrapper.find('button')).toHaveClassName('primary');
   });
 

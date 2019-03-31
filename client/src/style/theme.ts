@@ -1,3 +1,4 @@
+import { Theme as SHTheme } from 'skyhook-ui';
 import { shade, tint } from 'polished';
 
 /** Function to compute a lighter or darker variant of a base color. An amount of 0.5
@@ -5,13 +6,7 @@ import { shade, tint } from 'polished';
 export const dye = (amount: number, base: string) =>
     amount > 0.5 ? tint((amount - 0.5) * 2, base) : shade(1.0 - amount * 2, base);
 
-export interface ButtonColors {
-  bg: string;
-  text: string;
-  border?: string;
-}
-
-export interface ThemeInterface {
+export interface ThemeInterface extends SHTheme {
   // General
   primaryColor: string;
   dilutedColor: string;
@@ -37,13 +32,6 @@ export interface ThemeInterface {
   leftNavBgColor: string;
   leftNavTextColor: string;
 
-  // Button styles
-  buttonColors: {
-    default: ButtonColors;
-    action: ButtonColors;
-    primary: ButtonColors;
-  };
-
   // Progress Bars
   progressTrackColor: string;
   progressThumbColor: string;
@@ -64,18 +52,6 @@ export interface ThemeInterface {
   dialogHeaderBgColor: string;
   dialogHeaderTextColor: string;
   dialogShadow: string;
-
-  // Menus
-  menuBgColor: string;
-  menuTextColor: string;
-  menuBorderColor: string;
-  menuFocusBgColor: string;
-  menuFocusTextColor: string;
-  menuHoverBgColor: string;
-  menuHoverTextColor: string;
-  menuActiveBgColor: string;
-  menuActiveTextColor: string;
-  menuDividerColor: string;
 
   // Forms
   inputBorderColor: string;
