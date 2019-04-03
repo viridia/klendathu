@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { Button, FormControlGroup, Form, AutoNavigate, FormLabel } from 'skyhook-ui';
-import { Dialog } from '../../controls';
+import { Button, Dialog, FormControlGroup, Form, AutoNavigate, FormLabel } from 'skyhook-ui';
 import { observer } from 'mobx-react';
 import { ExecutableInput } from './ExecutableAction';
 import bind from 'bind-decorator';

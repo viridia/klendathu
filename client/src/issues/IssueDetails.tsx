@@ -6,7 +6,6 @@ import { action, observable, computed } from 'mobx';
 import { observer } from 'mobx-react';
 import { Issue, CustomField, Relation } from '../../../common/types/graphql';
 import {
-  Dialog,
   NavContainer,
   AccountName,
   RelativeDate,
@@ -25,7 +24,7 @@ import styled from 'styled-components';
 import ArrowUpIcon from '../svg-compiled/icons/IcArrowUpward';
 import { WorkflowActionsView } from './workflow/WorkflowActionsView';
 import { LocationState } from 'history';
-import { Button, ButtonGroup, FormLabel } from 'skyhook-ui';
+import { Button, Dialog, ButtonGroup, FormLabel } from 'skyhook-ui';
 
 const IssueDetailsLayout = styled(Card)`
   flex: 1 0 0;

@@ -4,16 +4,12 @@ import { observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { ViewContext } from '../../../models';
 import { Role } from '../../../../../common/types/json';
-import {
-  Dialog,
-  AccountName,
-  RoleSelector,
-} from '../../../controls';
+import { AccountName, RoleSelector } from '../../../controls';
 import { client, decodeErrorAsException } from '../../../graphql/client';
 import gql from 'graphql-tag';
 import { fragments } from '../../../graphql';
 import { Mutation } from '../../../../../common/types/graphql';
-import { Button, Form, FormLabel, FormControlGroup } from 'skyhook-ui';
+import { Button, Dialog, Form, FormLabel, FormControlGroup } from 'skyhook-ui';
 
 const SetRoleMutation = gql`
   mutation SetRoleMutation($project: ID!, $account: ID!, $role: Int!) {

@@ -2,8 +2,8 @@ import * as React from 'react';
 import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { Filter } from '../../../common/types/graphql';
-import { Button } from 'skyhook-ui';
-import { Dialog, Card } from '../controls';
+import { Button, Dialog } from 'skyhook-ui';
+import { Card } from '../controls';
 import { Role } from '../../../common/types/json';
 import {
   ModeContent,

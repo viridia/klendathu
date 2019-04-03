@@ -33,30 +33,3 @@ export const CheckBox = styled(CheckBoxImpl)`
     }
   }
 `;
-
-const RadioButtonImpl = React.forwardRef(({ children, className, ...props }: Props, ref: any) => {
-  const disabled = props.disabled;
-  return (
-    <label className={classNames(className, { disabled })}>
-      <input type="radio" ref={ref} {...props} />
-      <span className="caption">{children}</span>
-    </label>
-  );
-});
-
-export const RadioButton = styled(RadioButtonImpl)`
-  align-items: center;
-  cursor: pointer;
-  display: inline-flex;
-
-  > input {
-    margin-right: 6px;
-  }
-
-  &.disabled {
-    cursor: default;
-    > .caption {
-      opacity: 0.7;
-    }
-  }
-`;

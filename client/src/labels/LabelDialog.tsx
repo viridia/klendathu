@@ -2,9 +2,8 @@ import * as React from 'react';
 import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { Label, Project } from '../../../common/types/graphql';
-import { Button, Chip, Form, FormLabel, TextInput } from 'skyhook-ui';
+import { Button, Dialog, Chip, Form, FormLabel, TextInput } from 'skyhook-ui';
 import {
-  Dialog,
   CheckBox,
 } from '../controls';
 import { client, decodeErrorAsException } from '../graphql/client';
@@ -100,7 +99,7 @@ export class LabelDialog extends React.Component<Props> {
     return (
       <Dialog
           open={open}
-          onShow={this.onShow}
+          onOpen={this.onOpen}
           onClose={onClose}
       >
         <Dialog.Header hasClose={true}>
@@ -156,7 +155,7 @@ export class LabelDialog extends React.Component<Props> {
   }
 
   @action.bound
-  private onShow() {
+  private onOpen() {
     const { label, visible } = this.props;
     if (label) {
       this.labelName = label.name;

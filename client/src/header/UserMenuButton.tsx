@@ -15,7 +15,7 @@ export class UserMenuButton extends React.Component<RouteComponentProps<{}>> {
     const name = session.account && (session.account.display || session.account.accountName);
     return (
       <DropdownButton
-          kind="action"
+          variant="action"
           title={name}
           id="user-menu"
           alignEnd={true}

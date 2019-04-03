@@ -22,13 +22,13 @@ import {
   AutoNavigate,
   FormControlGroup,
   Form,
+  ActionLink,
 } from 'skyhook-ui';
 import {
   CheckBox,
   NavContainer,
   Card,
   UserAutocomplete,
-  ActionLink,
 } from '../controls';
 import {
   TypeSelector,

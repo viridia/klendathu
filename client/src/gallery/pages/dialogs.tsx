@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { styled } from '../../style';
 import { register } from '../registry';
-import { Button } from 'skyhook-ui';
-import { Dialog } from '../../controls';
+import { Button, Dialog } from 'skyhook-ui';
 import bind from 'bind-decorator';
 
 const Row = styled.section`

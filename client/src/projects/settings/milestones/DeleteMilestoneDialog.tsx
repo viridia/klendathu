@@ -1,11 +1,10 @@
 import * as React from 'react';
-import { Dialog } from '../../../controls';
 import { Milestone, Mutation } from '../../../../../common/types/graphql';
 import { ViewContext, ProjectEnv } from '../../../models';
 import { fragments } from '../../../graphql';
 import { client } from '../../../graphql/client';
 import gql from 'graphql-tag';
-import { Button } from 'skyhook-ui';
+import { Button, Dialog } from 'skyhook-ui';
 
 const DeleteMilestoneMutation = gql`
   mutation DeleteMilestoneMutation($id: ID!) {

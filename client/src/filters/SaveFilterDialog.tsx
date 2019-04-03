@@ -1,11 +1,10 @@
 import * as React from 'react';
 import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
-import { Dialog } from '../controls';
 import AddBoxIcon from '../svg-compiled/icons/IcAddBox';
 import { addPrefsFilter } from '../graphql/mutations';
 import { ViewContext } from '../models';
-import { Button, Form, FormLabel, TextInput } from 'skyhook-ui';
+import { Button, Dialog, Form, FormLabel, TextInput } from 'skyhook-ui';
 
 interface Props {
   env: ViewContext;

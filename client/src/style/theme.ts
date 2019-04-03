@@ -32,11 +32,6 @@ export interface ThemeInterface extends SHTheme {
   leftNavBgColor: string;
   leftNavTextColor: string;
 
-  // Progress Bars
-  progressTrackColor: string;
-  progressThumbColor: string;
-  progressTextColor: string;
-
   // Tabs
   tabTextColor: string;
   tabBgColor: string;
@@ -44,14 +39,6 @@ export interface ThemeInterface extends SHTheme {
   tabActiveTextColor: string;
   tabActiveBgColor: string;
   tabActiveBorderColor: string;
-
-  // Dialogs
-  dialogBackdropColor: string;
-  dialogBgColor: string;
-  dialogBorder: string;
-  dialogHeaderBgColor: string;
-  dialogHeaderTextColor: string;
-  dialogShadow: string;
 
   // Forms
   inputBorderColor: string;

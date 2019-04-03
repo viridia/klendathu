@@ -2,14 +2,13 @@ import * as React from 'react';
 import { observable, action } from 'mobx';
 import { observer } from 'mobx-react';
 import { ViewContext } from '../../../models';
-import { Dialog } from '../../../controls';
 import { Mutation, WebhookInput } from '../../../../../common/types/graphql';
 import { fragments } from '../../../graphql';
 import gql from 'graphql-tag';
 import { client } from '../../../graphql/client';
 import { decodeErrorAsException } from '../../../graphql/__mocks__/client';
 import { WebhookServiceSelector } from './WebhookServiceSelector';
-import { Button, Form, FormLabel, TextInput } from 'skyhook-ui';
+import { Button, Dialog, Form, FormLabel, TextInput } from 'skyhook-ui';
 
 const AddWebhookMutation = gql`
   mutation AddWebhookMutation($input: WebhookInput!) {
@@ -39,7 +38,7 @@ export class AddWebhookDialog extends React.Component<Props> {
     return (
       <Dialog
           open={open}
-          onShow={this.onShow}
+          onOpen={this.onOpen}
           onClose={onClose}
           className="add-member"
       >
@@ -66,7 +65,7 @@ export class AddWebhookDialog extends React.Component<Props> {
   }
 
   @action.bound
-  private onShow() {
+  private onOpen() {
     this.serviceId = null;
   }
 

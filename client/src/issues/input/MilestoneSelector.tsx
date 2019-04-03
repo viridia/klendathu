@@ -1,7 +1,7 @@
 // tslint:disable:max-classes-per-file
 import * as React from 'react';
-import { Button } from 'skyhook-ui';
-import { Dialog, Autocomplete, SearchCallback } from '../../controls';
+import { Button, Dialog } from 'skyhook-ui';
+import { Autocomplete, SearchCallback } from '../../controls';
 import { observer } from 'mobx-react';
 import { observable, action } from 'mobx';
 import classNames from 'classnames';

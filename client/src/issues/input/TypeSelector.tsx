@@ -1,9 +1,9 @@
 import bind from 'bind-decorator';
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import { RadioButton } from '../../controls';
 import { Template } from '../../../../common/types/json';
 import { styled } from '../../style';
+import { RadioButton } from 'skyhook-ui';
 
 interface Props {
   value: string;

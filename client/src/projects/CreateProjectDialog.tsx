@@ -1,11 +1,11 @@
 import bind from 'bind-decorator';
 import * as React from 'react';
 import {
-  Dialog,
   CheckBox,
 } from '../controls';
 import {
   Button,
+  Dialog,
   TextArea,
   FormLabel,
   Form,

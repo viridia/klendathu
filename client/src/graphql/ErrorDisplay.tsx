@@ -5,7 +5,7 @@ import { GraphQLError } from 'graphql';
 import { Errors } from '../../../common/types/json';
 import { Observer } from 'mobx-react-lite';
 import { ViewContext } from '../models';
-import { Dialog, Button } from '../controls';
+import { Dialog, Button } from 'skyhook-ui';
 
 const ErrorList = styled.section`
   background-color: #000;

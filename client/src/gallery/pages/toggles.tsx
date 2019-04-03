@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { register } from '../registry';
-import { CheckBox, RadioButton } from '../../controls';
+import { CheckBox, RadioButton } from 'skyhook-ui';
 
 function onClick() {
   console.info('clicked');

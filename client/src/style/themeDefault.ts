@@ -12,7 +12,8 @@ export const themeDefault: ThemeInterface = {
   primaryColor: primary,
   dilutedColor: diluted,
   focusColor: transparentize(0.7, primary),
-  shadowColor: transparentize(0.3, '#000'),
+  shadowColor: transparentize(0.8, '#000'),
+  linkColor: primary,
 
   // Text colors
   textNormal,
@@ -33,11 +34,6 @@ export const themeDefault: ThemeInterface = {
   // Left Nav
   leftNavBgColor: dye(0.8, muted),
   leftNavTextColor: dye(0.2, diluted),
-
-  // Progress Bars
-  progressTrackColor: dye(0.8, diluted),
-  progressThumbColor: dye(0.7, primary),
-  progressTextColor: '#222',
 
   // Tabs
   tabTextColor: dye(0.4, diluted),
@@ -89,7 +85,12 @@ export const themeDefault: ThemeInterface = {
       borderColor: dye(0.63, primary),
       textColor: dye(0.1, primary),
     },
-    radio: null,
+    radio: {
+      bgColor: dye(0.9, primary),
+      borderColor: dye(0.7, muted),
+      textColor: dye(0.5, primary),
+    },
+    checkbox: null,
     roundCorners: true,
   },
 
@@ -100,14 +101,6 @@ export const themeDefault: ThemeInterface = {
     headerBgColor: dye(0.8, primary),
     headerTextColor: dye(0.1, primary),
   },
-
-  // Dialogs
-  dialogBackdropColor: dye(0.1, primary),
-  dialogBgColor: dye(0.9, primary),
-  dialogBorder: `1px solid ${dye(0.7, muted)}`,
-  dialogHeaderBgColor: dye(0.8, primary),
-  dialogHeaderTextColor: dye(0.1, primary),
-  dialogShadow: `1px 2px 6px 6px ${dye(0.1, transparentize(0.9, muted))}`,
 
   menu: {
     bgColor: dye(1.0, primary),
@@ -133,6 +126,7 @@ export const themeDefault: ThemeInterface = {
   },
 
   toggle: null,
+  insetToggle: null,
 };
 
 /** Alternate theme for Mass edit panel */
@@ -155,6 +149,7 @@ export const themeAlt: ThemeInterface = {
       textColor: dye(0.1, alt),
     },
     radio: null,
+    checkbox: null,
     roundCorners: true,
   },
 

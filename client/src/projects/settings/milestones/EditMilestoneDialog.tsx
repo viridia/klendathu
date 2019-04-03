@@ -1,9 +1,6 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import {
-  Dialog,
-  DatePicker,
-} from '../../../controls';
+import { DatePicker } from '../../../controls';
 import {
   Milestone,
   MilestoneStatus,
@@ -16,7 +13,15 @@ import { MilestoneStatusSelector } from './MilestoneStatusSelector';
 import { fragments } from '../../../graphql';
 import gql from 'graphql-tag';
 import { client } from '../../../graphql/client';
-import { Button, Form, FormLabel, TextInput, AutoNavigate, FormControlGroup } from 'skyhook-ui';
+import {
+  Button,
+  Dialog,
+  Form,
+  FormLabel,
+  TextInput,
+  AutoNavigate,
+  FormControlGroup,
+} from 'skyhook-ui';
 
 const NewMilestoneMutation = gql`
   mutation NewMilestoneMutation($project: ID!, $input: MilestoneInput!) {
@@ -55,7 +60,7 @@ export class EditMilestoneDialog extends React.Component<Props> {
   public render() {
     const { open, onClose, milestone } = this.props;
     return (
-      <Dialog open={open} onClose={onClose} onShow={this.reset}>
+      <Dialog open={open} onClose={onClose} onOpen={this.reset}>
         <Dialog.Header hasClose={true}>
           {milestone ? 'Edit Milestone' : 'Add Milestone'}
         </Dialog.Header>

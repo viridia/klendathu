@@ -3,12 +3,12 @@ import bind from 'bind-decorator';
 import { observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { ViewContext } from '../../../models';
-import { Dialog, AccountName } from '../../../controls';
+import { AccountName } from '../../../controls';
 import { client, decodeErrorAsException } from '../../../graphql/client';
 import { fragments } from '../../../graphql';
 import { Mutation } from '../../../../../common/types/graphql';
 import gql from 'graphql-tag';
-import { Button } from 'skyhook-ui';
+import { Button, Dialog } from 'skyhook-ui';
 
 const RemoveMemberMutation = gql`
   mutation RemoveMemberMutation($project: ID!, $account: ID!) {

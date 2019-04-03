@@ -63,7 +63,7 @@ export function EditOperand(props: Props) {
             return (
               <DropdownButton
                   size="small"
-                  kind={kind}
+                  variant={kind}
                   title={selectedState ? selectedState.caption : 'Choose state...'}
                   onSelect={onChange}
               >
@@ -78,7 +78,7 @@ export function EditOperand(props: Props) {
             return (
               <DropdownButton
                   size="small"
-                  kind={kind}
+                  variant={kind}
                   title={selectedType ? selectedType.caption : 'Choose type...'}
                   onSelect={onChange}
               >
