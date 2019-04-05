@@ -18,5 +18,4 @@ export { RoleName } from './RoleName';
 export { RoleSelector } from './RoleSelector';
 export { humanAge, RelativeDate } from './RelativeDate';
 export { Tab, TabBar } from './Tabs';
-export { CheckBox } from './Toggle';
 export { UserAutocomplete } from './UserAutocomplete';

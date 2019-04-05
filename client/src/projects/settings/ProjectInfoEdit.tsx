@@ -2,10 +2,16 @@ import * as React from 'react';
 import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { ProjectInput } from '../../../../common/types/graphql';
-import { Button, Dialog, TextInput, TextArea, Form, FormLabel, FormControlGroup } from 'skyhook-ui';
 import {
+  Button,
   CheckBox,
-} from '../../controls';
+  Dialog,
+  TextInput,
+  TextArea,
+  Form,
+  FormLabel,
+  FormControlGroup,
+} from 'skyhook-ui';
 import { Role, Errors } from '../../../../common/types/json';
 import { SettingsPane, SettingsPaneContent } from '../../layout/SettingsPane';
 import gql from 'graphql-tag';

@@ -6,10 +6,11 @@ import { observer } from 'mobx-react';
 import { ViewContext } from '../models';
 import { Issue } from '../../../common/types/graphql';
 import { Role } from '../../../common/types/json';
-import { CheckBox, LabelName } from '../controls';
+import { LabelName } from '../controls';
 import { styled } from '../style';
 import classNames from 'classnames';
 import { idToIndex } from '../lib/idToIndex';
+import { CheckBox } from 'skyhook-ui';
 
 const SelectedCell = styled.td`
   width: 2rem;

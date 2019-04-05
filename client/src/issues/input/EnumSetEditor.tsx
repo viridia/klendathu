@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { action, ObservableSet } from 'mobx';
 import { observer } from 'mobx-react';
-import { CheckBox } from '../../controls';
 import { FieldType } from '../../../../common/types/json';
 import styled from 'styled-components';
+import { CheckBox } from 'skyhook-ui';
 
 interface Props {
   field: FieldType;
@@ -16,7 +16,6 @@ const EnumSetLayout = styled.div`
   grid-auto-flow: column;
 
   > label {
-    display: block;
     margin: 4px 1em 4px 0 !important;
   }
 `;

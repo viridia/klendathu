@@ -2,10 +2,7 @@ import * as React from 'react';
 import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { Label, Project } from '../../../common/types/graphql';
-import { Button, Dialog, Chip, Form, FormLabel, TextInput } from 'skyhook-ui';
-import {
-  CheckBox,
-} from '../controls';
+import { Button, Dialog, Chip, Form, FormLabel, TextInput, CheckBox } from 'skyhook-ui';
 import { client, decodeErrorAsException } from '../graphql/client';
 import classNames from 'classnames';
 import LABEL_COLORS from './LabelColors';

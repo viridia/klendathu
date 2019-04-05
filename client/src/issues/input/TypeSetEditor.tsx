@@ -1,9 +1,9 @@
 import bind from 'bind-decorator';
 import * as React from 'react';
-import { CheckBox } from '../../controls';
 import { Template } from '../../../../common/types/json';
 import { ObservableSet } from 'mobx';
 import { styled } from '../../style';
+import { CheckBox } from 'skyhook-ui';
 
 interface Props {
   template: Template;
@@ -16,7 +16,6 @@ const SelectTypesLayout = styled.div`
   grid-auto-flow: column;
 
   > label {
-    display: block;
     margin: 4px 1em 4px 0 !important;
   }
 `;

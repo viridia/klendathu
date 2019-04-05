@@ -90,7 +90,11 @@ export const themeDefault: ThemeInterface = {
       borderColor: dye(0.7, muted),
       textColor: dye(0.5, primary),
     },
-    checkbox: null,
+    checkbox: {
+      bgColor: dye(0.9, primary),
+      borderColor: dye(0.7, muted),
+      textColor: dye(0.5, primary),
+    },
     roundCorners: true,
   },
 
@@ -127,6 +131,7 @@ export const themeDefault: ThemeInterface = {
 
   toggle: null,
   insetToggle: null,
+  tooltip: null,
 };
 
 /** Alternate theme for Mass edit panel */

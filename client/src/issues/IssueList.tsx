@@ -3,7 +3,7 @@ import * as qs from 'qs';
 import { RouteComponentProps } from 'react-router';
 import { ErrorListDisplay } from '../graphql/ErrorDisplay';
 import { ViewContext } from '../models';
-import { LoadingIndicator, CheckBox, ColumnSort } from '../controls';
+import { LoadingIndicator, ColumnSort } from '../controls';
 import { observer } from 'mobx-react';
 import { computed, action } from 'mobx';
 import { EmptyList, Table, TableHead, TableBody } from '../layout';
@@ -23,6 +23,7 @@ import { IssueListEntry } from './IssueListEntry';
 import { keyframes } from 'styled-components';
 import { Issue } from '../../../common/types/graphql';
 import { GroupHeader } from './GroupHeader';
+import { CheckBox } from 'skyhook-ui';
 
 const highlightNew = (color: string) => keyframes`
   from {

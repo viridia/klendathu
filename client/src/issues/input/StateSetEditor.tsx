@@ -2,9 +2,9 @@ import * as React from 'react';
 import bind from 'bind-decorator';
 import { observer } from 'mobx-react';
 import { ObservableSet } from 'mobx';
-import { CheckBox } from '../../controls';
 import { Template } from '../../../../common/types/json';
 import { styled } from '../../style';
+import { CheckBox } from 'skyhook-ui';
 
 interface Props {
   template: Template;
@@ -16,13 +16,7 @@ const SelectStatesLayout = styled.div`
   grid-template-rows: auto auto auto auto;
   grid-auto-flow: column;
   > label {
-    display: flex;
-    align-items: flex-start;
     margin: 4px 1em 4px 0 !important;
-
-    > input {
-      margin-top: 3px;
-    }
   }
 `;
 
