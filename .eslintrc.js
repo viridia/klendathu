@@ -49,7 +49,7 @@ module.exports = {
     // "consistent-return": "error",
 
     // Prefer camelcase, except for properties (which are sometimes JSON)
-    // "camelcase": ["error", { "properties": "never" }],
+    "camelcase": ["error", { "properties": "never" }],
 
     // Require space after commas
     "comma-spacing": ["error", { "before": false, "after": true }],
@@ -275,10 +275,10 @@ module.exports = {
     "@typescript-eslint/no-parameter-properties": "off",
 
     // Disabed because there appears to be a bug in the eslint rule. I'd like to enable.
+    // "@typescript-eslint/explicit-member-accessibility": ["error", { "accessibility": "explicit" }],
     "@typescript-eslint/explicit-member-accessibility": ["off"],
   },
 };
-
 
 // , {
 //   "accessibility": "explicit",
