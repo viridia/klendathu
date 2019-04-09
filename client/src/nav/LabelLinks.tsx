@@ -36,9 +36,9 @@ export function LabelLinks({ prefs, account, project }: Props) {
       {prefs.labels.map(labelId => (
         <li key={labelId}>
           <QueryLink
-              to={`/${account.accountName}/${project.name}/issues`}
-              query={{ label: labelId.split('.', 2)[1] }}
-              strict={true}
+            to={`/${account.accountName}/${project.name}/issues`}
+            query={{ label: labelId.split('.', 2)[1] }}
+            strict={true}
           >
             <LabelName id={labelId} size="small" />
           </QueryLink>

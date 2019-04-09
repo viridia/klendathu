@@ -125,11 +125,11 @@ export class ProgressGrid extends React.Component<Props> {
         <tr>
           {template.states.map(st => (
             <th
-                className={classNames({
-                  collapsed: !issuesByState.has(st.id),
-                  dragOver: st.id === this.dragState && groupId === this.dragGroup,
-                })}
-                key={st.id}
+              className={classNames({
+                collapsed: !issuesByState.has(st.id),
+                dragOver: st.id === this.dragState && groupId === this.dragGroup,
+              })}
+              key={st.id}
             >
               {issuesByState.has(st.id) && st.caption}
             </th>
@@ -145,21 +145,21 @@ export class ProgressGrid extends React.Component<Props> {
             const nonEmptyList = issuesByState.has(st.id);
             return (
               <td
-                  className={classNames({
-                    collapsed: !nonEmptyList,
-                    dragOver: st.id === this.dragState && groupId === this.dragGroup,
-                  })}
-                  data-state={st.id}
-                  data-group={groupId}
-                  key={st.id}
-                  onDragOver={this.onDragOver}
-                  onDragLeave={this.onDragLeave}
-                  onDrop={this.onDrop}
+                className={classNames({
+                  collapsed: !nonEmptyList,
+                  dragOver: st.id === this.dragState && groupId === this.dragGroup,
+                })}
+                data-state={st.id}
+                data-group={groupId}
+                key={st.id}
+                onDragOver={this.onDragOver}
+                onDragLeave={this.onDragLeave}
+                onDrop={this.onDrop}
               >
                 {!nonEmptyList
                   ? <ProgressColumnLabel>{st.caption}</ProgressColumnLabel>
                   : ilist && ilist.map(i =>
-                      <IssueCard {...this.props} key={i.id} issue={i} group={groupId} />)}
+                    <IssueCard {...this.props} key={i.id} issue={i} group={groupId} />)}
               </td>
             );
           })}

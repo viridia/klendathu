@@ -12,13 +12,13 @@ const TypeStatsQuery = gql`
   }
 `;
 
-export function TypesRingChart(props: {}) {
+export function TypesRingChart(_props: {}) {
   const env = React.useContext(ProjectEnv);
   const { project, template } = env;
   return (
     <Query
-        query={TypeStatsQuery}
-        variables={{ project: project.id }}
+      query={TypeStatsQuery}
+      variables={{ project: project.id }}
     >
       {({ loading, error, data }) => {
         if (loading) {
@@ -49,19 +49,19 @@ export function TypesRingChart(props: {}) {
           return (
             <section style={{ width: '100%', height: '320px', position: 'relative' }}>
               <ResponsivePie
-                  innerRadius={0.5}
-                  colorBy={(bk: any) => bk.color}
-                  padAngle={1}
-                  cornerRadius={3}
-                  margin={{
-                    top: 40,
-                    right: 80,
-                    bottom: 40,
-                    left: 80,
-                  }}
-                  borderWidth={1}
-                  borderColor="inherit:darker(0.6)"
-                  data={sortedBuckets}
+                innerRadius={0.5}
+                colorBy={(bk: any) => bk.color}
+                padAngle={1}
+                cornerRadius={3}
+                margin={{
+                  top: 40,
+                  right: 80,
+                  bottom: 40,
+                  left: 80,
+                }}
+                borderWidth={1}
+                borderColor="inherit:darker(0.6)"
+                data={sortedBuckets}
               />
             </section>
           );

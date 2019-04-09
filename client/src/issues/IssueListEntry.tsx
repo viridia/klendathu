@@ -79,10 +79,10 @@ export class IssueListEntry extends React.Component<Props> {
         {project.role >= Role.UPDATER && (
           <SelectedCell className="selected">
             <CheckBox
-                id={issueId}
-                data-id={issue.id}
-                checked={selection.has(issue.id)}
-                onChange={this.onChangeSelection}
+              id={issueId}
+              data-id={issue.id}
+              checked={selection.has(issue.id)}
+              onChange={this.onChangeSelection}
             />
           </SelectedCell>)}
         <IdCell>

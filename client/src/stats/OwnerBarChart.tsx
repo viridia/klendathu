@@ -16,18 +16,18 @@ interface Props {
   open?: boolean;
 }
 
-export function OwnerBarChart(props: Props) {
+export function OwnerBarChart(_props: Props) {
   const env = React.useContext(ProjectEnv);
   const { project } = env;
   return (
     <Query
-        query={OwnerStatsQuery}
-        variables={{
-          project: project.id,
-          filter: {
-            state: Array.from(env.openStates),
-          },
-        }}
+      query={OwnerStatsQuery}
+      variables={{
+        project: project.id,
+        filter: {
+          state: Array.from(env.openStates),
+        },
+      }}
     >
       {({ loading, error, data }) => {
         if (loading) {

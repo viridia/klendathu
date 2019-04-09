@@ -51,11 +51,11 @@ export class WorkflowActions extends React.Component<Props> {
         )}
         {this.actions.map((a, index) => (
           <WorkflowActionControl
-              key={index}
-              execAction={a}
-              issue={issue}
-              vars={this.placeholderEnv}
-              onExec={this.exec}
+            key={index}
+            execAction={a}
+            issue={issue}
+            vars={this.placeholderEnv}
+            onExec={this.exec}
           />
         ))}
       </WorkflowActionsLayout>

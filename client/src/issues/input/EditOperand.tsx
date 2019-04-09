@@ -34,19 +34,19 @@ export function EditOperand(props: Props) {
           case OperandType.SEARCH_TEXT:
             return (
               <TextInput
-                  containerClassName="match-text operand-value"
-                  placeholder="text to match"
-                  value={value}
-                  onChange={(e: any) => onChange(e.target.value)}
+                containerClassName="match-text operand-value"
+                placeholder="text to match"
+                value={value}
+                onChange={(e: any) => onChange(e.target.value)}
               />
             );
           case OperandType.TEXT:
             return (
               <TextInput
-                  containerClassName="match-text operand-value"
-                  placeholder="text to find"
-                  value={value}
-                  onChange={(e: any) => onChange(e.target.value)}
+                containerClassName="match-text operand-value"
+                placeholder="text to find"
+                value={value}
+                onChange={(e: any) => onChange(e.target.value)}
               />
             );
           case OperandType.STATE_SET: {
@@ -62,10 +62,10 @@ export function EditOperand(props: Props) {
             const selectedState = template.states.find(st => st.id === value);
             return (
               <DropdownButton
-                  size="small"
-                  variant={kind}
-                  title={selectedState ? selectedState.caption : 'Choose state...'}
-                  onSelect={onChange}
+                size="small"
+                variant={kind}
+                title={selectedState ? selectedState.caption : 'Choose state...'}
+                onSelect={onChange}
               >
                 {items}
               </DropdownButton>);
@@ -77,10 +77,10 @@ export function EditOperand(props: Props) {
             const selectedType = template.types.find(t => t.id === value);
             return (
               <DropdownButton
-                  size="small"
-                  variant={kind}
-                  title={selectedType ? selectedType.caption : 'Choose type...'}
-                  onSelect={onChange}
+                size="small"
+                variant={kind}
+                title={selectedType ? selectedType.caption : 'Choose type...'}
+                onSelect={onChange}
               >
                 {items}
               </DropdownButton>);
@@ -88,29 +88,29 @@ export function EditOperand(props: Props) {
           case OperandType.LABEL: {
             return (
               <LabelSelector
-                  className="operand-value"
-                  project={project}
-                  selection={value.slice()}
-                  onSelectionChange={onChange}
+                className="operand-value"
+                project={project}
+                selection={value.slice()}
+                onSelectionChange={onChange}
               />);
           }
           case OperandType.USER: {
             return (
               <UserAutocomplete
-                  className="operand-value"
-                  placeholder="(none)"
-                  selection={value}
-                  onSelectionChange={onChange}
+                className="operand-value"
+                placeholder="(none)"
+                selection={value}
+                onSelectionChange={onChange}
               />);
           }
           case OperandType.USERS: {
             return (
               <UserAutocomplete
-                  className="operand-value"
-                  placeholder="(none)"
-                  selection={value ? value.slice() : []}
-                  multiple={true}
-                  onSelectionChange={onChange}
+                className="operand-value"
+                placeholder="(none)"
+                selection={value ? value.slice() : []}
+                multiple={true}
+                onSelectionChange={onChange}
               />);
           }
           case OperandType.ENUM: {

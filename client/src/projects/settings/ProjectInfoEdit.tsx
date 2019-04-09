@@ -79,8 +79,8 @@ export class ProjectInfoEdit extends React.Component<Props> {
           <ProjectTitle>{project.title} [{project.ownerName}/{project.name}]</ProjectTitle>
           <Spacer />
           <Button
-              variant="action"
-              onClick={this.onShowDelete}
+            variant="action"
+            onClick={this.onShowDelete}
           >
             Delete Project
           </Button>
@@ -89,40 +89,40 @@ export class ProjectInfoEdit extends React.Component<Props> {
           <Form onSubmit={this.onSave}>
             <FormLabel>Title:</FormLabel>
             <TextInput
-                style={{ width: '24rem' }}
-                placeholder="title of the project"
-                disabled={project.role < Role.MANAGER}
-                value={this.title}
-                onChange={this.onChangeTitle}
+              style={{ width: '24rem' }}
+              placeholder="title of the project"
+              disabled={project.role < Role.MANAGER}
+              value={this.title}
+              onChange={this.onChangeTitle}
             />
             <FormLabel>Description:</FormLabel>
             <TextArea
-                style={{ width: '24rem', height: '4rem' }}
-                placeholder="description of the project"
-                disabled={project.role < Role.MANAGER}
-                value={this.description}
-                onChange={this.onChangeDescription}
+              style={{ width: '24rem', height: '4rem' }}
+              placeholder="description of the project"
+              disabled={project.role < Role.MANAGER}
+              value={this.description}
+              onChange={this.onChangeDescription}
             />
             <FormControlGroup>
               <CheckBox
-                  checked={this.isPublic}
-                  onChange={this.onChangePublic}
-                  disabled={project.role < Role.MANAGER}
+                checked={this.isPublic}
+                onChange={this.onChangePublic}
+                disabled={project.role < Role.MANAGER}
               >
                 Public
               </CheckBox>
             </FormControlGroup>
-              {/*<tr>
-                <th className="header"><FormLabel>Owner:</FormLabel></th>
-                <td className="owner single-static">
-                  {project.owningUser}
-                </td>
-              </tr>*/}
+            {/*<tr>
+              <th className="header"><FormLabel>Owner:</FormLabel></th>
+              <td className="owner single-static">
+                {project.owningUser}
+              </td>
+            </tr>*/}
             <FormControlGroup>
               <Button
-                  variant="primary"
-                  type="submit"
-                  disabled={!modified || project.role < Role.MANAGER}
+                variant="primary"
+                type="submit"
+                disabled={!modified || project.role < Role.MANAGER}
               >
                 Save
               </Button>
@@ -137,16 +137,16 @@ export class ProjectInfoEdit extends React.Component<Props> {
             cannot be undone.</b></p>
             <p>Type the name of the project to confirm:</p>
             <TextInput
-                value={this.confirmName}
-                onChange={this.onChangeConfirmName}
+              value={this.confirmName}
+              onChange={this.onChangeConfirmName}
             />
           </Dialog.Body>
           <Dialog.Footer>
             <Button variant="default" onClick={this.onHideDelete}>Cancel</Button>
             <Button
-                variant="action"
-                onClick={this.onConfirmDelete}
-                disabled={this.confirmName !== `${project.ownerName}/${project.name}`}
+              variant="action"
+              onClick={this.onConfirmDelete}
+              disabled={this.confirmName !== `${project.ownerName}/${project.name}`}
             >
               Delete
             </Button>
@@ -196,7 +196,7 @@ export class ProjectInfoEdit extends React.Component<Props> {
         id: project.id,
         input,
       },
-    }).then(result => {
+    }).then(() => {
       toast.success(`Project ${project.ownerName}/${project.name} updated successfully.`);
     }, error => {
       const [code] = decodeError(error);
@@ -239,7 +239,7 @@ export class ProjectInfoEdit extends React.Component<Props> {
       variables: {
         id: project.id,
       },
-    }).then(result => {
+    }).then(() => {
       toast.success(`Project ${project.ownerName}/${project.name} deleted.`);
       history.push('/');
     }, error => {

@@ -36,12 +36,12 @@ interface Props {
 export function IssueTimeline({ issue }: Props) {
   return (
     <Query
-        query={IssueTimelineQuery}
-        variables={{
-          issue: issue.id,
-          project: issue.project,
-        }}
-        fetchPolicy="cache-and-network"
+      query={IssueTimelineQuery}
+      variables={{
+        issue: issue.id,
+        project: issue.project,
+      }}
+      fetchPolicy="cache-and-network"
     >
       {({ data, error, loading, subscribeToMore, refetch }) => {
         if (error) {

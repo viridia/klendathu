@@ -21,12 +21,12 @@ export class OrganizationForm extends React.Component<{}> {
           <Form>
             <FormLabel>Organization Name</FormLabel>
             <TextInput
-                value={this.displayName}
-                onChange={this.onChangeDisplayName}
-                maxLength={64}
-                autoFocus={true}
-                validationStatus={this.displayNameError ? 'error' : null}
-                validationMsg={this.displayNameError}
+              value={this.displayName}
+              onChange={this.onChangeDisplayName}
+              maxLength={64}
+              autoFocus={true}
+              validationStatus={this.displayNameError ? 'error' : null}
+              validationMsg={this.displayNameError}
             />
           </Form>
           <section className="org-list">

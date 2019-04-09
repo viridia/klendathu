@@ -49,13 +49,13 @@ export class UserAccountForm extends React.Component<{}> {
             <Form onSubmit={this.onClickSave}>
               <FormLabel>Display Name</FormLabel>
               <TextInput
-                  value={this.displayName}
-                  onChange={this.onChangeDisplayName}
-                  maxLength={64}
-                  placeholder="How you want your name to be displayed"
-                  validationStatus={this.displayNameError ? 'error' : null}
-                  validationMsg={this.displayNameError}
-                  autoFocus={true}
+                value={this.displayName}
+                onChange={this.onChangeDisplayName}
+                maxLength={64}
+                placeholder="How you want your name to be displayed"
+                validationStatus={this.displayNameError ? 'error' : null}
+                validationMsg={this.displayNameError}
+                autoFocus={true}
               />
               <FormControlGroup>
                 <Button variant="primary" onClick={this.onClickSave}>
@@ -64,10 +64,10 @@ export class UserAccountForm extends React.Component<{}> {
               </FormControlGroup>
             </Form>
             <PhotoSelect
-                className="round"
-                value={session.account.photo}
-                defaultPhoto={DefaultAvatar}
-                onChange={this.upload}
+              className="round"
+              value={session.account.photo}
+              defaultPhoto={DefaultAvatar}
+              onChange={this.upload}
             />
           </LayoutEl>
         </SettingsPaneContent>
@@ -94,7 +94,7 @@ export class UserAccountForm extends React.Component<{}> {
     return request.post(`/api/photo/${session.account.id}`, formData, {
       // onUploadProgress: this.onProgress,
     }).then(resp => {
-      return request.patch(`/api/accounts/me`, {
+      return request.patch('/api/accounts/me', {
         photo: resp.data.url,
       }).then(() => {
         session.reload();

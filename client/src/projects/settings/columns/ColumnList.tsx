@@ -60,18 +60,18 @@ export class ColumnList extends React.Component<Props> {
     const { columns, isVisible } = this.props;
     return (
       <ColumnListEl
-          className={classNames('field-list', { dragOver: this.isOver })}
-          onDragOver={this.onDragOver}
-          onDragLeave={this.onDragLeave}
-          onDrop={this.onDrop}
+        className={classNames('field-list', { dragOver: this.isOver })}
+        onDragOver={this.onDragOver}
+        onDragLeave={this.onDragLeave}
+        onDrop={this.onDrop}
       >
         {columns.map((column, index) =>
           (<ColumnListItem
-              key={column.id}
-              className={classNames({
-                insertBefore: this.isOver && this.insertionIndex === 0 && index === 0,
-                insertAfter: this.isOver && this.insertionIndex === index + 1,
-              })}
+            key={column.id}
+            className={classNames({
+              insertBefore: this.isOver && this.insertionIndex === 0 && index === 0,
+              insertAfter: this.isOver && this.insertionIndex === index + 1,
+            })}
           >
             <ColumnEntry column={column} isVisible={isVisible} />
           </ColumnListItem>))}

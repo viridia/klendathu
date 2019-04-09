@@ -117,26 +117,26 @@ export class LoginForm extends React.Component<RouteComponentProps<{}>> {
           <AutoNavigate autoSelect={true} />
           <FormLabel>Email</FormLabel>
           <TextInput
-              id="username"
-              type="text"
-              value={this.email}
-              placeholder="Enter user name"
-              autoComplete="email"
-              onChange={this.onChangeUserName}
-              validationStatus={this.emailError ? 'error' : null}
-              validationMsg={this.emailError}
+            id="username"
+            type="text"
+            value={this.email}
+            placeholder="Enter user name"
+            autoComplete="email"
+            onChange={this.onChangeUserName}
+            validationStatus={this.emailError ? 'error' : null}
+            validationMsg={this.emailError}
           />
           <FormLabel>Password</FormLabel>
           <TextInput
-              id="password"
-              type="password"
-              value={this.password}
-              autoComplete="password"
-              placeholder="Enter password"
-              onChange={this.onChangePassword}
-              name="password"
-              validationStatus={this.passwordError ? 'error' : null}
-              validationMsg={this.passwordError}
+            id="password"
+            type="password"
+            value={this.password}
+            autoComplete="password"
+            placeholder="Enter password"
+            onChange={this.onChangePassword}
+            name="password"
+            validationStatus={this.passwordError ? 'error' : null}
+            validationMsg={this.passwordError}
           />
           <ButtonRow>
             <NavLink to={{ ...this.props.location, pathname: '/account/register' }}>

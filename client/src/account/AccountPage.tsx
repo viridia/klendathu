@@ -25,10 +25,10 @@ export class AccountPage extends React.Component<RouteComponentProps<{}>> {
     return (
       <Page>
         <ToastContainer
-            position="bottom-left"
-            autoClose={10000}
-            hideProgressBar={true}
-            newestOnTop={false}
+          position="bottom-left"
+          autoClose={10000}
+          hideProgressBar={true}
+          newestOnTop={false}
         />
         <AccountPageContent>
           <Switch>

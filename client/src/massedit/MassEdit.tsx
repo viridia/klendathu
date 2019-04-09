@@ -51,9 +51,9 @@ export class MassEdit extends React.Component<Props> {
                 Mass Edit ({env.selection.size} issues selected)
               </div>
               <Button
-                  size="small"
-                  disabled={this.actions.length === 0}
-                  onClick={this.onSave}
+                size="small"
+                disabled={this.actions.length === 0}
+                onClick={this.onSave}
               >
                 Apply Changes
               </Button>
@@ -61,17 +61,17 @@ export class MassEdit extends React.Component<Props> {
             <MassEditActionList>
               {this.actions.map((action, index) => (
                 <MassAction
-                    index={index}
-                    key={index}
-                    action={action}
-                    env={env}
-                    onRemove={this.onRemoveAction}
-                    onChange={this.onChangeAction}
-                />))}
-              <MassAction
+                  index={index}
+                  key={index}
+                  action={action}
                   env={env}
                   onRemove={this.onRemoveAction}
                   onChange={this.onChangeAction}
+                />))}
+              <MassAction
+                env={env}
+                onRemove={this.onRemoveAction}
+                onChange={this.onChangeAction}
               />
             </MassEditActionList>
           </MassEditCard>

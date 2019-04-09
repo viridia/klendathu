@@ -18,10 +18,10 @@ export function handleAxiosError(error: AxiosError) {
         case 404: throw new RequestError(Errors.NOT_FOUND);
         case 409: throw new RequestError(Errors.CONFLICT);
         default:
-        throw new RequestError(Errors.UNKNOWN, {
-          status: error.response.status,
-          message: error.message,
-        });
+          throw new RequestError(Errors.UNKNOWN, {
+            status: error.response.status,
+            message: error.message,
+          });
       }
     }
   }
@@ -30,6 +30,6 @@ export function handleAxiosError(error: AxiosError) {
 }
 
 export function createUserAccount(email: string, password: string): Promise<LoginResponse> {
-  return request.post(`/auth/signup`, { email, password })
-  .then(resp => resp.data, handleAxiosError);
+  return request.post('/auth/signup', { email, password })
+    .then(resp => resp.data, handleAxiosError);
 }

@@ -48,20 +48,20 @@ export class AddMemberDialog extends React.Component<Props> {
     const { project } = env;
     return (
       <Dialog
-          open={open}
-          onOpen={this.onOpen}
-          onClose={onClose}
-          className="add-member"
+        open={open}
+        onOpen={this.onOpen}
+        onClose={onClose}
+        className="add-member"
       >
         <Dialog.Header hasClose={true}>Add Project Member</Dialog.Header>
         <Dialog.Body>
           <BodyLayout>
             <UserAutocomplete
-                placeholder="select user..."
-                className="user"
-                selection={this.user}
-                autoFocus={true}
-                onSelectionChange={this.onChangeUser}
+              placeholder="select user..."
+              className="user"
+              selection={this.user}
+              autoFocus={true}
+              onSelectionChange={this.onChangeUser}
             />
             <RoleSelector value={this.role} maxRole={project.role} onChange={this.onSelectRole} />
           </BodyLayout>
@@ -69,9 +69,9 @@ export class AddMemberDialog extends React.Component<Props> {
         <Dialog.Footer>
           <Button onClick={onClose}>Cancel</Button>
           <Button
-              onClick={this.onAddMember}
-              disabled={this.user === null || this.role === null || this.busy}
-              variant="primary"
+            onClick={this.onAddMember}
+            disabled={this.user === null || this.role === null || this.busy}
+            variant="primary"
           >
             Add
           </Button>

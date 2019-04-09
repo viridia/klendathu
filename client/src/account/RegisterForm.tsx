@@ -59,39 +59,39 @@ export class RegisterForm extends React.Component<RouteComponentProps<{}>> {
       <RegisterCard>
         <header>Create Account</header>
         <RegisterFormEl layout="stacked" className="signup-form card" onSubmit={this.onSubmit}>
-            <FormLabel>Email</FormLabel>
-            <TextInput
-                id="email"
-                type="text"
-                value={this.email}
-                placeholder="Enter email address"
-                autoComplete="email"
-                onChange={this.onChangeEmail}
-                validationStatus={this.emailError ? 'error' : null}
-                validationMsg={this.emailError}
-            />
-            <FormLabel>Password</FormLabel>
-            <TextInput
-                id="password"
-                type="password"
-                value={this.password}
-                placeholder="Choose a password"
-                autoComplete="new-password"
-                onChange={this.onChangePassword}
-                validationStatus={this.passwordError ? 'error' : null}
-                validationMsg={this.passwordError}
-            />
-            <FormLabel>Confirm Password</FormLabel>
-            <TextInput
-                id="confirm-password"
-                type="password"
-                value={this.password2}
-                placeholder="Re-enter your password"
-                autoComplete="new-password"
-                onChange={this.onChangePassword2}
-                validationStatus={this.password2Error ? 'error' : null}
-                validationMsg={this.password2Error}
-            />
+          <FormLabel>Email</FormLabel>
+          <TextInput
+            id="email"
+            type="text"
+            value={this.email}
+            placeholder="Enter email address"
+            autoComplete="email"
+            onChange={this.onChangeEmail}
+            validationStatus={this.emailError ? 'error' : null}
+            validationMsg={this.emailError}
+          />
+          <FormLabel>Password</FormLabel>
+          <TextInput
+            id="password"
+            type="password"
+            value={this.password}
+            placeholder="Choose a password"
+            autoComplete="new-password"
+            onChange={this.onChangePassword}
+            validationStatus={this.passwordError ? 'error' : null}
+            validationMsg={this.passwordError}
+          />
+          <FormLabel>Confirm Password</FormLabel>
+          <TextInput
+            id="confirm-password"
+            type="password"
+            value={this.password2}
+            placeholder="Re-enter your password"
+            autoComplete="new-password"
+            onChange={this.onChangePassword2}
+            validationStatus={this.password2Error ? 'error' : null}
+            validationMsg={this.password2Error}
+          />
           <ButtonRow>
             <NavLink to={{ ...this.props.location, pathname: '/account/login' }}>Sign In</NavLink>
             <NavContainer to={next || { pathname: '/' }}>

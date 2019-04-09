@@ -20,12 +20,12 @@ export class UserAutocomplete extends React.Component<Props> {
   public render() {
     return (
       <Autocomplete
-          {...this.props}
-          onSearch={this.onSearch}
-          onGetValue={this.onGetValue}
-          onGetSortKey={this.onGetSortKey}
-          onRenderSuggestion={this.onRenderSuggestion}
-          onRenderSelection={this.onRenderSelection}
+        {...this.props}
+        onSearch={this.onSearch}
+        onGetValue={this.onGetValue}
+        onGetSortKey={this.onGetSortKey}
+        onRenderSuggestion={this.onRenderSuggestion}
+        onRenderSelection={this.onRenderSelection}
       />
     );
   }

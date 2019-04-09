@@ -77,13 +77,13 @@ export class Server {
   }
 
   public stop() {
-    logger.info(`Shutting down...`);
+    logger.info('Shutting down...');
     this.httpServer.close();
     this.client.close();
   }
 
   private getContext(
-    { req, connection }: { req: express.Request, connection: any }): Context {
+    { req, connection }: { req: express.Request; connection: any }): Context {
     if (connection) {
       return connection.context;
     }

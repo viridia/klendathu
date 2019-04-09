@@ -19,7 +19,7 @@ export const queries = {
     const result = await templates.findOne<TemplateRecord>({
       owner: new ObjectID(owner),
       name,
-     });
+    });
     return result;
   },
 };

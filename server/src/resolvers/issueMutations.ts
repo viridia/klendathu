@@ -195,14 +195,14 @@ export const mutations = {
     if (input.linked) {
       const linkedIssueIds = new Set(input.linked.map(link => link.to));
       const linkedIssues = await context.issues
-          .find({ _id: { $in: Array.from(linkedIssueIds) } }).toArray();
+        .find({ _id: { $in: Array.from(linkedIssueIds) } }).toArray();
       for (const link of linkedIssues) {
         linkedIssueIds.delete(link._id);
       }
       if (linkedIssueIds.size > 0) {
         logger.error(
-            'Attempt to link to non-existent issue:',
-            { user, id, links: Array.from(linkedIssueIds) });
+          'Attempt to link to non-existent issue:',
+          { user, id, links: Array.from(linkedIssueIds) });
         throw new UserInputError(Errors.INVALID_LINK);
       }
     }
@@ -482,7 +482,7 @@ export const mutations = {
       const linksToUpdate: IssueLinkRecord[] = [];
 
       // Change records for the other side of the link.
-      const addChangeRecord = (iss: string, ch: { before?: Relation, after?: Relation }) => {
+      const addChangeRecord = (iss: string, ch: { before?: Relation; after?: Relation }) => {
         timelineRecordsToInsert.push({
           project: project._id,
           by: context.user._id,
@@ -494,12 +494,12 @@ export const mutations = {
 
       // Links from this issue to another issue, indexed by target
       const fwdMap = new Map<string, IssueLinkRecord>(links
-          .filter(link => link.from === issue._id)
-          .map(link => [link.to, link] as [string, IssueLinkRecord]));
+        .filter(link => link.from === issue._id)
+        .map(link => [link.to, link] as [string, IssueLinkRecord]));
       // Links to this issue from another issue, indexed by source
       const rvsMap = new Map<string, IssueLinkRecord>(links
-          .filter(link => link.to === issue._id)
-          .map(link => [link.from, link] as [string, IssueLinkRecord]));
+        .filter(link => link.to === issue._id)
+        .map(link => [link.from, link] as [string, IssueLinkRecord]));
       change.linked = [];
 
       if ('linked' in input) {
@@ -526,7 +526,7 @@ export const mutations = {
             if (rvs.relation !== inv) {
               linksToUpdate.push({ ...rvs, relation: inv });
               change.linked.push({
-                  to: link.to, before: inverseRelations[rvs.relation], after: inv });
+                to: link.to, before: inverseRelations[rvs.relation], after: inv });
               addChangeRecord(rvs.from, { before: rvs.relation, after: link.relation });
             }
           }
@@ -578,7 +578,7 @@ export const mutations = {
             if (rvs.relation !== inv) {
               linksToUpdate.push({ ...rvs, relation: inv });
               change.linked.push({
-                  to: link.to, before: inverseRelations[rvs.relation], after: inv });
+                to: link.to, before: inverseRelations[rvs.relation], after: inv });
               addChangeRecord(rvs.from, { before: rvs.relation, after: link.relation });
             }
           }

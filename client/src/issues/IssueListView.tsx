@@ -6,7 +6,7 @@ import { IssueList } from './IssueList';
 import { FilterParams } from '../filters/FilterParams';
 import { MassEdit } from '../massedit/MassEdit';
 
-interface Props extends RouteComponentProps<{}> {}
+type Props = RouteComponentProps<{}>;
 
 /** Contains the table of issues for a project.
     Handles the mechanics of selection, filtering and column layout. Actual rendering is delegated

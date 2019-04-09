@@ -23,7 +23,7 @@ import { pubsub, Channels, RecordChange, publish } from './pubsub';
 import { withFilter } from 'graphql-subscriptions';
 import { getProjectRole, getProjectAndRole } from '../db/role';
 
-const software = require('../templates/software.json'); // tslint:disable-line
+const software = require('../templates/software.json'); // eslint-disable-line
 
 type ProjectRecordChange = RecordChange<ProjectRecord>;
 
@@ -52,7 +52,7 @@ export const queries = {
 
     // Look up user membership
     const membership = context.user ? await context.memberships
-        .findOne({ user: context.user._id, project: project._id }) : null;
+      .findOne({ user: context.user._id, project: project._id }) : null;
     let role = Role.NONE;
     if (membership) {
       // Set role.
@@ -142,8 +142,8 @@ export const mutations = {
     const accountRecord = await context.accounts.findOne({ _id: new ObjectID(owner) });
     if (!accountRecord) {
       logger.error(
-          'Attempt to create project under non-existent name:',
-          { user: context.user.accountName, owner });
+        'Attempt to create project under non-existent name:',
+        { user: context.user.accountName, owner });
       throw new UserInputError(Errors.INVALID_ACCOUNT);
     }
 
@@ -151,35 +151,35 @@ export const mutations = {
     if (accountRecord.type === 'USER') {
       if (!accountRecord._id.equals(context.user._id)) {
         logger.error(
-            'You can only create projects for yourself.',
-            { user: context.user.accountName, owner });
+          'You can only create projects for yourself.',
+          { user: context.user.accountName, owner });
         throw new UserInputError(Errors.UNAUTHORIZED);
       }
     } else {
       // TODO: Check organization role.
       logger.error(
-          'Creating projects for organizations not implemented yet:',
-          { user: context.user.accountName, owner });
+        'Creating projects for organizations not implemented yet:',
+        { user: context.user.accountName, owner });
       throw new UserInputError(Errors.NOT_IMPLEMENTED);
     }
 
     if (!name || name.length < 1) {
       logger.error(
-          'Project name is required.',
-          { user: context.user.accountName, owner, name });
+        'Project name is required.',
+        { user: context.user.accountName, owner, name });
       throw new UserInputError(Errors.TEXT_MISSING, { field: 'name' });
     } else if (!name.match(/^[a-z][\w\-\.]*$/)) {
       logger.error(
-          'Invalid project name.',
-          { user: context.user.accountName, owner, name });
+        'Invalid project name.',
+        { user: context.user.accountName, owner, name });
       throw new UserInputError(Errors.TEXT_INVALID_CHARS, { field: 'name' });
     }
 
     const existing = await context.projects.findOne({ owner: accountRecord._id, name });
     if (existing) {
       logger.error(
-          'A project with that name already exists.',
-          { user: context.user.accountName, owner, name });
+        'A project with that name already exists.',
+        { user: context.user.accountName, owner, name });
       throw new UserInputError(Errors.CONFLICT, { field: 'name' });
     }
 
@@ -332,7 +332,7 @@ export const subscriptions = {
 
         // Lookup membership
         return getProjectRole(context.db, context.user, project)
-            .then(role => role !== Role.NONE);
+          .then(role => role !== Role.NONE);
       }
     ),
     resolve: (payload: ProjectRecordChange, args: any, context: Context) => {
@@ -354,7 +354,7 @@ export const subscriptions = {
 
         // Project must be visible
         return getProjectRole(context.db, context.user, project)
-            .then(role => role !== Role.NONE);
+          .then(role => role !== Role.NONE);
       }
     ),
     resolve: (payload: ProjectRecordChange, args: any, context: Context) => {

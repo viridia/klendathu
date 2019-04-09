@@ -28,11 +28,11 @@ export function ProjectMembers(props: {}) {
   const { project } = env;
   return (
     <Query
-        query={ProjectMembersQuery}
-        variables={{
-          project: project.id,
-        }}
-        fetchPolicy="cache-and-network"
+      query={ProjectMembersQuery}
+      variables={{
+        project: project.id,
+      }}
+      fetchPolicy="cache-and-network"
     >
       {({ loading, error, data, refetch, subscribeToMore }) => {
         if (loading && !(data && data.labels)) {
@@ -46,7 +46,7 @@ export function ProjectMembers(props: {}) {
             variables: {
               project: project.id,
             },
-            updateQuery: (prev, { subscriptionData }) => {
+            updateQuery: (/*prev, { subscriptionData }*/) => {
               // For the moment we're just going to refresh.
               // console.log('subscriptionData', subscriptionData);
               refetch();

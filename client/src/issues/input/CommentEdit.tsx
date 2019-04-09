@@ -34,17 +34,17 @@ export class CommentEdit extends React.Component<Props> {
     return (
       <CommentEditLayout>
         <TextArea
-            containerClassName="comment-container"
-            className="comment-entry"
-            disabled={disabled}
-            value={this.newComment}
-            placeholder="Leave a comment... (markdown format supported)"
-            onChange={this.onChangeCommentBody}
+          containerClassName="comment-container"
+          className="comment-entry"
+          disabled={disabled}
+          value={this.newComment}
+          placeholder="Leave a comment... (markdown format supported)"
+          onChange={this.onChangeCommentBody}
         />
         <Button
-            title="add comment"
-            disabled={disabled || this.newComment.length === 0}
-            onClick={this.onAddComment}
+          title="add comment"
+          disabled={disabled || this.newComment.length === 0}
+          onClick={this.onAddComment}
         >
           Comment
         </Button>

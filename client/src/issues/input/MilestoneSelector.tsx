@@ -86,20 +86,20 @@ export class MilestoneSelector extends React.Component<Props> {
     return (
       <MilestoneSelectorLayout>
         <AutocompleteMilestones
-            className={className}
-            selection={env.getMilestone(selection)}
-            onSelectionChange={onSelectionChange}
-            onSearch={this.onSearchMilestones}
-            onGetValue={this.onGetValue}
-            onGetSortKey={this.onGetSortKey}
-            onRenderSuggestion={this.onRenderSuggestion}
-            onRenderSelection={this.onRenderSelection}
+          className={className}
+          selection={env.getMilestone(selection)}
+          onSelectionChange={onSelectionChange}
+          onSearch={this.onSearchMilestones}
+          onGetValue={this.onGetValue}
+          onGetSortKey={this.onGetSortKey}
+          onRenderSuggestion={this.onRenderSuggestion}
+          onRenderSelection={this.onRenderSelection}
         />
         <Button size="small" onClick={this.onShowDialog}>&hellip;</Button>
         <Dialog
-            open={this.showDialog}
-            onClose={this.onHideDialog}
-            className="choose-milestone-dialog"
+          open={this.showDialog}
+          onClose={this.onHideDialog}
+          className="choose-milestone-dialog"
         >
           <Dialog.Header hasClose={true}>Select Milestone</Dialog.Header>
           <Dialog.Body>
@@ -113,9 +113,9 @@ export class MilestoneSelector extends React.Component<Props> {
               <tbody>
                 {env.sortedMilestones.map(m => (
                   <MilestoneRow
-                      key={m.id}
-                      className={classNames({ selected: m === this.milestone})}
-                      onClick={e => { this.milestone = m; }}
+                    key={m.id}
+                    className={classNames({ selected: m === this.milestone})}
+                    onClick={e => { this.milestone = m; }}
                   >
                     <td className="name">{m.name}</td>
                     <td className={classNames('status center', m.status.toLowerCase())}>

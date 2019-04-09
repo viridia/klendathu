@@ -38,16 +38,16 @@ export class ProjectMemberList extends React.Component<Props> {
       <SettingsPane>
         <AddMemberDialog env={env} open={this.showAddMember} onClose={this.onHideAddMember}/>
         <SetRoleDialog
-            user={this.setRoleUser}
-            env={env}
-            open={!!this.setRoleUser}
-            onClose={this.onHideSetRole}
+          user={this.setRoleUser}
+          env={env}
+          open={!!this.setRoleUser}
+          onClose={this.onHideSetRole}
         />
         <RemoveMemberDialog
-            user={this.removeMemberUser}
-            env={env}
-            open={!!this.removeMemberUser}
-            onClose={this.onHideRemoveMember}
+          user={this.removeMemberUser}
+          env={env}
+          open={!!this.removeMemberUser}
+          onClose={this.onHideRemoveMember}
         />
         <header>
           <CardTitle>Project members</CardTitle>
@@ -87,20 +87,20 @@ export class ProjectMemberList extends React.Component<Props> {
           &nbsp;
           {project.role >= Role.MANAGER && (
             <Button
-                size="smaller"
-                variant="action"
-                disabled={disabled}
-                onClick={() => { this.onShowSetRole(member.user); }}
+              size="smaller"
+              variant="action"
+              disabled={disabled}
+              onClick={() => { this.onShowSetRole(member.user); }}
             >
               Change&hellip;
             </Button>
           )}
           {project.role >= Role.MANAGER && (
             <Button
-                size="smaller"
-                variant="action"
-                disabled={disabled}
-                onClick={() => { this.onShowRemoveMember(member.user); }}
+              size="smaller"
+              variant="action"
+              disabled={disabled}
+              onClick={() => { this.onShowRemoveMember(member.user); }}
             >
               Remove
             </Button>

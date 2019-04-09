@@ -19,11 +19,10 @@ function deleteMilestone(milestone: Milestone, env: ViewContext): Promise<void> 
   return client.mutate<DeleteMilestoneMutationResult>({
     mutation: DeleteMilestoneMutation,
     variables: { id: milestone.id }
-  }).then(({ data, errors }) => {
+  }).then(({ /* data, */ errors }) => {
     if (errors) {
       env.error = errors[0];
     }
-    return;
   }, error => {
     env.mutationError = error;
   });
@@ -50,15 +49,15 @@ export function DeleteMilestoneDialog({ open, onClose, milestone }: Props) {
       <Dialog.Footer>
         <Button onClick={onClose}>Cancel</Button>
         <Button
-            onClick={() => {
-              setBusy(true);
-              deleteMilestone(milestone, env).then(() => {
-                setBusy(false);
-                onClose();
-              });
-            }}
-            disabled={busy}
-            variant="primary"
+          onClick={() => {
+            setBusy(true);
+            deleteMilestone(milestone, env).then(() => {
+              setBusy(false);
+              onClose();
+            });
+          }}
+          disabled={busy}
+          variant="primary"
         >
           Delete
         </Button>

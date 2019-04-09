@@ -655,7 +655,7 @@ describe('issues', () => {
           id: issueId,
           input: {
             ...testData,
-            labels: [ l1.toHexString(), l2.toHexString() ]
+            labels: [l1.toHexString(), l2.toHexString()]
           }
         },
       });
@@ -665,7 +665,7 @@ describe('issues', () => {
       expect(qres.errors).toBeUndefined();
       expect(qres.data.issue).toMatchObject({
         ...expectedResponse,
-        labels: [ l1.toHexString(), l2.toHexString() ]
+        labels: [l1.toHexString(), l2.toHexString()]
       });
 
       const cres = await query({ query: TimelineQuery, variables: { project, issue: issueId } });
@@ -673,7 +673,7 @@ describe('issues', () => {
       expect(cres.data.timeline.results).toBeArrayOfSize(1);
       expect(cres.data.timeline.results[0]).toMatchObject({
         labels: {
-          added: [ l1.toHexString(), l2.toHexString() ],
+          added: [l1.toHexString(), l2.toHexString()],
           removed: [],
         },
       });
@@ -690,7 +690,7 @@ describe('issues', () => {
           id: issueId,
           input: {
             ...testData,
-            addLabels: [ l1.toHexString(), l2.toHexString() ]
+            addLabels: [l1.toHexString(), l2.toHexString()]
           }
         },
       });
@@ -700,7 +700,7 @@ describe('issues', () => {
       expect(qres.errors).toBeUndefined();
       expect(qres.data.issue).toMatchObject({
         ...expectedResponse,
-        labels: [ l1.toHexString(), l2.toHexString() ]
+        labels: [l1.toHexString(), l2.toHexString()]
       });
 
       const cres = await query({ query: TimelineQuery, variables: { project, issue: issueId } });
@@ -708,7 +708,7 @@ describe('issues', () => {
       expect(cres.data.timeline.results).toBeArrayOfSize(1);
       expect(cres.data.timeline.results[0]).toMatchObject({
         labels: {
-          added: [ l1.toHexString(), l2.toHexString() ],
+          added: [l1.toHexString(), l2.toHexString()],
           removed: [],
         },
       });
@@ -722,7 +722,7 @@ describe('issues', () => {
           id: issueId,
           input: {
             ...testData,
-            addLabels: [ l1.toHexString(), l3.toHexString() ]
+            addLabels: [l1.toHexString(), l3.toHexString()]
           }
         },
       });
@@ -732,7 +732,7 @@ describe('issues', () => {
       expect(qres2.errors).toBeUndefined();
       expect(qres2.data.issue).toMatchObject({
         ...expectedResponse,
-        labels: [ l1.toHexString(), l2.toHexString(), l3.toHexString() ]
+        labels: [l1.toHexString(), l2.toHexString(), l3.toHexString()]
       });
 
       const cres2 = await query({ query: TimelineQuery, variables: { project, issue: issueId } });
@@ -740,7 +740,7 @@ describe('issues', () => {
       expect(cres2.data.timeline.results).toBeArrayOfSize(1);
       expect(cres2.data.timeline.results[0]).toMatchObject({
         labels: {
-          added: [ l3.toHexString() ],
+          added: [l3.toHexString()],
           removed: [],
         },
       });
@@ -757,7 +757,7 @@ describe('issues', () => {
           id: issueId,
           input: {
             ...testData,
-            addLabels: [ l1.toHexString(), l2.toHexString() ]
+            addLabels: [l1.toHexString(), l2.toHexString()]
           }
         },
       });
@@ -770,7 +770,7 @@ describe('issues', () => {
           id: issueId,
           input: {
             ...testData,
-            removeLabels: [ l1.toHexString(), l3.toHexString() ]
+            removeLabels: [l1.toHexString(), l3.toHexString()]
           }
         },
       });
@@ -780,7 +780,7 @@ describe('issues', () => {
       expect(qres.errors).toBeUndefined();
       expect(qres.data.issue).toMatchObject({
         ...expectedResponse,
-        labels: [ l2.toHexString() ]
+        labels: [l2.toHexString()]
       });
 
       const cres = await query({ query: TimelineQuery, variables: { project, issue: issueId } });
@@ -789,7 +789,7 @@ describe('issues', () => {
       expect(cres.data.timeline.results[0]).toMatchObject({
         labels: {
           added: [],
-          removed: [ l1.toHexString() ],
+          removed: [l1.toHexString()],
         },
       });
     });
@@ -1570,7 +1570,7 @@ describe('issues', () => {
           input: {
             summary: 'Coalesced summary',
             description: 'Coalesced description',
-            labels: [ l1.toHexString() ],
+            labels: [l1.toHexString()],
           }
         },
       });
@@ -1582,7 +1582,7 @@ describe('issues', () => {
           input: {
             owner: server.users.kitten._id.toHexString(),
             cc: [server.users.dflores._id.toHexString()],
-            addLabels: [ l2.toHexString() ],
+            addLabels: [l2.toHexString()],
           }
         },
       });
@@ -1601,7 +1601,7 @@ describe('issues', () => {
         description: { before: 'first issue', after: 'Coalesced description' },
         owner: { before: null, after: server.users.kitten._id.toHexString() },
         cc: { removed: [], added: [server.users.dflores._id.toHexString()] },
-        labels: { removed: [], added: [ l1.toHexString(), l2.toHexString() ] },
+        labels: { removed: [], added: [l1.toHexString(), l2.toHexString()] },
         // custom: [
         //   { key: 'a', before: null, after: 1 },
         //   { key: 'b', before: null, after: 2 },

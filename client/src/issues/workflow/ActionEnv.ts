@@ -4,9 +4,9 @@ import { session } from '../../models';
 /** Set of variables that can be used in workflow action expressions. */
 export class ActionEnv {
   constructor(
-    private issue: Issue,
-    private timeline: TimelineEntry[],
-    private props: Map<string, string>) {}
+      private issue: Issue,
+      private timeline: TimelineEntry[],
+      private props: Map<string, string>) {}
 
   public get(key: string): string {
     if (this.props.has(key)) {

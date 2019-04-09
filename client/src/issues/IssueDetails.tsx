@@ -169,18 +169,18 @@ export class IssueDetails extends React.Component<Props> {
         <CopyLink url={window.location.toString()} title="Copy issue link to clipboard" />
         <ButtonGroup className="issue-actions">
           <NavContainer
-              to={{
-                pathname: `/${account.accountName}/${project.name}/edit/${this.issueIndex}`,
-                state: { ...location.state, back: here },
-              }}
+            to={{
+              pathname: `/${account.accountName}/${project.name}/edit/${this.issueIndex}`,
+              state: { ...location.state, back: here },
+            }}
           >
             <Button title="Edit issue" disabled={project.role < Role.UPDATER}>Edit</Button>
           </NavContainer>
           <Button
-              title="Delete issue"
-              variant="default"
-              disabled={project.role < Role.MANAGER}
-              onClick={this.onDeleteIssue}
+            title="Delete issue"
+            variant="default"
+            disabled={project.role < Role.MANAGER}
+            onClick={this.onDeleteIssue}
           >
             Delete
           </Button>

@@ -16,7 +16,7 @@ function Forms() {
             <FormLabel>Last Name:</FormLabel>
             <TextInput validationStatus="error" validationMsg="Name must not be empty!" />
             <FormLabel>Address:</FormLabel>
-            <TextInput name="street" validationStatus="warning" validationMsg="Weak password"  />
+            <TextInput name="street" validationStatus="warning" validationMsg="Weak password" />
             <FormLabel>City:</FormLabel>
             <TextInput name="city" />
             <FormLabel>State:</FormLabel>

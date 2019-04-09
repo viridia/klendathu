@@ -41,10 +41,10 @@ function AcOneState(props: any) {
   const [selection, setSelection] = useState<string>(null);
   return (
     <StringAutocomplete
-        selection={selection}
-        onSearch={searchStates}
-        onSelectionChange={(s: string) => setSelection(s)}
-        onRenderSelection={s => <Chip color="#9cc">{s}</Chip>}
+      selection={selection}
+      onSearch={searchStates}
+      onSelectionChange={(s: string) => setSelection(s)}
+      onRenderSelection={s => <Chip color="#9cc">{s}</Chip>}
     />
   );
 }
@@ -53,11 +53,11 @@ function AcOneStateSuggest(props: any) {
   const [selection, setSelection] = useState<string>('California');
   return (
     <StringAutocomplete
-        selection={selection}
-        suggest={true}
-        onSearch={searchStates}
-        onSelectionChange={(s: string) => setSelection(s)}
-        onRenderSelection={s => <span>{s}</span>}
+      selection={selection}
+      suggest={true}
+      onSearch={searchStates}
+      onSelectionChange={(s: string) => setSelection(s)}
+      onRenderSelection={s => <span>{s}</span>}
     />
   );
 }
@@ -66,11 +66,11 @@ function AcMultipleStates(props: any) {
   const [selection, setSelection] = useState<string[]>(['Nevada']);
   return (
     <StringAutocomplete
-        selection={selection}
-        onSearch={searchStates}
-        onSelectionChange={(s: string[]) => setSelection(s)}
-        onRenderSelection={s => <Chip color="#cc9">{s}</Chip>}
-        multiple={true}
+      selection={selection}
+      onSearch={searchStates}
+      onSelectionChange={(s: string[]) => setSelection(s)}
+      onRenderSelection={s => <Chip color="#cc9">{s}</Chip>}
+      multiple={true}
     />
   );
 }

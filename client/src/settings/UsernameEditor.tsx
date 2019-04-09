@@ -66,7 +66,7 @@ export class UsernameEditor extends React.Component<Props> {
       this.status = 'error';
       this.message = 'Longer please';
       this.props.onChangeAvailable(false);
-    } else if (!value.match(/^[\w\-\.\_]+$/)) {
+    } else if (!value.match(/^[\w\-._]+$/)) {
       this.status = 'error';
       this.message = 'Invalid character';
       this.props.onChangeAvailable(false);
@@ -78,25 +78,25 @@ export class UsernameEditor extends React.Component<Props> {
       this.message = 'Checking availability...';
       autorun(() => {
         client.query({ query: accountNameQuery, variables: { accountName: value }})
-        .then(result => {
-          if (result.errors) {
-            this.status = 'error';
-            this.message = 'Error checking name';
-          } else if (result.loading) {
-            this.status = 'warning';
-            this.message = 'Checking...';
-          } else {
-            const { account } = result.data as { account: Account };
-            this.props.onChangeAvailable(!account);
-            if (account) {
+          .then(result => {
+            if (result.errors) {
               this.status = 'error';
-              this.message = 'Name is not available';
+              this.message = 'Error checking name';
+            } else if (result.loading) {
+              this.status = 'warning';
+              this.message = 'Checking...';
             } else {
-              this.status = 'success';
-              this.message = 'Name is available';
+              const { account } = result.data as { account: Account };
+              this.props.onChangeAvailable(!account);
+              if (account) {
+                this.status = 'error';
+                this.message = 'Name is not available';
+              } else {
+                this.status = 'success';
+                this.message = 'Name is available';
+              }
             }
-          }
-        });
+          });
       }, { delay: 10 });
     }
   }

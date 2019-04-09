@@ -103,12 +103,12 @@ export class LabelListView extends React.Component<Props> {
     return (
       <ModeContent>
         <LabelDialog
-            open={this.showCreate}
-            project={project}
-            label={this.labelToUpdate}
-            visible={this.labelToUpdate && visibleLabels.has(this.labelToUpdate.id)}
-            onClose={this.onHideCreate}
-            onInsertLabel={this.onCreateLabel}
+          open={this.showCreate}
+          project={project}
+          label={this.labelToUpdate}
+          visible={this.labelToUpdate && visibleLabels.has(this.labelToUpdate.id)}
+          onClose={this.onHideCreate}
+          onInsertLabel={this.onCreateLabel}
         />
         {this.showDelete && (
           <Dialog open={true} onClose={this.onHideDelete}>
@@ -139,11 +139,11 @@ export class LabelListView extends React.Component<Props> {
     const { project } = this.props.context;
     return (
       <Query
-          query={LabelListQuery}
-          variables={{
-            project: project.id,
-          }}
-          fetchPolicy="cache-and-network"
+        query={LabelListQuery}
+        variables={{
+          project: project.id,
+        }}
+        fetchPolicy="cache-and-network"
       >
         {({ loading, error, data, refetch, subscribeToMore }) => {
           if (loading && !(data && data.labels)) {
@@ -157,7 +157,7 @@ export class LabelListView extends React.Component<Props> {
               variables: {
                 project: project.id,
               },
-              updateQuery: (prev, { subscriptionData }) => {
+              updateQuery: (/* prev, { subscriptionData } */) => {
                 // For the moment we're just going to refresh.
                 // console.log('subscriptionData', subscriptionData);
                 refetch();
@@ -204,9 +204,9 @@ export class LabelListView extends React.Component<Props> {
         <td className="label-id center">{id}</td>
         <td className="visible center">
           <CheckBox
-              data-id={label.id}
-              checked={visibleLabels.has(label.id)}
-              onChange={this.onChangeVisible}
+            data-id={label.id}
+            checked={visibleLabels.has(label.id)}
+            onChange={this.onChangeVisible}
           />
         </td>
         <td className="name center">
@@ -216,18 +216,18 @@ export class LabelListView extends React.Component<Props> {
         <td className="created center"><RelativeDate date={label.created} /></td>
         {project.role >= Role.DEVELOPER && (<ActionButtonCell className="right">
           <Button
-              variant="default"
-              className="small"
-              data-label={label.id}
-              onClick={e => this.onShowUpdate(label)}
+            variant="default"
+            className="small"
+            data-label={label.id}
+            onClick={e => this.onShowUpdate(label)}
           >
             Edit
           </Button>
           <Button
-              variant="action"
-              className="small"
-              data-label={label.id}
-              onClick={e => this.onShowDelete(label)}
+            variant="action"
+            className="small"
+            data-label={label.id}
+            onClick={e => this.onShowDelete(label)}
           >
             Delete
           </Button>

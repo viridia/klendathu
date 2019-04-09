@@ -56,7 +56,7 @@ export const queries = {
 
     const user = context.user ? context.user.accountName : null;
     const { project, role } = await getProjectAndRole(
-        context.db, context.user, new ObjectID(query.project));
+      context.db, context.user, new ObjectID(query.project));
     if (!project) {
       logger.error('Query to non-existent project:', { user, project: query.project });
       throw new UserInputError(Errors.NOT_FOUND);
@@ -207,7 +207,7 @@ export const queries = {
       { $match: filter },
       { $addFields: {
         // Add an 'index' field derived from the _id.
-        index: { $toInt: { $arrayElemAt: [{ $split: [ '$_id', '.' ] }, 1] } },
+        index: { $toInt: { $arrayElemAt: [{ $split: ['$_id', '.'] }, 1] } },
         // Sort unassigned (null) owners last.
         ownerSort: { $ifNull: ['$ownerSort', false] },
       }},

@@ -125,9 +125,9 @@ export class MainPage extends React.Component<RouteComponentProps<{}>> {
                         render={props => (<DependenciesView {...props} {...models}/>)}
                       /> */}
                       <Route
-                          path="/:owner/:name/settings/:tab?"
-                          exact={true}
-                          component={ProjectSettings}
+                        path="/:owner/:name/settings/:tab?"
+                        exact={true}
+                        component={ProjectSettings}
                       />
                       <Route component={Dashboard} />
                     </Switch>

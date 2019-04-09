@@ -28,10 +28,10 @@ export async function createTestUserAccount(
     type: 'USER',
   };
   const result = await db.collection<AccountRecord>('accounts')
-      .findOneAndUpdate({ accountName }, { $setOnInsert: account }, {
-        upsert: true,
-        returnOriginal: false,
-      });
+    .findOneAndUpdate({ accountName }, { $setOnInsert: account }, {
+      upsert: true,
+      returnOriginal: false,
+    });
   return result.value;
 }
 

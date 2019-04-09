@@ -46,8 +46,8 @@ export function ProjectSettings(props: RouteComponentProps<{ tab?: string }>) {
         />
         <Route path={`${locationPrefix}/members`} component={ProjectMembers} />
         <Route
-            path={`${locationPrefix}/milestones`}
-            render={() => <MilestoneListView env={env} />}
+          path={`${locationPrefix}/milestones`}
+          render={() => <MilestoneListView env={env} />}
         />
         <Route path={`${locationPrefix}/templates`} />
         <Route path={`${locationPrefix}/workflow`} />

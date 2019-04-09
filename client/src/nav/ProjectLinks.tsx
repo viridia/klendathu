@@ -44,7 +44,7 @@ export function ProjectLinks() {
               {data.projects.map((project: Project) => (
                 <li key={project.id}>
                   <QueryLink
-                      to={`/${project.ownerName}/${project.name}`}
+                    to={`/${project.ownerName}/${project.name}`}
                   >
                     {project.ownerName}/{project.name}
                   </QueryLink>

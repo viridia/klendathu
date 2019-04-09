@@ -117,7 +117,7 @@ export class MassAction extends React.Component<Props> {
       caption: 'Delete',
       type: null,
       // action: 'delete',
-      apply: () => {/* */},
+      apply: () => { /* */ },
     },
   ];
 
@@ -132,20 +132,20 @@ export class MassAction extends React.Component<Props> {
     return (
       <MassActionLayout>
         <DropdownButton
-            className="action-type"
-            size="small"
-            title={caption}
-            onSelect={this.onSelectActionType}
+          className="action-type"
+          size="small"
+          title={caption}
+          onSelect={this.onSelectActionType}
         >
           {items}
         </DropdownButton>
         <section className="action-operand">
           {action && (
             <EditOperand
-                type={action.type}
-                value={action.value}
-                customField={action.customField}
-                onChange={this.onChangeValue}
+              type={action.type}
+              value={action.value}
+              customField={action.customField}
+              onChange={this.onChangeValue}
             />
           )}
         </section>

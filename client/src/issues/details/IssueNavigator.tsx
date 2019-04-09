@@ -23,24 +23,24 @@ export function IssueNavigator({ issue, location }: Props) {
   const [prevIssue, nextIssue] = issues.adjacentIssueIds(issue.id);
   return (
     <ButtonGroup className="issue-nav">
-    <NavContainer
+      <NavContainer
         to={{
           ...location,
           pathname: `/${account.accountName}/${project.name}/${prevIssue}` }}
-    >
-      <Button title="Previous issue" disabled={prevIssue === null}>
-        <ArrowBackIcon />
-      </Button>
-    </NavContainer>
-    <NavContainer
+      >
+        <Button title="Previous issue" disabled={prevIssue === null}>
+          <ArrowBackIcon />
+        </Button>
+      </NavContainer>
+      <NavContainer
         to={{
           ...location,
           pathname: `/${account.accountName}/${project.name}/${nextIssue}` }}
-    >
-      <Button title="Next issue" disabled={nextIssue === null}>
-        <ArrowForwardIcon />
-      </Button>
-    </NavContainer>
-  </ButtonGroup>
-);
+      >
+        <Button title="Next issue" disabled={nextIssue === null}>
+          <ArrowForwardIcon />
+        </Button>
+      </NavContainer>
+    </ButtonGroup>
+  );
 }

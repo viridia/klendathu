@@ -81,7 +81,7 @@ export function relativeDay(time: Date) {
 
 export function RelativeDate(
     { date, brief = false, withPrefix = false }:
-        { date: Date | string, brief?: boolean, withPrefix?: boolean }) {
+    { date: Date | string; brief?: boolean; withPrefix?: boolean }) {
   const d = typeof date === 'string' ? new Date(date) : date;
   return (
     <span className="date" title={format(date, 'MMM Do, YYYY H:mm:ss')}>

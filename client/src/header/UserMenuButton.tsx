@@ -15,10 +15,10 @@ export class UserMenuButton extends React.Component<RouteComponentProps<{}>> {
     const name = session.account && (session.account.display || session.account.accountName);
     return (
       <DropdownButton
-          variant="action"
-          title={name}
-          id="user-menu"
-          alignEnd={true}
+        variant="action"
+        title={name}
+        id="user-menu"
+        alignEnd={true}
       >
         <NavContainer to={{ pathname: '/' }} exact={true}>
           <MenuItem disabled={!name}>Projects</MenuItem>

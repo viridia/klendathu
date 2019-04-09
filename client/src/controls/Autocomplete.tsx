@@ -156,25 +156,25 @@ export class Autocomplete<S> extends React.Component<Props<S>> {
     const editing = this.textValue.length > 0;
     return (
       <Container
-          className={classNames(className,
-            { valid: this.valid, open: this.open, focused: this.focused, editing })}
-          onMouseDown={this.onClickContainer}
+        className={classNames(className,
+          { valid: this.valid, open: this.open, focused: this.focused, editing })}
+        onMouseDown={this.onClickContainer}
       >
         {this.renderSelection()}
         <input
-            className="ac-input"
-            placeholder={selection.length > 0 ? null : placeholder}
-            ref={this.input}
-            autoFocus={autoFocus}
-            value={this.textValue}
-            maxLength={maxLength}
-            onChange={this.onValueChange}
-            onFocus={this.onFocus}
-            onBlur={this.onBlur}
+          className="ac-input"
+          placeholder={selection.length > 0 ? null : placeholder}
+          ref={this.input}
+          autoFocus={autoFocus}
+          value={this.textValue}
+          maxLength={maxLength}
+          onChange={this.onValueChange}
+          onFocus={this.onFocus}
+          onBlur={this.onBlur}
         />
         <SuggestionMenu
-            ref={this.menu as any}
-            className="ac-menu"
+          ref={this.menu as any}
+          className="ac-menu"
         >
           {this.renderSuggestions()}
         </SuggestionMenu>
@@ -189,10 +189,10 @@ export class Autocomplete<S> extends React.Component<Props<S>> {
       const active = index === this.suggestionIndex;
       return (
         <MenuItem
-            className={classNames({ active })}
-            key={value}
-            data-index={index}
-            onClick={e => this.onClickSuggestion(e, s)}
+          className={classNames({ active })}
+          key={value}
+          data-index={index}
+          onClick={e => this.onClickSuggestion(e, s)}
         >
           {onRenderSuggestion(s)}
         </MenuItem>
@@ -206,10 +206,10 @@ export class Autocomplete<S> extends React.Component<Props<S>> {
       const active = index === this.suggestionIndex - this.suggestions.length;
       return (
         <MenuItem
-            className={classNames({ active })}
-            key={value}
-            data-index={index}
-            onClick={e => this.onClickSuggestion(e, s)}
+          className={classNames({ active })}
+          key={value}
+          data-index={index}
+          onClick={e => this.onClickSuggestion(e, s)}
         >
           {onRenderSuggestion(s)}
         </MenuItem>
@@ -365,11 +365,9 @@ export class Autocomplete<S> extends React.Component<Props<S>> {
         }
         break;
       case 'Backspace':
-        {
-          // Remove the last chip from the selection.
-          if (this.input.current.selectionStart === 0 && this.input.current.selectionEnd === 0) {
-            this.deleteLastSelectedItem();
-          }
+        // Remove the last chip from the selection.
+        if (this.input.current.selectionStart === 0 && this.input.current.selectionEnd === 0) {
+          this.deleteLastSelectedItem();
         }
         break;
       case 'Escape':

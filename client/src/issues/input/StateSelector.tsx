@@ -74,8 +74,8 @@ export function StateSelector(props: Props) {
           //   transitions = transitions.filter(st => st !== currState);
           // }
         } else {
-            // No workflow, let them choose any state in the template.
-            transitions = env.template.states.map(st => st.id);
+          // No workflow, let them choose any state in the template.
+          transitions = env.template.states.map(st => st.id);
           // if (currState) {
           //   transitions = transitions.filter(st => st !== currState);
           // }
@@ -84,10 +84,10 @@ export function StateSelector(props: Props) {
           <StateSelectorLayout>
             <FormLabel className="form-label">State</FormLabel>
             {prevState && <RadioButton
-                checked={prevState === nextState}
-                data-state={prevState}
-                onChange={onChange}
-                disabled={!workflow}
+              checked={prevState === nextState}
+              data-state={prevState}
+              onChange={onChange}
+              disabled={!workflow}
             >
               {caption(env.states.get(prevState))}
             </RadioButton>}

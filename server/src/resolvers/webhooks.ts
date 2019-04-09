@@ -47,7 +47,7 @@ export const mutations = {
       await getProjectAndRole(context.db, context.user, new ObjectID(input.project));
     if (!project) {
       logger.error(
-          'Attempt to add webhook to non-existent project:', { user, project: project._id });
+        'Attempt to add webhook to non-existent project:', { user, project: project._id });
       throw new UserInputError(Errors.NOT_FOUND);
     }
 
@@ -82,7 +82,7 @@ export const mutations = {
       await getProjectAndRole(context.db, context.user, new ObjectID(input.project));
     if (!project) {
       logger.error(
-          'Attempt to add webhook to non-existent project:', { user, project: project._id });
+        'Attempt to add webhook to non-existent project:', { user, project: project._id });
       throw new UserInputError(Errors.NOT_FOUND);
     }
 
@@ -127,7 +127,7 @@ export const mutations = {
     }
 
     const { project, role } = await getProjectAndRole(
-        context.db, context.user, record.project);
+      context.db, context.user, record.project);
     if (!project) {
       logger.error('Attempt to remove webhook from non-existent project:', { user, project });
       throw new UserInputError(Errors.NOT_FOUND);

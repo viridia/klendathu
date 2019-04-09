@@ -27,11 +27,11 @@ export class CustomColumnRenderer implements ColumnRenderer {
     return (
       <th className={this.className} key={this.field.id}>
         <ColumnSort
-            column={`custom.${this.field.id}`}
-            sortKey={sort}
-            className="sort"
-            descending={descending}
-            onChangeSort={onChangeSort}
+          column={`custom.${this.field.id}`}
+          sortKey={sort}
+          className="sort"
+          descending={descending}
+          onChangeSort={onChangeSort}
         >
           {this.title}
         </ColumnSort>

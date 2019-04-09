@@ -29,14 +29,14 @@ function ProjectNavLinksImpl(props: Props) {
     <>
       <LeftNavLink to={prefix} exact={true}><PieChartIcon /> Dashboard</LeftNavLink>
       <LeftNavLink
-          to={`${prefix}/issues`}
-          query={{ owner: undefined, label: undefined, type: undefined, state: undefined }}
+        to={`${prefix}/issues`}
+        query={{ owner: undefined, label: undefined, type: undefined, state: undefined }}
       >
         <ListIcon /> All Issues
       </LeftNavLink>
       <LeftNavLink
-          to={`${prefix}/issues`}
-          query={{ owner: 'me', state: 'open' }}
+        to={`${prefix}/issues`}
+        query={{ owner: 'me', state: 'open' }}
       >
         <PersonIcon /> My Open Issues
       </LeftNavLink>

@@ -92,11 +92,11 @@ export class FilterParams extends React.Component<Props> {
           <div className="search-group">
             <Form onSubmit={this.onSearch}>
               <TextInput
-                  className="search"
-                  placeholder="Search"
-                  value={this.search}
-                  onChange={this.onChangeSearch}
-                  onKeyDown={this.onSearchKeyDown}
+                className="search"
+                placeholder="Search"
+                value={this.search}
+                onChange={this.onChangeSearch}
+                onKeyDown={this.onSearchKeyDown}
               >
                 <DismissButton className="clear" onClick={this.onClearSearch} />
               </TextInput>
@@ -115,63 +115,63 @@ export class FilterParams extends React.Component<Props> {
         <FilterTermList onSubmit={this.onApplyFilter}>
           {this.terms.map((term, index) => (
             <FilterTermEditor
-                index={index}
-                key={index}
-                term={term}
-                termsUsed={this.termsUsed}
-                env={env}
-                onRemove={this.onRemoveTerm}
-                onChange={this.onChangeTerm}
-            />))}
-          <FilterTermEditor
-              env={env}
+              index={index}
+              key={index}
+              term={term}
               termsUsed={this.termsUsed}
+              env={env}
               onRemove={this.onRemoveTerm}
               onChange={this.onChangeTerm}
+            />))}
+          <FilterTermEditor
+            env={env}
+            termsUsed={this.termsUsed}
+            onRemove={this.onRemoveTerm}
+            onChange={this.onChangeTerm}
           >
             <Spacer />
             <DropdownButton
-                size="small"
-                title={selectedGroup && selectedGroup.field
-                    ? `Group by ${selectedGroup.caption}` : 'Group by...'}
-                id="group-by"
-                onSelect={this.onSelectGroup}
+              size="small"
+              title={selectedGroup && selectedGroup.field
+                  ? `Group by ${selectedGroup.caption}` : 'Group by...'}
+              id="group-by"
+              onSelect={this.onSelectGroup}
             >
               {GROUP_TERMS.map(gt => (
                 <MenuItem eventKey={gt.field} key={gt.field}>{gt.caption}</MenuItem>
               ))}
             </DropdownButton>
             <Button
-                variant="default"
-                size="small"
-                onClick={this.onClearFilter}
-                disabled={this.terms.length === 0}
+              variant="default"
+              size="small"
+              onClick={this.onClearFilter}
+              disabled={this.terms.length === 0}
             >
               Clear
             </Button>
             <Button
-                variant="default"
-                size="small"
-                onClick={this.onSaveFilter}
-                disabled={this.terms.length === 0}
+              variant="default"
+              size="small"
+              onClick={this.onSaveFilter}
+              disabled={this.terms.length === 0}
             >
               Save Filter As&hellip;
             </Button>
             <Button
-                variant="primary"
-                size="small"
-                onClick={this.onApplyFilter}
-                disabled={location.search === this.queryString}
+              variant="primary"
+              size="small"
+              onClick={this.onApplyFilter}
+              disabled={location.search === this.queryString}
             >
               Apply Filter
             </Button>
           </FilterTermEditor>
           {this.showSaveDialog &&
             <SaveFilterDialog
-                env={env}
-                view={this.props.view}
-                queryString={this.queryString}
-                onClose={this.onCloseSaveDialog}
+              env={env}
+              view={this.props.view}
+              queryString={this.queryString}
+              onClose={this.onCloseSaveDialog}
             />}
         </FilterTermList>
       </Collapse>

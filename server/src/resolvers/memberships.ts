@@ -99,16 +99,16 @@ export const mutations = {
   },
 
   async removeProjectMember(
-    _: any,
-    { project, account }: RemoveProjectMemberMutationArgs,
-    context: Context): Promise<MembershipRecord> {
+      _: any,
+      { project, account }: RemoveProjectMemberMutationArgs,
+      context: Context): Promise<MembershipRecord> {
     if (!context.user) {
       throw new AuthenticationError(Errors.UNAUTHORIZED);
     }
     const user = context.user.accountName;
 
     const { project: pr, role } = await getProjectAndRole(
-        context.db, context.user, new ObjectID(project));
+      context.db, context.user, new ObjectID(project));
     if (!pr) {
       logger.error('Attempt to remove member for non-existent project:', { user, project });
       throw new UserInputError(Errors.NOT_FOUND);
@@ -118,7 +118,7 @@ export const mutations = {
         await context.memberships.findOne({ user: new ObjectID(account), project: pr._id });
     if (!membership) {
       logger.error(
-          'Attempt to remove non-existent project membership:', { user, project, account });
+        'Attempt to remove non-existent project membership:', { user, project, account });
       throw new UserInputError(Errors.NOT_FOUND);
     }
 

@@ -6,7 +6,7 @@ import { RouteComponentProps } from 'react-router';
 import { LoadingIndicator } from '../controls';
 import { ApolloError } from 'apollo-client';
 
-interface Props extends RouteComponentProps<{ owner: string, name: string }> {
+interface Props extends RouteComponentProps<{ owner: string; name: string }> {
   env: ViewContext;
   children: () => JSX.Element;
 }

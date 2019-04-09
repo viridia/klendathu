@@ -47,11 +47,11 @@ export class PhotoSelect extends React.Component<Props> {
           {!value && <div className="caption">Profile Photo</div>}
         </PhotoPreview>
         <input
-            ref={this.fileInput}
-            accept="image/*"
-            type="file"
-            onChange={this.onFileChange}
-            style={{ display: 'none '}}
+          ref={this.fileInput}
+          accept="image/*"
+          type="file"
+          onChange={this.onFileChange}
+          style={{ display: 'none '}}
         />
       </React.Fragment>
     );

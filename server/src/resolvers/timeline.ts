@@ -21,7 +21,7 @@ export const queries = {
 
     const user = context.user ? context.user.accountName : null;
     const { project, role } = await getProjectAndRole(
-        context.db, context.user, new ObjectID(pid));
+      context.db, context.user, new ObjectID(pid));
     if (!project) {
       logger.error('Query to non-existent project:', { user, project: pid });
       throw new UserInputError(Errors.NOT_FOUND);
@@ -60,7 +60,7 @@ export const queries = {
 
     const user = context.user ? context.user.accountName : null;
     const { project, role } = await getProjectAndRole(
-        context.db, context.user, new ObjectID(pid));
+      context.db, context.user, new ObjectID(pid));
     if (!project) {
       logger.error('Query to non-existent project:', { user, project: pid });
       throw new UserInputError(Errors.NOT_FOUND);

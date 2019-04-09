@@ -60,20 +60,20 @@ export class WorkflowInputsDialog extends React.Component<Props> {
     if (input.type === OperandType.ISSUE) {
       return (
         <IssueSelector
-            env={env}
-            selection={outputs.get(input.id)}
-            autoFocus={first}
-            exclude={new Set([issue.id])}
-            onSelectionChange={selection => outputs.set(input.id, selection)}
+          env={env}
+          selection={outputs.get(input.id)}
+          autoFocus={first}
+          exclude={new Set([issue.id])}
+          onSelectionChange={selection => outputs.set(input.id, selection)}
         />
       );
     } else {
       return (
         <EditOperand
-            type={input.type}
-            value={outputs.get(input.id)}
-            customField={null}
-            onChange={value => outputs.set(input.id, value)}
+          type={input.type}
+          value={outputs.get(input.id)}
+          customField={null}
+          onChange={value => outputs.set(input.id, value)}
         />
       );
     }

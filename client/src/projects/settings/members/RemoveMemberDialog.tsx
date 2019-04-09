@@ -34,10 +34,10 @@ export class RemoveMemberDialog extends React.Component<Props> {
     const { open, onClose, user } = this.props;
     return (
       <Dialog
-          open={open}
-          onClose={onClose}
-          className="set-role"
-          style={{ minWidth: '25rem' }}
+        open={open}
+        onClose={onClose}
+        className="set-role"
+        style={{ minWidth: '25rem' }}
       >
         <Dialog.Header hasClose={true}>
           <span>Remove <AccountName id={user} /> from project?</span>
@@ -45,9 +45,9 @@ export class RemoveMemberDialog extends React.Component<Props> {
         <Dialog.Footer>
           <Button onClick={onClose}>Cancel</Button>
           <Button
-              onClick={this.onSubmit}
-              disabled={this.busy}
-              variant="primary"
+            onClick={this.onSubmit}
+            disabled={this.busy}
+            variant="primary"
           >
             Remove
           </Button>

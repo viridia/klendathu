@@ -33,7 +33,7 @@ const AddCommentMutation = gql`
   ${fragments.timelineEntry}
 `;
 
-export interface IssueProviderProps extends RouteComponentProps<{ project: string, id: string }> {}
+export declare type IssueProviderProps = RouteComponentProps<{ project: string; id: string }>;
 
 type IssueChangeResult = Pick<Subscription, 'issueChanged'>;
 type AddCommentResult = Pick<Mutation, 'addComment'>;
@@ -65,11 +65,11 @@ export const IssueDetailsView = (props: IssueProviderProps) => {
   return (
     <React.Fragment>
       <Query
-          query={IssueDetailsQuery}
-          variables={{
-            issue: `${project.id}.${id}`,
-          }}
-          fetchPolicy="cache-and-network"
+        query={IssueDetailsQuery}
+        variables={{
+          issue: `${project.id}.${id}`,
+        }}
+        fetchPolicy="cache-and-network"
       >
         {({ data, error, loading, subscribeToMore, refetch }) => {
           if (error) {
@@ -92,11 +92,11 @@ export const IssueDetailsView = (props: IssueProviderProps) => {
 
           return (
             <IssueDetails
-                {...props}
-                env={env}
-                issue={issue}
-                loading={loading}
-                onAddComment={addComment}
+              {...props}
+              env={env}
+              issue={issue}
+              loading={loading}
+              onAddComment={addComment}
             />
           );
         }}

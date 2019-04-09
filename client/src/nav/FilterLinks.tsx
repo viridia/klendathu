@@ -46,9 +46,9 @@ export function FilterLinks({ prefs, account, project }: Props) {
       {prefs.filters.map(filter => (
         <li key={filter.name}>
           <QueryLink
-              to={`/${account.accountName}/${project.name}/${filter.view}`}
-              query={parseFilterString(filter.value)}
-              strict={true}
+            to={`/${account.accountName}/${project.name}/${filter.view}`}
+            query={parseFilterString(filter.value)}
+            strict={true}
           >
             <span>{filter.name}</span>
           </QueryLink>

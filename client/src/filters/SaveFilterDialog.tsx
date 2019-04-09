@@ -31,30 +31,30 @@ export class SaveFilterDialog extends React.Component<Props> {
   public render() {
     return (
       <Dialog
-          open={true}
-          onClose={this.props.onClose}
+        open={true}
+        onClose={this.props.onClose}
       >
         <Dialog.Header hasClose={true}>Create Filter</Dialog.Header>
         <Dialog.Body>
           <Form className="save-filter-form" onSubmit={this.onSave}>
             <FormLabel>Filter Name</FormLabel>
             <TextInput
-                autoFocus={true}
-                type="text"
-                placeholder="Project Name"
-                value={this.filterName}
-                onChange={this.onChangeFilterName}
-                validationStatus={this.filterNameError ? 'error' : null}
-                validationMsg={this.filterNameError}
+              autoFocus={true}
+              type="text"
+              placeholder="Project Name"
+              value={this.filterName}
+              onChange={this.onChangeFilterName}
+              validationStatus={this.filterNameError ? 'error' : null}
+              validationMsg={this.filterNameError}
             />
           </Form>
         </Dialog.Body>
         <Dialog.Footer>
           <Button onClick={this.props.onClose}>Cancel</Button>
           <Button
-              onClick={this.onSave}
-              disabled={this.filterName.length === 0 || this.busy}
-              variant="primary"
+            onClick={this.onSave}
+            disabled={this.filterName.length === 0 || this.busy}
+            variant="primary"
           >
             <AddBoxIcon />
             Save

@@ -63,15 +63,15 @@ export class MilestoneListView extends React.Component<Props> {
     return (
       <SettingsPane>
         <EditMilestoneDialog
-            env={env}
-            open={this.showEdit}
-            onClose={this.onHideEdit}
-            milestone={this.milestoneToEdit}
+          env={env}
+          open={this.showEdit}
+          onClose={this.onHideEdit}
+          milestone={this.milestoneToEdit}
         />
         <DeleteMilestoneDialog
-            open={this.showDelete}
-            onClose={this.onHideDelete}
-            milestone={this.milestoneToEdit}
+          open={this.showDelete}
+          onClose={this.onHideDelete}
+          milestone={this.milestoneToEdit}
         />
         <header>
           <CardTitle>Milestones</CardTitle>
@@ -112,7 +112,7 @@ export class MilestoneListView extends React.Component<Props> {
         </td>
         <td className="start center pad">
           {milestone.status !== MilestoneStatus.Timeless && milestone.startDate ?
-              format(milestone.startDate, 'MM/DD/YYYY') : null}
+            format(milestone.startDate, 'MM/DD/YYYY') : null}
         </td>
         <td className="end center pad">
           {milestone.status !== MilestoneStatus.Timeless && milestone.endDate ?

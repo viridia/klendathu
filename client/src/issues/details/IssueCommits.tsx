@@ -23,12 +23,12 @@ interface Props {
 export function IssueCommits({ issue }: Props) {
   return (
     <Query
-        query={IssueCommitsQuery}
-        variables={{
-          issue: issue.id,
-          project: issue.project,
-        }}
-        fetchPolicy="cache-and-network"
+      query={IssueCommitsQuery}
+      variables={{
+        issue: issue.id,
+        project: issue.project,
+      }}
+      fetchPolicy="cache-and-network"
     >
       {({ data, error, subscribeToMore, refetch }) => {
         if (error) {

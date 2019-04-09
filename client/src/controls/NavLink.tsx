@@ -3,7 +3,7 @@ import { styled } from '../style';
 import { darken } from 'polished';
 import { NavLink as RouterNavLink, NavLinkProps } from 'react-router-dom';
 
-function NavLinkImpl({ children, className, ...attrs }: NavLinkProps & { disabled?: boolean; }) {
+function NavLinkImpl({ children, className, ...attrs }: NavLinkProps & { disabled?: boolean }) {
   return (
     <RouterNavLink className={className} {...attrs}>
       {children}

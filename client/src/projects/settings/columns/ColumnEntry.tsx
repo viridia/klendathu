@@ -13,8 +13,8 @@ export class ColumnEntry extends React.Component<Props> {
     const { column } = this.props;
     return (
       <div
-          draggable={true}
-          onDragStart={this.onDragStart}
+        draggable={true}
+        onDragStart={this.onDragStart}
       >
         {column.title}
       </div>

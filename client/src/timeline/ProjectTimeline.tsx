@@ -56,13 +56,13 @@ export function ProjectTimeline({ env }: Props) {
   const { project } = env;
   return (
     <Query
-        query={ProjectTimelineQuery}
-        variables={{
-          project: project.id,
-        }}
-        fetchPolicy="cache-and-network"
+      query={ProjectTimelineQuery}
+      variables={{
+        project: project.id,
+      }}
+      fetchPolicy="cache-and-network"
     >
-      {({ data, error, loading, subscribeToMore, refetch }) => {
+      {({ data, error, subscribeToMore, refetch }) => {
         if (error) {
           return <ErrorDisplay error={error} />;
         }
@@ -73,7 +73,7 @@ export function ProjectTimeline({ env }: Props) {
             variables: {
               project: project.id,
             },
-            updateQuery: (prev, { subscriptionData }) => {
+            updateQuery: (/*prev, { subscriptionData } */) => {
               // TODO: be smarter about updating the cache.
               // return {
               //   timeline: subscriptionData.data.timelineChanged.value,

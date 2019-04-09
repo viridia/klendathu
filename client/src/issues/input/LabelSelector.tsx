@@ -1,6 +1,6 @@
 import bind from 'bind-decorator';
 import * as React from 'react';
-import { LabelDialog  } from '../../labels/LabelDialog';
+import { LabelDialog } from '../../labels/LabelDialog';
 import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { Project, Label } from '../../../../common/types/graphql';
@@ -41,22 +41,22 @@ export class LabelSelector extends React.Component<Props> {
     return (
       <div className="label-selector">
         <LabelDialog
-            open={this.open}
-            project={this.props.project}
-            onClose={this.onCloseModal}
-            onInsertLabel={this.onInsertLabel}
+          open={this.open}
+          project={this.props.project}
+          onClose={this.onCloseModal}
+          onInsertLabel={this.onInsertLabel}
         />
         <AutocompleteLabels
-            {...this.props}
-            className={this.props.className}
-            multiple={true}
-            onSearch={this.onSearchLabels}
-            onGetValue={this.onGetValue}
-            onGetSortKey={this.onGetSortKey}
-            onChooseSuggestion={this.onChooseSuggestion}
-            onRenderSuggestion={this.onRenderSuggestion}
-            onRenderSelection={this.onRenderSelection}
-            ref={el => { this.ac = el; }}
+          {...this.props}
+          className={this.props.className}
+          multiple={true}
+          onSearch={this.onSearchLabels}
+          onGetValue={this.onGetValue}
+          onGetSortKey={this.onGetSortKey}
+          onChooseSuggestion={this.onChooseSuggestion}
+          onRenderSuggestion={this.onRenderSuggestion}
+          onRenderSelection={this.onRenderSelection}
+          ref={el => { this.ac = el; }}
         />
       </div>);
   }
@@ -123,9 +123,9 @@ export class LabelSelector extends React.Component<Props> {
   private onRenderSelection(label: string) {
     return (
       <LabelName
-          key={label}
-          id={label}
-          onClose={() => this.removeLabel(label)}
+        key={label}
+        id={label}
+        onClose={() => this.removeLabel(label)}
       />
     );
   }

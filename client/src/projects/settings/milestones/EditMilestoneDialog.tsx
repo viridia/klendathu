@@ -96,9 +96,9 @@ export class EditMilestoneDialog extends React.Component<Props> {
         <Dialog.Footer>
           <Button onClick={onClose}>Cancel</Button>
           <Button
-              onClick={this.onSave}
-              disabled={this.name === null || this.description === null || this.busy}
-              variant="primary"
+            onClick={this.onSave}
+            disabled={this.name === null || this.description === null || this.busy}
+            variant="primary"
           >
             {milestone ? 'Save' : 'Add'}
           </Button>

@@ -52,7 +52,7 @@ export const mutations = {
     }
 
     const user = context.user.accountName;
-    const { project : pr, role } =
+    const { project: pr, role } =
       await getProjectAndRole(context.db, context.user, new ObjectID(project));
     if (!pr) {
       logger.error('Attempt to create milestone for non-existent project:', { user, project });

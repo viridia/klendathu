@@ -76,7 +76,7 @@ export interface IssueGroup {
 
 type IssuesQueryResult = Pick<Query, 'issues'>;
 type IssueChangeResult = Pick<Subscription, 'issuesChanged'>;
-interface SearchParams { [param: string]: string | string[]; }
+interface SearchParams { [param: string]: string | string[] }
 
 /** Reactive model class that represents a query over the issue table. */
 export class IssueQueryModel {
@@ -151,7 +151,7 @@ export class IssueQueryModel {
       Promise.all(coerceToStringArray(queryParams.reporter).map(resolveAccountName)),
       Promise.all(coerceToStringArray(queryParams.owner).map(resolveAccountName)),
       Promise.all(coerceToStringArray(queryParams.cc).map(resolveAccountName)),
-    ]).then(([ reporters, owners, ccs ]) => {
+    ]).then(([reporters, owners, ccs]) => {
       // Compute query parameters to send to server
       this.projectId = project ? project.id : null;
       const issueQuery: IssueQueryParams = {
@@ -191,7 +191,7 @@ export class IssueQueryModel {
 
       if ('label' in queryParams) {
         issueQuery.labels = coerceToStringArray(queryParams.label)
-            .map(l => `${this.projectId}.${l}`);
+          .map(l => `${this.projectId}.${l}`);
       }
 
       // Custom fields
@@ -297,19 +297,19 @@ export class IssueQueryModel {
           variables: {
             project: this.projectId,
           },
-      }).subscribe(({ errors, data }) => {
-        if (errors) {
-          this.errors = errors;
-        } else {
-          if (data.issuesChanged.action === ChangeAction.Added) {
-            this.recentlyAdded.replace([data.issuesChanged.value.id]);
+        }).subscribe(({ errors, data }) => {
+          if (errors) {
+            this.errors = errors;
+          } else {
+            if (data.issuesChanged.action === ChangeAction.Added) {
+              this.recentlyAdded.replace([data.issuesChanged.value.id]);
+            }
+            // console.log(data);
+            if (this.querySubscription) {
+              this.queryResult.refetch();
+            }
           }
-          // console.log(data);
-          if (this.querySubscription) {
-            this.queryResult.refetch();
-          }
-        }
-      });
+        });
     }
   }
 

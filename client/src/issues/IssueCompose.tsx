@@ -16,6 +16,7 @@ import {
 import { RouteComponentProps } from 'react-router';
 import {
   Button,
+  CheckBox,
   TextInput,
   TextArea,
   FormLabel,
@@ -25,7 +26,6 @@ import {
   ActionLink,
 } from 'skyhook-ui';
 import {
-  CheckBox,
   NavContainer,
   Card,
   UserAutocomplete,
@@ -208,33 +208,33 @@ export class IssueCompose extends React.Component<Props> {
           <Spacer />
         </header>
         <IssueComposeBody
-            name="lastpass-disable-search"
-            layout="row"
-            onSubmit={this.onSubmit}
+          name="lastpass-disable-search"
+          layout="row"
+          onSubmit={this.onSubmit}
         >
           <AutoNavigate />
           <LeftPanel className="layout-ledger">
             <FormLabel>Issue Type:</FormLabel>
             <TypeSelector
-                value={this.type}
-                template={template}
-                onChange={this.onChangeType}
+              value={this.type}
+              template={template}
+              onChange={this.onChangeType}
             />
 
             <FormLabel>Summary:</FormLabel>
             <SummaryEdit
-                containerClassName="fill"
-                value={this.summary}
-                placeholder="one-line summary of this issue"
-                onChange={this.onChangeSummary}
+              containerClassName="fill"
+              value={this.summary}
+              placeholder="one-line summary of this issue"
+              onChange={this.onChangeSummary}
             />
 
             <FormLabel>Description:</FormLabel>
             <DescriptionEdit
-                containerClassName="fill"
-                value={this.description}
-                placeholder="description of this issue (markdown format supported)"
-                onChange={this.onChangeDescription}
+              containerClassName="fill"
+              value={this.description}
+              placeholder="description of this issue (markdown format supported)"
+              onChange={this.onChangeDescription}
             />
 
             <FormLabel>Reporter:</FormLabel>
@@ -245,10 +245,10 @@ export class IssueCompose extends React.Component<Props> {
             <FormLabel>Owner:</FormLabel>
             <OwnerEditGroup>
               <UserAutocomplete
-                  className="assignee"
-                  placeholder="(unassigned)"
-                  selection={this.owner}
-                  onSelectionChange={this.onChangeOwner}
+                className="assignee"
+                placeholder="(unassigned)"
+                selection={this.owner}
+                onSelectionChange={this.onChangeOwner}
               />
               <ActionLink onClick={this.onAssignToMe}>
                 Assign to me
@@ -258,20 +258,20 @@ export class IssueCompose extends React.Component<Props> {
             <FormLabel>CC:</FormLabel>
             <CcEditGroup>
               <UserAutocomplete
-                  className="assignee"
-                  multiple={true}
-                  selection={this.cc.slice()}
-                  onSelectionChange={this.onChangeCC}
+                className="assignee"
+                multiple={true}
+                selection={this.cc.slice()}
+                onSelectionChange={this.onChangeCC}
               />
             </CcEditGroup>
 
             <FormLabel>Labels:</FormLabel>
             <LabelEditGroup>
               <LabelSelector
-                  className="labels"
-                  project={project}
-                  selection={this.labels.slice()}
-                  onSelectionChange={this.onChangeLabels}
+                className="labels"
+                project={project}
+                selection={this.labels.slice()}
+                onSelectionChange={this.onChangeLabels}
               />
             </LabelEditGroup>
 
@@ -279,9 +279,9 @@ export class IssueCompose extends React.Component<Props> {
               <React.Fragment>
                 <FormLabel>Milestone:</FormLabel>
                 <MilestoneSelector
-                    env={this.props.env}
-                    selection={this.milestone}
-                    onSelectionChange={this.onChangeMilestone}
+                  env={this.props.env}
+                  selection={this.milestone}
+                  onSelectionChange={this.onChangeMilestone}
                 />
               </React.Fragment>
             )}
@@ -292,9 +292,9 @@ export class IssueCompose extends React.Component<Props> {
             <IssueLinkGroup>
               <IssueLinks links={this.issueLinkMap} onRemoveLink={this.onRemoveIssueLink}/>
               <IssueLinkEdit
-                  issue={issue}
-                  exclude={this.excludeLinks}
-                  onLink={this.onAddIssueLink}
+                issue={issue}
+                exclude={this.excludeLinks}
+                onLink={this.onAddIssueLink}
               />
             </IssueLinkGroup>
 
@@ -308,16 +308,16 @@ export class IssueCompose extends React.Component<Props> {
 
             <FormLabel>Comments:</FormLabel>
             <CommentEdit
-                disabled={project.role < Role.REPORTER}
-                onAddComment={this.onAddComment}
+              disabled={project.role < Role.REPORTER}
+              onAddComment={this.onAddComment}
             />
           </LeftPanel>
           <RightPanel>
             <StateSelector
-                workflow={this.workflow}
-                state={this.issueState}
-                prevState={this.prevState}
-                onStateChanged={this.onChangeState}
+              workflow={this.workflow}
+              state={this.issueState}
+              prevState={this.prevState}
+              onStateChanged={this.onChangeState}
             />
             {project.isPublic && <FormLabel>Visbility</FormLabel>}
             {project.isPublic &&
@@ -365,21 +365,21 @@ export class IssueCompose extends React.Component<Props> {
         case DataType.TEXT:
           component = (
             <CustomSuggestField
-                key={field.id}
-                value={String(value)}
-                field={field}
-                project={project}
-                onChange={this.onChangeCustomField}
+              key={field.id}
+              value={String(value)}
+              field={field}
+              project={project}
+              onChange={this.onChangeCustomField}
             />
           );
           break;
         case DataType.ENUM:
           component = (
             <CustomEnumField
-                key={field.id}
-                value={String(value)}
-                field={field}
-                onChange={this.onChangeCustomField}
+              key={field.id}
+              value={String(value)}
+              field={field}
+              onChange={this.onChangeCustomField}
             />
           );
           break;
@@ -514,14 +514,14 @@ export class IssueCompose extends React.Component<Props> {
       this.props.env.mutationError = error;
       console.error('save returned error');
       console.error(JSON.stringify(error, null, 2));
-    //   switch (error.code) {
-    //     case Errors.SCHEMA:
-    //       toast.error('Schema validation failure');
-    //       break;
-    //     default:
-    //       displayErrorToast(error);
-    //       break;
-    //   }
+      //   switch (error.code) {
+      //     case Errors.SCHEMA:
+      //       toast.error('Schema validation failure');
+      //       break;
+      //     default:
+      //       displayErrorToast(error);
+      //       break;
+      //   }
       this.busy = false;
     });
   }

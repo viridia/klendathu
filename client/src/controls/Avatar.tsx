@@ -66,11 +66,11 @@ export function Avatar({ id, accountName, small }: Props) {
             // Use the account photo
             return (
               <AvatarImg
-                  className={classNames('avatar', { small })}
-                  style={{ backgroundImage: `url(${account.photo})` }}
-                  title={data.display}
-                  data-name={account.accountName}
-                  data-id={account.id}
+                className={classNames('avatar', { small })}
+                style={{ backgroundImage: `url(${account.photo})` }}
+                title={data.display}
+                data-name={account.accountName}
+                data-id={account.id}
               />
             );
           } else if (account.id && account.display) {
@@ -81,11 +81,11 @@ export function Avatar({ id, accountName, small }: Props) {
             // Display initials
             return (
               <AvatarImg
-                  className={classNames('avatar', { small })}
-                  title={data.display}
-                  data-name={account.accountName}
-                  data-id={account.id}
-                  style={{ backgroundColor, color }}
+                className={classNames('avatar', { small })}
+                title={data.display}
+                data-name={account.accountName}
+                data-id={account.id}
+                style={{ backgroundColor, color }}
               >
                 {initials(account.display)}
               </AvatarImg>
@@ -94,11 +94,11 @@ export function Avatar({ id, accountName, small }: Props) {
             // Display default avatar image
             return (
               <AvatarImg
-                  className={classNames('avatar', { small })}
-                  style={{ backgroundImage: `url(${DefaultAvatar})` }}
-                  title={data.display}
-                  data-name={account.accountName}
-                  data-id={account.id}
+                className={classNames('avatar', { small })}
+                style={{ backgroundImage: `url(${DefaultAvatar})` }}
+                title={data.display}
+                data-name={account.accountName}
+                data-id={account.id}
               />
             );
           }

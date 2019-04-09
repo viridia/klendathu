@@ -7,7 +7,7 @@ import { sendEmail } from './sendEmail';
 export function sendEmailVerify(account: AccountRecord): Promise<any> {
   const email = process.env.OVERRIDE_EMAIL_ADDR || account.email;
   const resetUrl = new URL(process.env.PUBLIC_URL);
-  resetUrl.pathname = `/account/verify`;
+  resetUrl.pathname = '/account/verify';
   resetUrl.search = qs.stringify({
     email: account.email,
     token: account.verificationToken,

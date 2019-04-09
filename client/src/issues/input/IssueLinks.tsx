@@ -43,8 +43,8 @@ export function IssueLinks({ links, onRemoveLink }: Props) {
                   {onRemoveLink && <DismissButton onClick={() => onRemoveLink(to)} />}
                 </IssueLink>
               </li>
-            )
-          )}</IssueLinksEl>
+            ))}
+          </IssueLinksEl>
         );
       }}
     </Observer>

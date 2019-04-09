@@ -25,17 +25,18 @@ export class NavContainer extends React.Component<NavContainerProps> {
     const path = typeof to === 'string' ? to : to.pathname;
     return (
       <Route
-          path={path}
-          exact={exact}
-          children={({ match, history }) => React.cloneElement(
-            child,
-            {
-              ...props,
-              className: classNames(child.props.className, { [activeClassName]: match }),
-              onClick: this.onClick.bind(this, history),
-            }
-          )}
-      />
+        path={path}
+        exact={exact}
+      >
+        {({ match, history }) => React.cloneElement(
+          child,
+          {
+            ...props,
+            className: classNames(child.props.className, { [activeClassName]: match }),
+            onClick: this.onClick.bind(this, history),
+          }
+        )}
+      </Route>
     );
   }
 

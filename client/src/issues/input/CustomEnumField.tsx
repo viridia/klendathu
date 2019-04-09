@@ -14,9 +14,9 @@ export function CustomEnumField(props: Props) {
     <DropdownButton title={value} >
       {field.values.map(v =>
         <MenuItem
-            key={v}
-            active={v === value}
-            onClick={() => onChange(field.id, v)}
+          key={v}
+          active={v === value}
+          onClick={() => onChange(field.id, v)}
         >
           {v}
         </MenuItem>)}

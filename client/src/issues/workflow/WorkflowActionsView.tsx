@@ -25,11 +25,11 @@ export function WorkflowActionsView({ issue, history }: Props) {
   const env = React.useContext(ProjectEnv);
   return (
     <Query
-        query={IssueTimelineQuery}
-        variables={{
-          issue: issue.id,
-          project: issue.project,
-        }}
+      query={IssueTimelineQuery}
+      variables={{
+        issue: issue.id,
+        project: issue.project,
+      }}
     >
       {({ data, error, loading, subscribeToMore, refetch }) => {
         if (error) {

@@ -37,10 +37,10 @@ export class AddWebhookDialog extends React.Component<Props> {
     console.log(project.id);
     return (
       <Dialog
-          open={open}
-          onOpen={this.onOpen}
-          onClose={onClose}
-          className="add-member"
+        open={open}
+        onOpen={this.onOpen}
+        onClose={onClose}
+        className="add-member"
       >
         <Dialog.Header hasClose={true}>Create Incoming Webhook</Dialog.Header>
         <Dialog.Body>
@@ -54,9 +54,9 @@ export class AddWebhookDialog extends React.Component<Props> {
         <Dialog.Footer>
           <Button onClick={onClose}>Cancel</Button>
           <Button
-              onClick={this.onAddWebhook}
-              disabled={this.serviceId === null || this.busy}
-              variant="primary"
+            onClick={this.onAddWebhook}
+            disabled={this.serviceId === null || this.busy}
+            variant="primary"
           >
             Add
           </Button>

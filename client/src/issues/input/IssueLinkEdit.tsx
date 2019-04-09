@@ -32,24 +32,24 @@ export function IssueLinkEdit({ issue, onLink, exclude }: Props) {
     <IssueLinkEditEl>
       <RelationSelector value={relation} onChange={setRelation} />
       <IssueSelector
-          className="ac-issue"
-          env={env}
-          placeholder="select an issue..."
-          exclude={exclude}
-          selection={target}
-          onSelectionChange={i => setTarget(i as Issue)}
-          onAcceptSuggestion={() => {
-            onLink(relation, target);
-            setTarget(null);
-          }}
+        className="ac-issue"
+        env={env}
+        placeholder="select an issue..."
+        exclude={exclude}
+        selection={target}
+        onSelectionChange={i => setTarget(i as Issue)}
+        onAcceptSuggestion={() => {
+          onLink(relation, target);
+          setTarget(null);
+        }}
       />
       <Button
-          onClick={(e: any) => {
-            e.preventDefault();
-            onLink(relation, target);
-            setTarget(null);
-          }}
-          disabled={!target}
+        onClick={(e: any) => {
+          e.preventDefault();
+          onLink(relation, target);
+          setTarget(null);
+        }}
+        disabled={!target}
       >
         Add
       </Button>

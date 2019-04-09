@@ -88,9 +88,9 @@ export class FilterTermEditor extends React.Component<Props> {
       const customId = `custom.${field.id}`;
       items.push(
         <MenuItem
-            eventKey={customId}
-            key={customId}
-            disabled={termsUsed.has(field.id)}
+          eventKey={customId}
+          key={customId}
+          disabled={termsUsed.has(field.id)}
         >
           {field.caption}
         </MenuItem>);
@@ -100,10 +100,10 @@ export class FilterTermEditor extends React.Component<Props> {
     return (
       <FilterTermSection className="filter-term">
         <DropdownButton
-            size="small"
-            title={caption}
-            className="filter-field"
-            onSelect={this.onSelectField}
+          size="small"
+          title={caption}
+          className="filter-field"
+          onSelect={this.onSelectField}
         >
           {items}
         </DropdownButton>
@@ -111,10 +111,10 @@ export class FilterTermEditor extends React.Component<Props> {
         <section className="filter-value">
           {term && (
             <EditOperand
-                type={term.descriptor.type}
-                value={term.value}
-                customField={term.descriptor.customField}
-                onChange={this.onChangeValue}
+              type={term.descriptor.type}
+              value={term.value}
+              customField={term.descriptor.customField}
+              onChange={this.onChangeValue}
             />)}
         </section>
         {children}
@@ -129,10 +129,10 @@ export class FilterTermEditor extends React.Component<Props> {
     const selectedInfo = preds.find(p => p[0] === selected);
     return (
       <DropdownButton
-          size="small"
-          title={selectedInfo[1]}
-          id="term-field"
-          onSelect={this.onSelectPredicate}
+        size="small"
+        title={selectedInfo[1]}
+        id="term-field"
+        onSelect={this.onSelectPredicate}
       >
         {preds.map(([p, caption]) => <MenuItem eventKey={p} key={p}>{caption}</MenuItem>)}
       </DropdownButton>

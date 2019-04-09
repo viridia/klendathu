@@ -53,13 +53,13 @@ export class WebhookSettings extends React.Component<Props> {
   }
 
   @action.bound
-  private onShowEdit(wh: Webhook) {
+  private onShowEdit(_wh: Webhook) {
   //   const { env } = this.props;
     // this.openAdd = true;
   }
 
   @action.bound
-  private onShowDelete(wh: Webhook) {
+  private onShowDelete(_wh: Webhook) {
   //   const { env } = this.props;
     // e.preventDefault();
     // this.openAdd = true;

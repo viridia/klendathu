@@ -37,10 +37,10 @@ export class SetRoleDialog extends React.Component<Props> {
     const { project } = env;
     return (
       <Dialog
-          open={open}
-          onClose={onClose}
-          className="set-role"
-          style={{ minWidth: '25rem' }}
+        open={open}
+        onClose={onClose}
+        className="set-role"
+        style={{ minWidth: '25rem' }}
       >
         <Dialog.Header hasClose={true}>
           <span>Set Project Role for <AccountName id={user} /></span>
@@ -58,9 +58,9 @@ export class SetRoleDialog extends React.Component<Props> {
         <Dialog.Footer>
           <Button onClick={onClose}>Cancel</Button>
           <Button
-              onClick={this.onSubmit}
-              disabled={this.role === null || this.busy}
-              variant="primary"
+            onClick={this.onSubmit}
+            disabled={this.role === null || this.busy}
+            variant="primary"
           >
             Set Role
           </Button>

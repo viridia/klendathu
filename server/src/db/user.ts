@@ -4,7 +4,7 @@ import { AccountRecord } from './types';
 
 export async function lookupUser(db: Db, uid: string): Promise<AccountRecord> {
   const account = await db.collection('accounts')
-      .findOne<AccountRecord>({ _id: new ObjectID(uid) });
+    .findOne<AccountRecord>({ _id: new ObjectID(uid) });
   return account ? { ...account, password: undefined } : null;
 }
 

@@ -1,10 +1,8 @@
 import bind from 'bind-decorator';
 import * as React from 'react';
 import {
-  CheckBox,
-} from '../controls';
-import {
   Button,
+  CheckBox,
   Dialog,
   TextArea,
   FormLabel,
@@ -50,8 +48,8 @@ export class CreateProjectDialog extends React.Component<Props> {
   public render() {
     return (
       <Dialog
-          open={this.props.show}
-          onClose={this.props.onClose}
+        open={this.props.show}
+        onClose={this.props.onClose}
       >
         <Dialog.Header hasClose={true}>
           Create Project
@@ -61,31 +59,31 @@ export class CreateProjectDialog extends React.Component<Props> {
             <AutoNavigate />
             <FormLabel>Project Id</FormLabel>
             <TextInput
-                autoFocus={true}
-                type="text"
-                placeholder="Project Name"
-                value={this.projectName}
-                onChange={this.onChangeProjectName}
-                validationStatus={this.projectNameError ? 'error' : null}
-                validationMsg={this.projectNameError}
-                style={{ width: '20rem' }}
+              autoFocus={true}
+              type="text"
+              placeholder="Project Name"
+              value={this.projectName}
+              onChange={this.onChangeProjectName}
+              validationStatus={this.projectNameError ? 'error' : null}
+              validationMsg={this.projectNameError}
+              style={{ width: '20rem' }}
             />
             <FormLabel>Project Title</FormLabel>
             <TextInput
-                type="text"
-                placeholder="Project Title"
-                value={this.projectTitle}
-                onChange={this.onChangeProjectTitle}
-                validationStatus={this.projectTitleError ? 'error' : null}
-                validationMsg={this.projectTitle}
-                style={{ width: '20rem' }}
+              type="text"
+              placeholder="Project Title"
+              value={this.projectTitle}
+              onChange={this.onChangeProjectTitle}
+              validationStatus={this.projectTitleError ? 'error' : null}
+              validationMsg={this.projectTitle}
+              style={{ width: '20rem' }}
             />
             <FormLabel>Project Description</FormLabel>
             <TextArea
-                placeholder="Project Description"
-                value={this.projectDescription}
-                onChange={this.onChangeProjectDescription}
-                style={{ width: '20rem', height: '5rem' }}
+              placeholder="Project Description"
+              value={this.projectDescription}
+              onChange={this.onChangeProjectDescription}
+              style={{ width: '20rem', height: '5rem' }}
             />
             <FormControlGroup>
               <CheckBox checked={this.public} onChange={this.onChangePublic}>
@@ -97,9 +95,9 @@ export class CreateProjectDialog extends React.Component<Props> {
         <Dialog.Footer>
           <Button onClick={this.props.onClose}>Cancel</Button>
           <Button
-              onClick={this.onCreate}
-              disabled={this.projectName.length === 0 || this.busy}
-              variant="primary"
+            onClick={this.onCreate}
+            disabled={this.projectName.length === 0 || this.busy}
+            variant="primary"
           >
             <AddBoxIcon />
             Create Project
@@ -126,7 +124,7 @@ export class CreateProjectDialog extends React.Component<Props> {
         name: this.projectName,
         input,
       },
-    }).then(result => {
+    }).then(() => {
       // console.log(result);
       this.busy = false;
       this.clearForm();

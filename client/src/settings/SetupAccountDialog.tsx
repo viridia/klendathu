@@ -48,7 +48,7 @@ export class SetupAccountDialog extends React.Component<{}> {
     this.displayName = session.account.display || '';
     this.username = session.account.accountName || '';
     if (!this.username && session.account.email) {
-      const m = session.account.email.match(/[A-Za-z][\w\-\.\_]*/);
+      const m = session.account.email.match(/[A-Za-z][\w\-._]*/);
       if (m) {
         this.username = m[0];
       }
@@ -73,20 +73,20 @@ export class SetupAccountDialog extends React.Component<{}> {
             <AutoNavigate />
             <FormLabel className="label">Name</FormLabel>
             <TextInput
-                value={this.displayName}
-                onChange={this.onChangeDisplayName}
-                maxLength={64}
-                placeholder="How you want your name to be displayed"
-                autoFocus={true}
-                validationStatus={this.displayNameError ? 'error' : null}
-                validationMsg={this.displayNameError}
+              value={this.displayName}
+              onChange={this.onChangeDisplayName}
+              maxLength={64}
+              placeholder="How you want your name to be displayed"
+              autoFocus={true}
+              validationStatus={this.displayNameError ? 'error' : null}
+              validationMsg={this.displayNameError}
             />
             <UsernameEditor
-                initialValue=""
-                value={this.username}
-                error={this.usernameError}
-                onChangeUsername={this.onChangeUsername}
-                onChangeAvailable={this.onChangeAvailable}
+              initialValue=""
+              value={this.username}
+              error={this.usernameError}
+              onChangeUsername={this.onChangeUsername}
+              onChangeAvailable={this.onChangeAvailable}
             />
           </SetupAccountForm>
         </Dialog.Body>
@@ -95,9 +95,9 @@ export class SetupAccountDialog extends React.Component<{}> {
             Cancel
           </Button>
           <Button
-              variant="primary"
-              disabled={this.busy || !this.available || this.displayName.length < 1}
-              onClick={this.onClickSave}
+            variant="primary"
+            disabled={this.busy || !this.available || this.displayName.length < 1}
+            onClick={this.onClickSave}
           >
             Save
           </Button>

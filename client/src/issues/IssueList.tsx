@@ -130,11 +130,11 @@ export class IssueList extends React.Component<Props> {
       <IssueListTableBody>
         {issueList.map(issue => (
           <IssueListEntry
-              {...this.props}
-              key={issue.id}
-              issue={issue}
-              columnRenderers={this.columnRenderers}
-              selection={selection}
+            {...this.props}
+            key={issue.id}
+            issue={issue}
+            columnRenderers={this.columnRenderers}
+            selection={selection}
           />))}
       </IssueListTableBody>
     );
@@ -147,18 +147,18 @@ export class IssueList extends React.Component<Props> {
         <tr>
           {project.role >= Role.UPDATER && (<th className="selected">
             <CheckBox
-                checked={selection.size > 0}
-                ref={this.selectAllEl}
-                onChange={this.onChangeSelectAll}
+              checked={selection.size > 0}
+              ref={this.selectAllEl}
+              onChange={this.onChangeSelectAll}
             />
           </th>)}
           <th className="id">
             <ColumnSort
-                column="id"
-                className="sort"
-                sortKey={issues.sort}
-                descending={issues.descending}
-                onChangeSort={this.onChangeSort}
+              column="id"
+              className="sort"
+              sortKey={issues.sort}
+              descending={issues.descending}
+              onChangeSort={this.onChangeSort}
             >
               #
             </ColumnSort>
@@ -173,11 +173,11 @@ export class IssueList extends React.Component<Props> {
           <th className="summary">
             <section>
               <ColumnSort
-                  column="summary"
-                  className="sort"
-                  sortKey={issues.sort}
-                  descending={issues.descending}
-                  onChangeSort={this.onChangeSort}
+                column="summary"
+                className="sort"
+                sortKey={issues.sort}
+                descending={issues.descending}
+                onChangeSort={this.onChangeSort}
               >
                 Summary
               </ColumnSort>
@@ -232,8 +232,9 @@ export class IssueList extends React.Component<Props> {
   private get columnRenderers(): Map<string, ColumnRenderer> {
     const { template } = this.props.env;
     const columnRenderers = new Map<string, ColumnRenderer>();
-    columnRenderers.set('reporter',
-        new UserColumnRenderer('Reporter', 'reporter', 'reporter pad'));
+    columnRenderers.set(
+      'reporter',
+      new UserColumnRenderer('Reporter', 'reporter', 'reporter pad'));
     columnRenderers.set('owner', new UserColumnRenderer('Owner', 'owner', 'owner pad'));
     columnRenderers.set('created', new DateColumnRenderer('Created', 'created', 'created pad'));
     columnRenderers.set('updated', new DateColumnRenderer('Updated', 'updated', 'updated pad'));

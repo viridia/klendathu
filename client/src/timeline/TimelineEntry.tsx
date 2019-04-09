@@ -146,8 +146,8 @@ export function TimelineEntryDisplay({ change, showIssue }: Props) {
           <TimelinePropery>
             state:{' '}
             <StateNameDisplay state={state.before} />
-             {' '}to{' '}
-             <StateNameDisplay state={state.after} />
+            {' '}to{' '}
+            <StateNameDisplay state={state.after} />
           </TimelinePropery>)}
         {summary && (<TimelinePropery>
           changed <span className="field-name">summary</span> from &quot;
@@ -159,9 +159,9 @@ export function TimelineEntryDisplay({ change, showIssue }: Props) {
         </TimelinePropery>)}
         {owner &&
           <TimelinePropery>owner:{' '}
-          <AccountName id={owner.before} />
-          {' '}to{' '}
-          <AccountName id={owner.after} />
+            <AccountName id={owner.before} />
+            {' '}to{' '}
+            <AccountName id={owner.after} />
           </TimelinePropery>}
         {cc && cc.added && cc.added.map(acc => (
           <TimelinePropery key={acc}>
@@ -183,15 +183,15 @@ export function TimelineEntryDisplay({ change, showIssue }: Props) {
           </TimelinePropery>))}
         {attachments && attachments.removed &&
             attachments.removed.map(a =>
-          (<TimelinePropery key={a}>
-            removed file <span className="attachment" />
-          </TimelinePropery>))}
+              (<TimelinePropery key={a}>
+                removed file <span className="attachment" />
+              </TimelinePropery>))}
         {milestone && (
           <TimelinePropery>
             milestone:{' '}
             <MilestoneNameDisplay milestone={milestone.before} />
-              {' '}to{' '}
-              <MilestoneNameDisplay milestone={milestone.after} />
+            {' '}to{' '}
+            <MilestoneNameDisplay milestone={milestone.after} />
           </TimelinePropery>)}
         {linked && linked.map(LinkChangeDisplay)}
         {custom && custom.map(customChange)}

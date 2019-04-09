@@ -60,21 +60,21 @@ async function getOrCreateUserAccount(email: string, verified: boolean): Promise
     display: '',
     verified,
     photo: null,
-};
+  };
   const result = await server.db.collection('accounts').insertOne(account);
   return { uid: result.insertedId };
 }
 
 // Will use JWT strategy and fall back to anonymous if they are not logged in.
 server.app.use(
-    ['/auth', '/graphql'], passport.initialize());
+  ['/auth', '/graphql'], passport.initialize());
 server.app.use(
-    ['/auth', '/graphql'], passport.authenticate(['jwt', 'anonymous'], { session: false }));
+  ['/auth', '/graphql'], passport.authenticate(['jwt', 'anonymous'], { session: false }));
 
 // Set up JWT strategy
 passport.use(new JwtStrategy(jwtOpts, async (payload: SessionState, done) => {
   const account = await server.db.collection('accounts')
-      .findOne<AccountRecord>({ _id: new ObjectID(payload.uid) });
+    .findOne<AccountRecord>({ _id: new ObjectID(payload.uid) });
   done(null, account ? { ...account, password: undefined } : null);
 }));
 
@@ -278,7 +278,7 @@ server.app.post('/auth/sendverify', handleAsyncErrors(async (req, res) => {
     account.verificationToken = crypto.randomBytes(20).toString('hex');
 
     await server.db.collection('accounts')
-        .updateOne({ _id: account._id }, { verificationToken: account.verificationToken });
+      .updateOne({ _id: account._id }, { verificationToken: account.verificationToken });
 
     sendEmailVerify(account).then(() => {
       logger.info('Sent verification email to:', account.email);
@@ -315,7 +315,7 @@ authRouter.post('/verify', handleAsyncErrors(async (req, res) => {
 
     if (account.verificationToken !== token) {
       await server.db.collection('accounts')
-          .updateOne({ _id: account._id }, { verificationToken: null, verified: true });
+        .updateOne({ _id: account._id }, { verificationToken: null, verified: true });
       logger.info('Account verified:', { email });
       res.end();
     } else {

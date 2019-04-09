@@ -42,7 +42,7 @@ export class TypeSelector extends React.Component<Props> {
             </RadioButton>
           );
         })}
-    </TypeSelectorLayout>);
+      </TypeSelectorLayout>);
   }
 
   @bind

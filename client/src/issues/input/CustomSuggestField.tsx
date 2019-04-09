@@ -26,19 +26,19 @@ export class CustomSuggestField extends React.Component<Props> {
     const { field, value } = this.props;
     return (
       <StringAutocomplete
-          className="keywords ac-multi"
-          textValue={value}
-          selection={null}
-          maxLength={field.maxLength}
-          suggest={true}
-          onSearch={this.onSearch}
-          onGetValue={this.onGetValue}
-          onGetSortKey={this.onGetSortKey}
-          onChooseSuggestion={this.onChooseSuggestion}
-          onRenderSuggestion={this.onRenderSuggestion}
-          onRenderSelection={this.onRenderSelection}
-          onSelectionChange={this.onChangeValue}
-          onValueChange={this.onChangeValue}
+        className="keywords ac-multi"
+        textValue={value}
+        selection={null}
+        maxLength={field.maxLength}
+        suggest={true}
+        onSearch={this.onSearch}
+        onGetValue={this.onGetValue}
+        onGetSortKey={this.onGetSortKey}
+        onChooseSuggestion={this.onChooseSuggestion}
+        onRenderSuggestion={this.onRenderSuggestion}
+        onRenderSelection={this.onRenderSelection}
+        onSelectionChange={this.onChangeValue}
+        onValueChange={this.onChangeValue}
       />
     );
   }

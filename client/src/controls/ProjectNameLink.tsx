@@ -27,8 +27,8 @@ export function ProjectNameLink({ id }: Props) {
           const project: Project = data.project;
           return (
             <NavLink
-                className="project-link"
-                to={`${project.ownerName}/${project.name}`}
+              className="project-link"
+              to={`${project.ownerName}/${project.name}`}
             >
               {project.title}
             </NavLink>

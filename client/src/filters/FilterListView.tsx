@@ -124,10 +124,10 @@ export class FilterListView extends React.Component<Props> {
         <td className="para center">{filter.value}</td>
         {project.role >= Role.DEVELOPER && (<ActionButtonCell className="right">
           <Button
-              variant="action"
-              className="small"
-              data-filter={filter.name}
-              onClick={e => this.onShowDelete(filter)}
+            variant="action"
+            className="small"
+            data-filter={filter.name}
+            onClick={e => this.onShowDelete(filter)}
           >
             Delete
           </Button>
@@ -151,11 +151,11 @@ export class FilterListView extends React.Component<Props> {
     const { project } = this.props.env;
     this.busy = true;
     removePrefsFilter({ project: project.id, name: this.filterToDelete.name })
-    .then(() => {
-      this.busy = false;
-    }, error => {
-      this.busy = false;
-      this.props.env.mutationError = error;
-    });
+      .then(() => {
+        this.busy = false;
+      }, error => {
+        this.busy = false;
+        this.props.env.mutationError = error;
+      });
   }
 }

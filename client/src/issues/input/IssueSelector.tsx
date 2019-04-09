@@ -52,13 +52,13 @@ export class IssueSelector extends React.Component<Props> {
   public render() {
     return (
       <IssueAutocomplete
-          {...this.props}
-          onSearch={this.onSearch}
-          onGetValue={this.onGetValue}
-          onGetSortKey={this.onGetSortKey}
-          onRenderSuggestion={this.onRenderSuggestion}
-          onRenderSelection={this.onRenderSelection}
-          onAcceptSuggestion={this.props.onAcceptSuggestion}
+        {...this.props}
+        onSearch={this.onSearch}
+        onGetValue={this.onGetValue}
+        onGetSortKey={this.onGetSortKey}
+        onRenderSuggestion={this.onRenderSuggestion}
+        onRenderSelection={this.onRenderSelection}
+        onAcceptSuggestion={this.props.onAcceptSuggestion}
       />
     );
   }

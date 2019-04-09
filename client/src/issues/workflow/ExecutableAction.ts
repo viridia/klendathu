@@ -120,7 +120,7 @@ export class ExecutableAction {
       if (repl !== undefined) {
         return String(repl);
       }
-      return `?`;
+      return '?';
     });
   }
 
@@ -140,7 +140,7 @@ export class ExecutableAction {
   private scanForInputFields(value: string, type: OperandType) {
     if (value) {
       const re = /\{(\w+?):(\w+?)\?\}/g;
-      while (true) {
+      for (;;) {
         const m = re.exec(value);
         if (!m) {
           break;

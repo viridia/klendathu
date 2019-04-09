@@ -15,7 +15,7 @@ export const AccountQuery = gql`
 
 type AccountQueryResult = Pick<Query, 'account'>;
 
-export function queryAccount({ accountName, id }: { accountName?: string, id?: string }) {
+export function queryAccount({ accountName, id }: { accountName?: string; id?: string }) {
   return client.query<AccountQueryResult>({
     query: AccountQuery,
     fetchPolicy: 'network-only',

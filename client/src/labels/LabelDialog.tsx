@@ -95,9 +95,9 @@ export class LabelDialog extends React.Component<Props> {
     const { label, open, onClose } = this.props;
     return (
       <Dialog
-          open={open}
-          onOpen={this.onOpen}
-          onClose={onClose}
+        open={open}
+        onOpen={this.onOpen}
+        onClose={onClose}
       >
         <Dialog.Header hasClose={true}>
           {label ? <span>Edit Label</span> : <span>Create Label</span>}
@@ -106,11 +106,11 @@ export class LabelDialog extends React.Component<Props> {
           <Form layout="stacked" onSubmit={this.onSubmit}>
             <FormLabel>Label text</FormLabel>
             <TextInput
-                value={this.labelName}
-                placeholder="Text for this label"
-                autoFocus={true}
-                maxLength={64}
-                onChange={this.onChangeLabelText}
+              value={this.labelName}
+              placeholder="Text for this label"
+              autoFocus={true}
+              maxLength={64}
+              onChange={this.onChangeLabelText}
             />
             <FormLabel>Label color</FormLabel>
             <ColorTable>
@@ -118,12 +118,12 @@ export class LabelDialog extends React.Component<Props> {
                 <div className="color-column" key={index}>
                   {row.map(color =>
                     <button
-                        className={classNames('color-selector',
-                          { selected: color === this.color })}
-                        key={color}
-                        data-color={color}
-                        style={{ backgroundColor: color, color: contrastingColor(color) }}
-                        onClick={this.onChangeLabelColor}
+                      className={classNames('color-selector',
+                        { selected: color === this.color })}
+                      key={color}
+                      data-color={color}
+                      style={{ backgroundColor: color, color: contrastingColor(color) }}
+                      onClick={this.onChangeLabelColor}
                     >
                       A
                     </button>)}
@@ -141,9 +141,9 @@ export class LabelDialog extends React.Component<Props> {
         <Dialog.Footer>
           <Button onClick={onClose}>Cancel</Button>
           <Button
-              onClick={this.onSubmit}
-              disabled={this.labelName.length < 3 || this.busy}
-              variant="primary"
+            onClick={this.onSubmit}
+            disabled={this.labelName.length < 3 || this.busy}
+            variant="primary"
           >
             {label ? 'Save' : 'Create'}
           </Button>
@@ -228,7 +228,7 @@ export class LabelDialog extends React.Component<Props> {
         promise = Promise.resolve(({ data: null, errors: null }));
       }
 
-      promise.then(({ data, errors }) => {
+      promise.then(({ /* data, */ errors }) => {
         this.busy = false;
         this.props.onClose();
         if (errors) {

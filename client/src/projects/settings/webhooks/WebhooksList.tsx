@@ -30,13 +30,13 @@ export function WebhooksList({ onShowEdit, onShowDelete }: Props) {
   const { project } = env;
   return (
     <Query
-        query={WebhooksQuery}
-        variables={{
-          project: project.id,
-        }}
-        fetchPolicy="cache-and-network"
+      query={WebhooksQuery}
+      variables={{
+        project: project.id,
+      }}
+      fetchPolicy="cache-and-network"
     >
-      {({ loading, error, data, refetch }) => {
+      {({ loading, error, data /*, refetch*/ }) => {
         if (loading && !(data && data.labels)) {
           // Only display loading indicator if nothing in cache.
           return <div>loading&hellip;</div>;
@@ -69,16 +69,16 @@ export function WebhooksList({ onShowEdit, onShowDelete }: Props) {
                     <td className="pad center"><RelativeDate date={wh.createdAt} /></td>
                     <ActionButtonCell className="right">
                       <Button
-                          variant="default"
-                          className="small"
-                          onClick={e => onShowEdit(wh)}
+                        variant="default"
+                        className="small"
+                        onClick={e => onShowEdit(wh)}
                       >
                         Edit
                       </Button>
                       <Button
-                          variant="action"
-                          className="small"
-                          onClick={e => onShowDelete(wh)}
+                        variant="action"
+                        className="small"
+                        onClick={e => onShowDelete(wh)}
                       >
                         Delete
                       </Button>

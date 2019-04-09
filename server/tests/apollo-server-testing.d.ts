@@ -6,17 +6,17 @@ declare module 'apollo-server-testing' {
   type StringOrAst = string | DocumentNode;
 
   // A query must not come with a mutation (and vice versa).
-  type Query<TVariables> = {
+  interface Query<TVariables> {
     query: StringOrAst;
     mutation?: undefined;
     variables?: TVariables;
-  };
+  }
 
-  type Mutation<TVariables> = {
+  interface Mutation<TVariables> {
     mutation: StringOrAst;
     query?: undefined;
     variables?: TVariables;
-  };
+  }
 
   export const createTestClient: <TVariables>(
     server: ApolloServerBase,

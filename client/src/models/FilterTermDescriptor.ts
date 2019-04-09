@@ -149,7 +149,7 @@ export const descriptors: { [type: string]: FilterTermDescriptor } = {
     },
     parseQuery(query, term, env) {
       term.value = Promise.all(coerceToStringArray(query.cc).map(resolveAccountName))
-          .then(accounts => accounts.filter(a => a));
+        .then(accounts => accounts.filter(a => a));
     }
   },
   label: {

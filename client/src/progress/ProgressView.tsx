@@ -5,13 +5,11 @@ import { ProjectEnv } from '../models';
 import { ProgressGrid } from './ProgressGrid';
 import { FilterParams } from '../filters/FilterParams';
 
-interface Props extends RouteComponentProps<{}> {}
-
 /** Contains the table of issues for a project.
     Handles the mechanics of selection, filtering and column layout. Actual rendering is delegated
     to a sub-component.
  */
-export function ProgressView(props: Props) {
+export function ProgressView(props: RouteComponentProps<{}>) {
   const env = React.useContext(ProjectEnv);
   const { location } = props;
   React.useEffect(() => {

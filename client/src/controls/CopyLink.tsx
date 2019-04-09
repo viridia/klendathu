@@ -18,10 +18,10 @@ export function CopyLink(props: Props) {
 
   return (
     <Button
-        variant="default"
-        className="copy-link"
-        title={title || 'Copy link to clipboard'}
-        onClick={onClick}
+      variant="default"
+      className="copy-link"
+      title={title || 'Copy link to clipboard'}
+      onClick={onClick}
     >
       <LinkIcon />
     </Button>

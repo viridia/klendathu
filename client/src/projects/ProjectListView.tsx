@@ -157,8 +157,8 @@ export class ProjectListView extends React.Component<{}> {
                       <div className="title">
                         <ProjectTitle>{prj.title}</ProjectTitle>[
                         <NavLink
-                            className="project-link"
-                            to={`/${prj.ownerName}/${prj.name}`}
+                          className="project-link"
+                          to={`/${prj.ownerName}/${prj.name}`}
                         >
                           {prj.ownerName}/{prj.name}
                         </NavLink>]

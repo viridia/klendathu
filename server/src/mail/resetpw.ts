@@ -7,7 +7,7 @@ import { AccountRecord } from '../db/types';
 export function sendResetPassword(account: AccountRecord): Promise<any> {
   const email = process.env.OVERRIDE_EMAIL_ADDR || account.email;
   const resetUrl = new URL(process.env.PUBLIC_URL);
-  resetUrl.pathname = `/account/reset`;
+  resetUrl.pathname = '/account/reset';
   resetUrl.search = qs.stringify({
     email: account.email,
     token: account.verificationToken,

@@ -36,7 +36,7 @@ export async function getProjectRole(
 export async function getProjectAndRole(
     db: Db,
     user: AccountRecord,
-    projectId: ObjectID): Promise<{ project?: ProjectRecord, role: Role }> {
+    projectId: ObjectID): Promise<{ project?: ProjectRecord; role: Role }> {
   const projects = db.collection('projects');
   const project = await projects.findOne<ProjectRecord>({ _id: projectId });
   if (project) {
