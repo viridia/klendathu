@@ -35,7 +35,7 @@ const MainPageLayout = styled(Page)`
 `;
 
 const ContentPaneLayout = styled.section`
-  background-color: ${props => props.theme.pageBgColor};
+  background-color: ${props => props.theme.pageColor};
   display: flex;
   flex-direction: column;
   grid-area: main;

@@ -10,16 +10,13 @@ export interface ThemeInterface extends SHTheme {
   // General
   primaryColor: string;
   dilutedColor: string;
-  focusColor: string;
 
   // Text colors
-  textNormal: string;
   textAccented: string;
   textMuted: string;
   textExtraMuted: string;
 
   // Page
-  pageBgColor: string;
   scrollbarThumbColor: string;
   scrollbarInactiveThumbColor: string;
 

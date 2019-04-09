@@ -8,7 +8,7 @@ import { Page } from '../layout';
 import styled from 'styled-components';
 
 const AccountPageContent = styled.section`
-  background-color: ${props => props.theme.pageBgColor};
+  background-color: ${props => props.theme.pageColor};
   flex: 1;
   display: grid;
   grid-template-areas:

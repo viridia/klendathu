@@ -8,7 +8,7 @@ const muted = desaturate(0.35, primary);
 const textNormal = '#222';
 
 export const themeDefault: ThemeInterface = {
-  pageColor: '#222',
+  pageColor: dye(0.9, primary),
   primaryColor: primary,
   dilutedColor: diluted,
   focusColor: transparentize(0.7, primary),
@@ -22,7 +22,6 @@ export const themeDefault: ThemeInterface = {
   textExtraMuted: dye(0.6, muted),
 
   // Page
-  pageBgColor: dye(0.9, primary),
   scrollbarThumbColor: dye(0.7, diluted),
   scrollbarInactiveThumbColor: dye(0.8, diluted),
 
@@ -93,7 +92,7 @@ export const themeDefault: ThemeInterface = {
     checkbox: {
       bgColor: dye(0.9, primary),
       borderColor: dye(0.7, muted),
-      textColor: dye(0.5, primary),
+      textColor: dye(0.3, primary),
     },
     roundCorners: true,
   },
