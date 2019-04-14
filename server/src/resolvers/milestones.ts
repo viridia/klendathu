@@ -14,7 +14,7 @@ import { AuthenticationError, UserInputError } from 'apollo-server-core';
 import { Errors, Role } from '../../../common/types/json';
 import { logger } from '../logger';
 import { getProjectAndRole } from '../db/role';
-import { pubsub, Channels, publish, RecordChange } from './pubsub';
+import { Channels, publish, RecordChange, getPubSub } from './pubsub';
 import { withFilter } from 'graphql-subscriptions';
 
 type MilestoneRecordChange = RecordChange<MilestoneRecord>;
@@ -187,12 +187,12 @@ export const mutations = {
 export const subscriptions = {
   milestoneChanged: {
     subscribe: withFilter(
-      () => pubsub.asyncIterator([Channels.MILESTONE_CHANGE]),
+      () => getPubSub().asyncIterator([Channels.MILESTONE_CHANGE]),
       (
         { value }: MilestoneRecordChange,
         { project }: MilestoneChangedSubscriptionArgs,
         context: Context) => {
-        return context.user && value.project.equals(project);
+        return context.user && new ObjectID(value.project).equals(project);
       }
     ),
     resolve: (payload: MilestoneRecordChange) => {
@@ -204,7 +204,6 @@ export const subscriptions = {
 export const types = {
   Milestone: {
     id(row: MilestoneRecord) { return row._id; },
-    creator: (row: MilestoneRecord) => row.creator.toHexString(),
     createdAt: (row: MilestoneRecord) => row.created,
     updatedAt: (row: MilestoneRecord) => row.updated,
   },

@@ -14,7 +14,7 @@ import { ObjectID } from 'mongodb';
 import { AuthenticationError } from 'apollo-server-core';
 import { Errors } from '../../../common/types/json';
 import { withFilter } from 'graphql-subscriptions';
-import { pubsub, RecordChange, publish, Channels } from './pubsub';
+import { RecordChange, publish, Channels, getPubSub } from './pubsub';
 
 const DefaultColumns: string[] = [
   'type',
@@ -175,13 +175,15 @@ export const mutations = {
 export const subscriptions = {
   prefsChanged: {
     subscribe: withFilter(
-      () => pubsub.asyncIterator([Channels.PREFS_CHANGE]),
+      () => getPubSub().asyncIterator([Channels.PREFS_CHANGE]),
       (
         { value: prefs }: PrefsRecordChange,
         { project: id }: PrefsChangedSubscriptionArgs,
         context: Context
       ) => {
-        return context.user && prefs.project.equals(id) && prefs.user.equals(context.user._id);
+        return context.user
+            && new ObjectID(prefs.project).equals(id)
+            && context.user._id.equals(prefs.user);
       }
     ),
     resolve: (payload: PrefsRecordChange, args: any, context: Context) => {

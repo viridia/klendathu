@@ -145,7 +145,7 @@ export const mutations = {
 
 export const types = {
   Webhook: {
-    id: (wr: WebhookRecord) => wr._id.toHexString(),
+    id: (wr: WebhookRecord) => wr._id,
     serviceName: (wr: WebhookRecord) => {
       const svc = registry.services.get(wr.serviceId);
       return svc ? svc.serviceName : 'unknown-service';

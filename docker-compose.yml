@@ -31,3 +31,8 @@ services:
     command: -enable-url-source
     ports:
       - "9000:9000"
+  redis:
+    image: redis:5.0-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"

@@ -25,7 +25,7 @@ export function RelationSelector({ value, onChange }: Props) {
       onSelect={r => onChange(r as Relation)}
     >
       {RELATIONS.map(r => (
-        <MenuItem key={r} eventKey={r} active={r === value}>
+        <MenuItem key={r} eventKey={r} checked={r === value}>
           <RelationName relation={r} />
         </MenuItem>))}
     </DropdownButton>

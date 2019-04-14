@@ -186,10 +186,9 @@ export class Autocomplete<S> extends React.Component<Props<S>> {
     const { onGetValue, onRenderSuggestion } = this.props;
     const menu = this.suggestions.map((s, index) => {
       const value = onGetValue(s);
-      const active = index === this.suggestionIndex;
       return (
         <MenuItem
-          className={classNames({ active })}
+          active={index === this.suggestionIndex}
           key={value}
           data-index={index}
           onClick={e => this.onClickSuggestion(e, s)}
@@ -203,10 +202,9 @@ export class Autocomplete<S> extends React.Component<Props<S>> {
     }
     const suffix = this.suffixActions.map((s, index) => {
       const value = onGetValue(s);
-      const active = index === this.suggestionIndex - this.suggestions.length;
       return (
         <MenuItem
-          className={classNames({ active })}
+          active={index === this.suggestionIndex - this.suggestions.length}
           key={value}
           data-index={index}
           onClick={e => this.onClickSuggestion(e, s)}

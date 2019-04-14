@@ -6,7 +6,8 @@ import {
   TimelineChangedSubscriptionArgs,
 } from '../../../common/types/graphql';
 import { withFilter } from 'graphql-subscriptions';
-import { pubsub, Channels, RecordChange } from './pubsub';
+import { Channels, RecordChange, getPubSub } from './pubsub';
+import { ObjectID } from 'mongodb';
 
 type IssueRecordChange = RecordChange<IssueRecord>;
 type TimelineRecordChange = RecordChange<TimelineEntryRecord>;
@@ -14,7 +15,7 @@ type TimelineRecordChange = RecordChange<TimelineEntryRecord>;
 export const subscriptions = {
   issueChanged: {
     subscribe: withFilter(
-      () => pubsub.asyncIterator([Channels.ISSUE_CHANGE]),
+      () => getPubSub().asyncIterator(Channels.ISSUE_CHANGE),
       (
         change: IssueRecordChange,
         { issue }: IssueChangedSubscriptionArgs,
@@ -30,14 +31,14 @@ export const subscriptions = {
   },
   issuesChanged: {
     subscribe: withFilter(
-      () => pubsub.asyncIterator([Channels.ISSUE_CHANGE]),
+      () => getPubSub().asyncIterator(Channels.ISSUE_CHANGE),
       (
         change: IssueRecordChange,
         { project }: IssuesChangedSubscriptionArgs,
         context: Context
       ) => {
         // TODO: Need a fast way to check project membership
-        return context.user && change.value.project.equals(project);
+        return context.user && new ObjectID(change.value.project).equals(project);
       }
     ),
     resolve: (payload: IssueRecordChange, args: any, context: Context) => {
@@ -46,14 +47,14 @@ export const subscriptions = {
   },
   timelineChanged: {
     subscribe: withFilter(
-      () => pubsub.asyncIterator([Channels.TIMELINE_CHANGE]),
+      () => getPubSub().asyncIterator([Channels.TIMELINE_CHANGE]),
       (
         change: TimelineRecordChange,
         { issue, project }: TimelineChangedSubscriptionArgs,
         context: Context
       ) => {
         // TODO: Need a fast way to check project membership
-        if (!change.value.project.equals(project)) {
+        if (!new ObjectID(change.value.project).equals(project)) {
           return false;
         }
         if (issue) {

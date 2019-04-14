@@ -67,6 +67,19 @@ export function GroupHeader({ group }: Props) {
       );
     }
 
+    case 'milestone': {
+      const ms = env.milestones.find(m => m.id === group.value);
+      return (
+        <GroupHeaderEl colSpan={numColumns}>
+          <GroupTitle>Milestone: </GroupTitle>
+          {ms
+            ? <span className="value">{ms.name}</span>
+            : <span className="value unassigned">None assigned</span>
+          }
+        </GroupHeaderEl>
+      );
+    }
+
     default:
       return (
         <>

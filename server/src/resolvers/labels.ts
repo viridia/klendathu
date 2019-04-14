@@ -15,7 +15,7 @@ import { AuthenticationError, UserInputError } from 'apollo-server-core';
 import { Errors, Role } from '../../../common/types/json';
 import { logger } from '../logger';
 import { getProjectAndRole } from '../db/role';
-import { pubsub, Channels, publish, RecordChange } from './pubsub';
+import { Channels, publish, RecordChange, getPubSub } from './pubsub';
 import { withFilter } from 'graphql-subscriptions';
 
 type LabelRecordChange = RecordChange<LabelRecord>;
@@ -77,7 +77,7 @@ export const mutations = {
     };
 
     const result = await context.labels.insertOne(record);
-    publish(Channels.LABEL_CHANGE, {
+    publish(`${Channels.LABEL_CHANGE}.${pr._id.toHexString()}`, {
       action: ChangeAction.Added,
       value: result.ops[0],
     });
@@ -118,7 +118,7 @@ export const mutations = {
     };
 
     const result = await context.labels.findOneAndUpdate({ _id: id }, { $set: record });
-    publish(Channels.LABEL_CHANGE, {
+    publish(`${Channels.LABEL_CHANGE}.${project._id.toHexString()}`, {
       action: ChangeAction.Changed,
       value: result.value,
     });
@@ -159,12 +159,13 @@ export const mutations = {
 export const subscriptions = {
   labelChanged: {
     subscribe: withFilter(
-      () => pubsub.asyncIterator([Channels.LABEL_CHANGE]),
+      (_, args: LabelChangedSubscriptionArgs) =>
+        getPubSub().asyncIterator(`${Channels.LABEL_CHANGE}.${args.project}`),
       (
-        { value }: LabelRecordChange,
-        { project: id }: LabelChangedSubscriptionArgs,
+        change: LabelRecordChange,
+        args: LabelChangedSubscriptionArgs,
         context: Context) => {
-        return context.user && value.project.equals(id);
+        return !!context.user;
       }
     ),
     resolve: (payload: LabelRecordChange, args: any, context: Context) => {

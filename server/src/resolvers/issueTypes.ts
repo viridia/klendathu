@@ -5,7 +5,6 @@ import { inverseRelations } from '../../../common/types/json';
 export const types = {
   Issue: {
     id(row: IssueRecord) { return row._id; },
-    owner: (row: IssueRecord) => row.owner ? row.owner.toHexString() : null,
     ownerSort: (row: IssueRecord) => row.ownerSort ? row.ownerSort : null,
     createdAt: (row: IssueRecord) => row.created,
     updatedAt: (row: IssueRecord) => row.updated,

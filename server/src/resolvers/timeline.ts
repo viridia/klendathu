@@ -97,6 +97,5 @@ export const queries = {
 export const types = {
   TimelineEntry: {
     id: (row: TimelineEntryRecord) => row._id,
-    by: (row: TimelineEntryRecord) => row.by ? row.by.toHexString() : null,
   },
 };

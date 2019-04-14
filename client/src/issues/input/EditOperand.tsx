@@ -10,6 +10,7 @@ import { ProjectEnv } from '../../models';
 import { Observer } from 'mobx-react-lite';
 import { RelationSelector } from './RelationSelector';
 import { DropdownButton, ButtonVariant, MenuItem, TextInput } from 'skyhook-ui';
+import { MilestoneSelector } from './MilestoneSelector';
 
 interface Props {
   type: OperandType;
@@ -111,6 +112,16 @@ export function EditOperand(props: Props) {
                 selection={value ? value.slice() : []}
                 multiple={true}
                 onSelectionChange={onChange}
+              />);
+          }
+          case OperandType.MILESTONE: {
+            console.log(value);
+            return (
+              <MilestoneSelector
+                env={env}
+                className="operand-value"
+                selection={value}
+                onSelectionChange={ms => onChange(ms ? ms.id : null)}
               />);
           }
           case OperandType.ENUM: {

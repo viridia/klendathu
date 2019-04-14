@@ -179,7 +179,7 @@ module.exports = {
     // Disallow useless .call() or .apply()
     "no-useless-call": "error",
 
-    // This rule prevents things like /[\.]/, but it's easier to read
+    // Disabled: This rule would prevents things like /[\.]/, but it's easier to read
     "no-useless-escape": "off",
 
     // Detect un-needed catch statements.
@@ -194,17 +194,17 @@ module.exports = {
       "allowTernary": true
     }],
 
-    // require quotes around object literal property names
+    // Only require quotes around object literal property names when needed
     "quote-props": ["error", "as-needed", { "keywords": false, "unnecessary": true, "numbers": false }],
 
-    // specify whether double or single quotes should be used
+    // We prefer single quotes, except in HTML attributes
     "quotes": ["error", "single", { "avoidEscape": true }],
 
     // There are still occasional use cases for this.
     "react/no-find-dom-node": "off",
 
     // Will be removed in future versions of React.
-    "react/no-string-refs": "off",
+    "react/no-string-refs": "error",
 
     // require use of semicolons
     "semi": ["error", "always"],
@@ -274,7 +274,7 @@ module.exports = {
     // Parameter properties are a useful, if somewhat underutilized, TypeScript feature.
     "@typescript-eslint/no-parameter-properties": "off",
 
-    // Disabed because there appears to be a bug in the eslint rule. I'd like to enable.
+    // Disabled because there appears to be a bug in the eslint rule. I'd like to enable.
     // "@typescript-eslint/explicit-member-accessibility": ["error", { "accessibility": "explicit" }],
     "@typescript-eslint/explicit-member-accessibility": ["off"],
   },

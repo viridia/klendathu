@@ -140,6 +140,9 @@ export class FilterParams extends React.Component<Props> {
               {GROUP_TERMS.map(gt => (
                 <MenuItem eventKey={gt.field} key={gt.field}>{gt.caption}</MenuItem>
               ))}
+              {env.milestones.length > 0 &&
+                <MenuItem eventKey="milestone">Milestone</MenuItem>
+              }
             </DropdownButton>
             <Button
               variant="default"

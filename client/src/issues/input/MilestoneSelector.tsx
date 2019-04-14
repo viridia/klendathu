@@ -12,6 +12,7 @@ import { styled } from '../../style';
 import { MilestoneColors } from '../../style/milestoneColors';
 
 const MilestoneSelectorLayout = styled.div`
+  align-items: center;
   display: flex;
   flex-direction: row;
   flex: 1;
@@ -116,6 +117,7 @@ export class MilestoneSelector extends React.Component<Props> {
                     key={m.id}
                     className={classNames({ selected: m === this.milestone})}
                     onClick={e => { this.milestone = m; }}
+                    onDoubleClick={e => { this.milestone = m; this.onSelectMilestone(); }}
                   >
                     <td className="name">{m.name}</td>
                     <td className={classNames('status center', m.status.toLowerCase())}>

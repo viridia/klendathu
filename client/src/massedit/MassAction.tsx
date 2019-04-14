@@ -113,6 +113,14 @@ export class MassAction extends React.Component<Props> {
       },
     },
     {
+      id: 'milestone',
+      caption: 'Set Milestone',
+      type: OperandType.MILESTONE,
+      apply: (update: UpdateIssueInput, value: string) => {
+        update.milestone = value;
+      },
+    },
+    {
       id: 'delete',
       caption: 'Delete',
       type: null,
@@ -122,9 +130,13 @@ export class MassAction extends React.Component<Props> {
   ];
 
   public render() {
-    const { index, action } = this.props;
+    const { index, action, env } = this.props;
     const items: JSX.Element[] = [];
     MassAction.ACTION_TYPES.forEach(at => {
+      // Don't show milestone edit if there are no milestones defined.
+      if (at.type === OperandType.MILESTONE && env.milestones.length < 1) {
+        return;
+      }
       items.push(<MenuItem eventKey={at.id} key={at.id}>{at.caption}</MenuItem>);
     });
     const caption = (action && action.caption) || 'Choose action...';

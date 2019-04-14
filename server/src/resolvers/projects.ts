@@ -19,7 +19,7 @@ import { UserInputError, AuthenticationError } from 'apollo-server-core';
 import { Errors, Role } from '../../../common/types/json';
 import { logger } from '../logger';
 import { ObjectID } from 'mongodb';
-import { pubsub, Channels, RecordChange, publish } from './pubsub';
+import { Channels, RecordChange, publish, getPubSub } from './pubsub';
 import { withFilter } from 'graphql-subscriptions';
 import { getProjectRole, getProjectAndRole } from '../db/role';
 
@@ -314,7 +314,7 @@ export const mutations = {
 export const subscriptions = {
   projectsChanged: {
     subscribe: withFilter(
-      () => pubsub.asyncIterator([Channels.PROJECT_CHANGE]),
+      () => getPubSub().asyncIterator([Channels.PROJECT_CHANGE]),
       (
         { value: project }: ProjectRecordChange,
         { owners }: ProjectsChangedSubscriptionArgs,
@@ -326,7 +326,8 @@ export const subscriptions = {
         }
 
         // Only listen to projects from specific owners.
-        if (owners.findIndex(o => project.owner.equals(o)) < 0) {
+        const owner = new ObjectID(project.owner);
+        if (owners.findIndex(o => owner.equals(o)) < 0) {
           return false;
         }
 
@@ -341,14 +342,14 @@ export const subscriptions = {
   },
   projectChanged: {
     subscribe: withFilter(
-      () => pubsub.asyncIterator([Channels.PROJECT_CHANGE]),
+      () => getPubSub().asyncIterator([Channels.PROJECT_CHANGE]),
       (
         { value: project }: ProjectRecordChange,
         { project: id }: ProjectChangedSubscriptionArgs,
         context: Context
       ) => {
-        console.log('project changed');
-        if (!project._id.equals(id)) {
+        // console.log('project changed');
+        if (!new ObjectID(project._id).equals(id)) {
           return false;
         }
 
@@ -365,8 +366,7 @@ export const subscriptions = {
 
 export const types = {
   Project: {
-    id: (row: ProjectRecord) => row._id.toHexString(),
-    owner: (row: ProjectRecord) => row.owner.toHexString(),
+    id: (row: ProjectRecord) => row._id,
     createdAt: (row: ProjectRecord) => row.created,
     updatedAt: (row: ProjectRecord) => row.updated,
   },

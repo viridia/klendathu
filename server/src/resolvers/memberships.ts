@@ -14,7 +14,7 @@ import { getProjectAndRole } from '../db/role';
 import { logger } from '../logger';
 import { AuthenticationError, UserInputError } from 'apollo-server-core';
 import { withFilter } from 'graphql-subscriptions';
-import { pubsub, Channels, publish } from './pubsub';
+import { Channels, publish, getPubSub } from './pubsub';
 
 interface MembershipRecordChange {
   value: MembershipRecord;
@@ -140,12 +140,12 @@ export const mutations = {
 export const subscriptions = {
   membershipChanged: {
     subscribe: withFilter(
-      () => pubsub.asyncIterator([Channels.MEMBERSHIP_CHANGE]),
+      () => getPubSub().asyncIterator([Channels.MEMBERSHIP_CHANGE]),
       (
         { value }: MembershipRecordChange,
         { project: id }: MembershipChangedSubscriptionArgs,
         context: Context) => {
-        return context.user && value.project.equals(id);
+        return context.user && new ObjectID(value.project).equals(id);
       }
     ),
     resolve: (payload: MembershipRecordChange, args: any, context: Context) => {
@@ -156,9 +156,7 @@ export const subscriptions = {
 
 export const types = {
   Membership: {
-    id: (m: MembershipRecord) => m._id.toHexString(),
-    project: (m: MembershipRecord) => m.project ? m.project.toHexString() : null,
-    organization: (m: MembershipRecord) => m.organization ? m.organization.toHexString() : null,
+    id: (m: MembershipRecord) => m._id,
     createdAt: (m: MembershipRecord) => m.created,
     updatedAt: (m: MembershipRecord) => m.updated,
   },

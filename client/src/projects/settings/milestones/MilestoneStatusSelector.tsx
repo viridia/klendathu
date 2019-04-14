@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { MilestoneStatus } from '../../../../../common/types/graphql';
-import { MenuItem } from '../../../controls';
 import { styled } from '../../../style';
-import { DropdownButton } from 'skyhook-ui';
+import { DropdownButton, MenuItem } from 'skyhook-ui';
 
 const states: MilestoneStatus[] = [
   MilestoneStatus.Active,
@@ -37,7 +36,7 @@ export function MilestoneStatusSelector({ value, disabled, onChange }: Props) {
       onSelect={state => onChange(state as MilestoneStatus)}
     >
       {states.map(state => (
-        <MenuItem key={state} active={state === value} eventKey={state.toString()}>
+        <MenuItem key={state} checked={state === value} eventKey={state.toString()}>
           {statusNames[state]}
         </MenuItem>
       ))}

@@ -9,6 +9,7 @@ import { logger } from './logger';
 import { Context, resolverMap } from './resolvers';
 import { decodeAuthToken } from './db/user';
 import { createClient } from './db/client';
+import { initRedisPubSub, closePubSub } from './resolvers/pubsub';
 
 export class Server {
   public app = express();
@@ -57,6 +58,10 @@ export class Server {
     // Add Apollo middleware
     this.apollo.applyMiddleware({ app: this.app });
 
+    // Set up the connection to Redis. Pubsub is a global so that resolvers don't have
+    // a dependency on Server.
+    initRedisPubSub();
+
     // Other middleware
     // TODO
 
@@ -80,6 +85,7 @@ export class Server {
     logger.info('Shutting down...');
     this.httpServer.close();
     this.client.close();
+    closePubSub();
   }
 
   private getContext(

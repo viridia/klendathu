@@ -1,5 +1,7 @@
 # TODO
 
+* Autocomplete arrow keys stopped working.
+* Possibly use Redis cache for project membership test in subscriptions.
 * Attachments
 * Milestones
   * Progress
@@ -15,7 +17,7 @@
 * GraphQL Batching
 * Better loading indicator
 * Syntax highlighting for code examples.
-* "Dark mode".
+* "Dark mode" theme.
 * Preserve issue navigation list between page refreshes.
 * Better error reporting in issue create and issue edit.
 * Ability to embed inline attachments in markdown
@@ -58,7 +60,6 @@
 * Cron job
 * Issue Compose
   * Attachments
-  * Milestones
 * Issue Delete
 * Issue Query
   * By Time
@@ -74,12 +75,9 @@
 
 # Controls
 
-* HelpBlocks for forms (CreateProject dialog)
-* Dropdown (non-button)
+* HelpBlocks for forms (CreateProject dialog) - Skyhook
 * Spinner
-* Switch
 * Loading indicator
-* Progress bar
 
 # Cleanups / Technical Debt
 
@@ -87,6 +85,7 @@
 * Get rid of explicit passing of ViewContext where possible.
 * Write Jest tests for all frontend components
 * Move client queries and mutations to /graphql directory.
+* Redis: dynamically create topic names based on the subscription args. (performance)
 
 # Issue Models
 

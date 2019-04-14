@@ -3,7 +3,7 @@ import * as qs from 'qs';
 import { RouteComponentProps } from 'react-router';
 import { ErrorListDisplay } from '../graphql/ErrorDisplay';
 import { ViewContext } from '../models';
-import { LoadingIndicator, ColumnSort } from '../controls';
+import { LoadingIndicator, ColumnSort, NavContainer } from '../controls';
 import { observer } from 'mobx-react';
 import { computed, action } from 'mobx';
 import { EmptyList, Table, TableHead, TableBody } from '../layout';
@@ -23,7 +23,8 @@ import { IssueListEntry } from './IssueListEntry';
 import { keyframes } from 'styled-components';
 import { Issue } from '../../../common/types/graphql';
 import { GroupHeader } from './GroupHeader';
-import { CheckBox } from 'skyhook-ui';
+import { CheckBox, DropdownButton, MenuItem } from 'skyhook-ui';
+import MenuIcon from '../svg-compiled/icons/IcMenu';
 
 const highlightNew = (color: string) => keyframes`
   from {
@@ -45,6 +46,12 @@ const IssueListTable = styled(Table)`
   .selected {
     text-align: center;
   }
+
+  th.summary > section {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+  }
 `;
 
 const IssueListTableHeader = styled(TableHead)`
@@ -59,6 +66,13 @@ const IssueListTableBody = styled(TableBody)`
 
   > tr:first-child {
     box-shadow: inset 0px 2px 3px 0 ${props => props.theme.cardShadowColor};
+  }
+`;
+
+const MenuButton = styled(DropdownButton)`
+  padding: 0 4px;
+  .down-arrow {
+    display: none;
   }
 `;
 
@@ -181,18 +195,22 @@ export class IssueList extends React.Component<Props> {
               >
                 Summary
               </ColumnSort>
+              <MenuButton
+                size="smaller"
+                checkable={true}
+                alignEnd={true}
+                title={<MenuIcon />}
+              >
+                <NavContainer to={`/${project.ownerName}/${project.name}/settings/columns`}>
+                  <MenuItem>Arrange Columns&hellip;</MenuItem>
+                </NavContainer>
+                <MenuItem disabled={true}>Show Subtasks</MenuItem>
+              </MenuButton>
               {/* <Dropdown id="issue-menu" pullRight={true}>
-                <Dropdown.Toggle noCaret={true}>
-                  <MenuIcon />
-                </Dropdown.Toggle>
                 <Dropdown.Menu>
                   <MenuItem
                       className={classNames({ checked: query.subtasks !== undefined })}
                       onClick={this.onToggleSubtasks}>Show Subtasks</MenuItem>
-
-                  <NavContainer to={`/${account.uname}/${project.uname}/settings/columns`}>
-                    <MenuItem>Arrange Columns&hellip;</MenuItem>
-                  </NavContainer>
                 </Dropdown.Menu>
               </Dropdown> */}
             </section>

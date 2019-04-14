@@ -36,6 +36,7 @@ import {
   LabelSelector,
   CustomSuggestField,
   CustomEnumField,
+  MilestoneSelector,
 } from './input';
 import { Role, Workflow, IssueType, DataType } from '../../../common/types/json';
 import { session, ViewContext } from '../models';
@@ -48,7 +49,6 @@ import { IssueLinkEdit } from './input/IssueLinkEdit';
 import styled from 'styled-components';
 import ArrowUpIcon from '../svg-compiled/icons/IcArrowUpward';
 import { Spacer } from '../layout';
-import { MilestoneSelector } from './input/MilestoneSelector';
 
 const IssueComposeLayout = styled(Card)`
   flex: 1;

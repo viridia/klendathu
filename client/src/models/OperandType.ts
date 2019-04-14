@@ -16,6 +16,7 @@ export enum OperandType {
   LINK = 'link',
   RELATION = 'relation',
   ISSUE = 'issue',
+  MILESTONE = 'milestone',
 }
 
 export function defaultOperandValue(
@@ -36,6 +37,8 @@ export function defaultOperandValue(
     return new ObservableSet(customField.values);
   } else if (type === OperandType.RELATION) {
     return Relation.BlockedBy;
+  } else if (type === OperandType.MILESTONE) {
+    return null;
   } else {
     return '';
   }
