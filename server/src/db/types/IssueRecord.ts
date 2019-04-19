@@ -12,6 +12,7 @@ export interface CustomValues {
 
 /** Information about a file attachment to an issue. */
 export interface Attachment {
+  id: ObjectID;
   filename: string;
   url: string;
   thumbnail?: string;
@@ -35,7 +36,6 @@ export interface IssueRecord {
   updated: Date;
   labels: LabelID[];
   custom: CustomValues;
-  // comments: CommentEntry[];
   attachments: Attachment[];
   isPublic?: boolean;
   position?: [number, number];

@@ -36,8 +36,8 @@ export interface TimelineEntryRecord {
   labels?: StringListChange;
   milestone?: StringChange;
   attachments?: {
-    added?: string[];
-    removed?: string[];
+    added?: Attachment[];
+    removed?: Attachment[];
   };
   commentBody?: string;
   commentUpdated?: Date;

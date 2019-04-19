@@ -19,7 +19,10 @@ import { handleAsyncErrors } from './errors';
 import { ObjectID } from 'mongodb';
 
 const jwtOpts = {
-  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  jwtFromRequest: ExtractJwt.fromExtractors([
+    ExtractJwt.fromAuthHeaderAsBearerToken(),
+    ExtractJwt.fromUrlQueryParameter('authorization'),
+  ]),
   secretOrKey: process.env.JWT_SECRET,
 };
 
@@ -67,9 +70,10 @@ async function getOrCreateUserAccount(email: string, verified: boolean): Promise
 
 // Will use JWT strategy and fall back to anonymous if they are not logged in.
 server.app.use(
-  ['/auth', '/graphql'], passport.initialize());
-server.app.use(
-  ['/auth', '/graphql'], passport.authenticate(['jwt', 'anonymous'], { session: false }));
+  ['/auth', '/graphql', '/file'],
+  passport.initialize(),
+  passport.authenticate(['jwt', 'anonymous'], { session: false }),
+);
 
 // Set up JWT strategy
 passport.use(new JwtStrategy(jwtOpts, async (payload: SessionState, done) => {
@@ -252,7 +256,7 @@ authRouter.post('/login', handleAsyncErrors(async (req, res) => {
 }));
 
 // Send verify email address
-server.app.post('/auth/sendverify', handleAsyncErrors(async (req, res) => {
+authRouter.post('/sendverify', handleAsyncErrors(async (req, res) => {
   const { email } = req.body;
   // TODO: Validate email, username, fullname.
   if (email.length < 3) {

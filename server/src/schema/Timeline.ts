@@ -52,6 +52,15 @@ type CustomFieldChange {
   after: CustomValue
 }
 
+"A change to attachments."
+type AttachmentsChange {
+  "List of attachments that were added to the issue."
+  added: [Attachment!]!
+
+  "List of attachments that were removed from the issue."
+  removed: [Attachment!]!
+}
+
 "A change record for an issue. Note that comments are also stored as change records."
 type TimelineEntry {
   id: ID!
@@ -93,7 +102,7 @@ type TimelineEntry {
   milestone: StringChange
 
   "Changes to the issue attachment list."
-  attachments: IDListChange
+  attachments: AttachmentsChange
 
   "If this change is a comment, then this holds the body of the comment."
   commentBody: String

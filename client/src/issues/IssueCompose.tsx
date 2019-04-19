@@ -1,8 +1,5 @@
 import * as React from 'react';
 import * as qs from 'qs';
-// import { getFileInfoList } from '../../network/requests';
-// import { UploadAttachments } from '../files/UploadAttachments';
-
 import {
   Relation,
   IssueInput,
@@ -49,6 +46,7 @@ import { IssueLinkEdit } from './input/IssueLinkEdit';
 import styled from 'styled-components';
 import ArrowUpIcon from '../svg-compiled/icons/IcArrowUpward';
 import { Spacer } from '../layout';
+import { UploadAttachments } from '../files/UploadAttachments';
 
 const IssueComposeLayout = styled(Card)`
   flex: 1;
@@ -145,6 +143,17 @@ const LabelEditGroup = styled.span`
 const IssueLinkGroup = styled.div`
   grid-column: controls;
   justify-self: stretch;
+  min-width: 0;
+`;
+
+const AttachmentGroup = styled.div`
+  align-content: stretch;
+  display: flex;
+  flex-direction: row;
+  grid-column: controls;
+  justify-content: stretch;
+  justify-self: stretch;
+  margin-right: 4px;
   min-width: 0;
 `;
 
@@ -299,12 +308,12 @@ export class IssueCompose extends React.Component<Props> {
             </IssueLinkGroup>
 
             <FormLabel>Attach Files:</FormLabel>
-            {/*
-                <UploadAttachments
-                  attachments={this.attachments}
-                  project={project}
-                />
-                /> */}
+            <AttachmentGroup>
+              <UploadAttachments
+                attachments={this.attachments}
+                env={this.props.env}
+              />
+            </AttachmentGroup>
 
             <FormLabel>Comments:</FormLabel>
             <CommentEdit
@@ -500,7 +509,11 @@ export class IssueCompose extends React.Component<Props> {
       linked,
       custom,
       comments: toJS(this.comments),
-      attachments: this.attachments.slice(),
+      attachments: this.attachments.slice().map(a => {
+        // Strip off extra fields.
+        const { id, filename, url, thumbnail, type } = a;
+        return { id, filename, url, thumbnail, type };
+      }),
     };
     this.props.onSave(input).then(issue => {
       const { history } = this.props;
@@ -543,11 +556,6 @@ export class IssueCompose extends React.Component<Props> {
         this.custom.set(key, value);
       }
       this.attachments.replace(issue.attachments || []);
-      // if (issue.attachments) {
-      //   getFileInfoList(issue.attachments.slice(), files => {
-      //     this.attachments.replace(files);
-      //   });
-      // }
       this.issueLinkMap.clear();
       for (const link of issue.links) {
         this.issueLinkMap.set(link.to, link.relation);

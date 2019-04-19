@@ -1,6 +1,5 @@
 # TODO
 
-* Autocomplete arrow keys stopped working.
 * Possibly use Redis cache for project membership test in subscriptions.
 * Attachments
 * Milestones

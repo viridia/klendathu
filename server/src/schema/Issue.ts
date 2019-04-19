@@ -70,6 +70,7 @@ input CoordInput {
 
 "File attachment."
 type Attachment {
+  id: ID!
   filename: String!
   url: String!
   thumbnail: String
@@ -78,6 +79,7 @@ type Attachment {
 
 "File attachment input."
 input AttachmentInput {
+  id: ID!
   filename: String!
   url: String!
   thumbnail: String

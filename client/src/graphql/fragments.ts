@@ -43,7 +43,7 @@ export const fragments = {
     id createdAt updatedAt type state project summary description
     reporter reporterSort owner ownerSort cc labels
     custom { key value }
-    attachments { filename url thumbnail type }
+    attachments { id filename url thumbnail type }
     links { to relation }
     isPublic
     position { x y }
@@ -63,6 +63,10 @@ export const fragments = {
     milestone { before after }
     custom { key before after }
     linked { to before after }
+    attachments {
+      added { filename }
+      removed { filename }
+    }
     commentBody commentUpdated commentRemoved
   }`,
 

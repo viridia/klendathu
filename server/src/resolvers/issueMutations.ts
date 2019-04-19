@@ -16,6 +16,7 @@ import {
   CustomFieldChange,
   Relation,
   AddCommentMutationArgs,
+  AttachmentInput,
 } from '../../../common/types/graphql';
 import { UserInputError, AuthenticationError } from 'apollo-server-core';
 import { Errors, Role, inverseRelations } from '../../../common/types/json';
@@ -23,11 +24,17 @@ import { getProjectAndRole } from '../db/role';
 import { logger } from '../logger';
 import { ObjectID, UpdateQuery } from 'mongodb';
 import { Channels, publish } from './pubsub';
+import { Attachment } from '../db/types/IssueRecord';
 
 function customArrayToMap(custom: CustomFieldInput[]): CustomValues {
   const result: CustomValues = {};
   custom.forEach(({ key, value }) => { if (value !== null) { result[key] = value; } });
   return result;
+}
+
+function attachmentInputToAttachment(input: AttachmentInput): Attachment {
+  const { id, ...props } = input;
+  return { id: new ObjectID(id), ...props };
 }
 
 const strToId = (s: string): ObjectID => new ObjectID(s);
@@ -79,7 +86,7 @@ export const mutations = {
       milestone: input.milestone,
       labels: (input.labels || []),
       custom: input.custom ? customArrayToMap(input.custom) : {},
-      attachments: input.attachments || [],
+      attachments: (input.attachments || []).map(attachmentInputToAttachment),
       isPublic: !!input.isPublic,
     };
 
@@ -433,22 +440,24 @@ export const mutations = {
       }
     }
 
-    // TODO: Implement
-    // if ('attachments' in input) {
-    //   const existingAttachments = issue.attachments || [];
-    //   record.attachments = input.attachments;
-    //   const attachmentsPrev = new Set(existingAttachments);
-    //   const attachmentsNext = new Set(input.attachments);
-    //   input.attachments.forEach(attachments => attachmentsPrev.delete(attachments));
-    //   existingAttachments.forEach(attachments => attachmentsNext.delete(attachments));
-    //   if (attachmentsNext.size > 0 || attachmentsPrev.size > 0) {
-    //     change.attachments = {
-    //       added: Array.from(attachmentsNext),
-    //       removed: Array.from(attachmentsPrev),
-    //     };
-    //     change.at = record.updated;
-    //   }
-    // }
+    if ('attachments' in input) {
+      const existingAttachments = issue.attachments || [];
+      issue.attachments = input.attachments.map(attachmentInputToAttachment);
+      const attachmentsPrev = new Map<string, Attachment>(
+        existingAttachments.map(att => [att.id.toHexString(), att] as [string, Attachment]));
+      const attachmentsNext = new Map<string, Attachment>(
+        issue.attachments.map(att => [att.id.toHexString(), att] as [string, Attachment]));
+      input.attachments.forEach(att => attachmentsPrev.delete(att.id));
+      existingAttachments.forEach(att => attachmentsNext.delete(att.id.toHexString()));
+      if (attachmentsNext.size > 0 || attachmentsPrev.size > 0) {
+        update.$set.attachments = issue.attachments;
+        change.attachments = {
+          added: Array.from(attachmentsNext.values()),
+          removed: Array.from(attachmentsPrev.values()),
+        };
+        change.at = now;
+      }
+    }
 
     // Patch comments list.
     if ('comments' in input) {

@@ -23,6 +23,7 @@ import { IssueTimeline } from './IssueTimeline';
 import styled from 'styled-components';
 import ArrowUpIcon from '../svg-compiled/icons/IcArrowUpward';
 import { WorkflowActionsView } from './workflow/WorkflowActionsView';
+import { ShowAttachments } from '../files/ShowAttachments';
 import { LocationState } from 'history';
 import { Button, Dialog, ButtonGroup, FormLabel } from 'skyhook-ui';
 
@@ -260,12 +261,14 @@ export class IssueDetails extends React.Component<Props> {
                   </>
                 )}
 
-                {/* {issue.attachments.length > 0 && (
-                  <tr>
-                    <th className="header">Attachments:</th>
-                    <td><ShowAttachments attachments={issue.attachments} /></td>
-                  </tr>
-                )}*/}
+                {issue.attachments.length > 0 && (
+                  <>
+                    <FormLabel>Attachments:</FormLabel>
+                    <ShowAttachments
+                      attachments={issue.attachments}
+                    />
+                  </>
+                )}
 
                 {issue.links.length > 0 && (
                   <>

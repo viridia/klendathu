@@ -179,13 +179,12 @@ export function TimelineEntryDisplay({ change, showIssue }: Props) {
           </TimelinePropery>))}
         {attachments && attachments.added && attachments.added.map(a =>
           (<TimelinePropery key={a}>
-            attached file <span className="attachment" />
+            attached file: <span className="attachment">{a.filename}</span>
           </TimelinePropery>))}
-        {attachments && attachments.removed &&
-            attachments.removed.map(a =>
-              (<TimelinePropery key={a}>
-                removed file <span className="attachment" />
-              </TimelinePropery>))}
+        {attachments && attachments.removed && attachments.removed.map(a =>
+          (<TimelinePropery key={a}>
+            removed file: <span className="attachment">{a.filename}</span>
+          </TimelinePropery>))}
         {milestone && (
           <TimelinePropery>
             milestone:{' '}

@@ -2,7 +2,7 @@ import * as express from 'express';
 import * as http from 'http';
 import * as path from 'path';
 import * as Bundler from 'parcel-bundler';
-import { MongoClient, Db } from 'mongodb';
+import { MongoClient, Db, GridFSBucket } from 'mongodb';
 import { ApolloServer } from 'apollo-server-express';
 import { typeDefs } from './schema';
 import { logger } from './logger';
@@ -15,6 +15,7 @@ export class Server {
   public app = express();
   public client: MongoClient;
   public db: Db;
+  public bucket: GridFSBucket;
   public apollo = new ApolloServer({
     typeDefs,
     context: this.getContext.bind(this),
@@ -54,6 +55,7 @@ export class Server {
     // Connect to the database
     this.client = await createClient();
     this.db = this.client.db(process.env.DB_NAME);
+    this.bucket = new GridFSBucket(this.db);
 
     // Add Apollo middleware
     this.apollo.applyMiddleware({ app: this.app });

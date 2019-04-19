@@ -151,6 +151,8 @@ export interface CustomFieldInput {
 }
 /** File attachment input. */
 export interface AttachmentInput {
+  id: string;
+
   filename: string;
 
   url: string;
@@ -660,7 +662,7 @@ export interface TimelineEntry {
   /** Change to assigned milestone. */
   milestone?: Maybe<StringChange>;
   /** Changes to the issue attachment list. */
-  attachments?: Maybe<IdListChange>;
+  attachments?: Maybe<AttachmentsChange>;
   /** If this change is a comment, then this holds the body of the comment. */
   commentBody?: Maybe<string>;
   /** If the comment was edited, this is when. */
@@ -695,6 +697,14 @@ export interface IdListChange {
   added: string[];
   /** List of entries that were removed from the field. */
   removed: string[];
+}
+
+/** A change to attachments. */
+export interface AttachmentsChange {
+  /** List of attachments that were added to the issue. */
+  added: Attachment[];
+  /** List of attachments that were removed from the issue. */
+  removed: Attachment[];
 }
 
 /** A change to a custom field. */
