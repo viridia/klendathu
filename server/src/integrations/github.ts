@@ -8,6 +8,7 @@ import { Db, ObjectID } from 'mongodb';
 import { logger } from '../logger';
 import { escapeRegExp } from '../db/helpers';
 
+/* eslint-disable camelcase */
 enum GHEvent {
   PULL_REQUEST = 'pull_request',
   PUSH = 'push',

@@ -3,6 +3,7 @@ node_modules
 builds/
 /dist
 /data
+/uploads
 /.env
 /.cache
 coverage/

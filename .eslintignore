@@ -1,2 +1,7 @@
 client/src/svg-compiled
 /node_modules
+/data
+/design
+/dist
+/docs
+/uploads
