@@ -2,6 +2,7 @@ import { AccountRecord, ProjectRecord, MembershipRecord } from './types';
 import { Role } from '../../../common/types/json';
 import { Db, ObjectID } from 'mongodb';
 import { logger } from '../logger';
+import { server } from '../Server';
 
 export async function getProjectRole(
     db: Db, user: AccountRecord, project: ProjectRecord): Promise<number> {
@@ -44,6 +45,20 @@ export async function getProjectAndRole(
     return { project, role };
   }
   return { role: Role.NONE };
+}
+
+/** Looks up the user's role from the redis cache. */
+export function getCachedProjectRole(user: AccountRecord, projectId: ObjectID): Promise<Role> {
+  const key = `role-${user ? user._id : '0'}-${projectId}`;
+  return server.redis.get(key).then(res => {
+    if (res !== null) {
+      return res as unknown as Role;
+    }
+    return getProjectAndRole(server.db, user, projectId).then(({ role }) => {
+      server.redis.set(key, role, 'EX', 600); // Expire in ten minutes
+      return role;
+    });
+  });
 }
 
 export async function getOrganizationRole(

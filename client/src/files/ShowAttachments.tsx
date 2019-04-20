@@ -24,7 +24,6 @@ interface Props {
 
 /** React component that represents a list of attachments to an issue. */
 export function ShowAttachments({ attachments }: Props) {
-  console.log(attachments);
   const model = React.useMemo(
     () => new MediaViewerModel(new AttachmentCollection(attachments)), attachments);
 

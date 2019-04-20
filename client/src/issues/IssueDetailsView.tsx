@@ -58,49 +58,58 @@ export const IssueDetailsView = (props: IssueProviderProps) => {
     }, error => {
       env.mutationError = error;
       toast.error('Error posting comment.');
-      console.log(error);
+      console.error(error);
     });
   }
 
-  return (
-    <React.Fragment>
-      <Query
-        query={IssueDetailsQuery}
-        variables={{
-          issue: `${project.id}.${id}`,
-        }}
-        fetchPolicy="cache-and-network"
-      >
-        {({ data, error, loading, subscribeToMore, refetch }) => {
-          if (error) {
-            return <ErrorDisplay error={error} />;
-          }
-          const { issue } = data;
-          if (session.account && issue) {
-            subscribeToMore<IssueChangeResult>({
-              document: IssueSubscription,
-              variables: {
-                issue: issue.id,
-              },
-              updateQuery: (prev, { subscriptionData }) => {
-                return {
-                  issue: subscriptionData.data.issueChanged.value,
-                };
-              },
-            });
-          }
+  const issueId = `${project.id}.${id}`;
 
-          return (
-            <IssueDetails
-              {...props}
-              env={env}
-              issue={issue}
-              loading={loading}
-              onAddComment={addComment}
-            />
-          );
-        }}
-      </Query>
-    </React.Fragment>
+  return (
+    <Query
+      query={IssueDetailsQuery}
+      variables={{ issue: issueId }}
+      fetchPolicy="cache-and-network"
+    >
+      {({ data, error, loading, subscribeToMore, refetch }) => {
+        if (error) {
+          return <ErrorDisplay error={error} />;
+        }
+
+        const { issue } = data;
+        if (!issue) {
+          return null;
+        }
+
+        if (session.account) {
+          subscribeToMore<IssueChangeResult>({
+            document: IssueSubscription,
+            variables: { issue: issueId },
+            updateQuery: (prev, { subscriptionData }) => {
+              refetch();
+              // TODO: For some reason, this is not working as expected. It gets executed,
+              // but the query isn't re-rendered.
+              // if (!subscriptionData.data.issueChanged) {
+              //   return prev;
+              // }
+              // const updatedIssue = subscriptionData.data.issueChanged.value;
+              // return {
+              //   ...prev,
+              //   issue: updatedIssue
+              // };
+            },
+          });
+        }
+
+        return (
+          <IssueDetails
+            {...props}
+            env={env}
+            issue={issue}
+            loading={loading}
+            onAddComment={addComment}
+          />
+        );
+      }}
+    </Query>
   );
 };

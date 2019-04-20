@@ -75,13 +75,6 @@ const ImagePreview = styled.img`
   object-fit: contain;
 `;
 
-function withAuth(url: string) {
-  if (session.isLoggedIn) {
-    return `${url}${qs.stringify({ authorization: session.token }, { addQueryPrefix: true })}`;
-  }
-  return url;
-}
-
 interface Props {
   model: MediaViewerModel;
 }
@@ -100,7 +93,7 @@ export class MediaViewerDialog extends React.Component<Props> {
           <HeaderButton onClick={this.onClose}><CloseIcon /></HeaderButton>
         </MediaViewerHeader>
         <MediaViewerBody>
-          {mo && <ImagePreview src={withAuth(mo.url)} />}
+          {mo && <ImagePreview src={session.withAuthParam(mo.url)} />}
         </MediaViewerBody>
       </MediaViewerDialogEl>
     );

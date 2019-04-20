@@ -1,6 +1,7 @@
 import * as express from 'express';
 import * as http from 'http';
 import * as path from 'path';
+import * as Redis from 'ioredis';
 import * as Bundler from 'parcel-bundler';
 import { MongoClient, Db, GridFSBucket } from 'mongodb';
 import { ApolloServer } from 'apollo-server-express';
@@ -47,6 +48,7 @@ export class Server {
     playground: process.env.NODE_ENV !== 'production',
   });
   public httpServer: http.Server;
+  public redis: Redis.Redis;
 
   // Note this is called *after* routes have been created
   public async start() {
@@ -63,6 +65,10 @@ export class Server {
     // Set up the connection to Redis. Pubsub is a global so that resolvers don't have
     // a dependency on Server.
     initRedisPubSub();
+    this.redis = new Redis({
+      host: process.env.REDIS_HOST,
+      port: Number(process.env.REDIS_PORT),
+    });
 
     // Other middleware
     // TODO
@@ -85,6 +91,7 @@ export class Server {
 
   public stop() {
     logger.info('Shutting down...');
+    this.redis.disconnect();
     this.httpServer.close();
     this.client.close();
     closePubSub();

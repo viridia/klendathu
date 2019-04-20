@@ -1,18 +1,10 @@
 import * as React from 'react';
-import * as qs from 'qs';
 import { Attachment } from '../../../common/types/graphql';
 import { styled } from '../style';
 import { session } from '../models';
 import CloseIcon from '../svg-compiled/icons/IcClose';
 import ErrorIcon from '../svg-compiled/icons/IcError';
 import classNames from 'classnames';
-
-function withAuth(url: string) {
-  if (session.isLoggedIn) {
-    return `${url}${qs.stringify({ authorization: session.token }, { addQueryPrefix: true })}`;
-  }
-  return url;
-}
 
 /** Preview content for thumbnail. */
 export function ThumbnailPreviewContent({ attachment }: { attachment: Attachment }) {
@@ -25,9 +17,17 @@ export function ThumbnailPreviewContent({ attachment }: { attachment: Attachment
     case 'image/gif':
     case 'image/jpeg':
       if (thumbnail) {
-        return <img className="image thumb" src={withAuth(thumbnail)} alt={filename} />;
+        return (<img
+          className="image thumb"
+          src={session.withAuthParam(thumbnail)}
+          alt={filename}
+        />);
       } else if (url) {
-        return <img className="image" src={withAuth(url)} alt={withAuth(filename)} />;
+        return (<img
+          className="image"
+          src={session.withAuthParam(url)}
+          alt={session.withAuthParam(filename)}
+        />);
       }
       return <div className="image nothumb" />;
     case 'image/svg+xml':

@@ -103,6 +103,14 @@ export class Session {
     this.account = null;
     localStorage.removeItem('token');
   }
+
+  /** Given a URL, appends an authentication token to it. */
+  public withAuthParam(url: string) {
+    if (this.isLoggedIn) {
+      return `${url}${qs.stringify({ authorization: this.token }, { addQueryPrefix: true })}`;
+    }
+    return url;
+  }
 }
 
 export const session = new Session();

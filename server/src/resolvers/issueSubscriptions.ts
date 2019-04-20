@@ -8,6 +8,8 @@ import {
 import { withFilter } from 'graphql-subscriptions';
 import { Channels, RecordChange, getPubSub } from './pubsub';
 import { ObjectID } from 'mongodb';
+import { getCachedProjectRole } from '../db/role';
+import { Role } from '../../../common/types/json';
 
 type IssueRecordChange = RecordChange<IssueRecord>;
 type TimelineRecordChange = RecordChange<TimelineEntryRecord>;
@@ -16,13 +18,13 @@ export const subscriptions = {
   issueChanged: {
     subscribe: withFilter(
       () => getPubSub().asyncIterator(Channels.ISSUE_CHANGE),
-      (
+      async (
         change: IssueRecordChange,
         { issue }: IssueChangedSubscriptionArgs,
         context: Context
       ) => {
-        // TODO: Need a fast way to check project membership
-        return context.user && change.value._id === issue;
+        const role = await getCachedProjectRole(context.user, new ObjectID(change.value.project));
+        return role > Role.NONE && change.value._id === issue;
       }
     ),
     resolve: (payload: IssueRecordChange, args: any, context: Context) => {
@@ -32,13 +34,17 @@ export const subscriptions = {
   issuesChanged: {
     subscribe: withFilter(
       () => getPubSub().asyncIterator(Channels.ISSUE_CHANGE),
-      (
+      async (
         change: IssueRecordChange,
         { project }: IssuesChangedSubscriptionArgs,
         context: Context
       ) => {
-        // TODO: Need a fast way to check project membership
-        return context.user && new ObjectID(change.value.project).equals(project);
+        const projectId = new ObjectID(change.value.project);
+        if (!projectId.equals(project)) {
+          return false;
+        }
+        const role = await getCachedProjectRole(context.user, projectId);
+        return role > Role.NONE;
       }
     ),
     resolve: (payload: IssueRecordChange, args: any, context: Context) => {
@@ -48,16 +54,20 @@ export const subscriptions = {
   timelineChanged: {
     subscribe: withFilter(
       () => getPubSub().asyncIterator([Channels.TIMELINE_CHANGE]),
-      (
+      async (
         change: TimelineRecordChange,
         { issue, project }: TimelineChangedSubscriptionArgs,
         context: Context
       ) => {
-        // TODO: Need a fast way to check project membership
-        if (!new ObjectID(change.value.project).equals(project)) {
+        const projectId = new ObjectID(change.value.project);
+        if (!projectId.equals(project)) {
           return false;
         }
-        if (issue) {
+
+        const role = await getCachedProjectRole(context.user, projectId);
+        if (role === Role.NONE) {
+          return false;
+        } else if (issue) {
           return change.value.issue === issue;
         } else {
           return true;

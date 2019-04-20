@@ -1,16 +1,17 @@
 # TODO
 
 * Possibly use Redis cache for project membership test in subscriptions.
-* Attachments
 * Milestones
   * Progress
   * Number of issues
   * Delete
+* Reachability graph
+* Autocomplete for custom field values
 * Edit comment
 * Redo screenshots in README
 * Issue Child items
 * Delete issues
-* Centralize graphql queries and mutations
+* Centralize graphql queries and mutations (partly done)
 * Workflow actions (test)
   * Server unit test for removeLinks
 * GraphQL Batching
@@ -57,8 +58,6 @@
 # Major pieces
 
 * Cron job
-* Issue Compose
-  * Attachments
 * Issue Delete
 * Issue Query
   * By Time
@@ -91,7 +90,6 @@
 Issue List State:
 
 * Filter Params
-* Column Order / Column Prefs
 * Template
 * Sort Order
 * Pagination
