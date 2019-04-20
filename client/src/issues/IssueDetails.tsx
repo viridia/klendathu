@@ -264,9 +264,7 @@ export class IssueDetails extends React.Component<Props> {
                 {issue.attachments.length > 0 && (
                   <>
                     <FormLabel>Attachments:</FormLabel>
-                    <ShowAttachments
-                      attachments={issue.attachments}
-                    />
+                    <ShowAttachments attachments={issue.attachments} />
                   </>
                 )}
 

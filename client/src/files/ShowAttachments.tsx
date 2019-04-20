@@ -1,5 +1,7 @@
 import * as React from 'react';
+import { Attachment } from '../../../common/types/graphql';
 import { AttachmentDisplay } from './AttachmentDisplay';
+import { AttachmentCollection, MediaViewerDialog, MediaViewerModel } from '../viewer';
 import { styled } from '../style';
 
 const ShowAttachmentsEl = styled.div`
@@ -17,18 +19,20 @@ const ShowAttachmentsEl = styled.div`
 `;
 
 interface Props {
-  fileList: Attachment[];
-  onShow: (attachment: Attachment) => void;
+  attachments: Attachment[];
 }
 
 /** React component that represents a list of attachments to an issue. */
-export function ShowAttachments({ attachments, onShow }: Props) {
-  const [selected, showSelected] = React.useState<Attachment>();
+export function ShowAttachments({ attachments }: Props) {
+  console.log(attachments);
+  const model = React.useMemo(
+    () => new MediaViewerModel(new AttachmentCollection(attachments)), attachments);
 
   return (
     <ShowAttachmentsEl>
-      {attachments.map(a => (
-        <AttachmentDisplay key={a.id} attachment={a} onShow={showSelected} />))}
+      <MediaViewerDialog model={model} />
+      {attachments.map((a, index) => (
+        <AttachmentDisplay key={a.id} attachment={a} onShow={() => model.show(a.url)} />))}
     </ShowAttachmentsEl>
   );
 }

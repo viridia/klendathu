@@ -32,7 +32,7 @@ services:
     ports:
       - "9000:9000"
   redis:
-    image: redis:5.0-alpine
+    image: redis:5.0-32bit
     container_name: redis
     ports:
       - "6379:6379"

@@ -590,6 +590,8 @@ export interface CustomField {
 
 /** File attachment. */
 export interface Attachment {
+  id: string;
+
   filename: string;
 
   url: string;
