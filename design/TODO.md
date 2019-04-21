@@ -1,6 +1,5 @@
 # TODO
 
-* Possibly use Redis cache for project membership test in subscriptions.
 * Milestones
   * Progress
   * Number of issues
@@ -54,6 +53,13 @@
 * Issue Grouping by custom field.
 * Dashboard time line.
 * Idea: implicit operations via comments.
+  * examples:
+    :blocked by #2
+    :blocks #5
+    :part of #6
+    :has part #7
+    :duplicate #8
+    :related #9
 
 # Major pieces
 

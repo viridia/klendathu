@@ -17,6 +17,7 @@ import {
   Relation,
   AddCommentMutationArgs,
   AttachmentInput,
+  IssueLinkInput,
 } from '../../../common/types/graphql';
 import { UserInputError, AuthenticationError } from 'apollo-server-core';
 import { Errors, Role, inverseRelations } from '../../../common/types/json';
@@ -25,6 +26,8 @@ import { logger } from '../logger';
 import { ObjectID, UpdateQuery } from 'mongodb';
 import { Channels, publish } from './pubsub';
 import { Attachment } from '../db/types/IssueRecord';
+import { escapeRegExp } from '../db/helpers';
+import { updateIssueLinks } from '../db/links';
 
 function customArrayToMap(custom: CustomFieldInput[]): CustomValues {
   const result: CustomValues = {};
@@ -35,6 +38,56 @@ function customArrayToMap(custom: CustomFieldInput[]): CustomValues {
 function attachmentInputToAttachment(input: AttachmentInput): Attachment {
   const { id, ...props } = input;
   return { id: new ObjectID(id), ...props };
+}
+
+const BASE_URL = escapeRegExp(process.env.PUBLIC_URL || '');
+const LINK_RE = new RegExp(
+  `^:([\\-_A-Za-z0-9\\s]+)(?:#(\\d+)|${BASE_URL}/([\\w_\\-\\.]+)/([\\w_\\-\\.]+)/(\\d+))`, 'mg'); // eslint-disable-line
+
+const LinkDirectives: { [key: string]: Relation } = {
+  'blocked by': Relation.BlockedBy,
+  blocks: Relation.Blocks,
+  'part of': Relation.PartOf,
+  'has part': Relation.HasPart,
+  duplicate: Relation.Duplicate,
+  dup: Relation.Duplicate,
+  related: Relation.Related,
+};
+
+export function scanForDirectives(
+    accountName: string,
+    projectName: string,
+    projectId: ObjectID | string,
+    comments: string[],
+    links: IssueLinkInput[]) {
+  if (!BASE_URL) {
+    return;
+  }
+  const re = new RegExp(LINK_RE);
+  for (const comment of comments) {
+    for (;;) {
+      const m = re.exec(comment);
+      if (m) {
+        const [, directive, id, account, project, issue] = m;
+        const dir = directive.trimRight();
+        let issueId: string;
+        if (id !== undefined) {
+          issueId = `${projectId}.${id}`;
+        } else if (account === accountName && project === projectName) {
+          issueId = `${projectId}.${issue}`;
+        }
+
+        if (issueId && dir in LinkDirectives) {
+          links.push({
+            to: issueId,
+            relation: LinkDirectives[dir],
+          });
+        }
+      } else {
+        break;
+      }
+    }
+  }
 }
 
 const strToId = (s: string): ObjectID => new ObjectID(s);
@@ -103,6 +156,10 @@ export const mutations = {
         record.owner = owner._id;
         record.ownerSort = owner.accountName;
       }
+    }
+
+    if (input.comments) {
+      scanForDirectives(pr.ownerName, pr.name, pr._id, input.comments, input.linked);
     }
 
     const timelineRecordsToInsert: TimelineEntryRecord[] = (input.comments || []).map(comment => ({
@@ -196,6 +253,11 @@ export const mutations = {
     if (role < Role.UPDATER) {
       logger.error('Insufficient permissions to update project:', { user, id });
       throw new UserInputError(Errors.FORBIDDEN);
+    }
+
+    if ('comments' in input) {
+      scanForDirectives(
+        project.ownerName, project.name, project._id, input.comments, input.linked);
     }
 
     // Ensure that all of the issues we are linking to actually exist.
@@ -486,137 +548,22 @@ export const mutations = {
           { to: issue._id },
         ]
       }).toArray();
+
       const linksToInsert: IssueLinkRecord[] = [];
       const linksToRemove: IssueLinkRecord[] = [];
       const linksToUpdate: IssueLinkRecord[] = [];
 
-      // Change records for the other side of the link.
-      const addChangeRecord = (iss: string, ch: { before?: Relation; after?: Relation }) => {
-        timelineRecordsToInsert.push({
-          project: project._id,
-          by: context.user._id,
-          issue: iss,
-          at: now,
-          linked: [{ to: issue._id, ...ch }],
-        });
-      };
-
-      // Links from this issue to another issue, indexed by target
-      const fwdMap = new Map<string, IssueLinkRecord>(links
-        .filter(link => link.from === issue._id)
-        .map(link => [link.to, link] as [string, IssueLinkRecord]));
-      // Links to this issue from another issue, indexed by source
-      const rvsMap = new Map<string, IssueLinkRecord>(links
-        .filter(link => link.to === issue._id)
-        .map(link => [link.from, link] as [string, IssueLinkRecord]));
-      change.linked = [];
-
-      if ('linked' in input) {
-        // Replace list
-        for (const link of input.linked) {
-          const inv = inverseRelations[link.relation]; // Inverse relation
-          const fwd = fwdMap.get(link.to); // Pre-existing link from this to another issue.
-          const rvs = rvsMap.get(link.to); // Pre-existing link from another issue to this.
-
-          if (!fwd && !rvs) {
-            // This is a new link (no link between current issue and link.to)
-            linksToInsert.push({ from: issue._id, to: link.to, relation: link.relation });
-            change.linked.push({ to: link.to, after: link.relation });
-            addChangeRecord(link.to, { after: inv });
-          } else if (fwd) {
-            // Existing forward link, see if the relationship changed
-            if (fwd.relation !== link.relation) {
-              linksToUpdate.push({ ...fwd, relation: link.relation });
-              change.linked.push({ to: link.to, before: fwd.relation, after: link.relation });
-              addChangeRecord(link.to, { before: inverseRelations[fwd.relation], after: inv });
-            }
-          } else if (rvs) {
-            // Existing reverse link, see if the (inverse) relationship changed.
-            if (rvs.relation !== inv) {
-              linksToUpdate.push({ ...rvs, relation: inv });
-              change.linked.push({
-                to: link.to, before: inverseRelations[rvs.relation], after: inv });
-              addChangeRecord(rvs.from, { before: rvs.relation, after: link.relation });
-            }
-          }
-        }
-
-        // Remove any entries from the maps that were maintained
-        for (const link of input.linked) {
-          fwdMap.delete(link.to);
-          rvsMap.delete(link.to);
-        }
-
-        // Delete all forward links that weren't in the list
-        for (const fwd of fwdMap.values()) {
-          // Queue link for deletion
-          linksToRemove.push(fwd);
-          change.linked.push({ to: fwd.to, before: fwd.relation });
-          addChangeRecord(fwd.to, { before: inverseRelations[fwd.relation] });
-        }
-
-        // Delete all reverse links that weren't in the list
-        for (const rvs of rvsMap.values()) {
-          // Queue link for deletion
-          linksToRemove.push(rvs);
-          change.linked.push({ to: rvs.from, before: inverseRelations[rvs.relation] });
-          addChangeRecord(rvs.from, { before: rvs.relation });
-        }
-      }
-
-      if ('addLinks' in input) {
-        for (const link of input.addLinks) {
-          const inv = inverseRelations[link.relation]; // Inverse relation
-          const fwd = fwdMap.get(link.to); // Pre-existing link from this to another issue.
-          const rvs = rvsMap.get(link.to); // Pre-existing link from another issue to this.
-
-          if (!fwd && !rvs) {
-            // This is a new link (no link between current issue and link.to)
-            linksToInsert.push({ from: issue._id, to: link.to, relation: link.relation });
-            change.linked.push({ to: link.to, after: link.relation });
-            addChangeRecord(link.to, { after: inv });
-          } else if (fwd) {
-            // Existing forward link, see if the relationship changed
-            if (fwd.relation !== link.relation) {
-              linksToUpdate.push({ ...fwd, relation: link.relation });
-              change.linked.push({ to: link.to, before: fwd.relation, after: link.relation });
-              addChangeRecord(link.to, { before: inverseRelations[fwd.relation], after: inv });
-            }
-          } else if (rvs) {
-            // Existing reverse link, see if the (inverse) relationship changed.
-            if (rvs.relation !== inv) {
-              linksToUpdate.push({ ...rvs, relation: inv });
-              change.linked.push({
-                to: link.to, before: inverseRelations[rvs.relation], after: inv });
-              addChangeRecord(rvs.from, { before: rvs.relation, after: link.relation });
-            }
-          }
-        }
-
-        // Unlike 'linked' case above, we don't remove any links.
-      }
-
-      if ('removeLinks' in input) {
-        for (const linkId of input.removeLinks) {
-          const fwd = fwdMap.get(linkId); // Pre-existing link from this to another issue.
-          const rvs = rvsMap.get(linkId); // Pre-existing link from another issue to this.
-
-          if (fwd) {
-            linksToRemove.push(fwd);
-            change.linked.push({ to: fwd.to, before: fwd.relation });
-            addChangeRecord(fwd.to, { before: inverseRelations[fwd.relation] });
-          } else if (rvs) {
-            // Existing reverse link, see if the (inverse) relationship changed.
-            linksToRemove.push(rvs);
-            change.linked.push({ to: rvs.from, before: inverseRelations[rvs.relation] });
-            addChangeRecord(rvs.from, { before: rvs.relation });
-          }
-        }
-      }
-
-      if (change.linked.length > 0) {
-        change.at = now;
-      }
+      updateIssueLinks(
+        input,
+        issue,
+        project,
+        links,
+        context.user,
+        change,
+        linksToInsert,
+        linksToRemove,
+        linksToUpdate,
+        timelineRecordsToInsert);
 
       if (linksToInsert.length > 0) {
         promises.push(issueLinks.insertMany(linksToInsert));
@@ -831,7 +778,75 @@ export const mutations = {
       commentBody: body,
     };
 
+    const issuesToLink: IssueLinkInput[] = [];
+    scanForDirectives(
+      project.ownerName, project.name, project._id, [body], issuesToLink);
+
+    if (issuesToLink) {
+      // Find all links referencing this issue
+      const issueLinks = context.db.collection<IssueLinkRecord>('issueLinks');
+      const links = await issueLinks.find({
+        $or: [
+          { from: issue._id },
+          { to: issue._id },
+        ]
+      }).toArray();
+
+      const timelineRecordsToInsert: TimelineEntryRecord[] = [];
+      const linksToInsert: IssueLinkRecord[] = [];
+      const linksToRemove: IssueLinkRecord[] = [];
+      const linksToUpdate: IssueLinkRecord[] = [];
+
+      const change: TimelineEntryRecord = {
+        project: project._id,
+        issue: issue._id,
+        by: context.user._id,
+        at: null, // 'at' is also used as a marker to indicate that this record needs to be updated.
+      };
+
+      const promises: Array<Promise<any>> = [];
+      updateIssueLinks(
+        { addLinks: issuesToLink },
+        issue,
+        project,
+        links,
+        context.user,
+        change,
+        linksToInsert,
+        linksToRemove,
+        linksToUpdate,
+        timelineRecordsToInsert);
+
+      if (linksToInsert.length > 0) {
+        promises.push(issueLinks.insertMany(linksToInsert));
+      }
+      if (linksToRemove.length > 0) {
+        promises.push(issueLinks.deleteMany({ _id: { $in: linksToRemove.map(lnk => lnk._id) } }));
+      }
+      if (linksToUpdate.length > 0) {
+        for (const lnk of linksToUpdate) {
+          promises.push(issueLinks.findOneAndReplace({ _id: lnk._id }, lnk));
+        }
+      }
+      await Promise.all(promises);
+
+      if (change.at) {
+        timelineRecordsToInsert.push(change);
+      }
+
+      if (timelineRecordsToInsert.length > 0) {
+        const res = await context.timeline.insertMany(timelineRecordsToInsert);
+        res.ops.forEach(changeRow => {
+          publish(Channels.TIMELINE_CHANGE, {
+            action: ChangeAction.Added,
+            value: changeRow,
+          });
+        });
+      }
+    }
+
     const result = await context.timeline.insertOne(record);
+
     publish(Channels.TIMELINE_CHANGE, {
       action: ChangeAction.Added,
       value: result.ops[0],

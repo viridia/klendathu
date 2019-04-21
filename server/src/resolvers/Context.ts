@@ -8,6 +8,7 @@ import {
   TimelineEntryRecord,
   ProjectPrefsRecord,
   MembershipRecord,
+  IssueLinkRecord,
 } from '../db/types';
 
 export class Context {
@@ -19,6 +20,10 @@ export class Context {
 
   public get issues(): Collection<IssueRecord> {
     return this.db.collection<IssueRecord>('issues');
+  }
+
+  public get issueLinks(): Collection<IssueLinkRecord> {
+    return this.db.collection<IssueLinkRecord>('issueLinks');
   }
 
   public get labels(): Collection<LabelRecord> {

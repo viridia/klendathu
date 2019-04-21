@@ -6,6 +6,7 @@ import {
   IssueSearchQueryArgs,
   SearchCustomFieldsQueryArgs,
   Predicate,
+  Relation,
 } from '../../../common/types/graphql';
 import { UserInputError, AuthenticationError } from 'apollo-server-core';
 import { Errors, Role } from '../../../common/types/json';
@@ -196,14 +197,10 @@ export const queries = {
       sort.index = 1;
     }
 
-    // TODO: Find related subtasks
-    // if (req.subtasks) {
-    //   return this.findSubtasks(query, sort);
-    // }
     // console.log(filter);
     // console.log(sort);
     // Generate numeric index from _id (for sorting).
-    const result = await context.issues.aggregate([
+    const result: IssueRecord[] = await context.issues.aggregate([
       { $match: filter },
       { $addFields: {
         // Add an 'index' field derived from the _id.
@@ -213,6 +210,21 @@ export const queries = {
       }},
       { $sort: sort },
     ]).toArray();
+
+    // TODO: Find related subtasks
+    if (query.subtasks) {
+      const idList = result.map(issue => issue._id);
+      // console.log(idList);
+      const reachable = await context.issueLinks.find({
+        $or: [
+          { from: { $in: idList } },
+          { to: { $in: idList } },
+        ],
+        relation: { $in: [Relation.PartOf, Relation.HasPart] },
+      }).toArray();
+      console.log(reachable);
+    }
+
     return {
       count: result.length,
       offset: 0,

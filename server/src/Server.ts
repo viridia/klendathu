@@ -1,8 +1,6 @@
 import * as express from 'express';
 import * as http from 'http';
-import * as path from 'path';
 import * as Redis from 'ioredis';
-import * as Bundler from 'parcel-bundler';
 import { MongoClient, Db, GridFSBucket } from 'mongodb';
 import { ApolloServer } from 'apollo-server-express';
 import { typeDefs } from './schema';
@@ -69,16 +67,6 @@ export class Server {
       host: process.env.REDIS_HOST,
       port: Number(process.env.REDIS_PORT),
     });
-
-    // Other middleware
-    // TODO
-
-    // Proxy client
-    if (process.env.CLIENT_PROXY === 'true') {
-      const indexPage = path.resolve(__dirname, '../../client/src/index.html');
-      const bundler = new Bundler(indexPage, {});
-      this.app.use((bundler as any).middleware());
-    }
 
     // Start HTTP listener
     const port = Number(process.env.SERVER_PORT || 4000);
