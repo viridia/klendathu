@@ -229,7 +229,8 @@ export class GraphModel {
           Vec2.create(
             target.x * nodeXStride + this.nodeXSpacing + 1,
             target.y * nodeYStride + this.nodeYSpacing + 1),
-        ]
+        ],
+        verticesTransformed: [],
       });
     };
 
