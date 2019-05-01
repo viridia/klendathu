@@ -146,7 +146,7 @@ export class IssueCard extends React.Component<Props> {
 
   private renderIssueType() {
     const { issue, env } = this.props;
-    const typeInfo = env.getInheritedIssueType(issue.type);
+    const typeInfo = env.types.get(issue.type);
     if (!typeInfo) {
       return <div className="type">{issue.type}</div>;
     }

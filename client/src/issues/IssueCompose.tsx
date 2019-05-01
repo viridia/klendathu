@@ -633,7 +633,7 @@ export class IssueCompose extends React.Component<Props> {
   @computed
   get issueType(): IssueType {
     const { env: context } = this.props;
-    return context.getInheritedIssueType(this.type);
+    return context.types.get(this.type);
   }
 
   @computed

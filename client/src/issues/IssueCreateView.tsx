@@ -8,6 +8,8 @@ import { newIssue } from '../graphql';
 import { decodeErrorAsException } from '../graphql/client';
 import { idToIndex } from '../lib/idToIndex';
 
+// const IssueCompose = React.lazy(() => import('./IssueCompose'));
+
 export function IssueCreateView(props: RouteComponentProps<{}>) {
   const env = React.useContext(ProjectEnv);
   const onSave = (input: IssueInput): Promise<Issue> => {

@@ -48,7 +48,8 @@ const LinkDirectives: { [key: string]: Relation } = {
   'blocked by': Relation.BlockedBy,
   blocks: Relation.Blocks,
   'part of': Relation.PartOf,
-  'has part': Relation.HasPart,
+  'subtask of': Relation.PartOf,
+  contains: Relation.HasPart,
   duplicate: Relation.Duplicate,
   dup: Relation.Duplicate,
   related: Relation.Related,
@@ -178,7 +179,7 @@ export const mutations = {
       if (input.linked && input.linked.length > 0) {
         const linksToInsert: IssueLinkRecord[] = [];
         for (const link of input.linked) {
-          const target = await context.issues.findOne({ _id: new ObjectID(link.to) });
+          const target = await context.issues.findOne({ _id: link.to });
           if (target) {
             linksToInsert.push({
               from: row._id,

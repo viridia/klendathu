@@ -64,6 +64,9 @@ type Query {
   "Search for issues by text query, sorted by relevance."
   issueSearch(project: ID!, search: String!): [Issue!]!
 
+  "Given an initial set of issue ids, return the set of all issues reachable from that set."
+  reachableIssues(rootSet: [ID!]!): [ReachableIssue!]!
+
   "Retrieve history of changes to an issue, or all issues within a project."
   timeline(project: ID!, issue: ID, recent: Boolean, pagination: Pagination): PaginatedTimeline!
 

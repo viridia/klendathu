@@ -15,7 +15,7 @@ const IssueTypeEl = styled.div`
 
 export function IssueTypeDisplay({ issue }: Props) {
   const env = React.useContext(ProjectEnv);
-  const issueType = issue && env.getInheritedIssueType(issue.type);
+  const issueType = issue && env.types.get(issue.type);
   if (!issueType) {
     return null;
   }

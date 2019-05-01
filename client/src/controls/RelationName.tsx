@@ -6,8 +6,8 @@ export const RELATION_NAMES: { [relation: string]: string } = {
   [Relation.Blocks]: 'blocks',
   [Relation.Duplicate]: 'duplicates',
   [Relation.Related]: 'related to',
-  [Relation.PartOf]: 'included by',
-  [Relation.HasPart]: 'includes',
+  [Relation.PartOf]: 'subtask of',
+  [Relation.HasPart]: 'contains ',
 };
 
 export function RelationName({ relation }: { relation: Relation }) {

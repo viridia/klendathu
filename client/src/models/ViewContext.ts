@@ -157,6 +157,19 @@ export class ViewContext {
   }
 
   @computed
+  public get types(): Map<string, IssueType> {
+    if (this.template) {
+      const map = new Map<string, IssueType>();
+      this.template.types.forEach(type => {
+        map.set(type.id, this.getInheritedIssueType(type.id));
+      });
+      return map;
+    } else {
+      return new Map();
+    }
+  }
+
+  @computed
   public get openStates(): Set<string> {
     if (this.template) {
       return new Set(this.template.states.filter(st => !st.closed).map(st => st.id));

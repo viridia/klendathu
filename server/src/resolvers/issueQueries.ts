@@ -7,6 +7,7 @@ import {
   SearchCustomFieldsQueryArgs,
   Predicate,
   Relation,
+  ReachableIssuesQueryArgs,
 } from '../../../common/types/graphql';
 import { UserInputError, AuthenticationError } from 'apollo-server-core';
 import { Errors, Role } from '../../../common/types/json';
@@ -15,6 +16,7 @@ import { logger } from '../logger';
 import { ObjectID } from 'mongodb';
 import { escapeRegExp } from '../db/helpers';
 import { stringPredicate } from './helpers';
+import { MultiMap } from '../../../common/lib/MultiMap';
 
 interface PaginatedIssueRecords {
   count: number;
@@ -212,18 +214,18 @@ export const queries = {
     ]).toArray();
 
     // TODO: Find related subtasks
-    if (query.subtasks) {
-      const idList = result.map(issue => issue._id);
-      // console.log(idList);
-      const reachable = await context.issueLinks.find({
-        $or: [
-          { from: { $in: idList } },
-          { to: { $in: idList } },
-        ],
-        relation: { $in: [Relation.PartOf, Relation.HasPart] },
-      }).toArray();
-      console.log(reachable);
-    }
+    // if (query.subtasks) {
+    //   const idList = result.map(issue => issue._id);
+    //   // console.log(idList);
+    //   const reachable = await context.issueLinks.find({
+    //     $or: [
+    //       { from: { $in: idList } },
+    //       { to: { $in: idList } },
+    //     ],
+    //     relation: { $in: [Relation.PartOf, Relation.HasPart] },
+    //   }).toArray();
+    //   console.log('subtasks', reachable);
+    // }
 
     return {
       count: result.length,
@@ -274,5 +276,72 @@ export const queries = {
     //   return accounts.findOne({ _id: new ObjectID(args.id) });
     // }
     return null;
+  },
+
+  async reachableIssues(
+    _: any,
+    { rootSet }: ReachableIssuesQueryArgs,
+    context: Context): Promise<any[]> {
+    const idSet = new Set(rootSet);
+    const parentMap = new MultiMap<string, string>();
+    const blockedMap = new MultiMap<string, string>();
+    const relatedMap = new MultiMap<string, string>();
+
+    // Expand the set of ids until we cannot find any more.
+    const idsToSearch = new Set(idSet);
+    while (idsToSearch.size > 0) {
+      // Query links which connect to the search set.
+      const idList = Array.from(idSet);
+      const reachable = await context.issueLinks.find({
+        $or: [
+          { from: { $in: idList } },
+          { to: { $in: idList } },
+        ],
+        relation: { $nin: [Relation.Duplicate] },
+      }).toArray();
+
+      // Compute frontier ids: set of ids not already in the result set.
+      idsToSearch.clear();
+      for (const link of reachable) {
+        if (link.relation === Relation.PartOf) {
+          parentMap.addUnique(link.from, link.to);
+        } else if (link.relation === Relation.HasPart) {
+          parentMap.addUnique(link.to, link.from);
+        } else if (link.relation === Relation.BlockedBy) {
+          blockedMap.addUnique(link.from, link.to);
+        } else if (link.relation === Relation.Blocks) {
+          blockedMap.addUnique(link.to, link.from);
+        } else if (link.relation === Relation.Related) {
+          relatedMap.addUnique(link.from, link.to);
+          relatedMap.addUnique(link.to, link.from);
+        } else {
+          continue;
+        }
+
+        if (!idSet.has(link.from)) {
+          idsToSearch.add(link.from);
+          idSet.add(link.from);
+        }
+        if (!idSet.has(link.to)) {
+          idsToSearch.add(link.to);
+          idSet.add(link.to);
+        }
+      }
+    }
+
+    const issues = await context.issues.aggregate([
+      { $match: { _id: { $in: Array.from(idSet) } } },
+      { $addFields: {
+        // Add an 'index' field derived from the _id.
+        index: { $toInt: { $arrayElemAt: [{ $split: ['$_id', '.'] }, 1] } },
+      }},
+    ]).toArray();
+
+    return issues.map(issue => ({
+      issue,
+      parents: parentMap.get(issue._id),
+      blockedBy: blockedMap.get(issue._id),
+      related: relatedMap.get(issue._id),
+    }));
   },
 };

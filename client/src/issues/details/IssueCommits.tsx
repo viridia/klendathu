@@ -4,8 +4,8 @@ import { fragments, ErrorDisplay } from '../../graphql';
 import { Query } from 'react-apollo';
 import { session } from '../../models';
 import gql from 'graphql-tag';
-import { FormLabel, FormControlGroup } from '../../controls';
 import { CommitLink } from './CommitLink';
+import { FormControlGroup, FormLabel } from 'skyhook-ui';
 
 const IssueCommitsQuery = gql`
   query IssueCommitsQuery($project: ID!, $issue: ID!) {

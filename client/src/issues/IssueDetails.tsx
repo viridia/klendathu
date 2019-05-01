@@ -26,6 +26,7 @@ import { WorkflowActionsView } from './workflow/WorkflowActionsView';
 import { ShowAttachments } from '../files/ShowAttachments';
 import { LocationState } from 'history';
 import { Button, Dialog, ButtonGroup, FormLabel } from 'skyhook-ui';
+import { DepGraph } from './details/DepGraph';
 
 const IssueDetailsLayout = styled(Card)`
   flex: 1 0 0;
@@ -201,7 +202,7 @@ export class IssueDetails extends React.Component<Props> {
       );
     }
     const { project, template } = env;
-    const issueType = env.getInheritedIssueType(issue.type);
+    const issueType = env.types.get(issue.type);
     const issueState = template.states.find(st => st.id === issue.state);
     return (
       <IssueDetailsContent>
@@ -273,6 +274,7 @@ export class IssueDetails extends React.Component<Props> {
                     <FormLabel>Linked Issues:</FormLabel>
                     <IssueLinkGroup>
                       <IssueLinks links={this.issueLinkMap} />
+                      <DepGraph issue={this.props.issue} env={env} />
                     </IssueLinkGroup>
                   </>
                 )}

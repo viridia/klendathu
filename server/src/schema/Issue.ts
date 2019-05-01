@@ -364,4 +364,20 @@ type PaginatedIssues {
   "List of results."
   issues: [Issue!]!
 }
+
+"Return result from reachability query."
+type ReachableIssue {
+  "List of issues"
+  issue: Issue!
+
+  "List of parents"
+  parents: [ID!]!
+
+  "List of issues that block this one"
+  blockedBy: [ID!]!
+
+  "List of related issues"
+  related: [ID!]!
+}
+
 `;

@@ -49,6 +49,7 @@
     "date-fns": "^1.30.1",
     "dotenv": "^7.0.0",
     "express": "^4.16.4",
+    "fastpriorityqueue": "^0.6.1",
     "form-data": "^2.3.3",
     "graphql": "^14.1.1",
     "graphql-redis-subscriptions": "^2.1.0",

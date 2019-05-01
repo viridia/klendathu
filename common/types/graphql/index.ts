@@ -353,6 +353,8 @@ export interface Query {
   issues: PaginatedIssues;
   /** Search for issues by text query, sorted by relevance. */
   issueSearch: Issue[];
+  /** Given an initial set of issue ids, return the set of all issues reachable from that set. */
+  reachableIssues: ReachableIssue[];
   /** Retrieve history of changes to an issue, or all issues within a project. */
   timeline: PaginatedTimeline;
   /** Retrieve milestones for a project */
@@ -624,6 +626,18 @@ export interface PaginatedIssues {
   offset: number;
   /** List of results. */
   issues: Issue[];
+}
+
+/** Return result from reachability query. */
+export interface ReachableIssue {
+  /** List of issues */
+  issue: Issue;
+  /** List of parents */
+  parents: string[];
+  /** List of issues that block this one */
+  blockedBy: string[];
+  /** List of related issues */
+  related: string[];
 }
 
 /** Issue change query result. */
@@ -1034,6 +1048,9 @@ export interface IssueSearchQueryArgs {
   project: string;
 
   search: string;
+}
+export interface ReachableIssuesQueryArgs {
+  rootSet: string[];
 }
 export interface TimelineQueryArgs {
   project: string;

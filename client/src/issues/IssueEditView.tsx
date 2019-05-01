@@ -9,6 +9,8 @@ import { fragments, ErrorDisplay, updateIssue, newIssue } from '../graphql';
 import { Query } from 'react-apollo';
 import { idToIndex } from '../lib/idToIndex';
 
+// const IssueCompose = React.lazy(() => import('./IssueCompose'));
+
 const IssueQuery = gql`
   query IssueQuery($id: ID!) {
     issue(id: $id) {
