@@ -293,23 +293,23 @@ export class IssueQueryModel {
     if (this.projectId) {
       this.subscription = client
         .subscribe<ApolloQueryResult<IssueChangeResult>, IssuesChangedSubscriptionArgs>({
-          query: IssuesSubscription,
-          variables: {
-            project: this.projectId,
-          },
-        }).subscribe(({ errors, data }) => {
-          if (errors) {
-            this.errors = errors;
-          } else {
-            if (data.issuesChanged.action === ChangeAction.Added) {
-              this.recentlyAdded.replace([data.issuesChanged.value.id]);
-            }
-            // console.log(data);
-            if (this.querySubscription) {
-              this.queryResult.refetch();
-            }
+        query: IssuesSubscription,
+        variables: {
+          project: this.projectId,
+        },
+      }).subscribe(({ errors, data }) => {
+        if (errors) {
+          this.errors = errors;
+        } else {
+          if (data.issuesChanged.action === ChangeAction.Added) {
+            this.recentlyAdded.replace([data.issuesChanged.value.id]);
           }
-        });
+          // console.log(data);
+          if (this.querySubscription) {
+            this.queryResult.refetch();
+          }
+        }
+      });
     }
   }
 

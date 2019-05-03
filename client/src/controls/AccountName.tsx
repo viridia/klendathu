@@ -4,8 +4,10 @@ import { PublicAccount } from '../../../common/types/graphql';
 import { NavLink } from './NavLink';
 import { History as H } from 'history';
 import { AccountQuery } from '../graphql';
+import { Query as Q } from '../../../common/types/graphql';
 
 type DisplayOnly = 'display' | 'account';
+type Data = Pick<Q, 'account'>;
 
 interface Props {
   id?: string;
@@ -28,7 +30,7 @@ export function AccountName({ id, to, only }: Props) {
     return <span className="account-name unassigned">unassigned</span>;
   }
   return (
-    <Query query={AccountQuery} variables={{ id }} >
+    <Query<Data> query={AccountQuery} variables={{ id }} >
       {({ loading, error, data }) => {
         if (loading) {
           return <div className="account-name loading" />;

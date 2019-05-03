@@ -13,7 +13,7 @@ This is an example comment.
 This is another comment.
 :part of #3
 :related http://localhost:4000/user/foo/4
-:has part #5
+:contains #5
 :blocked by #6
     `;
     const issueLinks: IssueLinkInput[] = [];

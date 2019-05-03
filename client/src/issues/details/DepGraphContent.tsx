@@ -15,7 +15,6 @@ const BOX_HEIGHT = 20;
 const BOX_SPACING = 24;
 const CURVE_LENGTH = 9;
 const ARROW_LENGTH = 5;
-const ARROW_WIDTH = 5;
 
 function displace(p0: Vec2, p1: Vec2, amount: number) {
   const dx = p1[0] - p0[0];
@@ -171,9 +170,9 @@ function EdgeArrow({ edge }: { edge: Edge }) {
     return makePath(a, 'arrow');
   } else if (edge.style === EdgeStyle.PRED) {
     const v0 = edge.verticesTransformed[edge.verticesTransformed.length - 1];
-    const v1 = edge.verticesTransformed[edge.verticesTransformed.length - 2];
-    const [x0, y0] = v0;
-    const [x1, y1] = v1;
+    // const v1 = edge.verticesTransformed[edge.verticesTransformed.length - 2];
+    // const [x0, y0] = v0;
+    // const [x1, y1] = v1;
     let [x, y] = v0;
     // if (y1 > y0) {
     //   y += 9;
