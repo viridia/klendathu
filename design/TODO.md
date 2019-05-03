@@ -9,7 +9,6 @@
   * Delete
 * Implicit operations via comments.
   * Insure that links are valid.
-* Reachability graph
 * Autocomplete for custom field values
 * Edit comment
 * Redo screenshots in README
@@ -149,50 +148,3 @@ Note: It might be better to do this as a separate process. (eventually)
 
 What happens if the worker crashes?
 What happens if there are multiple workers?
-
-# Auto-placement in graph
-
-1) Find all top-level nodes:
-
-- nodes that have no parents
-
-2) Find all nodes that are immediate children of any top-level parent and place them
-   on the next row down. Let's call that row 2.
-
-3) Now let's repeat the process for all nodes that are reachable via child links.
-
-4) Now, order each row so that any blocking nodes are placed before the nodes they block. If
-   there is a cycle, the pick an arbitrary one to go first.
-
-5) Now, of the remaining unconnected nodes, find any that have a blocking relationship to
-   the nodes placed so far. If they have a blocking relationship to more than one node, then
-   pick the one in the highest row, then nearest the start of the row.
-
-   Place the blocking nodes attached to a node in a column. Thus, each of the nodes placed
-   in the graph will potentially have a column of before-nodes (blocked by) and after-nodes
-   (blocks).
-
-- Note: we may want to assign a priority index to nodes as they are placed to help resolve
-  such ties.
-
-Related nodes can be placed at the last column?
-
-6) Now compute the row heights. This will be the height of the tallest column in the row.
-
-8) Routing grid: Each node occupies a 3x3 cell, and there is a 3x3 cell between adjacent nodes
-   both vertically and horizontally. Note, however, that visually on the screen the cells are
-   not uniform size - columns containing nodes are twice as wide as empty columns.
-
-   Routing is done via an A* algorithm with the following rules:
-
-   * the center line of each 3x3 cell costs less than the other spaces.
-   * an occupied cell costs more than an unoccupied cell, unless that cell is connected to
-     the same destination node with the same connection type.
-   * it costs much more to occupy the same cell if the lines are not crossing at right angles.
-
-Cell data: each cell consist of:
-
-  * a route type (parent, blocked, related)
-  * a destination id
-
-9) It would be nice if we could rely on MobX to let us known when connections change. Hmmm.

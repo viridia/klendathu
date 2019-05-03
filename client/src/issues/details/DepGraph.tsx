@@ -15,6 +15,7 @@ export const ReachableQuery = gql`
         type
         state
         summary
+        labels
       }
       parents
       blockedBy

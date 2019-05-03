@@ -3,10 +3,10 @@ import { RouteComponentProps } from 'react-router-dom';
 import { observer } from 'mobx-react';
 import bind from 'bind-decorator';
 import { Issue } from '../../../common/types/graphql';
-import { LabelName, Avatar, AccountName } from '../controls';
-import { ViewContext } from '../models';
+import { Avatar, AccountName } from '../controls';
 import { styled } from '../style';
 import { idToIndex } from '../lib/idToIndex';
+import { IssueTypeTag, ResponsiveIssueSummary } from './details';
 
 const IssueCardDiv = styled.div`
   display: flex;
@@ -40,51 +40,11 @@ const IssueCardHeader = styled.header`
     font-weight: bold;
     margin-right: 4px;
   }
-
-  .type {
-    padding: 2px 4px;
-    font-size: .8rem;
-    font-weight: bold;
-    border-radius: 3px;
-  }
 `;
 
-const IssueCardBody = styled.div`
+const IssueCardBody = styled(ResponsiveIssueSummary)`
   margin-top: 2px;
-  flex: 1;
-  font-size: 1rem;
   font-weight: bold;
-
-  &.large {
-    line-height: 1rem;
-    > .summary {
-      font-size: 1rem;
-    }
-  }
-  &.medium {
-    line-height: .9rem;
-    > .summary {
-      font-size: .9rem;
-    }
-  }
-  &.small {
-    line-height: .7rem;
-    > .summary {
-      font-size: .7rem;
-    }
-  }
-
-  .summary {
-    margin-right: 4px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .label-name {
-    margin-right: auto;
-    margin-left: 0;
-    margin-bottom: 3px;
-  }
 `;
 
 const IssueCardFooter = styled.footer`
@@ -101,7 +61,6 @@ const IssueCardFooter = styled.footer`
 `;
 
 interface Props extends RouteComponentProps<{}> {
-  env: ViewContext;
   issue: Issue;
   group?: string;
 }
@@ -109,49 +68,20 @@ interface Props extends RouteComponentProps<{}> {
 @observer
 export class IssueCard extends React.Component<Props> {
   public render() {
-    const { issue, env } = this.props;
+    const { issue } = this.props;
     const index = idToIndex(issue.id);
     return (
       <IssueCardDiv draggable={true} onDragStart={this.onDragStart}>
         <IssueCardHeader>
           #<span className="index">{index}</span>
-          {this.renderIssueType()}
+          <IssueTypeTag issue={issue} />
         </IssueCardHeader>
-        <IssueCardBody className={this.summarySize}>
-          <span className="summary">
-            {issue.summary}
-          </span>
-          {issue.labels
-            .filter(l => env.visibleLabels.has(l))
-            .map(l => <LabelName id={l} key={l} size="smaller" />)}
-        </IssueCardBody>
+        <IssueCardBody issue={issue} />
         <IssueCardFooter>
           <Avatar id={issue.owner} small={true} />
           <AccountName id={issue.owner} />
         </IssueCardFooter>
       </IssueCardDiv>
-    );
-  }
-
-  private get summarySize(): string {
-    const { issue } = this.props;
-    if (issue.summary.length < 32) {
-      return 'large';
-    }
-    if (issue.summary.length < 100) {
-      return 'medium';
-    }
-    return 'small';
-  }
-
-  private renderIssueType() {
-    const { issue, env } = this.props;
-    const typeInfo = env.types.get(issue.type);
-    if (!typeInfo) {
-      return <div className="type">{issue.type}</div>;
-    }
-    return (
-      <div className="type" style={{ backgroundColor: typeInfo.bg }}>{typeInfo.caption}</div>
     );
   }
 

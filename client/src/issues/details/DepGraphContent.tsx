@@ -5,8 +5,11 @@ import { styled } from '../../style';
 import { idToIndex } from '../../lib/idToIndex';
 import classNames from 'classnames';
 import { ProjectEnv } from '../../models';
+import { IssueTooltip } from '../IssueTooltip';
 import { Node, Edge, EdgeStyle, Vec2 } from '../../nodegraph';
 import { shade } from 'polished';
+import { NavLink } from 'react-router-dom';
+import { Tooltip } from 'skyhook-ui';
 
 type Vec2 = Vec2.Vec2;
 
@@ -45,7 +48,7 @@ const DepGraphLayout = styled.section`
   overflow-x: auto;
 `;
 
-const NodeEl = styled.div`
+const NodeEl = styled(NavLink)`
   align-items: center;
   background-color: ${p => p.theme.cardBgColor};
   border: 1px solid ${p => p.theme.commentBorderColor};
@@ -228,6 +231,7 @@ export function DepGraphContent({ selected, graph }: Props) {
     <Observer>
       {() => {
         const { layout } = graph;
+        const { project } = env;
         if (!layout) {
           return null;
         }
@@ -252,23 +256,34 @@ export function DepGraphContent({ selected, graph }: Props) {
               ))}
             </Routes>
             {layout.nodes.map(node => {
-              const type = env.types.get(node.data.issue.type);
+              const { issue } = node.data;
+              const type = env.types.get(issue.type);
+              const index = idToIndex(issue.id);
+              const linkTarget = {
+                pathname: `/${project.ownerName}/${project.name}/${index}`,
+                // state: { back: location },
+              };
               return (
-                <NodeEl
+                <Tooltip
                   key={node.data.issue.id}
-                  className={classNames({
-                    selected: selected === node.data.issue.id,
-                    closed: !env.openStates.has(node.data.issue.state),
-                  })}
-                  style={{
-                    left: `${node.x * (BOX_WIDTH + BOX_SPACING) + BOX_SPACING}px`,
-                    top: `${node.y * (BOX_HEIGHT + BOX_SPACING) + BOX_SPACING}px`,
-                    backgroundColor: type ? type.bg : undefined,
-                    borderColor: type ? shade(0.13, type.bg) : undefined,
-                  }}
-                >
-                  <div className="caption">#{idToIndex(node.data.issue.id)}</div>
-                </NodeEl>
+                  placement="right"
+                  content={() => <IssueTooltip issue={issue} />}>
+                  <NodeEl
+                    to={linkTarget}
+                    className={classNames({
+                      selected: selected === issue.id,
+                      closed: !env.openStates.has(node.data.issue.state),
+                    })}
+                    style={{
+                      left: `${node.x * (BOX_WIDTH + BOX_SPACING) + BOX_SPACING}px`,
+                      top: `${node.y * (BOX_HEIGHT + BOX_SPACING) + BOX_SPACING}px`,
+                      backgroundColor: type ? type.bg : undefined,
+                      borderColor: type ? shade(0.13, type.bg) : undefined,
+                    }}
+                  >
+                    <div className="caption">#{index}</div>
+                  </NodeEl>
+                </Tooltip>
               );
             })}
           </DepGraphLayout>

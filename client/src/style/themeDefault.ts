@@ -128,9 +128,14 @@ export const themeDefault: ThemeInterface = {
     textColor: textNormal,
   },
 
+  tooltip: {
+    bgColor: dye(0.98, primary),
+    textColor: textNormal,
+    borderColor: dye(0.85, primary),
+  },
+
   toggle: null,
   insetToggle: null,
-  tooltip: null,
 };
 
 /** Alternate theme for Mass edit panel */
