@@ -7,6 +7,7 @@ import { IssueInput, Issue, Project } from '../../../common/types/graphql';
 import gql from 'graphql-tag';
 import { fragments, ErrorDisplay, updateIssue, newIssue } from '../graphql';
 import { Query } from 'react-apollo';
+import { Query as Q } from '../../../common/types/graphql';
 import { idToIndex } from '../lib/idToIndex';
 
 // const IssueCompose = React.lazy(() => import('./IssueCompose'));
@@ -58,7 +59,7 @@ export function IssueEditView(props: Props) {
   const env = React.useContext(ProjectEnv);
   const id = props.match.params.id;
   return (
-    <Query query={IssueQuery} variables={{ id: `${env.project.id}.${id}` }}>
+    <Query<Pick<Q, 'issue'>> query={IssueQuery} variables={{ id: `${env.project.id}.${id}` }}>
       {({ loading, error, data }) => {
         if (loading) {
           return null;

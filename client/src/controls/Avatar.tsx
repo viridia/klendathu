@@ -1,6 +1,7 @@
 import * as React from 'react';
 import classNames from 'classnames';
 import { Query } from 'react-apollo';
+import { Query as Q } from '../../../common/types/graphql';
 import { hsl } from 'polished';
 import { PublicAccount } from '../../../common/types/graphql';
 import { styled } from '../style';
@@ -13,6 +14,8 @@ const avatarQuery = gql`
     account(accountName: $accountName, id: $id) { id, accountName, display, photo }
   }
 `;
+
+type Data = Pick<Q, 'account'>;
 
 interface Props {
   id?: string;
@@ -52,7 +55,7 @@ const AvatarImg = styled.div`
 
 export function Avatar({ id, accountName, small }: Props) {
   return (
-    <Query query={avatarQuery} variables={{ id, accountName }} >
+    <Query<Data> query={avatarQuery} variables={{ id, accountName }} >
       {({ loading, error, data }) => {
         if (loading) {
           return <AvatarImg className={classNames('avatar', 'loading', { small })} />;
@@ -68,7 +71,7 @@ export function Avatar({ id, accountName, small }: Props) {
               <AvatarImg
                 className={classNames('avatar', { small })}
                 style={{ backgroundImage: `url(${account.photo})` }}
-                title={data.display}
+                title={account.display}
                 data-name={account.accountName}
                 data-id={account.id}
               />
@@ -82,7 +85,7 @@ export function Avatar({ id, accountName, small }: Props) {
             return (
               <AvatarImg
                 className={classNames('avatar', { small })}
-                title={data.display}
+                title={account.display}
                 data-name={account.accountName}
                 data-id={account.id}
                 style={{ backgroundColor, color }}
@@ -96,7 +99,7 @@ export function Avatar({ id, accountName, small }: Props) {
               <AvatarImg
                 className={classNames('avatar', { small })}
                 style={{ backgroundImage: `url(${DefaultAvatar})` }}
-                title={data.display}
+                title={account.display}
                 data-name={account.accountName}
                 data-id={account.id}
               />

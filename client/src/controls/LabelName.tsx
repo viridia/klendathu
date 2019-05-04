@@ -1,6 +1,7 @@
 import * as React from 'react';
 import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
+import { Query as Q } from '../../../common/types/graphql';
 import { Label } from '../../../common/types/graphql';
 import { Chip, SizeVariant } from 'skyhook-ui';
 
@@ -9,6 +10,8 @@ const LabelQuery = gql`
     label(id: $id) { id name color }
   }
 `;
+
+type Data = Pick<Q, 'label'>;
 
 interface Props {
   id: string;
@@ -20,7 +23,7 @@ interface Props {
 
 export function LabelName({ id, textOnly, className, size, onClose }: Props) {
   return (
-    <Query query={LabelQuery} variables={{ id }} >
+    <Query<Data> query={LabelQuery} variables={{ id }} >
       {({ loading, error, data }) => {
         if (loading || error) {
           return null;

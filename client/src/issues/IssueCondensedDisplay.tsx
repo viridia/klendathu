@@ -2,6 +2,7 @@ import * as React from 'react';
 import { NavLink } from 'react-router-dom';
 import { ProjectEnv } from '../models';
 import { Query } from 'react-apollo';
+import { Query as Q } from '../../../common/types/graphql';
 import gql from 'graphql-tag';
 import { fragments } from '../graphql';
 import { Issue } from '../../../common/types/graphql';
@@ -42,7 +43,7 @@ export function IssueCondensedDisplay(props: Props) {
   const { id, link } = props;
   const issueIndex = idToIndex(id);
   return (
-    <Query query={IssueQuery} variables={{ id }}>
+    <Query<Pick<Q, 'issue'>> query={IssueQuery} variables={{ id }}>
       {({ data, loading, error }) => {
         if (error) {
           return <div>Error Loading Issue #{issueIndex}</div>;

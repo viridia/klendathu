@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Query } from 'react-apollo';
+import { Query as Q } from '../../../common/types/graphql';
 import { Project } from '../../../common/types/graphql';
 import { NavLink } from './NavLink';
 import gql from 'graphql-tag';
@@ -17,7 +18,7 @@ interface Props {
 /** Given a project id, renders a link that includes the account name and project name. */
 export function ProjectNameLink({ id }: Props) {
   return (
-    <Query query={projectQuery} variables={{ id }} >
+    <Query<Pick<Q, 'project'>> query={projectQuery} variables={{ id }} >
       {({ loading, error, data }) => {
         if (loading) {
           return <div className="project-name loading" />;
