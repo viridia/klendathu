@@ -17,7 +17,7 @@ import { SettingsPane, SettingsPaneContent } from '../../layout/SettingsPane';
 import gql from 'graphql-tag';
 import { client, decodeError } from '../../graphql/client';
 import { toast } from 'react-toastify';
-import { RouteComponentProps } from 'react-router';
+import { RouteComponentProps } from 'react-router-dom';
 import styled from 'styled-components';
 import { Spacer } from '../../layout';
 import { ViewContext } from '../../models';

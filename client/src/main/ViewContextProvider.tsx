@@ -2,7 +2,7 @@ import * as React from 'react';
 import { observer } from 'mobx-react';
 import { ViewContext, ProjectEnv } from '../models';
 import { ErrorDisplay } from '../graphql';
-import { RouteComponentProps } from 'react-router';
+import { RouteComponentProps } from 'react-router-dom';
 import { LoadingIndicator } from '../controls';
 import { ApolloError } from 'apollo-client';
 

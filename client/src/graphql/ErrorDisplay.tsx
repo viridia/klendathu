@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { ApolloError } from 'apollo-client';
 import { GraphQLError } from 'graphql';
 import { Errors } from '../../../common/types/json';
-import { Observer } from 'mobx-react-lite';
+import { Observer } from 'mobx-react';
 import { ViewContext } from '../models';
 import { Dialog, Button } from 'skyhook-ui';
 
@@ -155,7 +155,7 @@ export function ErrorDisplay({ error }: { error: ApolloError }) {
     );
   } else if (error.networkError) {
     const result = (error.networkError as any).result;
-    if (result.errors) {
+    if (result && result.errors) {
       return (
         <NetworkErrorsDisplay errors={result.errors} />
       );

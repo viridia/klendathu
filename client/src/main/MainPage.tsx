@@ -1,13 +1,12 @@
 import * as React from 'react';
-import { observer } from 'mobx-react';
-import { RouteComponentProps, Switch, Route, Redirect } from 'react-router';
+import { Switch, Route, Redirect, useLocation, useHistory } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { Page } from '../layout';
 import { Header } from '../header/Header';
 import { LeftNav } from '../nav/LeftNav';
 import { styled } from '../style';
 import { ProjectListView } from '../projects/ProjectListView';
-import { session, ViewContext } from '../models';
+import { session, ViewContext, ProjectEnv } from '../models';
 import { SetupAccountDialog } from '../settings/SetupAccountDialog';
 import { SettingsView } from '../settings/SettingsView';
 import { ProjectSettings } from '../projects/settings/ProjectSettings';
@@ -22,6 +21,7 @@ import { ProjectTimeline } from '../timeline/ProjectTimeline';
 import { ProgressView } from '../progress/ProgressView';
 import { FilterListView } from '../filters/FilterListView';
 import { Dashboard } from '../dashboard/Dashboard';
+import { useObserver } from 'mobx-react';
 
 import 'react-datepicker/dist/react-datepicker.css'; // tslint:disable-line
 
@@ -49,26 +49,19 @@ const ContentPaneLayout = styled.section`
     font-size: 1.2rem;
     justify-content: space-between;
     margin-bottom: 1rem;
+    height: 2em;
   }
 `;
 
-@observer
-export class MainPage extends React.Component<RouteComponentProps<{}>> {
-  private viewContext = new ViewContext();
+export const MainPage = () => {
+  const [ viewContext ] = React.useState(() => new ViewContext());
+  const location = useLocation();
+  const history = useHistory();
 
-  public componentWillMount() {
+  return useObserver(() => {
     if (!session.isLoggedIn) {
-      session.resume(this.props.location, this.props.history);
+      session.resume(location, history);
     }
-  }
-
-  public componentWillUpdate() {
-    if (!session.isLoggedIn) {
-      session.resume(this.props.location, this.props.history);
-    }
-  }
-
-  public render() {
     const showEmailVerification = false;
     const showSetupAccount =
         session.isLoggedIn && session.account &&
@@ -81,9 +74,11 @@ export class MainPage extends React.Component<RouteComponentProps<{}>> {
           hideProgressBar={true}
           newestOnTop={false}
         />
-        <ErrorDialog env={this.viewContext} />
-        <Header context={this.viewContext} />
-        <LeftNav context={this.viewContext} />
+        <ProjectEnv.Provider value={viewContext}>
+          <ErrorDialog env={viewContext} />
+          <Header />
+          <LeftNav context={viewContext} />
+        </ProjectEnv.Provider>
         <ContentPaneLayout>
           <Switch>
             <Route path="/settings" component={SettingsView} />
@@ -91,7 +86,7 @@ export class MainPage extends React.Component<RouteComponentProps<{}>> {
             <Route
               path="/:owner/:name"
               render={
-                p => <ViewContextProvider {...p} env={this.viewContext}>
+                p => <ViewContextProvider {...p} env={viewContext}>
                   {() => (
                     <Switch>
                       <Route path="/:owner/:name/new" component={IssueCreateView} />
@@ -106,17 +101,17 @@ export class MainPage extends React.Component<RouteComponentProps<{}>> {
                       <Route
                         path="/:owner/:name/labels"
                         exact={true}
-                        render={() => (<LabelListView context={this.viewContext} />)}
+                        render={() => (<LabelListView context={viewContext} />)}
                       />
                       <Route
                         path="/:owner/:name/filters"
                         exact={true}
-                        render={props => (<FilterListView {...props} env={this.viewContext} />)}
+                        render={props => (<FilterListView {...props} env={viewContext} />)}
                       />
                       <Route
                         path="/:owner/:name/timeline"
                         exact={true}
-                        render={props => (<ProjectTimeline {...props} env={this.viewContext} />)}
+                        render={props => (<ProjectTimeline {...props} env={viewContext} />)}
                       />
                       <Route path="/:owner/:name/progress" exact={true} component={ProgressView} />
                       {/* <Route
@@ -140,6 +135,6 @@ export class MainPage extends React.Component<RouteComponentProps<{}>> {
         {/* {showEmailVerification && <EmailVerificationDialog />} */}
         {!showEmailVerification && showSetupAccount && <SetupAccountDialog />}
       </MainPageLayout>
-    );
-  }
-}
+    )
+  });
+};

@@ -6,7 +6,7 @@ import { NavContainer } from '../../controls';
 import ArrowBackIcon from '../../svg-compiled/icons/IcArrowBack';
 import ArrowForwardIcon from '../../svg-compiled/icons/IcArrowForward';
 import { LocationState } from 'history';
-import { RouteComponentProps } from 'react-router';
+import { RouteComponentProps } from 'react-router-dom';
 import { ButtonGroup, Button } from 'skyhook-ui';
 
 interface Props extends RouteComponentProps<{}, LocationState> {

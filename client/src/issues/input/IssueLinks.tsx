@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { IssueCondensedDisplay } from '../IssueCondensedDisplay';
-import { Observer } from 'mobx-react-lite';
+import { Observer } from 'mobx-react';
 import { RelationName } from '../../controls';
 import { Relation } from '../../../../common/types/graphql';
 import styled from 'styled-components';

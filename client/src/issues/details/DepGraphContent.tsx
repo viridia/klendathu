@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Observer } from 'mobx-react-lite';
+import { Observer } from 'mobx-react';
 import { GraphModel } from '../../nodegraph/GraphModel';
 import { styled } from '../../style';
 import { idToIndex } from '../../lib/idToIndex';

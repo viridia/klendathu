@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { register } from '../registry';
 import { Card, Tab, TabBar } from '../../controls';
-import { Route, Switch } from 'react-router';
+import { Route, Switch } from 'react-router-dom';
 import { styled } from '../../style';
 
 const DemoCard = styled(Card)`

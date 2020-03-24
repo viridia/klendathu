@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { styled } from '../style';
 import { TabBar, Tab } from '../controls';
-import { Switch, Route } from 'react-router';
+import { Switch, Route } from 'react-router-dom';
 import { UserAccountForm } from './UserAccountForm';
 import { session } from '../models';
 import { OrganizationForm } from './OrganizationForm';

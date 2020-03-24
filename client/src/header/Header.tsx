@@ -1,9 +1,8 @@
 import * as React from 'react';
 import { styled } from '../style';
-import { Switch, Route } from 'react-router';
+import { Switch, Route } from 'react-router-dom';
 import { SignInLink } from './SignInLink';
 import { UserMenuButton } from './UserMenuButton';
-import { ViewContext } from '../models';
 import { NewIssueButton } from './NewIssueButton';
 
 const HeaderLayout = styled.header`
@@ -30,11 +29,7 @@ const HeaderSubTitle = styled.span`
   flex: 1;
 `;
 
-interface Props {
-  context: ViewContext;
-}
-
-export function Header({ context }: Props) {
+export function Header() {
   return (
     <HeaderLayout>
       <HeaderTitle className="title">Klendathu</HeaderTitle>
@@ -42,7 +37,7 @@ export function Header({ context }: Props) {
         <span> - </span>
         &ldquo;in order to <em>fight</em> the bug, we must <em>understand</em> the bug.&rdquo;
       </HeaderSubTitle>
-      <Route path="/" render={props => <NewIssueButton context={context} {...props} />} />
+      <Route path="/" render={props => <NewIssueButton />} />
       <Switch>
         <Route path="/account" />
         <Route path="/" component={UserMenuButton} />

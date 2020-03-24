@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as qs from 'qs';
-import { RouteComponentProps } from 'react-router';
+import { RouteComponentProps } from 'react-router-dom';
 import { ErrorListDisplay } from '../graphql/ErrorDisplay';
 import { ViewContext } from '../models';
 import { LoadingIndicator, ColumnSort, NavContainer } from '../controls';

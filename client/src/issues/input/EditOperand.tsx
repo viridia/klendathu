@@ -7,7 +7,7 @@ import { TypeSetEditor } from './TypeSetEditor';
 import { LabelSelector } from './LabelSelector';
 import { EnumSetEditor } from './EnumSetEditor';
 import { ProjectEnv } from '../../models';
-import { Observer } from 'mobx-react-lite';
+import { Observer } from 'mobx-react';
 import { RelationSelector } from './RelationSelector';
 import { DropdownButton, ButtonVariant, MenuItem, TextInput } from 'skyhook-ui';
 import { MilestoneSelector } from './MilestoneSelector';

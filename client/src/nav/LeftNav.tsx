@@ -6,7 +6,7 @@ import { LeftNavLink } from './LeftNavLink';
 
 import AppsIcon from '../svg-compiled/icons/IcApps';
 import { ViewContext } from '../models';
-import { Route } from 'react-router';
+import { Route } from 'react-router-dom';
 import { ProjectLinks } from './ProjectLinks';
 
 const NavLayout = styled.nav`

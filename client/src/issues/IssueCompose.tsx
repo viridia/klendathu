@@ -10,7 +10,7 @@ import {
   IssueLink,
   Milestone,
 } from '../../../common/types/graphql';
-import { RouteComponentProps } from 'react-router';
+import { RouteComponentProps } from 'react-router-dom';
 import {
   Button,
   CheckBox,

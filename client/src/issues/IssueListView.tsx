@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as qs from 'qs';
-import { RouteComponentProps } from 'react-router';
+import { RouteComponentProps } from 'react-router-dom';
 import { ProjectEnv } from '../models';
 import { IssueList } from './IssueList';
 import { FilterParams } from '../filters/FilterParams';

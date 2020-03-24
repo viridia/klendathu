@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { mount } from 'enzyme';
 import { AccountName } from './AccountName';
-import { MockedProvider } from 'react-apollo/test-utils'; // tslint:disable-line
+import { MockedProvider } from '@apollo/react-testing';
 import { PublicAccount, AccountType } from '../../../common/types/graphql';
 import { AccountQuery } from '../graphql';
 
