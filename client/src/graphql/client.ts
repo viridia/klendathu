@@ -13,7 +13,8 @@ const wsLink = new WebSocketLink({
   uri: `ws://${window.location.host}/graphql`,
   options: {
     reconnect: true,
-    connectionParams: () => session ? { ...session.headers } : {},
+    lazy: true,
+    connectionParams: () => session ? { authToken: session.token } : {},
   }
 });
 

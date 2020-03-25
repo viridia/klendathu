@@ -6,6 +6,7 @@
     "noUnusedLocals": true,
     "module": "esnext",
     "moduleResolution": "node",
+    "esModuleInterop": true,
     "target": "es6",
     "lib": [ "es5", "es6", "dom" ],
     "jsx": "react",

@@ -22,12 +22,9 @@ export class Server {
     subscriptions: {
       // Authentication for websocket
       onConnect: async (connectionParams: any, webSocket) => {
-        if (connectionParams.Authorization) {
-          const m = connectionParams.Authorization.match(/Bearer\s+(.*)/);
-          if (m) {
-            const user = await decodeAuthToken(this.db, m[1]);
-            return new Context(this.db, user);
-          }
+        if (connectionParams.authToken) {
+          const user = await decodeAuthToken(this.db, connectionParams.authToken);
+          return new Context(this.db, user);
         }
         return new Context(this.db, null);
       },
@@ -58,7 +55,7 @@ export class Server {
     this.bucket = new GridFSBucket(this.db);
 
     // Add Apollo middleware
-    this.apollo.applyMiddleware({ app: this.app });
+    this.apollo.applyMiddleware({ app: this.app, cors: false });
 
     // Set up the connection to Redis. Pubsub is a global so that resolvers don't have
     // a dependency on Server.

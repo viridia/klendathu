@@ -42,7 +42,10 @@ in to github. The `.env-sample` file can be used as a template.
 ```sh
 npm install
 docker-compose up db db-admin redis imaginary
-CLIENT_PROXY=true npm start
+npm start
+
+# In another shell
+npm run client
 ```
 
 Then browse to http://localhost:4000.
