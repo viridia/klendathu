@@ -4,9 +4,9 @@ import { QueryLink } from '../controls';
 import styled from 'styled-components';
 import gql from 'graphql-tag';
 import { fragments } from '../graphql';
-import { Query } from 'react-apollo';
+import { useQuery } from '@apollo/react-hooks';
 
-const projectsQuery = gql`
+const ProjectsQuery = gql`
   query ProjectsQuery {
     projects { ...ProjectFields }
   }
@@ -33,29 +33,24 @@ const ProjectList = styled.ul`
 `;
 
 export function ProjectLinks() {
-  return (
-    <Query query={projectsQuery} fetchPolicy="cache-and-network">
-      {({ error, data }) => {
-        if (error) {
-          return null;
-        } else if (data && data.projects) {
-          return (
-            <ProjectList>
-              {data.projects.map((project: Project) => (
-                <li key={project.id}>
-                  <QueryLink
-                    to={`/${project.ownerName}/${project.name}`}
-                  >
-                    {project.ownerName}/{project.name}
-                  </QueryLink>
-                </li>
-              ))}
-            </ProjectList>
-          );
-        } else {
-          return null;
-        }
-      }}
-    </Query>
-  );
+  const { error, data } = useQuery(ProjectsQuery);
+  if (error) {
+    return null;
+  } else if (data && data.projects) {
+    return (
+      <ProjectList>
+        {data.projects.map((project: Project) => (
+          <li key={project.id}>
+            <QueryLink
+              to={`/${project.ownerName}/${project.name}`}
+            >
+              {project.ownerName}/{project.name}
+            </QueryLink>
+          </li>
+        ))}
+      </ProjectList>
+    );
+  } else {
+    return null;
+  }
 }

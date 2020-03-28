@@ -1,4 +1,5 @@
-import * as React from 'react';
+import React from 'react';
+import classNames from 'classnames';
 import { Issue } from '../../../../common/types/graphql';
 import { LabelName } from '../../controls';
 import { styled } from '../../style';
@@ -43,6 +44,7 @@ const SummaryEl = styled.span`
 
 interface Props {
   issue: Issue;
+  className?: string;
 }
 
 function summarySize(issue: Issue): string {
@@ -55,10 +57,10 @@ function summarySize(issue: Issue): string {
   return '.8em';
 }
 
-export function ResponsiveIssueSummary({ issue }: Props) {
+export function ResponsiveIssueSummary({ issue, className }: Props) {
   const env = React.useContext(ProjectEnv);
   return (
-    <SummaryEl className={summarySize(issue)}>
+    <SummaryEl className={classNames(summarySize(issue), className)}>
       <span className="summary">
         {issue.summary}
       </span>

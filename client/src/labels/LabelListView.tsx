@@ -6,7 +6,7 @@ import { Label } from '../../../common/types/graphql';
 import { Button, Chip, Dialog, CheckBox } from 'skyhook-ui';
 import { RelativeDate, AccountName, Card } from '../controls';
 import { Role } from '../../../common/types/json';
-import { Query } from 'react-apollo';
+import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import { ErrorDisplay } from '../graphql/ErrorDisplay';
 import {
@@ -22,7 +22,7 @@ import {
 import { styled } from '../style';
 import { client } from '../graphql/client';
 import { fragments } from '../graphql';
-import { ViewContext } from '../models';
+import { ViewContext, ProjectEnv } from '../models';
 import { idToIndex } from '../lib/idToIndex';
 
 const LabelListQuery = gql`
@@ -87,6 +87,135 @@ interface Props {
   context: ViewContext;
 }
 
+interface LabelRowProps {
+  label: Label;
+  onShowUpdate: (label: Label) => void;
+  onShowDelete: (label: Label) => void;
+}
+
+const LabelRow = ({ label, onShowUpdate, onShowDelete }: LabelRowProps) => {
+  const { project, visibleLabels } = React.useContext(ProjectEnv);
+  const id = idToIndex(label.id);
+
+  function onChangeVisible(e: any) {
+    const id = e.target.dataset.id;
+    if (e.target.checked) {
+      client.mutate({
+        mutation: AddPrefsLabelMutation,
+        variables: { project: project.id, label: id }
+      });
+    } else {
+      client.mutate({
+        mutation: RemovePrefsLabelMutation,
+        variables: { project: project.id, label: id }
+      });
+    }
+  }
+
+  return (
+    <tr key={label.id}>
+      <td className="label-id center">{id}</td>
+      <td className="visible center">
+        <CheckBox
+          data-id={label.id}
+          checked={visibleLabels.has(label.id)}
+          onChange={onChangeVisible}
+        />
+      </td>
+      <td className="name center">
+        <Chip color={label.color}>{label.name}</Chip>
+      </td>
+      <td className="creator center"><AccountName id={label.creator} /></td>
+      <td className="created center"><RelativeDate date={label.created} /></td>
+      {project.role >= Role.DEVELOPER && (<ActionButtonCell className="right">
+        <Button
+          variant="default"
+          className="small"
+          data-label={label.id}
+          onClick={e => onShowUpdate(label)}
+        >
+          Edit
+        </Button>
+        <Button
+          variant="action"
+          className="small"
+          data-label={label.id}
+          onClick={e => onShowDelete(label)}
+        >
+          Delete
+        </Button>
+      </ActionButtonCell>)}
+    </tr>
+  );
+};
+
+interface LabelListProps {
+  onShowUpdate: (label: Label) => void;
+  onShowDelete: (label: Label) => void;
+}
+
+const LabelList = ({ onShowUpdate, onShowDelete }: LabelListProps) => {
+  const { project } = React.useContext(ProjectEnv);
+  const { loading, error, data, refetch, subscribeToMore } = useQuery(LabelListQuery, {
+    variables: {
+      project: project.id,
+    },
+    fetchPolicy: 'cache-and-network',
+  });
+
+  if (loading && !(data && data.labels)) {
+    // Only display loading indicator if nothing in cache.
+    return <div>loading&hellip;</div>;
+  } else if (error) {
+    return <ErrorDisplay error={error} />;
+  } else {
+    subscribeToMore({
+      document: LabelChangeSubscription,
+      variables: {
+        project: project.id,
+      },
+      updateQuery: (/* prev, { subscriptionData } */) => {
+        // For the moment we're just going to refresh.
+        // console.log('subscriptionData', subscriptionData);
+        refetch();
+      },
+    });
+    const labels: Label[] = data.labels;
+    if (labels.length === 0) {
+      return (
+        <Card>
+          <EmptyList>No labels defined</EmptyList>
+        </Card>
+      );
+    }
+    return (
+      <Card>
+        <LabelListViewTable>
+          <TableHead>
+            <tr>
+              <th className="label-id center">#</th>
+              <th className="visible center">Hotlist</th>
+              <th className="name center">Label</th>
+              <th className="owner center">Creator</th>
+              <th className="created center">Created</th>
+              {project.role >= Role.DEVELOPER && <th className="actions">Actions</th>}
+            </tr>
+          </TableHead>
+          <TableBody>
+            {labels.map(i => <LabelRow
+              key={i.id}
+              label={i}
+              onShowUpdate={onShowUpdate}
+              onShowDelete={onShowDelete}
+            />)}
+          </TableBody>
+        </LabelListViewTable>
+      </Card>
+    );
+  }
+}
+
+
 @observer
 export class LabelListView extends React.Component<Props> {
   @observable private showCreate = false;
@@ -130,109 +259,12 @@ export class LabelListView extends React.Component<Props> {
           {project.role >= Role.DEVELOPER &&
               <Button variant="primary" onClick={this.onShowCreate}>New Label</Button>}
         </ModeContentHeader>
-        {this.renderLabels()}
+        <LabelList
+          onShowUpdate={this.onShowUpdate}
+          onShowDelete={this.onShowDelete}
+        />
       </ModeContent>
     );
-  }
-
-  private renderLabels() {
-    const { project } = this.props.context;
-    return (
-      <Query
-        query={LabelListQuery}
-        variables={{
-          project: project.id,
-        }}
-        fetchPolicy="cache-and-network"
-      >
-        {({ loading, error, data, refetch, subscribeToMore }) => {
-          if (loading && !(data && data.labels)) {
-            // Only display loading indicator if nothing in cache.
-            return <div>loading&hellip;</div>;
-          } else if (error) {
-            return <ErrorDisplay error={error} />;
-          } else {
-            subscribeToMore({
-              document: LabelChangeSubscription,
-              variables: {
-                project: project.id,
-              },
-              updateQuery: (/* prev, { subscriptionData } */) => {
-                // For the moment we're just going to refresh.
-                // console.log('subscriptionData', subscriptionData);
-                refetch();
-              },
-            });
-            const labels: Label[] = data.labels;
-            if (labels.length === 0) {
-              return (
-                <Card>
-                  <EmptyList>No labels defined</EmptyList>
-                </Card>
-              );
-            }
-            return (
-              <Card>
-                <LabelListViewTable>
-                  <TableHead>
-                    <tr>
-                      <th className="label-id center">#</th>
-                      <th className="visible center">Hotlist</th>
-                      <th className="name center">Label</th>
-                      <th className="owner center">Creator</th>
-                      <th className="created center">Created</th>
-                      {project.role >= Role.DEVELOPER && <th className="actions">Actions</th>}
-                    </tr>
-                  </TableHead>
-                  <TableBody>
-                    {labels.map(i => this.renderLabel(i))}
-                  </TableBody>
-                </LabelListViewTable>
-              </Card>
-            );
-          }
-        }}
-      </Query>
-    );
-  }
-
-  private renderLabel(label: Label) {
-    const { project, visibleLabels } = this.props.context;
-    const id = idToIndex(label.id);
-    return (
-      <tr key={label.id}>
-        <td className="label-id center">{id}</td>
-        <td className="visible center">
-          <CheckBox
-            data-id={label.id}
-            checked={visibleLabels.has(label.id)}
-            onChange={this.onChangeVisible}
-          />
-        </td>
-        <td className="name center">
-          <Chip color={label.color}>{label.name}</Chip>
-        </td>
-        <td className="creator center"><AccountName id={label.creator} /></td>
-        <td className="created center"><RelativeDate date={label.created} /></td>
-        {project.role >= Role.DEVELOPER && (<ActionButtonCell className="right">
-          <Button
-            variant="default"
-            className="small"
-            data-label={label.id}
-            onClick={e => this.onShowUpdate(label)}
-          >
-            Edit
-          </Button>
-          <Button
-            variant="action"
-            className="small"
-            data-label={label.id}
-            onClick={e => this.onShowDelete(label)}
-          >
-            Delete
-          </Button>
-        </ActionButtonCell>)}
-      </tr>);
   }
 
   @action.bound
@@ -279,22 +311,5 @@ export class LabelListView extends React.Component<Props> {
   private onShowUpdate(label: Label) {
     this.showCreate = true;
     this.labelToUpdate = label;
-  }
-
-  @action.bound
-  private onChangeVisible(e: any) {
-    const { project } = this.props.context;
-    const id = e.target.dataset.id;
-    if (e.target.checked) {
-      client.mutate({
-        mutation: AddPrefsLabelMutation,
-        variables: { project: project.id, label: id }
-      });
-    } else {
-      client.mutate({
-        mutation: RemovePrefsLabelMutation,
-        variables: { project: project.id, label: id }
-      });
-    }
   }
 }

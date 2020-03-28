@@ -2,7 +2,7 @@ import * as React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { Subscription, Mutation } from '../../../common/types/graphql';
 import { session, ProjectEnv } from '../models';
-import { Query } from 'react-apollo';
+import { useQuery } from '@apollo/react-hooks';
 import { fragments, ErrorDisplay } from '../graphql';
 import { IssueDetails } from './IssueDetails';
 import { client } from '../graphql/client';
@@ -64,52 +64,51 @@ export const IssueDetailsView = (props: IssueProviderProps) => {
 
   const issueId = `${project.id}.${id}`;
 
+  const { loading, error, data, refetch, subscribeToMore } = useQuery(IssueDetailsQuery, {
+    variables: { issue: issueId },
+    fetchPolicy: 'cache-and-network',
+  });
+
+  if (error) {
+    return <ErrorDisplay error={error} />;
+  }
+
+  if (!data) {
+    return null;
+  }
+
+  const { issue } = data;
+  if (!issue) {
+    return null;
+  }
+
+  if (session.account) {
+    subscribeToMore<IssueChangeResult>({
+      document: IssueSubscription,
+      variables: { issue: issueId },
+      updateQuery: (prev, { subscriptionData }) => {
+        refetch();
+        // TODO: For some reason, this is not working as expected. It gets executed,
+        // but the query isn't re-rendered.
+        // if (!subscriptionData.data.issueChanged) {
+        //   return prev;
+        // }
+        // const updatedIssue = subscriptionData.data.issueChanged.value;
+        // return {
+        //   ...prev,
+        //   issue: updatedIssue
+        // };
+      },
+    });
+  }
+
   return (
-    <Query
-      query={IssueDetailsQuery}
-      variables={{ issue: issueId }}
-      fetchPolicy="cache-and-network"
-    >
-      {({ data, error, loading, subscribeToMore, refetch }) => {
-        if (error) {
-          return <ErrorDisplay error={error} />;
-        }
-
-        const { issue } = data;
-        if (!issue) {
-          return null;
-        }
-
-        if (session.account) {
-          subscribeToMore<IssueChangeResult>({
-            document: IssueSubscription,
-            variables: { issue: issueId },
-            updateQuery: (prev, { subscriptionData }) => {
-              refetch();
-              // TODO: For some reason, this is not working as expected. It gets executed,
-              // but the query isn't re-rendered.
-              // if (!subscriptionData.data.issueChanged) {
-              //   return prev;
-              // }
-              // const updatedIssue = subscriptionData.data.issueChanged.value;
-              // return {
-              //   ...prev,
-              //   issue: updatedIssue
-              // };
-            },
-          });
-        }
-
-        return (
-          <IssueDetails
-            {...props}
-            env={env}
-            issue={issue}
-            loading={loading}
-            onAddComment={addComment}
-          />
-        );
-      }}
-    </Query>
+    <IssueDetails
+      {...props}
+      env={env}
+      issue={issue}
+      loading={loading}
+      onAddComment={addComment}
+    />
   );
 };

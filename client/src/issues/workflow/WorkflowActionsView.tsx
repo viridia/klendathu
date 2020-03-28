@@ -3,7 +3,7 @@ import * as H from 'history';
 import { Issue } from '../../../../common/types/graphql';
 import gql from 'graphql-tag';
 import { fragments, ErrorDisplay } from '../../graphql';
-import { Query } from 'react-apollo';
+import { useQuery } from '@apollo/react-hooks';
 import { ProjectEnv } from '../../models';
 import { WorkflowActions } from './WorkflowActions';
 
@@ -23,28 +23,29 @@ interface Props {
 
 export function WorkflowActionsView({ issue, history }: Props) {
   const env = React.useContext(ProjectEnv);
+  const { loading, error, data } = useQuery(IssueTimelineQuery, {
+    variables: {
+      issue: issue.id,
+      project: issue.project,
+    },
+    fetchPolicy: 'cache-and-network',
+  });
+
+  if (error) {
+    return <ErrorDisplay error={error} />;
+  }
+
+  if (loading) {
+    return null;
+  }
+
+  const { timeline } = data;
   return (
-    <Query
-      query={IssueTimelineQuery}
-      variables={{
-        issue: issue.id,
-        project: issue.project,
-      }}
-    >
-      {({ data, error, loading, subscribeToMore, refetch }) => {
-        if (error) {
-          return <ErrorDisplay error={error} />;
-        }
-        const { timeline } = data;
-        return (
-          <WorkflowActions
-            history={history}
-            env={env}
-            issue={issue}
-            timeline={timeline ? timeline.results : []}
-          />
-        );
-      }}
-    </Query>
+    <WorkflowActions
+      history={history}
+      env={env}
+      issue={issue}
+      timeline={timeline ? timeline.results : []}
+    />
   );
 }

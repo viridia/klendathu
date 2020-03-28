@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Query } from 'react-apollo';
+import { useQuery } from '@apollo/react-hooks';
 import { Query as Q } from '../../../common/types/graphql';
 import { Project } from '../../../common/types/graphql';
 import { NavLink } from './NavLink';
@@ -17,25 +17,23 @@ interface Props {
 
 /** Given a project id, renders a link that includes the account name and project name. */
 export function ProjectNameLink({ id }: Props) {
-  return (
-    <Query<Pick<Q, 'project'>> query={projectQuery} variables={{ id }} >
-      {({ loading, error, data }) => {
-        if (loading) {
-          return <div className="project-name loading" />;
-        } else if (error) {
-          return <div className="project-name error">[Project Load Error]</div>;
-        } else {
-          const project: Project = data.project;
-          return (
-            <NavLink
-              className="project-link"
-              to={`${project.ownerName}/${project.name}`}
-            >
-              {project.title}
-            </NavLink>
-          );
-        }
-      }}
-    </Query>
-  );
+  const { loading, error, data } = useQuery<Pick<Q, 'project'>>(projectQuery, {
+    variables: { id },
+  });
+
+  if (loading) {
+    return <div className="project-name loading" />;
+  } else if (error) {
+    return <div className="project-name error">[Project Load Error]</div>;
+  } else {
+    const project: Project = data.project;
+    return (
+      <NavLink
+        className="project-link"
+        to={`${project.ownerName}/${project.name}`}
+      >
+        {project.title}
+      </NavLink>
+    );
+  }
 }

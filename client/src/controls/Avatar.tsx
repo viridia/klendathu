@@ -1,6 +1,6 @@
 import * as React from 'react';
 import classNames from 'classnames';
-import { Query } from 'react-apollo';
+import { useQuery } from '@apollo/react-hooks';
 import { Query as Q } from '../../../common/types/graphql';
 import { hsl } from 'polished';
 import { PublicAccount } from '../../../common/types/graphql';
@@ -54,59 +54,57 @@ const AvatarImg = styled.div`
 `;
 
 export function Avatar({ id, accountName, small }: Props) {
-  return (
-    <Query<Data> query={avatarQuery} variables={{ id, accountName }} >
-      {({ loading, error, data }) => {
-        if (loading) {
-          return <AvatarImg className={classNames('avatar', 'loading', { small })} />;
-        } else if (error) {
-          return <AvatarImg className={classNames('avatar', 'error', { small })} />;
-        } else if (!data || !data.account) {
-          return <AvatarImg className={classNames('avatar', 'error', { small })} />;
-        } else {
-          const account: PublicAccount = data.account;
-          if (account.photo) {
-            // Use the account photo
-            return (
-              <AvatarImg
-                className={classNames('avatar', { small })}
-                style={{ backgroundImage: `url(${account.photo})` }}
-                title={account.display}
-                data-name={account.accountName}
-                data-id={account.id}
-              />
-            );
-          } else if (account.id && account.display) {
-            // Compute a background tint
-            const hue = parseInt(account.id, 16) % 32 * 630 / 32;
-            const backgroundColor = hsl(hue, 1, 0.7);
-            const color = contrastingColor(backgroundColor);
-            // Display initials
-            return (
-              <AvatarImg
-                className={classNames('avatar', { small })}
-                title={account.display}
-                data-name={account.accountName}
-                data-id={account.id}
-                style={{ backgroundColor, color }}
-              >
-                {initials(account.display)}
-              </AvatarImg>
-            );
-          } else {
-            // Display default avatar image
-            return (
-              <AvatarImg
-                className={classNames('avatar', { small })}
-                style={{ backgroundImage: `url(${DefaultAvatar})` }}
-                title={account.display}
-                data-name={account.accountName}
-                data-id={account.id}
-              />
-            );
-          }
-        }
-      }}
-    </Query>
-  );
+  const { loading, error, data } = useQuery<Data>(avatarQuery, {
+    variables: { id, accountName },
+  });
+
+  if (loading) {
+    return <AvatarImg className={classNames('avatar', 'loading', { small })} />;
+  } else if (error) {
+    return <AvatarImg className={classNames('avatar', 'error', { small })} />;
+  } else if (!data || !data.account) {
+    return <AvatarImg className={classNames('avatar', 'error', { small })} />;
+  } else {
+    const account: PublicAccount = data.account;
+    if (account.photo) {
+      // Use the account photo
+      return (
+        <AvatarImg
+          className={classNames('avatar', { small })}
+          style={{ backgroundImage: `url(${account.photo})` }}
+          title={account.display}
+          data-name={account.accountName}
+          data-id={account.id}
+        />
+      );
+    } else if (account.id && account.display) {
+      // Compute a background tint
+      const hue = parseInt(account.id, 16) % 32 * 630 / 32;
+      const backgroundColor = hsl(hue, 1, 0.7);
+      const color = contrastingColor(backgroundColor);
+      // Display initials
+      return (
+        <AvatarImg
+          className={classNames('avatar', { small })}
+          title={account.display}
+          data-name={account.accountName}
+          data-id={account.id}
+          style={{ backgroundColor, color }}
+        >
+          {initials(account.display)}
+        </AvatarImg>
+      );
+    } else {
+      // Display default avatar image
+      return (
+        <AvatarImg
+          className={classNames('avatar', { small })}
+          style={{ backgroundImage: `url(${DefaultAvatar})` }}
+          title={account.display}
+          data-name={account.accountName}
+          data-id={account.id}
+        />
+      );
+    }
+  }
 }

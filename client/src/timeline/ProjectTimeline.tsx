@@ -2,7 +2,7 @@ import * as React from 'react';
 import { TimelineEntry, Subscription } from '../../../common/types/graphql';
 import { TimelineEntryDisplay } from '../timeline';
 import { fragments, ErrorDisplay } from '../graphql';
-import { Query } from 'react-apollo';
+import { useQuery } from '@apollo/react-hooks';
 import { session, ViewContext } from '../models';
 import { isSameDay } from 'date-fns';
 import { TimeLabel } from './TimeLabel';
@@ -39,6 +39,7 @@ const TimelineLayout = styled.section`
   grid-auto-flow: row;
   grid-template-columns: [labels] auto [controls] 1fr;
   justify-items: flex-start;
+  align-content: flex-start;
   margin: 0 0 0 1rem;
   padding: 0 0.5rem 1rem 0;
   overflow-y: scroll;
@@ -54,59 +55,59 @@ interface Props {
 
 export function ProjectTimeline({ env }: Props) {
   const { project } = env;
-  return (
-    <Query
-      query={ProjectTimelineQuery}
-      variables={{
+  const { loading, error, data, refetch, subscribeToMore } = useQuery(ProjectTimelineQuery, {
+    variables: {
+      project: project.id,
+    },
+    fetchPolicy: 'cache-and-network',
+  });
+
+  if (error) {
+    return <ErrorDisplay error={error} />;
+  }
+
+  if (loading) {
+    return null;
+  }
+
+  const { timeline } = data;
+  if (session.account && project) {
+    subscribeToMore<TimelineChangeResult>({
+      document: ProjectTimelineSubscription,
+      variables: {
         project: project.id,
-      }}
-      fetchPolicy="cache-and-network"
-    >
-      {({ data, error, subscribeToMore, refetch }) => {
-        if (error) {
-          return <ErrorDisplay error={error} />;
-        }
-        const { timeline } = data;
-        if (session.account && project) {
-          subscribeToMore<TimelineChangeResult>({
-            document: ProjectTimelineSubscription,
-            variables: {
-              project: project.id,
-            },
-            updateQuery: (/*prev, { subscriptionData } */) => {
-              // TODO: be smarter about updating the cache.
-              // return {
-              //   timeline: subscriptionData.data.timelineChanged.value,
-              // };
-              // console.log('prev', prev);
-              // console.log('subscriptionData', subscriptionData);
-              // // For the moment we're just going to refresh.
-              // // console.log('subscriptionData', subscriptionData);
-              refetch();
-            },
-          });
-        }
+      },
+      updateQuery: (/*prev, { subscriptionData } */) => {
+        // TODO: be smarter about updating the cache.
+        // return {
+        //   timeline: subscriptionData.data.timelineChanged.value,
+        // };
+        // console.log('prev', prev);
+        // console.log('subscriptionData', subscriptionData);
+        // // For the moment we're just going to refresh.
+        // // console.log('subscriptionData', subscriptionData);
+        refetch();
+      },
+    });
+  }
 
-        if (timeline && timeline.results && timeline.results.length > 0) {
-          let prevTime: Date = null;
-          const entries: JSX.Element[] = [];
+  if (timeline && timeline.results && timeline.results.length > 0) {
+    let prevTime: Date = null;
+    const entries: JSX.Element[] = [];
 
-          timeline.results.forEach((te: TimelineEntry) => {
-            if (prevTime === null || !isSameDay(prevTime, te.at)) {
-              prevTime = te.at;
-              entries.push(<TimeLabel key={`time_${te.id}`}>{relativeDay(te.at)}:</TimeLabel>);
-            }
-            entries.push(<TimelineEntryDisplay key={te.id} change={te} showIssue={true} />);
-          });
+    timeline.results.forEach((te: TimelineEntry) => {
+      if (prevTime === null || !isSameDay(prevTime, te.at)) {
+        prevTime = te.at;
+        entries.push(<TimeLabel key={`time_${te.id}`}>{relativeDay(te.at)}:</TimeLabel>);
+      }
+      entries.push(<TimelineEntryDisplay key={te.id} change={te} showIssue={true} />);
+    });
 
-          return (
-            <TimelineLayout>
-              {entries}
-            </TimelineLayout>
-          );
-        }
-        return null;
-      }}
-    </Query>
-  );
+    return (
+      <TimelineLayout>
+        {entries}
+      </TimelineLayout>
+    );
+  }
+  return null;
 }

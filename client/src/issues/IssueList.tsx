@@ -89,7 +89,7 @@ interface Props extends RouteComponentProps<{}> {
 export class IssueList extends React.Component<Props> {
   private selectAllEl = React.createRef<HTMLInputElement>();
 
-  public componentWillMount() {
+  public componentDidMount() {
     this.updateSelectAll();
   }
 

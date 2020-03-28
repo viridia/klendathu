@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { NavLink } from 'react-router-dom';
 import { ProjectEnv } from '../models';
-import { Query } from 'react-apollo';
+import { useQuery } from '@apollo/react-hooks';
 import { Query as Q } from '../../../common/types/graphql';
 import gql from 'graphql-tag';
 import { fragments } from '../graphql';
@@ -19,7 +19,7 @@ const IssueQuery = gql`
 const IssueCondensedEl = styled.span`
   align-items: flex-start;
   color: ${props => props.theme.textNormal};
-  display: inline-flex;
+  display: inline;
   overflow-x: hidden;
 
   > .id {
@@ -42,35 +42,33 @@ export function IssueCondensedDisplay(props: Props) {
   const env = React.useContext(ProjectEnv);
   const { id, link } = props;
   const issueIndex = idToIndex(id);
-  return (
-    <Query<Pick<Q, 'issue'>> query={IssueQuery} variables={{ id }}>
-      {({ data, loading, error }) => {
-        if (error) {
-          return <div>Error Loading Issue #{issueIndex}</div>;
-        } else if (loading) {
-          return <div>Loading&hellip;...</div>;
-        } else if (data && data.issue) {
-          const { account, project } = env;
-          const issue: Issue = data.issue;
-          if (link) {
-            return (
-              <NavLink to={`/${account.accountName}/${project.name}/${issueIndex}`}>
-                <IssueCondensedEl className="issue">
-                  <span className="id">#{issueIndex}:</span>
-                  <span className="summary">{issue.summary}</span>
-                </IssueCondensedEl>
-              </NavLink>
-            );
-          } else {
-            return (
-              <IssueCondensedEl className="issue">
-                <span className="id">#{issueIndex}:</span>
-                <span className="summary">{issue.summary}</span>
-              </IssueCondensedEl>
-            );
-          }
-        }
-      }}
-    </Query>
-  );
+  const { loading, error, data } = useQuery<Pick<Q, 'issue'>>(IssueQuery, {
+    variables: { id },
+  });
+
+  if (error) {
+    return <div>Error Loading Issue #{issueIndex}</div>;
+  } else if (loading) {
+    return <div>Loading&hellip;...</div>;
+  } else if (data && data.issue) {
+    const { account, project } = env;
+    const issue: Issue = data.issue;
+    if (link) {
+      return (
+        <NavLink to={`/${account.accountName}/${project.name}/${issueIndex}`}>
+          <IssueCondensedEl className="issue">
+            <span className="id">#{issueIndex}:</span>
+            <span className="summary">{issue.summary}</span>
+          </IssueCondensedEl>
+        </NavLink>
+      );
+    } else {
+      return (
+        <IssueCondensedEl className="issue">
+          <span className="id">#{issueIndex}:</span>
+          <span className="summary">{issue.summary}</span>
+        </IssueCondensedEl>
+      );
+    }
+  }
 }

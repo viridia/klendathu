@@ -13,7 +13,7 @@ export const AccountQuery = gql`
   ${fragments.account}
 `;
 
-type AccountQueryResult = Pick<Query, 'account'>;
+export type AccountQueryResult = Pick<Query, 'account'>;
 
 export function queryAccount({ accountName, id }: { accountName?: string; id?: string }) {
   return client.query<AccountQueryResult>({

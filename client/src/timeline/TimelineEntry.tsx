@@ -123,15 +123,17 @@ export function TimelineEntryDisplay({ change, showIssue }: Props) {
   return (
     <TimelineEntryLayout>
       {anyNonCommentChange && <TimelineEntryHeader>
-        <AccountName id={change.by} />
-        &nbsp;made changes&nbsp;
-        <RelativeDate date={change.at} withPrefix={true} />
-        {showIssue && (
-          <TimelineIssueName>&nbsp;to{' '}
-            <IssueCondensedDisplay id={change.issue} />
-          </TimelineIssueName>
-        )}
-        :
+        <span>
+          <AccountName id={change.by} />
+          {' '}made changes{' '}
+          <RelativeDate date={change.at} withPrefix={true} />
+          {showIssue && (
+            <TimelineIssueName>&nbsp;to{' '}
+              <IssueCondensedDisplay id={change.issue} />
+            </TimelineIssueName>
+          )}
+          :
+        </span>
       </TimelineEntryHeader>}
       {anyNonCommentChange && <TimelineProperyList>
         {type && (
@@ -178,11 +180,11 @@ export function TimelineEntryDisplay({ change, showIssue }: Props) {
             removed label <LabelName id={l} key={l} />
           </TimelinePropery>))}
         {attachments && attachments.added && attachments.added.map(a =>
-          (<TimelinePropery key={a}>
+          (<TimelinePropery key={a.id}>
             attached file: <span className="attachment">{a.filename}</span>
           </TimelinePropery>))}
         {attachments && attachments.removed && attachments.removed.map(a =>
-          (<TimelinePropery key={a}>
+          (<TimelinePropery key={a.id}>
             removed file: <span className="attachment">{a.filename}</span>
           </TimelinePropery>))}
         {milestone && (

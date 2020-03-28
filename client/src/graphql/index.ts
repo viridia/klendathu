@@ -8,6 +8,7 @@ export {
 } from './mutations';
 export {
   AccountQuery,
+  AccountQueryResult,
   AccountsQuery,
   queryAccount,
   queryAccounts,

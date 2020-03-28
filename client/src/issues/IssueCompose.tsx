@@ -182,7 +182,7 @@ export class IssueCompose extends React.Component<Props> {
   @observable private attachments = [] as IObservableArray<Attachment>;
   private prevState: string = '';
 
-  public componentWillMount() {
+  public componentDidMount() {
     if (this.props.issue) {
       this.reset();
     } else {
@@ -191,7 +191,7 @@ export class IssueCompose extends React.Component<Props> {
     this.applyParams();
   }
 
-  public componentWillUpdate() {
+  public componentDidUpdate() {
     this.resetType();
   }
 

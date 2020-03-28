@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Issue, Commit } from '../../../../common/types/graphql';
 import { fragments, ErrorDisplay } from '../../graphql';
-import { Query } from 'react-apollo';
+import { useQuery } from '@apollo/react-hooks';
 import { session } from '../../models';
 import gql from 'graphql-tag';
 import { CommitLink } from './CommitLink';
@@ -21,57 +21,58 @@ interface Props {
 }
 
 export function IssueCommits({ issue }: Props) {
-  return (
-    <Query
-      query={IssueCommitsQuery}
-      variables={{
-        issue: issue.id,
-        project: issue.project,
-      }}
-      fetchPolicy="cache-and-network"
-    >
-      {({ data, error, subscribeToMore, refetch }) => {
-        if (error) {
-          return (
-            <FormControlGroup>
-              <ErrorDisplay error={error} />
-            </FormControlGroup>
-          );
-        }
-        const { commits } = data;
-        if (session.account && issue) {
-          // subscribeToMore<TimelineChangeResult>({
-          //   document: IssueTimelineSubscription,
-          //   variables: {
-          //     issue: issue.id,
-          //     project: issue.project,
-          //   },
-          //   updateQuery: (prev, { subscriptionData }) => {
-          //     // TODO: be smarter about updating the cache.
-          //     // return {
-          //     //   timeline: subscriptionData.data.timelineChanged.value,
-          //     // };
-          //     // console.log('prev', prev);
-          //     // console.log('subscriptionData', subscriptionData);
-          //     // // For the moment we're just going to refresh.
-          //     // // console.log('subscriptionData', subscriptionData);
-          //     refetch();
-          //   },
-          // });
-        }
+  const { loading, error, data } = useQuery(IssueCommitsQuery, {
+    variables: {
+      issue: issue.id,
+      project: issue.project,
+    },
+    fetchPolicy: 'cache-and-network',
+  });
 
-        if (commits && commits.results && commits.results.length > 0) {
-          return (
-            <React.Fragment>
-              <FormLabel>Commits:</FormLabel>
-              <FormControlGroup>
-                {commits.results.map((cm: Commit) => <CommitLink key={cm.commit} commit={cm} />)}
-              </FormControlGroup>
-            </React.Fragment>
-          );
-        }
-        return null;
-      }}
-    </Query>
-  );
+  if (error) {
+    return (
+      <FormControlGroup>
+        <ErrorDisplay error={error} />
+      </FormControlGroup>
+    );
+  }
+
+  if (loading) {
+    return null;
+  }
+
+  const { commits } = data;
+  if (session.account && issue) {
+    // subscribeToMore<TimelineChangeResult>({
+    //   document: IssueTimelineSubscription,
+    //   variables: {
+    //     issue: issue.id,
+    //     project: issue.project,
+    //   },
+    //   updateQuery: (prev, { subscriptionData }) => {
+    //     // TODO: be smarter about updating the cache.
+    //     // return {
+    //     //   timeline: subscriptionData.data.timelineChanged.value,
+    //     // };
+    //     // console.log('prev', prev);
+    //     // console.log('subscriptionData', subscriptionData);
+    //     // // For the moment we're just going to refresh.
+    //     // // console.log('subscriptionData', subscriptionData);
+    //     refetch();
+    //   },
+    // });
+  }
+
+  if (commits && commits.results && commits.results.length > 0) {
+    return (
+      <React.Fragment>
+        <FormLabel>Commits:</FormLabel>
+        <FormControlGroup>
+          {commits.results.map((cm: Commit) => <CommitLink key={cm.commit} commit={cm} />)}
+        </FormControlGroup>
+      </React.Fragment>
+    );
+  }
+
+  return null;
 }

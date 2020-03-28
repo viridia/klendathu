@@ -1,11 +1,11 @@
-import * as React from 'react';
+import React from 'react';
 import { hot } from 'react-hot-loader';
 import { themeDefault, ThemeProvider, GlobalStyle } from './style';
 import { Normalize } from 'styled-normalize';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { AccountPage } from './account/AccountPage';
 import { MainPage } from './main/MainPage';
-import { ApolloProvider } from 'react-apollo';
+import { ApolloProvider } from '@apollo/react-hooks';
 import { client } from './graphql/client';
 import { observer } from 'mobx-react';
 
