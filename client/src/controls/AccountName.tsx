@@ -50,7 +50,7 @@ export function AccountName({ id, to, only }: Props) {
         );
       }
     } else {
-      return <div>[Anonymous user]</div>;
+      return <div data-userid={id}>[Anonymous user]</div>;
     }
   }
 }

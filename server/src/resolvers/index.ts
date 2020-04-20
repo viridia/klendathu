@@ -8,7 +8,7 @@ import * as issueSubscriptions from './issueSubscriptions';
 import * as timeline from './timeline';
 import * as labels from './labels';
 import * as memberships from './memberships';
-import * as milestones from './milestones';
+import * as timeboxes from './timeboxes';
 import * as projects from './projects';
 import * as projectPrefs from './projectPrefs';
 import * as stats from './stats';
@@ -22,11 +22,11 @@ export const resolverMap = {
     ...issueQueries.queries,
     ...labels.queries,
     ...memberships.queries,
-    ...milestones.queries,
     ...projects.queries,
     ...projectPrefs.queries,
     ...stats.queries,
     ...templates.queries,
+    ...timeboxes.queries,
     ...timeline.queries,
     ...webhooks.queries,
   },
@@ -35,30 +35,30 @@ export const resolverMap = {
     ...issueMutations.mutations,
     ...labels.mutations,
     ...memberships.mutations,
-    ...milestones.mutations,
     ...projects.mutations,
     ...projectPrefs.mutations,
     ...templates.mutations,
+    ...timeboxes.mutations,
     ...webhooks.mutations,
   },
   Subscription: {
     ...issueSubscriptions.subscriptions,
     ...labels.subscriptions,
     ...memberships.subscriptions,
-    ...milestones.subscriptions,
     ...projects.subscriptions,
     ...projectPrefs.subscriptions,
+    ...timeboxes.subscriptions,
   },
   ...accounts.types,
   ...commits.types,
   ...issueTypes.types,
   ...labels.types,
   ...memberships.types,
-  ...milestones.types,
   ...projects.types,
   ...projectPrefs.types,
   ...stats.types,
   ...templates.types,
+  ...timeboxes.types,
   ...timeline.types,
   ...webhooks.types,
 };

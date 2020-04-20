@@ -8,6 +8,7 @@ import {
   Predicate,
   Relation,
   ReachableIssuesQueryArgs,
+  TimeboxType,
 } from '../../../common/types/graphql';
 import { UserInputError, AuthenticationError } from 'apollo-server-core';
 import { Errors, Role } from '../../../common/types/json';
@@ -139,13 +140,41 @@ export const queries = {
       filter.labels = { $in: query.labels };
     }
 
-    // Match any cc
-    if (query.cc && query.cc.length > 0) {
-      const cc = query.cc.map(strToAccountId);
-      filter.cc = { $in: cc };
-    //   if (cc) {
-    //     const e = cc.reduce((expr: r.Expression<boolean>, uid) => {
-    //       const term = r.row('cc').contains(uid);
+    // Match any milestone
+    if (query.milestones && query.milestones.length > 0) {
+      filter.milestone = { $in: query.milestones };
+    }
+
+    // Match any sprints
+    if (query.sprints && query.sprints.length > 0) {
+      filter.sprints = { $in: query.sprints.map(id => new ObjectID(id)) };
+    }
+
+    // Match sprints in a given state.
+    if (query.sprintStatus && query.sprintStatus.length > 0) {
+      // Fetch sprints in that state.
+      const timeboxQuery = {
+        project: new ObjectID(query.project),
+        status: { $in: query.sprintStatus },
+        type: TimeboxType.Sprint,
+      };
+
+      const sprints = (await context.timeboxes.find(timeboxQuery).toArray())
+        .map(sp => new ObjectID(sp._id));
+      if (filter.sprints) {
+        filter.sprints.$in = sprints.concat(filter.sprints.$in);
+      } else {
+        filter.sprints = { $in: sprints };
+      }
+    }
+
+    // Match any watcher
+    if (query.watchers && query.watchers.length > 0) {
+      const watchers = query.watchers.map(strToAccountId);
+      filter.watchers = { $in: watchers };
+    //   if (watchers) {
+    //     const e = watchers.reduce((expr: r.Expression<boolean>, uid) => {
+    //       const term = r.row('watchers').contains(uid);
     //       return expr ? expr.or(term) : term;
     //     }, null);
     //     if (e) {
@@ -199,6 +228,7 @@ export const queries = {
       sort.index = 1;
     }
 
+    // console.log(query);
     // console.log(filter);
     // console.log(sort);
     // Generate numeric index from _id (for sorting).

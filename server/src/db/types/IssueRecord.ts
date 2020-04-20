@@ -31,7 +31,7 @@ export interface IssueRecord {
   reporterSort: string;
   owner?: ObjectID;
   ownerSort: string;
-  cc: ObjectID[];
+  watchers: ObjectID[];
   created: Date;
   updated: Date;
   labels: LabelID[];
@@ -40,4 +40,5 @@ export interface IssueRecord {
   isPublic?: boolean;
   position?: [number, number];
   milestone?: string;
+  sprints?: ObjectID[];
 }

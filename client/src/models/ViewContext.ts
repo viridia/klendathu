@@ -5,8 +5,9 @@ import {
   ProjectPrefs,
   ProjectContext,
   Subscription,
-  Milestone,
-  MilestoneStatus,
+  Timebox,
+  TimeboxStatus,
+  TimeboxType,
 } from '../../../common/types/graphql';
 import {
   Template,
@@ -31,14 +32,14 @@ const ProjectContextQuery = gql`
       project { ...ProjectFields }
       account { ...AccountFields }
       prefs { ...ProjectPrefsFields }
-      milestones { ...MilestoneFields }
+      timeboxes { ...TimeboxFields }
       template
     }
   }
   ${fragments.project}
   ${fragments.account}
   ${fragments.projectPrefs}
-  ${fragments.milestone}
+  ${fragments.timebox}
 `;
 
 interface ProjectContextQueryResult {
@@ -55,27 +56,27 @@ const PrefsChangeSubscription = gql`
   ${fragments.projectPrefs}
 `;
 
-const MilestoneChangeSubscription = gql`
-  subscription MilestoneChangeSubscription($project: ID!) {
-    milestoneChanged(project: $project) {
+const TimeboxChangeSubscription = gql`
+  subscription TimeboxChangeSubscription($project: ID!) {
+    timeboxChanged(project: $project) {
       action
-      value { ...MilestoneFields }
+      value { ...TimeboxFields }
     }
   }
-  ${fragments.milestone}
+  ${fragments.timebox}
 `;
 
 type PrefsChangeResult = Pick<Subscription, 'prefsChanged'>;
-type MilestoneChangeResult = Pick<Subscription, 'milestoneChanged'>;
+type TimeboxChangeResult = Pick<Subscription, 'timeboxChanged'>;
 
 const statusOrder = {
-  [MilestoneStatus.Active]: 0,
-  [MilestoneStatus.Pending]: 1,
-  [MilestoneStatus.Timeless]: 2,
-  [MilestoneStatus.Concluded]: 3,
+  [TimeboxStatus.Active]: 0,
+  [TimeboxStatus.Pending]: 1,
+  [TimeboxStatus.Timeless]: 2,
+  [TimeboxStatus.Concluded]: 3,
 };
 
-function compareMilestones(m0: Milestone, m1: Milestone) {
+function compareTimeboxes(m0: Timebox, m1: Timebox) {
   const s0 = statusOrder[m0.status];
   const s1 = statusOrder[m1.status];
   if (s0 < s1) {
@@ -103,7 +104,7 @@ export class ViewContext {
   @observable public account: PublicAccount = null;
   @observable public template: Template = null;
   @observable public prefs: ProjectPrefs = null;
-  @observable public milestones: Milestone[] = [];
+  @observable public timeboxes: Timebox[] = [];
   @observable public selection = new ObservableSet();
   @observable public mutationError: Error = null;
   public issues = new IssueQueryModel();
@@ -233,14 +234,24 @@ export class ViewContext {
   }
 
   @computed
-  public get sortedMilestones(): Milestone[] {
-    const sorted = [...this.milestones];
-    sorted.sort(compareMilestones);
+  public get sortedTimeboxes(): Timebox[] {
+    const sorted = [...this.timeboxes];
+    sorted.sort(compareTimeboxes);
     return sorted;
   }
 
-  public getMilestone(id: string): Milestone {
-    return this.milestones.find(m => m.id === id);
+  public getTimebox(id: string): Timebox {
+    return this.timeboxes.find(m => m.id === id);
+  }
+
+  @computed
+  public get milestones(): Timebox[] {
+    return this.timeboxes.filter(tb => tb.type === TimeboxType.Milestone);
+  }
+
+  @computed
+  public get sprints(): Timebox[] {
+    return this.timeboxes.filter(tb => tb.type === TimeboxType.Sprint);
   }
 
   @bind
@@ -258,7 +269,7 @@ export class ViewContext {
       this.account = null;
       this.template = null;
       this.prefs = null;
-      this.milestones = [];
+      this.timeboxes = [];
       return;
     }
 
@@ -291,8 +302,8 @@ export class ViewContext {
               };
             },
           }),
-          queryResult.subscribeToMore<MilestoneChangeResult>({
-            document: MilestoneChangeSubscription,
+          queryResult.subscribeToMore<TimeboxChangeResult>({
+            document: TimeboxChangeSubscription,
             variables: {
               project: data.projectContext.project.id,
             } as any,
@@ -300,9 +311,9 @@ export class ViewContext {
               return {
                 projectContext: {
                   ...prev.projectContext,
-                  milestones: updateQueryResults(
-                    prev.projectContext.milestones,
-                    subscriptionData.data.milestoneChanged),
+                  timeboxes: updateQueryResults(
+                    prev.projectContext.timeboxes,
+                    subscriptionData.data.timeboxChanged),
                 }
               };
             },
@@ -321,7 +332,7 @@ export class ViewContext {
     this.project = context.project;
     this.account = context.account;
     this.template = context.template;
-    this.milestones = context.milestones;
+    this.timeboxes = context.timeboxes;
     this.prefs = context.prefs;
   }
 }

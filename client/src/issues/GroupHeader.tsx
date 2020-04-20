@@ -3,6 +3,7 @@ import { AccountName } from '../controls';
 import { ProjectEnv } from '../models';
 import { IssueGroup } from '../models/IssueQueryModel';
 import { styled } from '../style';
+import { useObserver } from 'mobx-react';
 
 const GroupHeaderEl = styled.th`
   font-weight: normal;
@@ -68,16 +69,20 @@ export function GroupHeader({ group }: Props) {
     }
 
     case 'milestone': {
-      const ms = env.milestones.find(m => m.id === group.value);
-      return (
-        <GroupHeaderEl colSpan={numColumns}>
-          <GroupTitle>Milestone: </GroupTitle>
-          {ms
-            ? <span className="value">{ms.name}</span>
-            : <span className="value unassigned">None assigned</span>
-          }
-        </GroupHeaderEl>
-      );
+      return useObserver(() => {
+        const ms = env.getTimebox(group.value);
+        return (
+          <GroupHeaderEl colSpan={numColumns}>
+            <GroupTitle>Milestone: </GroupTitle>
+            {ms
+              ? <span className="value">{ms.name}</span>
+              : group.value
+                ? <span className="value unassigned">Invalid Group ID: {group.value}</span>
+                : <span className="value unassigned">None assigned</span>
+            }
+          </GroupHeaderEl>
+        );
+      });
     }
 
     default:

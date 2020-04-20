@@ -8,7 +8,8 @@ import { OperandType, defaultOperandValue } from '../models/OperandType';
 import { EditOperand } from '../issues/input/EditOperand';
 import { ViewContext } from '../models';
 import styled from 'styled-components';
-import { DismissButton, DropdownButton, MenuItem } from 'skyhook-ui';
+import { DismissButton } from 'skyhook-ui';
+import { Menu, MenuButton, MenuList, MenuItem } from '../controls/widgets/Menu';
 
 type PredicateList = Array<[Predicate, string]>;
 
@@ -82,15 +83,23 @@ export class FilterTermEditor extends React.Component<Props> {
     Object.getOwnPropertyNames(descriptors).forEach(id => {
       const desc = descriptors[id];
       items.push(
-        <MenuItem eventKey={id} key={id} disabled={termsUsed.has(id)}>{desc.caption}</MenuItem>);
+        <MenuItem
+          // eventKey={id}
+          key={id}
+          disabled={termsUsed.has(id)}
+          onSelect={() => this.onSelectField(id)}
+        >
+          {desc.caption}
+        </MenuItem>);
     });
     env.fields.forEach(field => {
       const customId = `custom.${field.id}`;
       items.push(
         <MenuItem
-          eventKey={customId}
+          // eventKey={customId}
           key={customId}
           disabled={termsUsed.has(field.id)}
+          onSelect={() => this.onSelectField(customId)}
         >
           {field.caption}
         </MenuItem>);
@@ -99,14 +108,25 @@ export class FilterTermEditor extends React.Component<Props> {
 
     return (
       <FilterTermSection className="filter-term">
-        <DropdownButton
+        <Menu>
+          <MenuButton
+            size="small"
+            className="filter-field"
+          >
+            <span>{caption}</span>
+          </MenuButton>
+          <MenuList align="justify">
+            {items}
+          </MenuList>
+        </Menu>
+        {/* <DropdownButton
           size="small"
           title={caption}
           className="filter-field"
           onSelect={this.onSelectField}
         >
           {items}
-        </DropdownButton>
+        </DropdownButton> */}
         {this.renderOpSelector(term)}
         <section className="filter-value">
           {term && (
@@ -124,18 +144,27 @@ export class FilterTermEditor extends React.Component<Props> {
     );
   }
 
-  private renderPredicateSelector(preds: PredicateList, defaultPred: Predicate) {
+  private renderPredicateSelector(preds: PredicateList, defaultPred: Predicate): JSX.Element {
     const selected = (this.props.term && this.props.term.predicate) || defaultPred;
     const selectedInfo = preds.find(p => p[0] === selected);
     return (
-      <DropdownButton
-        size="small"
-        title={selectedInfo[1]}
-        id="term-field"
-        onSelect={this.onSelectPredicate}
-      >
-        {preds.map(([p, caption]) => <MenuItem eventKey={p} key={p}>{caption}</MenuItem>)}
-      </DropdownButton>
+      <Menu>
+        <MenuButton
+          size="small"
+          id="term-field"
+        >
+          {selectedInfo[1]}
+        </MenuButton>
+        <MenuList>
+          {preds.map(([p, caption]) => (
+            <MenuItem
+              key={p}
+              onSelect={() => this.onSelectPredicate(p)}
+            >
+              {caption}
+            </MenuItem>))}
+        </MenuList>
+      </Menu>
     );
   }
 

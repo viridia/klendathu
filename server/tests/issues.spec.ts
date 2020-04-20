@@ -16,7 +16,7 @@ import { Relation } from '../../common/types/graphql';
 const IssueQuery = gql`query IssueQuery($id: ID!) {
   issue(id: $id) {
     id summary description state type reporter reporterSort owner ownerSort
-    labels cc
+    labels watchers
     custom { key value }
     links { to relation }
   }
@@ -41,7 +41,7 @@ const TimelineQuery = gql`query TimelineQuery($project: ID!, $issue: ID!) {
       summary { before after }
       description { before after }
       owner { before after }
-      cc { added removed }
+      watchers { added removed }
       labels { added removed }
       custom { key before after }
       linked { to before after }
@@ -466,7 +466,7 @@ describe('issues', () => {
       });
     });
 
-    test('cc', async () => {
+    test('watchers', async () => {
       const { query, mutate } = createTestClient(server.apollo);
       const res = await mutate({
         mutation: UpdateIssueMutation,
@@ -474,7 +474,7 @@ describe('issues', () => {
           id: issueId,
           input: {
             ...testData,
-            cc: [
+            watchers: [
               server.users.dflores._id.toHexString(),
               server.users.kitten._id.toHexString(),
             ]
@@ -487,7 +487,7 @@ describe('issues', () => {
       expect(qres.errors).toBeUndefined();
       expect(qres.data.issue).toMatchObject({
         ...expectedResponse,
-        cc: [
+        watchers: [
           server.users.dflores._id.toHexString(),
           server.users.kitten._id.toHexString(),
         ],
@@ -497,7 +497,7 @@ describe('issues', () => {
       expect(cres.errors).toBeUndefined();
       expect(cres.data.timeline.results).toBeArrayOfSize(1);
       expect(cres.data.timeline.results[0]).toMatchObject({
-        cc: {
+        watchers: {
           added: [
             server.users.dflores._id.toHexString(),
             server.users.kitten._id.toHexString(),
@@ -507,7 +507,7 @@ describe('issues', () => {
       });
     });
 
-    test('addCC', async () => {
+    test('addWatchers', async () => {
       const { query, mutate } = createTestClient(server.apollo);
       const res = await mutate({
         mutation: UpdateIssueMutation,
@@ -515,7 +515,7 @@ describe('issues', () => {
           id: issueId,
           input: {
             ...testData,
-            addCC: [
+            addWatchers: [
               server.users.dflores._id.toHexString(),
               server.users.kitten._id.toHexString(),
             ]
@@ -528,7 +528,7 @@ describe('issues', () => {
       expect(qres.errors).toBeUndefined();
       expect(qres.data.issue).toMatchObject({
         ...expectedResponse,
-        cc: [
+        watchers: [
           server.users.dflores._id.toHexString(),
           server.users.kitten._id.toHexString(),
         ],
@@ -538,7 +538,7 @@ describe('issues', () => {
       expect(cres.errors).toBeUndefined();
       expect(cres.data.timeline.results).toBeArrayOfSize(1);
       expect(cres.data.timeline.results[0]).toMatchObject({
-        cc: {
+        watchers: {
           added: [
             server.users.dflores._id.toHexString(),
             server.users.kitten._id.toHexString(),
@@ -556,7 +556,7 @@ describe('issues', () => {
           id: issueId,
           input: {
             ...testData,
-            addCC: [
+            addWatchers: [
               server.users.dflores._id.toHexString(),
               server.users.blacky._id.toHexString(),
             ]
@@ -569,7 +569,7 @@ describe('issues', () => {
       expect(qres2.errors).toBeUndefined();
       expect(qres2.data.issue).toMatchObject({
         ...expectedResponse,
-        cc: [
+        watchers: [
           server.users.dflores._id.toHexString(),
           server.users.kitten._id.toHexString(),
           server.users.blacky._id.toHexString(),
@@ -580,7 +580,7 @@ describe('issues', () => {
       expect(cres2.errors).toBeUndefined();
       expect(cres2.data.timeline.results).toBeArrayOfSize(1);
       expect(cres2.data.timeline.results[0]).toMatchObject({
-        cc: {
+        watchers: {
           added: [
             server.users.blacky._id.toHexString(),
           ],
@@ -589,7 +589,7 @@ describe('issues', () => {
       });
     });
 
-    test('removeCC', async () => {
+    test('removeWatchers', async () => {
       const { query, mutate } = createTestClient(server.apollo);
       const res = await mutate({
         mutation: UpdateIssueMutation,
@@ -597,7 +597,7 @@ describe('issues', () => {
           id: issueId,
           input: {
             ...testData,
-            cc: [
+            watchers: [
               server.users.dflores._id.toHexString(),
               server.users.kitten._id.toHexString(),
             ]
@@ -614,7 +614,7 @@ describe('issues', () => {
           id: issueId,
           input: {
             ...testData,
-            removeCC: [
+            removeWatchers: [
               server.users.kitten._id.toHexString(),
               server.users.blacky._id.toHexString(),
             ]
@@ -627,7 +627,7 @@ describe('issues', () => {
       expect(qres.errors).toBeUndefined();
       expect(qres.data.issue).toMatchObject({
         ...expectedResponse,
-        cc: [
+        watchers: [
           server.users.dflores._id.toHexString(),
         ],
       });
@@ -636,7 +636,7 @@ describe('issues', () => {
       expect(cres.errors).toBeUndefined();
       expect(cres.data.timeline.results).toBeArrayOfSize(1);
       expect(cres.data.timeline.results[0]).toMatchObject({
-        cc: {
+        watchers: {
           added: [],
           removed: [
             server.users.kitten._id.toHexString(),
@@ -1581,7 +1581,7 @@ describe('issues', () => {
           id: issueId,
           input: {
             owner: server.users.kitten._id.toHexString(),
-            cc: [server.users.dflores._id.toHexString()],
+            watchers: [server.users.dflores._id.toHexString()],
             addLabels: [l2.toHexString()],
           }
         },
@@ -1600,7 +1600,7 @@ describe('issues', () => {
         summary: { before: 'first', after: 'Coalesced summary' },
         description: { before: 'first issue', after: 'Coalesced description' },
         owner: { before: null, after: server.users.kitten._id.toHexString() },
-        cc: { removed: [], added: [server.users.dflores._id.toHexString()] },
+        watchers: { removed: [], added: [server.users.dflores._id.toHexString()] },
         labels: { removed: [], added: [l1.toHexString(), l2.toHexString()] },
         // custom: [
         //   { key: 'a', before: null, after: 1 },

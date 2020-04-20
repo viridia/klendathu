@@ -17,11 +17,10 @@ import {
   DiscloseButton,
   DismissButton,
   Button,
-  DropdownButton,
-  MenuItem,
   Form,
   TextInput,
 } from 'skyhook-ui';
+import { MenuButton, Menu, MenuList, MenuItem } from '../controls/widgets';
 
 interface GroupTerm {
   caption: string;
@@ -130,20 +129,25 @@ export class FilterParams extends React.Component<Props> {
             onChange={this.onChangeTerm}
           >
             <Spacer />
-            <DropdownButton
-              size="small"
-              title={selectedGroup && selectedGroup.field
-                  ? `Group by ${selectedGroup.caption}` : 'Group by...'}
-              id="group-by"
-              onSelect={this.onSelectGroup}
-            >
-              {GROUP_TERMS.map(gt => (
-                <MenuItem eventKey={gt.field} key={gt.field}>{gt.caption}</MenuItem>
-              ))}
-              {env.milestones.length > 0 &&
-                <MenuItem eventKey="milestone">Milestone</MenuItem>
-              }
-            </DropdownButton>
+            <Menu>
+              <MenuButton size="small" id="group-by">
+                {selectedGroup && selectedGroup.field
+                  ? `Group by ${selectedGroup.caption}` : <span>Group by&hellip;</span>}
+              </MenuButton>
+              <MenuList align="justify">
+                {GROUP_TERMS.map(gt => (
+                  <MenuItem
+                    key={gt.field}
+                    onSelect={() => this.onSelectGroup(gt.field)}
+                  >
+                    {gt.caption}
+                  </MenuItem>
+                ))}
+                {env.milestones.length > 0 &&
+                  <MenuItem onSelect={() => this.onSelectGroup('milestone')}>Milestone</MenuItem>
+                }
+              </MenuList>
+            </Menu>
             <Button
               variant="default"
               size="small"

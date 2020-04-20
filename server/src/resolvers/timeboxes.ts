@@ -1,12 +1,12 @@
-import { MilestoneRecord } from '../db/types';
+import { TimeboxRecord } from '../db/types';
 import { Context } from './Context';
 import {
-  NewMilestoneMutationArgs,
-  UpdateMilestoneMutationArgs,
-  DeleteMilestoneMutationArgs,
-  MilestonesQueryArgs,
+  NewTimeboxMutationArgs,
+  UpdateTimeboxMutationArgs,
+  DeleteTimeboxMutationArgs,
+  TimeboxesQueryArgs,
   ChangeAction,
-  MilestoneChangedSubscriptionArgs,
+  TimeboxChangedSubscriptionArgs,
 } from '../../../common/types/graphql';
 import { escapeRegExp } from '../db/helpers';
 import { ObjectID, UpdateQuery, FilterQuery } from 'mongodb';
@@ -17,14 +17,20 @@ import { getProjectAndRole } from '../db/role';
 import { Channels, publish, RecordChange, getPubSub } from './pubsub';
 import { withFilter } from 'graphql-subscriptions';
 
-type MilestoneRecordChange = RecordChange<MilestoneRecord>;
+type TimeboxRecordChange = RecordChange<TimeboxRecord>;
+
+interface PaginatedTimeboxRecords {
+  count: number;
+  offset: number;
+  results: TimeboxRecord[];
+}
 
 export const queries = {
-  async milestones(
+  async timeboxes(
       _: any,
-      { project, input }: MilestonesQueryArgs,
-      context: Context): Promise<MilestoneRecord[]> {
-    const query: FilterQuery<MilestoneRecord> = { project: new ObjectID(project) };
+      { project, input }: TimeboxesQueryArgs,
+      context: Context): Promise<PaginatedTimeboxRecords> {
+    const query: FilterQuery<TimeboxRecord> = { project: new ObjectID(project) };
     if (input.search) {
       const pattern = `(?i)\\b${escapeRegExp(input.search)}`;
       query.name = { $regex: pattern };
@@ -38,15 +44,20 @@ export const queries = {
     if (input.dateRangeEnd) {
       query.startDate = { $ge: input.dateRangeEnd };
     }
-    return context.milestones.find(query).sort({ startDate: 1 }).toArray();
+    const results = await context.timeboxes.find(query).sort({ startDate: 1 }).toArray();
+    return {
+      count: results.length,
+      offset: 0,
+      results,
+    };
   },
 };
 
 export const mutations = {
-  async newMilestone(
+  async newTimebox(
       _: any,
-      { project, input }: NewMilestoneMutationArgs,
-      context: Context): Promise<MilestoneRecord> {
+      { project, input }: NewTimeboxMutationArgs,
+      context: Context): Promise<TimeboxRecord> {
     if (!context.user) {
       throw new AuthenticationError(Errors.UNAUTHORIZED);
     }
@@ -55,64 +66,65 @@ export const mutations = {
     const { project: pr, role } =
       await getProjectAndRole(context.db, context.user, new ObjectID(project));
     if (!pr) {
-      logger.error('Attempt to create milestone for non-existent project:', { user, project });
+      logger.error('Attempt to create timebox for non-existent project:', { user, project });
       throw new UserInputError(Errors.NOT_FOUND);
     }
 
     if (role < Role.UPDATER) {
-      logger.error('Insufficient permissions to create milestone:', { user, project });
+      logger.error('Insufficient permissions to create timebox:', { user, project });
       throw new UserInputError(Errors.FORBIDDEN);
     }
 
     const now = new Date();
-    const record: MilestoneRecord = {
+    const record: TimeboxRecord = {
       project: pr._id,
       name: input.name,
+      type: input.type,
       description: input.description,
       status: input.status,
       startDate: input.startDate,
       endDate: input.endDate,
-      creator: context.user._id,
+      createdBy: context.user._id,
       created: now,
       updated: now,
     };
 
-    const result = await context.milestones.insertOne(record);
-    publish(Channels.MILESTONE_CHANGE, {
+    const result = await context.timeboxes.insertOne(record);
+    publish(Channels.TIMEBOX_CHANGE, {
       action: ChangeAction.Added,
       value: result.ops[0],
     });
     return result.ops[0];
   },
 
-  async updateMilestone(
+  async updateTimebox(
       _: any,
-      { id, input }: UpdateMilestoneMutationArgs,
-      context: Context): Promise<MilestoneRecord> {
+      { id, input }: UpdateTimeboxMutationArgs,
+      context: Context): Promise<TimeboxRecord> {
     if (!context.user) {
       throw new AuthenticationError(Errors.UNAUTHORIZED);
     }
 
     const user = context.user.accountName;
-    const milestone = await context.milestones.findOne({ _id: new ObjectID(id) });
-    if (!milestone) {
-      logger.error('Attempt to update non-existent milestone:', { user, id });
+    const timebox = await context.timeboxes.findOne({ _id: new ObjectID(id) });
+    if (!timebox) {
+      logger.error('Attempt to update non-existent timebox:', { user, id });
       throw new UserInputError(Errors.NOT_FOUND);
     }
 
-    const { project, role } = await getProjectAndRole(context.db, context.user, milestone.project);
+    const { project, role } = await getProjectAndRole(context.db, context.user, timebox.project);
     if (!project) {
-      logger.error('Attempt to update milestone for non-existent project:', { user, id });
+      logger.error('Attempt to update timebox for non-existent project:', { user, id });
       throw new UserInputError(Errors.NOT_FOUND);
     }
 
     if (role < Role.UPDATER) {
-      logger.error('Insufficient permissions to update milestone:', { user, id });
+      logger.error('Insufficient permissions to update timebox:', { user, id });
       throw new UserInputError(Errors.FORBIDDEN);
     }
 
     const now = new Date();
-    const record: UpdateQuery<MilestoneRecord> = {
+    const record: UpdateQuery<TimeboxRecord> = {
       $set: { updated: now },
     };
 
@@ -136,75 +148,75 @@ export const mutations = {
       record.$set.endDate = input.endDate;
     }
 
-    const result = await context.milestones.findOneAndUpdate(
-      { _id: milestone._id },
+    const result = await context.timeboxes.findOneAndUpdate(
+      { _id: timebox._id },
       record,
       { returnOriginal: false }
     );
-    publish(Channels.MILESTONE_CHANGE, {
+    publish(Channels.TIMEBOX_CHANGE, {
       action: ChangeAction.Changed,
       value: result.value,
     });
     return result.value;
   },
 
-  async deleteMilestone(
+  async deleteTimebox(
     _: any,
-    { id }: DeleteMilestoneMutationArgs,
-    context: Context): Promise<MilestoneRecord> {
+    { id }: DeleteTimeboxMutationArgs,
+    context: Context): Promise<TimeboxRecord> {
     if (!context.user) {
       throw new AuthenticationError(Errors.UNAUTHORIZED);
     }
     const user = context.user.accountName;
-    const milestone = await context.milestones.findOne({ _id: new ObjectID(id) });
-    if (!milestone) {
-      logger.error('Attempt to delete non-existent milestone:', { user, id });
+    const timebox = await context.timeboxes.findOne({ _id: new ObjectID(id) });
+    if (!timebox) {
+      logger.error('Attempt to delete non-existent timebox:', { user, id });
       throw new UserInputError(Errors.NOT_FOUND);
     }
 
-    const { project, role } = await getProjectAndRole(context.db, context.user, milestone.project);
+    const { project, role } = await getProjectAndRole(context.db, context.user, timebox.project);
     if (!project) {
-      logger.error('Attempt to delete milestone for non-existent project:', { user, id });
+      logger.error('Attempt to delete timebox for non-existent project:', { user, id });
       throw new UserInputError(Errors.NOT_FOUND);
     }
 
     if (role < Role.UPDATER) {
-      logger.error('Insufficient permissions to delete milestone:', { user, id });
+      logger.error('Insufficient permissions to delete timebox:', { user, id });
       throw new UserInputError(Errors.FORBIDDEN);
     }
 
-    // publish(Channels.MILESTONE_CHANGE, {
+    // publish(Channels.TIMEBOX_CHANGE, {
     //   action: ChangeAction.Removed,
     //   value: project,
     // });
 
     // TODO: Implement
-    // We need to remove this milestone from all issues in the project.
+    // We need to remove this timebox from all issues in the project.
     return null;
   },
 };
 
 export const subscriptions = {
-  milestoneChanged: {
+  timeboxChanged: {
     subscribe: withFilter(
-      () => getPubSub().asyncIterator([Channels.MILESTONE_CHANGE]),
+      () => getPubSub().asyncIterator([Channels.TIMEBOX_CHANGE]),
       (
-        { value }: MilestoneRecordChange,
-        { project }: MilestoneChangedSubscriptionArgs,
+        { value }: TimeboxRecordChange,
+        { project }: TimeboxChangedSubscriptionArgs,
         context: Context) => {
         return context.user && new ObjectID(value.project).equals(project);
       }
     ),
-    resolve: (payload: MilestoneRecordChange) => {
+    resolve: (payload: TimeboxRecordChange) => {
       return payload;
     },
   },
 };
 
 export const types = {
-  Milestone: {
-    id(row: MilestoneRecord) { return row._id; },
-    createdAt: (row: MilestoneRecord) => row.created,
-    updatedAt: (row: MilestoneRecord) => row.updated,
+  Timebox: {
+    id(row: TimeboxRecord) { return row._id; },
+    createdAt: (row: TimeboxRecord) => row.created,
+    updatedAt: (row: TimeboxRecord) => row.updated,
   },
 };

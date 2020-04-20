@@ -20,7 +20,7 @@ const HeaderLayout = styled.header`
 
 const HeaderTitle = styled.span`
   font-family: 'Russo One';
-  font-size: 1.7rem;
+  font-size: 1.5rem;
   margin-right: .4rem;
 `;
 

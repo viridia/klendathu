@@ -4,6 +4,7 @@ import {
   CustomFieldChange,
   StringChange,
 } from '../../../../common/types/graphql';
+import { Attachment } from './IssueRecord';
 import { IssueID } from './ids';
 
 export interface ObjectIDChange {
@@ -32,9 +33,10 @@ export interface TimelineEntryRecord {
   summary?: StringChange;
   description?: StringChange;
   owner?: ObjectIDChange;
-  cc?: ObjectIDListChange;
+  watchers?: ObjectIDListChange;
   labels?: StringListChange;
   milestone?: StringChange;
+  sprints?: ObjectIDListChange;
   attachments?: {
     added?: Attachment[];
     removed?: Attachment[];

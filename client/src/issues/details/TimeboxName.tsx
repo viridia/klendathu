@@ -2,12 +2,12 @@ import * as React from 'react';
 import { ProjectEnv } from '../../models';
 
 interface Props {
-  milestone: string;
+  timebox: string;
 }
 
-export function MilestoneName({ milestone }: Props) {
+export function TimeboxName({ timebox }: Props) {
   const env = React.useContext(ProjectEnv);
-  const m = env.getMilestone(milestone);
+  const m = env.getTimebox(timebox);
   if (m) {
     return <span>{m.name}</span>;
   }

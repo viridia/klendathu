@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { styled } from '../style';
-import { ProgressBar } from 'skyhook-ui';
 import { Thumbnail } from './Thumbnail';
 import { Attachment } from '../../../common/types/graphql';
 import classNames from 'classnames';
+import { ProgressBar } from '../controls/widgets';
 
 export const AttachmentThumbnailEl = styled.div`
   display: inline-flex;

@@ -17,7 +17,7 @@ const IssueQuery = gql`
     issue(id: $id) {
       ...IssueFields
       ownerAccount { ...AccountFields }
-      ccAccounts { ...AccountFields }
+      watcherAccounts { ...AccountFields }
     }
   }
   ${fragments.account}

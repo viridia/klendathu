@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { register } from '../registry';
 import { styled } from '../../style';
-import { ProgressBar } from 'skyhook-ui';
+import { ProgressBar } from '../../controls/widgets';
 
 const DemoProgress = styled(ProgressBar)`
   width: 20rem;

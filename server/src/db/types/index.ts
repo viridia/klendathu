@@ -5,7 +5,7 @@ export { IssueLinkRecord } from './IssueLinkRecord';
 export { IssueRecord, CustomValues, CustomData } from './IssueRecord';
 export { LabelRecord } from './LabelRecord';
 export { MembershipRecord } from './MembershipRecord';
-export { MilestoneRecord } from './MilestoneRecord';
+export { TimeboxRecord } from './TimeboxRecord';
 export { ProjectPrefsRecord } from './ProjectPrefsRecord';
 export { ProjectRecord, AugmentedProjectRecord } from './ProjectRecord';
 export { TemplateRecord } from './TemplateRecord';

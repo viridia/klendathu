@@ -16,7 +16,7 @@ import {
 } from '../controls';
 import { Role, IssueType, DataType } from '../../../common/types/json';
 import { ViewContext } from '../models';
-import { IssueTypeDisplay, IssueNavigator, IssueCommits, MilestoneName } from './details';
+import { IssueTypeDisplay, IssueNavigator, IssueCommits, TimeboxName } from './details';
 import { Spacer } from '../layout';
 import { idToIndex } from '../lib/idToIndex';
 import { IssueTimeline } from './IssueTimeline';
@@ -25,8 +25,10 @@ import ArrowUpIcon from '../svg-compiled/icons/IcArrowUpward';
 import { WorkflowActionsView } from './workflow/WorkflowActionsView';
 import { ShowAttachments } from '../files/ShowAttachments';
 import { LocationState } from 'history';
-import { Button, Dialog, ButtonGroup, FormLabel } from 'skyhook-ui';
+import { Button, Dialog, ButtonGroup } from 'skyhook-ui';
 import { DepGraph } from './details/DepGraph';
+import { FormLabel } from '../controls/widgets';
+import { SprintName } from '../controls/SprintName';
 
 const IssueDetailsLayout = styled(Card)`
   flex: 1 0 0;
@@ -112,6 +114,10 @@ const IssueDescription = styled(MarkdownText)`
 export const CommentGroup = styled.span`
   grid-column: controls;
   justify-self: stretch;
+`;
+
+const FormLabelCentered = styled(FormLabel)`
+  align-self: center;
 `;
 
 interface Props extends RouteComponentProps<{ project: string; id: string }, LocationState> {
@@ -236,10 +242,10 @@ export class IssueDetails extends React.Component<Props> {
                 <FormLabel>Owner:</FormLabel>
                 <AccountName id={issue.owner} />
 
-                {issue.cc.length > 0 && (
+                {issue.watchers.length > 0 && (
                   <>
-                    <FormLabel>CC:</FormLabel>
-                    <div>{issue.cc.map(cc => <AccountName id={cc} key={cc} />)}</div>
+                    <FormLabel>Watching:</FormLabel>
+                    <div>{issue.watchers.map(w => <AccountName id={w} key={w} />)}</div>
                   </>
                 )}
 
@@ -247,7 +253,7 @@ export class IssueDetails extends React.Component<Props> {
 
                 {issue.labels.length > 0 && (
                   <>
-                    <FormLabel>Labels:</FormLabel>
+                    <FormLabelCentered>Labels:</FormLabelCentered>
                     <div>
                       {issue.labels.map(label =>
                         <LabelName id={label} key={label} />)}
@@ -255,10 +261,21 @@ export class IssueDetails extends React.Component<Props> {
                   </>
                 )}
 
+                {issue.sprints.length > 0 && (
+                  <>
+                    <FormLabelCentered>Sprints:</FormLabelCentered>
+                    <div>
+                      {issue.sprints.map(spId =>
+                        <SprintName key={spId} sprint={spId} />
+                      )}
+                    </div>
+                  </>
+                )}
+
                 {issue.milestone && (
                   <>
                     <FormLabel>Milestone:</FormLabel>
-                    <MilestoneName milestone={issue.milestone} />
+                    <TimeboxName timebox={issue.milestone} />
                   </>
                 )}
 
@@ -274,7 +291,7 @@ export class IssueDetails extends React.Component<Props> {
                     <FormLabel>Linked Issues:</FormLabel>
                     <IssueLinkGroup>
                       <IssueLinks links={this.issueLinkMap} />
-                      <DepGraph issue={this.props.issue} env={env} />
+                      <DepGraph issue={this.props.issue} />
                     </IssueLinkGroup>
                   </>
                 )}

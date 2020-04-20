@@ -3,5 +3,5 @@ export { IssueCommits } from './IssueCommits';
 export { IssueNavigator } from './IssueNavigator';
 export { IssueTypeDisplay } from './IssueTypeDisplay';
 export { IssueTypeTag } from './IssueTypeTag';
-export { MilestoneName } from './MilestoneName';
+export { TimeboxName } from './TimeboxName';
 export { ResponsiveIssueSummary } from './ResponsiveIssueSummary';

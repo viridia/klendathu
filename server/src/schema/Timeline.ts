@@ -92,11 +92,14 @@ type TimelineEntry {
   "Change to the issue owner."
   owner: IDChange
 
-  "Changes to the issue cc list."
-  cc: IDListChange
+  "Changes to the issue watchers list."
+  watchers: IDListChange
 
   "Changes to the list of issue labels."
   labels: IDListChange
+
+  "Change to assigned sprint."
+  sprints: IDListChange
 
   "Change to assigned milestone."
   milestone: StringChange

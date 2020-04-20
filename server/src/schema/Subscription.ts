@@ -39,9 +39,9 @@ type MembershipChange {
   value: Membership!
 }
 
-type MilestoneChange {
+type TimeboxChange {
   action: ChangeAction!
-  value: Milestone!
+  value: Timebox!
 }
 
 type Subscription {
@@ -60,8 +60,8 @@ type Subscription {
   "Watch for changes to project or organization memberships."
   membershipChanged(project: ID, organization: ID): MembershipChange!
 
-  "Watch the list of milestones defined for a project."
-  milestoneChanged(project: ID!): MilestoneChange!
+  "Watch the list of timeboxes defined for a project."
+  timeboxChanged(project: ID!): TimeboxChange!
 
   "Watch for changes to project prefs (current user)."
   prefsChanged(project: ID!): ProjectPrefsChange!

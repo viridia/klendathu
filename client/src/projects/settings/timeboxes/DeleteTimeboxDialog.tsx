@@ -1,24 +1,24 @@
 import * as React from 'react';
-import { Milestone, Mutation } from '../../../../../common/types/graphql';
+import { Timebox, Mutation } from '../../../../../common/types/graphql';
 import { ViewContext, ProjectEnv } from '../../../models';
 import { fragments } from '../../../graphql';
 import { client } from '../../../graphql/client';
 import gql from 'graphql-tag';
 import { Button, Dialog } from 'skyhook-ui';
 
-const DeleteMilestoneMutation = gql`
-  mutation DeleteMilestoneMutation($id: ID!) {
-    deleteMilestone(id: $id) { ...MilestoneFields }
+const DeleteTimeboxMutation = gql`
+  mutation DeleteTimeboxMutation($id: ID!) {
+    deleteTimebox(id: $id) { ...TimeboxFields }
   }
-  ${fragments.milestone}
+  ${fragments.timebox}
 `;
 
-type DeleteMilestoneMutationResult = Pick<Mutation, 'deleteMilestone'>;
+type DeleteTimeboxMutationResult = Pick<Mutation, 'deleteTimebox'>;
 
-function deleteMilestone(milestone: Milestone, env: ViewContext): Promise<void> {
-  return client.mutate<DeleteMilestoneMutationResult>({
-    mutation: DeleteMilestoneMutation,
-    variables: { id: milestone.id }
+function deleteTimebox(timebox: Timebox, env: ViewContext): Promise<void> {
+  return client.mutate<DeleteTimeboxMutationResult>({
+    mutation: DeleteTimeboxMutation,
+    variables: { id: timebox.id }
   }).then(({ /* data, */ errors }) => {
     if (errors) {
       env.error = errors[0];
@@ -31,27 +31,27 @@ function deleteMilestone(milestone: Milestone, env: ViewContext): Promise<void> 
 interface Props {
   open: boolean;
   onClose: () => void;
-  milestone?: Milestone;
+  timebox?: Timebox;
 }
 
-export function DeleteMilestoneDialog({ open, onClose, milestone }: Props) {
+export function DeleteTimeboxDialog({ open, onClose, timebox }: Props) {
   const env = React.useContext(ProjectEnv);
   const [busy, setBusy] = React.useState(false);
-  if (!milestone) {
+  if (!timebox) {
     return null;
   }
   return (
     <Dialog open={open} onClose={onClose}>
       <Dialog.Header hasClose={true}>Delete Project Milestone</Dialog.Header>
       <Dialog.Body>
-        Are you sure you want to delete milestone {milestone.name}?
+        Are you sure you want to delete milestone {timebox.name}?
       </Dialog.Body>
       <Dialog.Footer>
         <Button onClick={onClose}>Cancel</Button>
         <Button
           onClick={() => {
             setBusy(true);
-            deleteMilestone(milestone, env).then(() => {
+            deleteTimebox(timebox, env).then(() => {
               setBusy(false);
               onClose();
             });

@@ -4,7 +4,7 @@ import {
   ProjectRecord,
   IssueRecord,
   LabelRecord,
-  MilestoneRecord,
+  TimeboxRecord,
   TimelineEntryRecord,
   ProjectPrefsRecord,
   MembershipRecord,
@@ -34,8 +34,12 @@ export class Context {
     return this.db.collection<MembershipRecord>('memberships');
   }
 
-  public get milestones(): Collection<MilestoneRecord> {
-    return this.db.collection<MilestoneRecord>('milestones');
+  public get sprints(): Collection<TimeboxRecord> {
+    return this.db.collection<TimeboxRecord>('sprints');
+  }
+
+  public get timeboxes(): Collection<TimeboxRecord> {
+    return this.db.collection<TimeboxRecord>('timeboxes');
   }
 
   public get projects(): Collection<ProjectRecord> {

@@ -17,6 +17,8 @@ export enum OperandType {
   RELATION = 'relation',
   ISSUE = 'issue',
   MILESTONE = 'milestone',
+  SPRINT = 'sprint',
+  SPRINT_STATES = 'sprint_states',
 }
 
 export function defaultOperandValue(
@@ -39,6 +41,8 @@ export function defaultOperandValue(
     return Relation.BlockedBy;
   } else if (type === OperandType.MILESTONE) {
     return null;
+  } else if (type === OperandType.SPRINT || type === OperandType.SPRINT_STATES) {
+    return new ObservableSet();
   } else {
     return '';
   }

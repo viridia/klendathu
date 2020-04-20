@@ -394,8 +394,8 @@ export const types = {
       }
       return prefs;
     },
-    milestones: (pc: ProjectAndAccount, args: any, context: Context) => {
-      return context.milestones.find({ project: pc.project._id }).toArray();
+    timeboxes: async (pc: ProjectAndAccount, args: any, context: Context) => {
+      return context.timeboxes.find({ project: pc.project._id }).sort({ startDate: 1 }).toArray();
     }
   }
 };

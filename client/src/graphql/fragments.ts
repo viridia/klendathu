@@ -23,9 +23,9 @@ export const fragments = {
     id user project organization role createdAt updatedAt
   }`,
 
-  milestone: gql`
-  fragment MilestoneFields on Milestone {
-    id project name status description startDate endDate createdAt updatedAt creator
+  timebox: gql`
+  fragment TimeboxFields on Timebox {
+    id project name type status description startDate endDate createdAt updatedAt createdBy
   }`,
 
   project: gql`
@@ -41,13 +41,14 @@ export const fragments = {
   issue: gql`
   fragment IssueFields on Issue {
     id createdAt updatedAt type state project summary description
-    reporter reporterSort owner ownerSort cc labels
+    reporter reporterSort owner ownerSort watchers labels
     custom { key value }
     attachments { id filename url thumbnail type }
     links { to relation }
     isPublic
     position { x y }
     milestone
+    sprints
   }`,
 
   timelineEntry: gql`
@@ -58,9 +59,10 @@ export const fragments = {
     summary { before after }
     description { before after }
     owner { before after }
-    cc { added removed }
+    watchers { added removed }
     labels { added removed }
     milestone { before after }
+    sprints { added removed }
     custom { key before after }
     linked { to before after }
     attachments {

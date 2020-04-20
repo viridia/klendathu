@@ -139,16 +139,16 @@ export const descriptors: { [type: string]: FilterTermDescriptor } = {
       });
     },
   },
-  cc: {
-    caption: 'CC',
+  watchers: {
+    caption: 'Watching',
     type: OperandType.USERS,
     buildQuery: (query, term) => {
       if (term.value) {
-        query.cc = term.value.map((account: PublicAccount) => account.accountName);
+        query.watchers = term.value.map((account: PublicAccount) => account.accountName);
       }
     },
     parseQuery(query, term, env) {
-      term.value = Promise.all(coerceToStringArray(query.cc).map(resolveAccountName))
+      term.value = Promise.all(coerceToStringArray(query.watchers).map(resolveAccountName))
         .then(accounts => accounts.filter(a => a));
     }
   },
@@ -166,9 +166,54 @@ export const descriptors: { [type: string]: FilterTermDescriptor } = {
       term.value = coerceToStringArray(query.label).map(n => `${project.id}.${n}`);
     }
   },
+  milestone: {
+    caption: 'Milestone',
+    type: OperandType.MILESTONE,
+    buildQuery: (query, term) => {
+      if (term.value) {
+        const timeboxes: string[] = term.value;
+        query.milestone = timeboxes.map(idToIndex);
+      }
+    },
+    parseQuery(query, term, env) {
+      term.value = coerceToStringArray(query.milestone);
+    }
+  },
+  sprint: {
+    caption: 'Sprint',
+    type: OperandType.SPRINT_STATES,
+    buildQuery: (query, term) => {
+      if (term.value) {
+        const timeboxes: ObservableSet<string> = term.value;
+        const sprints: string[] = [];
+        const sprintStates: string[] = [];
+        timeboxes.forEach(value => {
+          if (value.startsWith('.')) {
+            sprintStates.push(value.slice(1));
+          } else {
+            sprints.push(value);
+          }
+        })
+        if (sprints.length > 0) {
+          query.sprint = sprints;
+        }
+        if (sprintStates.length > 0) {
+          query.sstatus = sprintStates;
+        }
+      }
+    },
+    parseQuery(query, term, env) {
+      const sprints = coerceToStringArray(query.sprint);
+      const sprintStates = coerceToStringArray(query.sstatus);
+      term.value = new ObservableSet([ ...sprints, ...sprintStates.map(id => `.${id}`)]);
+    }
+  },
 };
 
 export function getDescriptor(env: ViewContext, fieldId: string): FilterTermDescriptor {
+  if (fieldId === 'sstatus') {
+    return descriptors['sprint'];
+  }
   if (fieldId && fieldId.startsWith('custom.')) {
     const id = fieldId.slice(7);
     const customField = env.fields.get(id);

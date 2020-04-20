@@ -131,10 +131,10 @@ type Issue {
   ownerAccount: PublicAccount
 
   "Users who wish to be informed when this issue is updated."
-  cc: [ID!]!
+  watchers: [ID!]!
 
   "Accounts of users who wish to be informed when this issue is updated."
-  ccAccounts: [PublicAccount!]!
+  watcherAccounts: [PublicAccount!]!
 
   "Labels associated with this issue."
   labels: [ID!]!
@@ -156,6 +156,9 @@ type Issue {
 
   "Milestone that we plan to address this issue in."
   milestone: String
+
+  "List of sprints containing this issue."
+  sprints: [String!]!
 }
 
 "Type for posting a new issue."
@@ -176,7 +179,7 @@ input IssueInput {
   owner: ID
 
   "Users who wish to be informed when this issue is updated."
-  cc: [ID!]
+  watchers: [ID!]
 
   "Labels associated with this issue."
   labels: [ID!]
@@ -195,6 +198,9 @@ input IssueInput {
 
   "Milestone that we plan to address this issue in."
   milestone: String
+
+  "Sprints containing this issue."
+  sprints: [String!]
 
   "List of issues linked to this one."
   linked: [IssueLinkInput!]
@@ -221,7 +227,7 @@ input UpdateIssueInput {
   owner: ID
 
   "Users who wish to be informed when this issue is updated."
-  cc: [ID!]
+  watchers: [ID!]
 
   "Labels associated with this issue."
   labels: [ID!]
@@ -241,17 +247,20 @@ input UpdateIssueInput {
   "Milestone that we plan to address this issue in."
   milestone: String
 
+  "Sprints containing this issue."
+  sprints: [String!]
+
   "List of issues linked to this one."
   linked: [IssueLinkInput!]
 
   "List of comments."
   comments: [ID!]
 
-  "Mass edit: add to the CC list."
-  addCC: [ID!]
+  "Mass edit: add to the watchers list."
+  addWatchers: [ID!]
 
-  "Mass edit: remove from the CC list."
-  removeCC: [ID!]
+  "Mass edit: remove from the watchers list."
+  removeWatchers: [ID!]
 
   "Mass edit: add to the labels list."
   addLabels: [ID!]
@@ -270,6 +279,12 @@ input UpdateIssueInput {
 
   "Mass edit: remove link."
   removeLinks: [ID!]
+
+  "Mass edit: add sprint."
+  addSprints: [ID!]
+
+  "Mass edit: remove sprint."
+  removeSprints: [ID!]
 }
 
 "Query params for searching for issues via custom fields."
@@ -307,8 +322,8 @@ input IssueQueryParams {
   "Query term that restricts the issue search to a set of reporters."
   reporter: [String!]
 
-  "Query term that restricts the issue search to a set of CCs."
-  cc: [String]
+  "Query term that restricts the issue search to a set of watchers."
+  watchers: [String]
 
   "Query term that searches the summary field."
   summary: String
@@ -324,6 +339,15 @@ input IssueQueryParams {
 
   "Query term that restricts the issue search to a set of label ids."
   labels: [String!]
+
+  "Query term that restricts the issue search to specific milestones."
+  milestones: [String!]
+
+  "Query term that restricts the issue search to specific sprints."
+  sprints: [String!]
+
+  "Query term that restricts the issue search to sprints in a particular state. Additive with sprints."
+  sprintStatus: [String!]
 
   "Specifies a list of linked issues to search for."
   linked: [String!]
@@ -379,5 +403,4 @@ type ReachableIssue {
   "List of related issues"
   related: [ID!]!
 }
-
 `;

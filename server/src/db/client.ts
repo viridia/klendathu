@@ -41,10 +41,10 @@ export async function createClient(): Promise<MongoClient> {
     'issueLinks',
     'labels',
     'memberships',
-    'milestones',
     'projects',
     'projectPrefs',
     'templates',
+    'timeboxes',
     'timeline',
     'webhooks',
   ]);

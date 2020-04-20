@@ -11,6 +11,8 @@ import { Observer } from 'mobx-react';
 import { RelationSelector } from './RelationSelector';
 import { DropdownButton, ButtonVariant, MenuItem, TextInput } from 'skyhook-ui';
 import { MilestoneSelector } from './MilestoneSelector';
+import { TimeboxSetSelector } from './TimeboxSetSelector';
+import { TimeboxType } from '../../../../common/types/graphql';
 
 interface Props {
   type: OperandType;
@@ -115,7 +117,6 @@ export function EditOperand(props: Props) {
               />);
           }
           case OperandType.MILESTONE: {
-            console.log(value);
             return (
               <MilestoneSelector
                 env={env}
@@ -123,6 +124,25 @@ export function EditOperand(props: Props) {
                 selection={value}
                 onSelectionChange={ms => onChange(ms ? ms.id : null)}
               />);
+          }
+          case OperandType.SPRINT_STATES: {
+            return (
+              <TimeboxSetSelector
+                className="operand-value"
+                type={TimeboxType.Sprint}
+                value={value}
+              />
+            );
+          }
+          case OperandType.SPRINT: {
+            return (
+              <TimeboxSetSelector
+                className="operand-value"
+                type={TimeboxType.Sprint}
+                value={value}
+                noStates
+              />
+            );
           }
           case OperandType.ENUM: {
             return <EnumSetEditor field={customField} value={value} />;

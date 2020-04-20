@@ -28,13 +28,10 @@ interface LabelOption {
   id: string;
 }
 
-// tslint:disable:max-classes-per-file
-class AutocompleteLabels extends Autocomplete<string> {}
-
 @observer
 export class LabelSelector extends React.Component<Props> {
   @observable private open = false;
-  private ac: AutocompleteLabels;
+  private ac: Autocomplete<string>;
   private token: string;
 
   public render() {
@@ -46,7 +43,7 @@ export class LabelSelector extends React.Component<Props> {
           onClose={this.onCloseModal}
           onInsertLabel={this.onInsertLabel}
         />
-        <AutocompleteLabels
+        <Autocomplete<string>
           {...this.props}
           className={this.props.className}
           multiple={true}

@@ -31,7 +31,7 @@ const UpdateIssueMutation = gql`
     updateIssue(id: $id, input: $input) {
       ...IssueFields
       ownerAccount { ...AccountFields }
-      ccAccounts { ...AccountFields }
+      watcherAccounts { ...AccountFields }
     }
   }
   ${fragments.account}

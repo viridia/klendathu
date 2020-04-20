@@ -1,15 +1,16 @@
-import { MilestoneStatus } from '../../../../common/types/graphql';
+import { TimeboxStatus, TimeboxType } from '../../../../common/types/graphql';
 import { ObjectID } from 'mongodb';
 
-export interface MilestoneRecord {
+export interface TimeboxRecord {
   _id?: string;
   project: ObjectID;
   name: string;
-  status: MilestoneStatus;
+  type: TimeboxType;
+  status: TimeboxStatus;
   description: string;
   startDate: Date;
   endDate: Date;
   created: Date;
   updated: Date;
-  creator: ObjectID;
+  createdBy: ObjectID;
 }

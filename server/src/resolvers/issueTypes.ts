@@ -8,6 +8,8 @@ export const types = {
     ownerSort: (row: IssueRecord) => row.ownerSort ? row.ownerSort : null,
     createdAt: (row: IssueRecord) => row.created,
     updatedAt: (row: IssueRecord) => row.updated,
+    sprints: (row: IssueRecord) => row.sprints || [],
+    watchers: (row: IssueRecord) => row.watchers || [],
     custom(row: IssueRecord) {
       return Object.getOwnPropertyNames(row.custom).map(key => ({
         key,
@@ -23,9 +25,9 @@ export const types = {
       }
       return null;
     },
-    async ccAccounts(row: IssueRecord, _: any, context: Context): Promise<AccountRecord[]> {
-      if (row.cc && row.cc.length > 0) {
-        return context.accounts.find({ _id: { $in: row.cc } }).toArray();
+    async watcherAccounts(row: IssueRecord, _: any, context: Context): Promise<AccountRecord[]> {
+      if (row.watchers && row.watchers.length > 0) {
+        return context.accounts.find({ _id: { $in: row.watchers } }).toArray();
       }
       return [];
     },

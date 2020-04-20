@@ -4,11 +4,11 @@ import { Commit } from './Commit';
 import { Issue } from './Issue';
 import { Label } from './Label';
 import { Membership } from './Membership';
-import { Milestone } from './Milestone';
 import { Mutation } from './Mutation';
 import { Project } from './Project';
 import { ProjectPrefs } from './ProjectPrefs';
 import { Query } from './Query';
+import { Timebox } from './Timebox';
 import { Stats } from './Stats';
 import { Subscription } from './Subscription';
 import { Timeline } from './Timeline';
@@ -32,13 +32,13 @@ export const typeDefs = [
   Issue,
   Label,
   Membership,
-  Milestone,
   Mutation,
   Project,
   ProjectPrefs,
   Query,
   Stats,
   Subscription,
+  Timebox,
   Timeline,
   Webhook,
   Root,

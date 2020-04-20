@@ -41,4 +41,14 @@ export const GlobalStyle = createGlobalStyle`
   div.Toastify__toast--success {
     background-color: #bd77e8;
   }
+
+  reach-portal {
+    display: block;
+    /* width: 100vw;
+    height: 100vh; */
+  }
+
+  [data-reach-popover] {
+    z-index: 100;
+  }
 `;

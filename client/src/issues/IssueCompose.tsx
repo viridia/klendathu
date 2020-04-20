@@ -8,7 +8,7 @@ import {
   PublicAccount,
   CustomFieldInput,
   IssueLink,
-  Milestone,
+  Timebox,
 } from '../../../common/types/graphql';
 import { RouteComponentProps } from 'react-router-dom';
 import {
@@ -34,6 +34,7 @@ import {
   CustomSuggestField,
   CustomEnumField,
   MilestoneSelector,
+  SprintSelector,
 } from './input';
 import { Role, Workflow, IssueType, DataType } from '../../../common/types/json';
 import { session, ViewContext } from '../models';
@@ -172,9 +173,10 @@ export class IssueCompose extends React.Component<Props> {
   @observable private public: boolean = false;
   @observable private another: boolean = false;
   @observable private owner: PublicAccount = null;
-  @observable.shallow private cc = [] as IObservableArray<PublicAccount>;
+  @observable.shallow private watchers = [] as IObservableArray<PublicAccount>;
   @observable.shallow private labels = [] as IObservableArray<string>;
   @observable private milestone: string = '';
+  @observable.shallow private sprints = [] as IObservableArray<string>;
   @observable private issueLinkMap = new ObservableMap<string, Relation>();
   @observable private custom = new Map<string, string | number | boolean>();
   @observable private comments = [] as IObservableArray<string>;
@@ -197,7 +199,7 @@ export class IssueCompose extends React.Component<Props> {
 
   public render() {
     const { location, issue } = this.props;
-    const { account, project, template, milestones } = this.props.env;
+    const { account, project, template, milestones, sprints } = this.props.env;
     if (!template) {
       return null;
     }
@@ -264,13 +266,13 @@ export class IssueCompose extends React.Component<Props> {
               </ActionLink>
             </OwnerEditGroup>
 
-            <FormLabel>CC:</FormLabel>
+            <FormLabel>Watching:</FormLabel>
             <CcEditGroup>
               <UserAutocomplete
                 className="assignee"
                 multiple={true}
-                selection={this.cc.slice()}
-                onSelectionChange={this.onChangeCC}
+                selection={this.watchers.slice()}
+                onSelectionChange={this.onChangeWatchers}
               />
             </CcEditGroup>
 
@@ -283,6 +285,16 @@ export class IssueCompose extends React.Component<Props> {
                 onSelectionChange={this.onChangeLabels}
               />
             </LabelEditGroup>
+
+            {sprints.length > 0 && (
+              <React.Fragment>
+                <FormLabel>Sprints:</FormLabel>
+                <SprintSelector
+                  selection={this.sprints}
+                  onSelectionChange={this.onChangeSprints}
+                />
+              </React.Fragment>
+            )}
 
             {milestones.length > 0 && (
               <React.Fragment>
@@ -435,8 +447,8 @@ export class IssueCompose extends React.Component<Props> {
   }
 
   @action.bound
-  private onChangeCC(cc: PublicAccount[]) {
-    this.cc.replace(cc);
+  private onChangeWatchers(watchers: PublicAccount[]) {
+    this.watchers.replace(watchers);
   }
 
   @action.bound
@@ -445,7 +457,12 @@ export class IssueCompose extends React.Component<Props> {
   }
 
   @action.bound
-  private onChangeMilestone(milestone: Milestone) {
+  private onChangeSprints(sprints: string[]) {
+    this.sprints.replace(sprints);
+  }
+
+  @action.bound
+  private onChangeMilestone(milestone: Timebox) {
     this.milestone = milestone ? milestone.id : null;
   }
 
@@ -503,9 +520,10 @@ export class IssueCompose extends React.Component<Props> {
       summary: this.summary,
       description: this.description,
       owner: this.owner ? this.owner.id : undefined,
-      cc: this.cc.map(cc => cc.id),
+      watchers: this.watchers.map(watchers => watchers.id),
       labels: this.labels,
       milestone: this.milestone,
+      sprints: this.sprints,
       linked,
       custom,
       comments: toJS(this.comments),
@@ -548,9 +566,10 @@ export class IssueCompose extends React.Component<Props> {
       this.summary = issue.summary;
       this.description = issue.description;
       this.owner = issue.ownerAccount;
-      this.cc.replace(issue.ccAccounts);
+      this.watchers.replace(issue.watcherAccounts);
       this.labels.replace(issue.labels);
       this.milestone = issue.milestone;
+      this.sprints.replace(issue.sprints);
       this.custom.clear();
       for (const { key, value } of issue.custom) {
         this.custom.set(key, value);
@@ -566,9 +585,10 @@ export class IssueCompose extends React.Component<Props> {
       this.summary = '';
       this.description = '';
       this.owner = null;
-      this.cc.replace([]);
+      this.watchers.replace([]);
       this.labels.replace([]);
       this.milestone = '';
+      this.sprints.replace([]);
       this.custom.clear();
       this.issueLinkMap.clear();
       this.comments.clear();
@@ -620,7 +640,7 @@ export class IssueCompose extends React.Component<Props> {
     if (params.owner) {
       this.owner = params.owner;
     }
-    // TODO: Apply other issue attributes: cc, custom, attachments, milestone
+    // TODO: Apply other issue attributes: watchers, custom, attachments, milestone
     for (const key of Object.getOwnPropertyNames(params)) {
       const value = params[key];
       if (key.startsWith('addLinks_')) {

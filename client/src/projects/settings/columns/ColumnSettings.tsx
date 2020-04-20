@@ -173,6 +173,7 @@ export class ColumnSettings extends React.Component<Props> {
       { id: 'owner', title: 'Owner' },
       { id: 'state', title: 'State' },
       { id: 'milestone', title: 'Milestone' },
+      { id: 'sprints', title: 'Sprints' },
     ];
     if (template) {
       for (const type of template.types) {

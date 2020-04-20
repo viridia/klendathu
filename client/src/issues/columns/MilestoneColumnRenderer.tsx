@@ -9,7 +9,7 @@ export class MilestoneColumnRenderer extends AbstractColumnRenderer {
   }
 
   public render(issue: Issue) {
-    const m = this.env.getMilestone(issue.milestone);
+    const m = this.env.getTimebox(issue.milestone);
     if (!m) {
       return <td className="milestone center pad" key="milestone">--</td>;
     }

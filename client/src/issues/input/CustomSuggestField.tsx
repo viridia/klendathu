@@ -15,9 +15,6 @@ interface Props {
   onChange: (id: string, value: string) => void;
 }
 
-// tslint:disable:max-classes-per-file
-class StringAutocomplete extends Autocomplete<string> {}
-
 export class CustomSuggestField extends React.Component<Props> {
   private reList: RegExp[];
 
@@ -25,7 +22,7 @@ export class CustomSuggestField extends React.Component<Props> {
   public render() {
     const { field, value } = this.props;
     return (
-      <StringAutocomplete
+      <Autocomplete<string>
         className="keywords ac-multi"
         textValue={value}
         selection={null}

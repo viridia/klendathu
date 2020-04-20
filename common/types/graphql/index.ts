@@ -14,8 +14,8 @@ export interface IssueQueryParams {
   owner?: Maybe<string[]>;
   /** Query term that restricts the issue search to a set of reporters. */
   reporter?: Maybe<string[]>;
-  /** Query term that restricts the issue search to a set of CCs. */
-  cc?: Maybe<(Maybe<string>)[]>;
+  /** Query term that restricts the issue search to a set of watchers. */
+  watchers?: Maybe<(Maybe<string>)[]>;
   /** Query term that searches the summary field. */
   summary?: Maybe<string>;
   /** Search predicate for the summary field. */
@@ -26,6 +26,12 @@ export interface IssueQueryParams {
   descriptionPred?: Maybe<Predicate>;
   /** Query term that restricts the issue search to a set of label ids. */
   labels?: Maybe<string[]>;
+  /** Query term that restricts the issue search to specific milestones. */
+  milestones?: Maybe<string[]>;
+  /** Query term that restricts the issue search to specific sprints. */
+  sprints?: Maybe<string[]>;
+  /** Query term that restricts the issue search to sprints in a particular state. Additive with sprints. */
+  sprintStatus?: Maybe<string[]>;
   /** Specifies a list of linked issues to search for. */
   linked?: Maybe<string[]>;
   /** Query term that searches the issue comments. */
@@ -58,14 +64,16 @@ export interface Pagination {
   offset?: Maybe<number>;
 }
 /** Query params for searching for issues. */
-export interface MilestoneQueryInput {
+export interface TimeboxQueryInput {
+  /** Type of timebox: sprint or milestone. */
+  type?: Maybe<TimeboxType>;
   /** Text search string. */
   search?: Maybe<string>;
   /** Query term that restricts the issue search to a set of types. */
-  status?: Maybe<MilestoneStatus[]>;
-  /** Include milestones after this date */
+  status?: Maybe<TimeboxStatus[]>;
+  /** Include timeboxes after this date */
   dateRangeStart?: Maybe<DateTime>;
-  /** Include milestones before this date */
+  /** Include timeboxes before this date */
   dateRangeEnd?: Maybe<DateTime>;
 }
 /** Query params for searching for issues. */
@@ -125,7 +133,7 @@ export interface IssueInput {
   /** Username of current owner of this issue. */
   owner?: Maybe<string>;
   /** Users who wish to be informed when this issue is updated. */
-  cc?: Maybe<string[]>;
+  watchers?: Maybe<string[]>;
   /** Labels associated with this issue. */
   labels?: Maybe<string[]>;
   /** List of custom fields for this issue. */
@@ -138,6 +146,8 @@ export interface IssueInput {
   position?: Maybe<CoordInput>;
   /** Milestone that we plan to address this issue in. */
   milestone?: Maybe<string>;
+  /** Sprints containing this issue. */
+  sprints?: Maybe<string[]>;
   /** List of issues linked to this one. */
   linked?: Maybe<IssueLinkInput[]>;
   /** List of comments. */
@@ -187,7 +197,7 @@ export interface UpdateIssueInput {
   /** Username of current owner of this issue. */
   owner?: Maybe<string>;
   /** Users who wish to be informed when this issue is updated. */
-  cc?: Maybe<string[]>;
+  watchers?: Maybe<string[]>;
   /** Labels associated with this issue. */
   labels?: Maybe<string[]>;
   /** List of custom fields for this issue. */
@@ -200,14 +210,16 @@ export interface UpdateIssueInput {
   position?: Maybe<CoordInput>;
   /** Milestone that we plan to address this issue in. */
   milestone?: Maybe<string>;
+  /** Sprints containing this issue. */
+  sprints?: Maybe<string[]>;
   /** List of issues linked to this one. */
   linked?: Maybe<IssueLinkInput[]>;
   /** List of comments. */
   comments?: Maybe<string[]>;
-  /** Mass edit: add to the CC list. */
-  addCC?: Maybe<string[]>;
-  /** Mass edit: remove from the CC list. */
-  removeCC?: Maybe<string[]>;
+  /** Mass edit: add to the watchers list. */
+  addWatchers?: Maybe<string[]>;
+  /** Mass edit: remove from the watchers list. */
+  removeWatchers?: Maybe<string[]>;
   /** Mass edit: add to the labels list. */
   addLabels?: Maybe<string[]>;
   /** Mass edit: remove from the labels list. */
@@ -220,18 +232,24 @@ export interface UpdateIssueInput {
   addLinks?: Maybe<IssueLinkInput[]>;
   /** Mass edit: remove link. */
   removeLinks?: Maybe<string[]>;
+  /** Mass edit: add sprint. */
+  addSprints?: Maybe<string[]>;
+  /** Mass edit: remove sprint. */
+  removeSprints?: Maybe<string[]>;
 }
-/** Input for milestone */
-export interface MilestoneInput {
-  /** Title of this milestone */
+/** Input for timebox */
+export interface TimeboxInput {
+  /** Type of timebox: sprint or milestone. */
+  type: TimeboxType;
+  /** Title of this timebox */
   name: string;
-  /** Current status */
-  status: MilestoneStatus;
-  /** Milestone description */
+  /** Timebox description */
   description: string;
-  /** Planned start date of milestone */
+  /** Current status */
+  status: TimeboxStatus;
+  /** Planned start date of timebox */
   startDate?: Maybe<DateTime>;
-  /** Planned end date of milestone */
+  /** Planned end date of timebox */
   endDate?: Maybe<DateTime>;
 }
 /** Used for setting filters. */
@@ -257,8 +275,13 @@ export enum AccountType {
   User = "USER",
   Organization = "ORGANIZATION"
 }
-/** Status of a milestone */
-export enum MilestoneStatus {
+/** Various types of timeboxes */
+export enum TimeboxType {
+  Milestone = "MILESTONE",
+  Sprint = "SPRINT"
+}
+/** Status of a timebox */
+export enum TimeboxStatus {
   Pending = "PENDING",
   Active = "ACTIVE",
   Concluded = "CONCLUDED",
@@ -357,8 +380,8 @@ export interface Query {
   reachableIssues: ReachableIssue[];
   /** Retrieve history of changes to an issue, or all issues within a project. */
   timeline: PaginatedTimeline;
-  /** Retrieve milestones for a project */
-  milestones: PaginatedMilestones;
+  /** Retrieve timeboxes for a project */
+  timeboxes: PaginatedTimeboxes;
   /** Retrieve history of comments to an issue, or all issues within a project. */
   comments: PaginatedTimeline;
   /** Search custom field text, used for auto completion. */
@@ -461,8 +484,8 @@ export interface ProjectContext {
   account: PublicAccount;
   /** Current user's project preferences */
   prefs: ProjectPrefs;
-  /** List of project milestones */
-  milestones: Milestone[];
+  /** List of project timeboxes */
+  timeboxes: Timebox[];
   /** Templates for this project */
   template: JsonObject;
 }
@@ -491,28 +514,30 @@ export interface Filter {
   view?: Maybe<string>;
 }
 
-/** Project milestone */
-export interface Milestone {
-  /** ID of this milestone */
+/** Project timebox */
+export interface Timebox {
+  /** ID of this timebox */
   id: string;
-  /** Project milestone is part of */
+  /** Type of timebox: sprint or milestone. */
+  type: TimeboxType;
+  /** Project timebox is part of */
   project: string;
-  /** Title of this milestone */
+  /** Title of this timebox */
   name: string;
-  /** Current status */
-  status: MilestoneStatus;
-  /** Milestone description */
+  /** Timebox description */
   description: string;
-  /** Planned start date of milestone */
+  /** Current status */
+  status: TimeboxStatus;
+  /** Planned start date of timebox */
   startDate?: Maybe<DateTime>;
-  /** Planned end date of milestone */
+  /** Planned end date of timebox */
   endDate?: Maybe<DateTime>;
-  /** When this milestone was created. */
+  /** When this timebox was created. */
   createdAt: DateTime;
-  /** When this milestone was last updated. */
+  /** When this timebox was last updated. */
   updatedAt: DateTime;
-  /** User that created this milestone. */
-  creator: string;
+  /** User that created this timebox. */
+  createdBy: string;
 }
 
 /** A label which can be attached to an issue. */
@@ -564,9 +589,9 @@ export interface Issue {
   /** Account of current owner of this issue. */
   ownerAccount?: Maybe<PublicAccount>;
   /** Users who wish to be informed when this issue is updated. */
-  cc: string[];
+  watchers: string[];
   /** Accounts of users who wish to be informed when this issue is updated. */
-  ccAccounts: PublicAccount[];
+  watcherAccounts: PublicAccount[];
   /** Labels associated with this issue. */
   labels: string[];
   /** List of custom fields for this issue. */
@@ -581,6 +606,8 @@ export interface Issue {
   position?: Maybe<Coord>;
   /** Milestone that we plan to address this issue in. */
   milestone?: Maybe<string>;
+  /** List of sprints containing this issue. */
+  sprints: string[];
 }
 
 /** Data for a custom field. */
@@ -671,10 +698,12 @@ export interface TimelineEntry {
   description?: Maybe<StringChange>;
   /** Change to the issue owner. */
   owner?: Maybe<IdChange>;
-  /** Changes to the issue cc list. */
-  cc?: Maybe<IdListChange>;
+  /** Changes to the issue watchers list. */
+  watchers?: Maybe<IdListChange>;
   /** Changes to the list of issue labels. */
   labels?: Maybe<IdListChange>;
+  /** Change to assigned sprint. */
+  sprints?: Maybe<IdListChange>;
   /** Change to assigned milestone. */
   milestone?: Maybe<StringChange>;
   /** Changes to the issue attachment list. */
@@ -743,14 +772,14 @@ export interface LinkChange {
   after?: Maybe<Relation>;
 }
 
-/** Milestones query result. */
-export interface PaginatedMilestones {
+/** Timeboxes query result. */
+export interface PaginatedTimeboxes {
   /** Total number of results. */
   count: number;
   /** Current offset */
   offset: number;
   /** List of results. */
-  results: Milestone[];
+  results: Timebox[];
 }
 
 /** A commit from a third-party SCM provider. Might not have a 1:1 mapping to SCM commits. */
@@ -884,12 +913,12 @@ export interface Mutation {
   addComment: TimelineEntry;
   /** Make an incremental change to an issue (mass edit). */
   editIssue: Issue;
-  /** Create a new project milestone. */
-  newMilestone: Milestone;
-  /** Update an existing project milestone. */
-  updateMilestone: Milestone;
-  /** Delete a project milestone. */
-  deleteMilestone: Milestone;
+  /** Create a new project timebox. */
+  newTimebox: Timebox;
+  /** Update an existing project timebox. */
+  updateTimebox: Timebox;
+  /** Delete a project timebox. */
+  deleteTimebox: Timebox;
   /** Set current user's preferences for visible columns. */
   setPrefColumns: ProjectPrefs;
   /** Add a label to the set of visible labels. */
@@ -927,8 +956,8 @@ export interface Subscription {
   labelChanged: LabelChange;
   /** Watch for changes to project or organization memberships. */
   membershipChanged: MembershipChange;
-  /** Watch the list of milestones defined for a project. */
-  milestoneChanged: MilestoneChange;
+  /** Watch the list of timeboxes defined for a project. */
+  timeboxChanged: TimeboxChange;
   /** Watch for changes to project prefs (current user). */
   prefsChanged: ProjectPrefsChange;
   /** Watch issues for a given project. */
@@ -957,10 +986,10 @@ export interface MembershipChange {
   value: Membership;
 }
 
-export interface MilestoneChange {
+export interface TimeboxChange {
   action: ChangeAction;
 
-  value: Milestone;
+  value: Timebox;
 }
 
 export interface ProjectPrefsChange {
@@ -1061,10 +1090,10 @@ export interface TimelineQueryArgs {
 
   pagination?: Maybe<Pagination>;
 }
-export interface MilestonesQueryArgs {
+export interface TimeboxesQueryArgs {
   project: string;
 
-  input?: Maybe<MilestoneQueryInput>;
+  input?: Maybe<TimeboxQueryInput>;
 
   pagination?: Maybe<Pagination>;
 }
@@ -1180,17 +1209,17 @@ export interface EditIssueMutationArgs {
 
   input: UpdateIssueInput;
 }
-export interface NewMilestoneMutationArgs {
+export interface NewTimeboxMutationArgs {
   project: string;
 
-  input: MilestoneInput;
+  input: TimeboxInput;
 }
-export interface UpdateMilestoneMutationArgs {
+export interface UpdateTimeboxMutationArgs {
   id: string;
 
-  input: MilestoneInput;
+  input: TimeboxInput;
 }
-export interface DeleteMilestoneMutationArgs {
+export interface DeleteTimeboxMutationArgs {
   id: string;
 }
 export interface SetPrefColumnsMutationArgs {
@@ -1255,7 +1284,7 @@ export interface MembershipChangedSubscriptionArgs {
 
   organization?: Maybe<string>;
 }
-export interface MilestoneChangedSubscriptionArgs {
+export interface TimeboxChangedSubscriptionArgs {
   project: string;
 }
 export interface PrefsChangedSubscriptionArgs {

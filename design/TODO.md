@@ -1,5 +1,6 @@
 # TODO
 
+* Rename 'created' to 'createdAt' and so on. Migrate tables later?
 * Linking issues on creation did not work.
   * Because we did not warn that link UI was in a non-final state.
   * Also check comments on creation.
@@ -7,6 +8,15 @@
   * Progress
   * Number of issues
   * Delete
+  * Filter by milestone:
+    - specific
+    - active
+    - pending
+    - complete
+  * Group by milestone should group unassociated ones last.
+  * Probably going to have to change "Milestone" to "Sprint"...Agile terminology.
+  * Perhaps *both* milestones and sprints? That might be easier.
+* Changing Group By doesn't make save search button enabled
 * Implicit operations via comments.
   * Insure that links are valid.
 * Autocomplete for custom field values
@@ -71,7 +81,6 @@
 * Client unit tests (coverage)
 * Enable Twitter auth
 * Export / backup database
-* Redis
 
 # Controls
 
@@ -119,7 +128,7 @@ Issue List State:
 * Email notification preferences:
   * What issues should generate a notification?
     * All issues
-    * Only issues where I am mentioned (owner, reporter or CC)
+    * Only issues where I am mentioned (owner, reporter or watching)
     * Issues containing any of the following labels:
 
   * What kinds of changes should generate a notification:

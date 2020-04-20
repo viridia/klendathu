@@ -14,7 +14,7 @@ import { observable, IReactionDisposer, autorun, action, ObservableSet, computed
 import { client } from '../graphql/client';
 import { GraphQLError } from 'graphql';
 import { coerceToString, coerceToStringArray } from '../lib/coerce';
-import { ObservableQuery, OperationVariables, ApolloQueryResult } from 'apollo-client';
+import { ObservableQuery, OperationVariables } from 'apollo-client';
 import { idToIndex } from '../lib/idToIndex';
 import { session } from './Session';
 import bind from 'bind-decorator';
@@ -150,7 +150,7 @@ export class IssueQueryModel {
     Promise.all([
       Promise.all(coerceToStringArray(queryParams.reporter).map(resolveAccountName)),
       Promise.all(coerceToStringArray(queryParams.owner).map(resolveAccountName)),
-      Promise.all(coerceToStringArray(queryParams.cc).map(resolveAccountName)),
+      Promise.all(coerceToStringArray(queryParams.watchers).map(resolveAccountName)),
     ]).then(([reporters, owners, ccs]) => {
       // Compute query parameters to send to server
       this.projectId = project ? project.id : null;
@@ -159,7 +159,7 @@ export class IssueQueryModel {
         labels: [],
         reporter: reporters.filter(acc => acc),
         owner: owners.filter(acc => acc),
-        cc: ccs.filter(acc => acc),
+        watchers: ccs.filter(acc => acc),
       };
 
       if ('search' in queryParams) {
@@ -192,6 +192,15 @@ export class IssueQueryModel {
       if ('label' in queryParams) {
         issueQuery.labels = coerceToStringArray(queryParams.label)
           .map(l => `${this.projectId}.${l}`);
+      }
+
+      if ('sprint' in queryParams) {
+        issueQuery.sprints = coerceToStringArray(queryParams.sprint);
+      }
+
+      if ('sstatus' in queryParams) {
+        issueQuery.sprintStatus =
+            coerceToStringArray(queryParams.sstatus).map(id => id.toUpperCase());
       }
 
       // Custom fields
@@ -292,7 +301,7 @@ export class IssueQueryModel {
 
     if (this.projectId) {
       this.subscription = client
-        .subscribe<ApolloQueryResult<IssueChangeResult>, IssuesChangedSubscriptionArgs>({
+        .subscribe<IssueChangeResult, IssuesChangedSubscriptionArgs>({
         query: IssuesSubscription,
         variables: {
           project: this.projectId,

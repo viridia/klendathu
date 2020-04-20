@@ -33,7 +33,7 @@ interface Props {
   issue: Issue;
 }
 
-export function IssueTimeline({ issue }: Props) {
+export function IssueTimeline({ issue }: Props): JSX.Element {
   const { loading, error, data, refetch, subscribeToMore } = useQuery(IssueTimelineQuery, {
     variables: {
       issue: issue.id,
@@ -84,7 +84,7 @@ export function IssueTimeline({ issue }: Props) {
       entries.push(<TimelineEntryDisplay key={te.id} change={te} />);
     });
 
-    return entries;
+    return <React.Fragment>{entries}</React.Fragment>;
   }
   return null;
 }

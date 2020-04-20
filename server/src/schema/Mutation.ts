@@ -47,14 +47,14 @@ type Mutation {
   "Make an incremental change to an issue (mass edit)."
   editIssue(issue: ID!, input: UpdateIssueInput!): Issue!
 
-  "Create a new project milestone."
-  newMilestone(project: ID!, input: MilestoneInput!): Milestone!
+  "Create a new project timebox."
+  newTimebox(project: ID!, input: TimeboxInput!): Timebox!
 
-  "Update an existing project milestone."
-  updateMilestone(id: ID!, input: MilestoneInput!): Milestone!
+  "Update an existing project timebox."
+  updateTimebox(id: ID!, input: TimeboxInput!): Timebox!
 
-  "Delete a project milestone."
-  deleteMilestone(id: ID!): Milestone!
+  "Delete a project timebox."
+  deleteTimebox(id: ID!): Timebox!
 
   "Set current user's preferences for visible columns."
   setPrefColumns(project: ID!, columns: [String!]!): ProjectPrefs!

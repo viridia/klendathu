@@ -7,7 +7,7 @@ import { ProjectEnv } from '../../models';
 import { ColumnSettings } from './columns/ColumnSettings';
 import { ProjectMembers } from './members/ProjectMembers';
 import { WebhookSettings } from './webhooks/WebhookSettings';
-import { MilestoneListView } from './milestones/MilestoneListView';
+import { TimeboxListView } from './timeboxes/TimeboxListView';
 // import { ProjectTemplateEdit } from './ProjectTemplateEdit';
 // import { WorkflowEdit } from './workflow/WorkflowEdit';
 
@@ -27,7 +27,7 @@ export function ProjectSettings(props: RouteComponentProps<{ tab?: string }>) {
         <Tab to={`${locationPrefix}/columns`}>Columns</Tab>
         <Tab to={`${locationPrefix}/members`}>Members</Tab>
         {project.role >= Role.DEVELOPER &&
-            <Tab to={`${locationPrefix}/milestones`}>Milestones</Tab>}
+            <Tab to={`${locationPrefix}/timeboxing`}>Timeboxing</Tab>}
         {project.role >= Role.MANAGER &&
             <Tab to={`${locationPrefix}/templates`}>Templates</Tab>}
         {project.role >= Role.MANAGER &&
@@ -46,8 +46,8 @@ export function ProjectSettings(props: RouteComponentProps<{ tab?: string }>) {
         />
         <Route path={`${locationPrefix}/members`} component={ProjectMembers} />
         <Route
-          path={`${locationPrefix}/milestones`}
-          render={() => <MilestoneListView env={env} />}
+          path={`${locationPrefix}/timeboxing`}
+          render={() => <TimeboxListView env={env} />}
         />
         <Route path={`${locationPrefix}/templates`} />
         <Route path={`${locationPrefix}/workflow`} />

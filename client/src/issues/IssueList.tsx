@@ -18,6 +18,7 @@ import {
   DateColumnRenderer,
   CustomColumnRenderer,
   MilestoneColumnRenderer,
+  SprintColumnRenderer,
 } from './columns';
 import { IssueListEntry } from './IssueListEntry';
 import { keyframes } from 'styled-components';
@@ -260,6 +261,9 @@ export class IssueList extends React.Component<Props> {
     columnRenderers.set('type', new TypeColumnRenderer(template));
     if (this.props.env.milestones.length > 0) {
       columnRenderers.set('milestone', new MilestoneColumnRenderer(this.props.env));
+    }
+    if (this.props.env.sprints.length > 0) {
+      columnRenderers.set('sprints', new SprintColumnRenderer());
     }
     for (const type of template.types) {
       if (type.fields) {

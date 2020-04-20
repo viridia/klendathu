@@ -136,8 +136,9 @@ export const mutations = {
       ownerSort: null,
       created: now,
       updated: now,
-      cc: (input.cc || []).map(id => new ObjectID(id)),
+      watchers: (input.watchers || []).map(id => new ObjectID(id)),
       milestone: input.milestone,
+      sprints: input.sprints.map(id => new ObjectID(id)),
       labels: (input.labels || []),
       custom: input.custom ? customArrayToMap(input.custom) : {},
       attachments: (input.attachments || []).map(attachmentInputToAttachment),
@@ -277,9 +278,11 @@ export const mutations = {
       }
     }
 
-    // TODO: ensure ccs are valid
+    // TODO: ensure watchers are valid
+    // TODO: ensure sprints are valid
     // TODO: ensure labels are valid
     // TODO: ensure attachments are valid
+    // TODO: ensure milestones are valid
 
     const now = new Date();
     const update: any = {
@@ -329,6 +332,65 @@ export const mutations = {
       change.at = now;
     }
 
+    if (!issue.sprints) {
+      issue.sprints = [];
+    }
+    if ('sprints' in input) {
+      const issueSprints = issue.sprints.map(id => id.toHexString())
+      const sprintsPrev = new Set(issueSprints);    // Current sprints
+      const sprintsNext = new Set(input.sprints);    // Newly-added items
+      input.sprints.forEach(sprint => sprintsPrev.delete(sprint));
+      if (issue.sprints) {
+        issueSprints.forEach(sprint => sprintsNext.delete(sprint));
+      }
+      update.$set.sprints = input.sprints.map(id => new ObjectID(id));
+      if (sprintsNext.size > 0 || sprintsPrev.size > 0) {
+        change.sprints = {
+          added: Array.from(sprintsNext).map(id => new ObjectID(id)),
+          removed: Array.from(sprintsPrev).map(id => new ObjectID(id)),
+        };
+        change.at = now;
+      }
+    } else if ('addSprints' in input || 'removeSprints' in input) {
+      const sprintsPrev = new Set(issue.sprints.map(sp => sp.toHexString()));
+      const sprintsToAdd = new Set(input.addSprints || []);
+      const sprintsAdded: ObjectID[] = [];
+      const sprintsRemoved: ObjectID[] = [];
+      for (const sprint of sprintsToAdd) {
+        if (!sprintsPrev.has(sprint)) {
+          sprintsPrev.add(sprint);
+          sprintsAdded.push(strToId(sprint));
+        }
+      }
+
+      for (const sprint of (input.removeSprints || [])) {
+        if (sprintsPrev.has(sprint) && !sprintsToAdd.has(sprint)) {
+          sprintsPrev.delete(sprint);
+          sprintsRemoved.push(strToId(sprint));
+        }
+      }
+
+      if (sprintsAdded.length > 0 || sprintsRemoved.length > 0) {
+        change.sprints = {
+          added: sprintsAdded,
+          removed: sprintsRemoved,
+        };
+        change.at = now;
+        if (sprintsAdded.length > 0) {
+          if (!update.$addToSet) {
+            update.$addToSet = {};
+          }
+          update.$addToSet.sprints = { $each: sprintsAdded };
+        }
+        if (sprintsRemoved.length > 0) {
+          if (!update.$pullAll) {
+            update.$pullAll = {};
+          }
+          update.$pullAll.sprints = sprintsRemoved;
+        }
+      }
+    }
+
     if ('owner' in input) {
       let ownerRecord: AccountRecord = null;
       if (input.owner) {
@@ -356,55 +418,59 @@ export const mutations = {
       }
     }
 
-    if ('cc' in input) {
-      const ccPrev = new Set(issue.cc.map(cc => cc.toHexString())); // Removed items
-      const ccNext = new Set(input.cc);    // Newly-added items
-      input.cc.forEach(cc => ccPrev.delete(cc));
-      issue.cc.forEach(cc => ccNext.delete(cc.toHexString()));
-      update.$set.cc = input.cc.map(strToId);
-      if (ccNext.size > 0 || ccPrev.size > 0) {
-        change.cc = {
-          added: Array.from(ccNext.keys()).map(strToId),
-          removed: Array.from(ccPrev).map(strToId),
+    if (!issue.watchers) {
+      issue.watchers = []; // Because we renamed this field from 'cc'.
+    }
+    if ('watchers' in input) {
+      const watchersPrev = new Set(issue.watchers
+        .map(watchers => watchers.toHexString())); // Removed items
+      const watchersNext = new Set(input.watchers);    // Newly-added items
+      input.watchers.forEach(watchers => watchersPrev.delete(watchers));
+      issue.watchers.forEach(watchers => watchersNext.delete(watchers.toHexString()));
+      update.$set.watchers = input.watchers.map(strToId);
+      if (watchersNext.size > 0 || watchersPrev.size > 0) {
+        change.watchers = {
+          added: Array.from(watchersNext.keys()).map(strToId),
+          removed: Array.from(watchersPrev).map(strToId),
         };
         change.at = now;
       }
-    } else if ('addCC' in input || 'removeCC' in input) {
-      const ccPrev = new Set(issue.cc.map(cc => cc.toHexString()));
-      const ccToAdd = new Set(input.addCC || []);
-      const ccAdded: ObjectID[] = [];
-      const ccRemoved: ObjectID[] = [];
-      for (const cc of ccToAdd) {
-        if (cc && !ccPrev.has(cc)) {
-          ccPrev.add(cc);
-          ccAdded.push(strToId(cc));
+    } else if ('addWatchers' in input || 'removeWatchers' in input) {
+      const watchersPrev = new Set(issue.watchers.map(watchers => watchers.toHexString()));
+      const watchersToAdd = new Set(input.addWatchers || []);
+      const watchersAdded: ObjectID[] = [];
+      const watchersRemoved: ObjectID[] = [];
+      for (const watchers of watchersToAdd) {
+        if (watchers && !watchersPrev.has(watchers)) {
+          watchersPrev.add(watchers);
+          watchersAdded.push(strToId(watchers));
         }
       }
 
-      for (const cc of (input.removeCC || [])) {
-        if (cc && ccPrev.has(cc) && !ccToAdd.has(cc)) {
-          ccPrev.delete(cc);
-          ccRemoved.push(strToId(cc));
+      for (const watchers of (input.removeWatchers || [])) {
+        if (watchers && watchersPrev.has(watchers) && !watchersToAdd.has(watchers)) {
+          watchersPrev.delete(watchers);
+          watchersRemoved.push(strToId(watchers));
         }
       }
 
-      if (ccAdded.length > 0 || ccRemoved.length > 0) {
-        change.cc = {
-          added: ccAdded,
-          removed: ccRemoved,
+      if (watchersAdded.length > 0 || watchersRemoved.length > 0) {
+        change.watchers = {
+          added: watchersAdded,
+          removed: watchersRemoved,
         };
         change.at = now;
-        if (ccAdded.length > 0) {
+        if (watchersAdded.length > 0) {
           if (!update.$addToSet) {
             update.$addToSet = {};
           }
-          update.$addToSet.cc = { $each: ccAdded };
+          update.$addToSet.watchers = { $each: watchersAdded };
         }
-        if (ccRemoved.length > 0) {
+        if (watchersRemoved.length > 0) {
           if (!update.$pullAll) {
             update.$pullAll = {};
           }
-          update.$pullAll.cc = ccRemoved;
+          update.$pullAll.watchers = watchersRemoved;
         }
       }
     }
@@ -636,10 +702,16 @@ export const mutations = {
               after: change.owner.after,
             };
           }
-          if (change.cc) {
-            updateRecent.$set.cc = {
-              added: [...(recent.cc ? recent.cc.added : []), ...change.cc.added],
-              removed: [...(recent.cc ? recent.cc.removed : []), ...change.cc.removed],
+          if (change.watchers) {
+            updateRecent.$set.watchers = {
+              added: [
+                ...(recent.watchers ? recent.watchers.added : []),
+                ...change.watchers.added,
+              ],
+              removed: [
+                ...(recent.watchers ? recent.watchers.removed : []),
+                ...change.watchers.removed,
+              ],
             };
           }
           if (change.labels) {
@@ -654,6 +726,18 @@ export const mutations = {
               after: change.milestone.after,
             };
           }
+          if (change.sprints) {
+            updateRecent.$set.sprints = {
+              added: [
+                ...(recent.sprints ? recent.sprints.added : []),
+                ...change.sprints.added,
+              ],
+              removed: [
+                ...(recent.sprints ? recent.sprints.removed : []),
+                ...change.sprints.removed,
+              ],
+            };
+          }
 
           if (change.custom) {
             updateRecent.$set.custom = [...(recent.custom || []), ...change.custom];
@@ -664,7 +748,6 @@ export const mutations = {
           }
 
           // TODO:
-          // milestone?: StringChange;
           // attachments?: {
           //   added?: string[];
           //   removed?: string[];
@@ -693,6 +776,8 @@ export const mutations = {
         timelineRecordsToInsert.push(change);
       }
     }
+
+    console.log(timelineRecordsToInsert);
 
     await Promise.all(promises);
 

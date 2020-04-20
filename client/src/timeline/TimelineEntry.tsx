@@ -15,11 +15,13 @@ export function StateNameDisplay({ state }: { state: string }) {
   );
 }
 
-export function MilestoneNameDisplay({ milestone }: { milestone: string }) {
+export function TimeboxNameDisplay({ timebox }: { timebox: string }) {
   const env = React.useContext(ProjectEnv);
-  const m = env.getMilestone(milestone);
+  const m = env.getTimebox(timebox);
   if (m) {
-    return <span className="milestone">{m.name}</span>;
+    return <span className="timebox">{m.name}</span>;
+  } else if (timebox) {
+    return <span className="unassigned">(unknown-ref)</span>;
   } else {
     return <span className="unassigned">none</span>;
   }
@@ -55,13 +57,14 @@ const TimelineProperyList = styled.ul`
   font-size: .9rem;
   padding-left: 2rem;
 `;
+TimelineProperyList.displayName = 'TimelinePropertyList';
 
 const TimelinePropery = styled.li`
   padding: 2px 0;
   margin: 0;
   line-height: 1.1rem;
 
-  .state, .type, .field-name, .custom-value, .attachment, .milestone {
+  .state, .type, .field-name, .custom-value, .attachment, .timebox {
     font-weight: bold;
     color: ${props => props.theme.textAccented};
   }
@@ -108,8 +111,9 @@ export function TimelineEntryDisplay({ change, showIssue }: Props) {
     summary,
     description,
     owner,
-    cc,
+    watchers,
     labels,
+    sprints,
     milestone,
     attachments,
     linked,
@@ -118,8 +122,8 @@ export function TimelineEntryDisplay({ change, showIssue }: Props) {
   // If the change contains a comment body and no other changes, then we don't want to
   // display a change header. Thus is a side-effect of the fact that the timeline contains
   // both comments and change history records.
-  const anyNonCommentChange = type || state || summary || description || owner || cc || labels
-      || milestone || attachments || linked || custom;
+  const anyNonCommentChange = type || state || summary || description || owner || watchers || labels
+      || milestone || attachments || linked || custom || sprints;
   return (
     <TimelineEntryLayout>
       {anyNonCommentChange && <TimelineEntryHeader>
@@ -165,12 +169,12 @@ export function TimelineEntryDisplay({ change, showIssue }: Props) {
             {' '}to{' '}
             <AccountName id={owner.after} />
           </TimelinePropery>}
-        {cc && cc.added && cc.added.map(acc => (
+        {watchers && watchers.added && watchers.added.map(acc => (
           <TimelinePropery key={acc}>
-            added <AccountName id={acc} /> to cc</TimelinePropery>))}
-        {cc && cc.removed && cc.removed.map(acc => (
+            added <AccountName id={acc} /> to watchers</TimelinePropery>))}
+        {watchers && watchers.removed && watchers.removed.map(acc => (
           <TimelinePropery key={acc}>
-            removed <AccountName id={acc} /> from cc</TimelinePropery>))}
+            removed <AccountName id={acc} /> from watchers</TimelinePropery>))}
         {labels && labels.added && labels.added.map(l =>
           (<TimelinePropery key={l}>
             added label <LabelName id={l} key={l} />
@@ -190,10 +194,18 @@ export function TimelineEntryDisplay({ change, showIssue }: Props) {
         {milestone && (
           <TimelinePropery>
             milestone:{' '}
-            <MilestoneNameDisplay milestone={milestone.before} />
+            <TimeboxNameDisplay timebox={milestone.before} />
             {' '}to{' '}
-            <MilestoneNameDisplay milestone={milestone.after} />
+            <TimeboxNameDisplay timebox={milestone.after} />
           </TimelinePropery>)}
+        {sprints && sprints.added && sprints.added.map(tb =>
+          (<TimelinePropery key={tb}>
+            added to sprint <TimeboxNameDisplay timebox={tb} />
+          </TimelinePropery>))}
+        {sprints && sprints.removed && sprints.removed.map(tb =>
+          (<TimelinePropery key={tb}>
+            removed from sprint <TimeboxNameDisplay timebox={tb} />
+          </TimelinePropery>))}
         {linked && linked.map(LinkChangeDisplay)}
         {custom && custom.map(customChange)}
         {/* {change.comments && change.comments.updated === 1 &&

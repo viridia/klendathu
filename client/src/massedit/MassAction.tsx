@@ -1,13 +1,14 @@
-import * as React from 'react';
+import React from 'react';
 import { defaultOperandValue, OperandType, ViewContext } from '../models';
 import { observer } from 'mobx-react';
-
 import { FieldType } from '../../../common/types/json';
 import { EditOperand } from '../issues/input/EditOperand';
 import { UpdateIssueInput, PublicAccount } from '../../../common/types/graphql';
 import bind from 'bind-decorator';
 import styled from 'styled-components';
-import { DismissButton, DropdownButton, MenuItem } from 'skyhook-ui';
+import { DismissButton } from 'skyhook-ui';
+import { Select, Option } from '../controls/widgets';
+import { ObservableSet } from 'mobx';
 
 const MassActionLayout = styled.section`
   align-items: center;
@@ -27,7 +28,9 @@ const MassActionLayout = styled.section`
   }
 
   .action-operand {
+    display: flex;
     flex: 1;
+    justify-content: flex-start;
   }
 `;
 
@@ -96,20 +99,20 @@ export class MassAction extends React.Component<Props> {
       },
     },
     {
-      id: 'addCC',
-      caption: 'Add CC',
+      id: 'addWatchers',
+      caption: 'Add Watchers',
       type: OperandType.USERS,
       apply: (update: UpdateIssueInput, value: PublicAccount[]) => {
-        update.addCC = value.map(l => l.id);
+        update.addWatchers = value.map(l => l.id);
         return true;
       },
     },
     {
-      id: 'removeCC',
-      caption: 'Remove CC',
+      id: 'removeWatchers',
+      caption: 'Remove Watchers',
       type: OperandType.USERS,
       apply: (update: UpdateIssueInput, value: PublicAccount[]) => {
-        update.removeCC = value.map(l => l.id);
+        update.removeWatchers = value.map(l => l.id);
       },
     },
     {
@@ -118,6 +121,23 @@ export class MassAction extends React.Component<Props> {
       type: OperandType.MILESTONE,
       apply: (update: UpdateIssueInput, value: string) => {
         update.milestone = value;
+      },
+    },
+    {
+      id: 'addSprint',
+      caption: 'Add Sprint',
+      type: OperandType.SPRINT,
+      apply: (update: UpdateIssueInput, value: ObservableSet<string>) => {
+        update.addSprints = Array.from(value);
+        return true;
+      },
+    },
+    {
+      id: 'removeSprint',
+      caption: 'Remove Sprint',
+      type: OperandType.SPRINT,
+      apply: (update: UpdateIssueInput, value: ObservableSet<string>) => {
+        update.removeSprints = Array.from(value);
       },
     },
     {
@@ -131,26 +151,27 @@ export class MassAction extends React.Component<Props> {
 
   public render() {
     const { index, action, env } = this.props;
-    const items: JSX.Element[] = [];
+    const options: Option<string>[] = [];
     MassAction.ACTION_TYPES.forEach(at => {
       // Don't show milestone edit if there are no milestones defined.
       if (at.type === OperandType.MILESTONE && env.milestones.length < 1) {
         return;
       }
-      items.push(<MenuItem eventKey={at.id} key={at.id}>{at.caption}</MenuItem>);
+      options.push({
+        value: at.id,
+        label: at.caption,
+      });
     });
-    const caption = (action && action.caption) || 'Choose action...';
 
     return (
       <MassActionLayout>
-        <DropdownButton
-          className="action-type"
-          size="small"
-          title={caption}
-          onSelect={this.onSelectActionType}
-        >
-          {items}
-        </DropdownButton>
+        <Select
+          value={action && action.id}
+          options={options}
+          onChange={this.onSelectActionType}
+          placeholder={<span>Choose action&hellip;</span>}
+          width="12rem"
+        />
         <section className="action-operand">
           {action && (
             <EditOperand
