@@ -1,4 +1,4 @@
-import { ApolloClient } from 'apollo-client';
+import { ApolloClient } from '@apollo/client';
 
 export const client: ApolloClient<any> = null;
 

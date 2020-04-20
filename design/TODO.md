@@ -4,21 +4,20 @@
 * Linking issues on creation did not work.
   * Because we did not warn that link UI was in a non-final state.
   * Also check comments on creation.
-* Milestones
+* Milestones / Sprints
+  * Should be ObjectID.
   * Progress
   * Number of issues
   * Delete
-  * Filter by milestone:
-    - specific
-    - active
-    - pending
-    - complete
   * Group by milestone should group unassociated ones last.
-  * Probably going to have to change "Milestone" to "Sprint"...Agile terminology.
-  * Perhaps *both* milestones and sprints? That might be easier.
 * Changing Group By doesn't make save search button enabled
 * Implicit operations via comments.
   * Insure that links are valid.
+* On Issue update, validate references
+* When deleting milestone, sprint, user, label, ensure all issues updated.
+  * What about timeline?
+  * Soft deletes to keep references intact?
+  * Timeline entries have a 'deleted' type (in addition to 'added' and 'removed')?
 * Autocomplete for custom field values
 * Edit comment
 * Redo screenshots in README

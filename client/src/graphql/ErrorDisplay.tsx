@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import { ApolloError } from 'apollo-client';
+import { ApolloError } from '@apollo/client';
 import { GraphQLError } from 'graphql';
 import { Errors } from '../../../common/types/json';
 import { Observer } from 'mobx-react';

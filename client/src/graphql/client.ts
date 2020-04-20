@@ -1,10 +1,6 @@
-import { ApolloClient } from 'apollo-client';
-import { InMemoryCache } from 'apollo-cache-inmemory';
-import { HttpLink } from 'apollo-link-http';
-import { WebSocketLink } from 'apollo-link-ws';
-// import { onError } from 'apollo-link-error';
-import { setContext } from 'apollo-link-context';
-import { ApolloLink, split } from 'apollo-link';
+import { ApolloClient, ApolloLink, HttpLink, InMemoryCache, split } from '@apollo/client';
+import { WebSocketLink } from '@apollo/link-ws';
+import { setContext } from '@apollo/link-context';
 import { getMainDefinition } from 'apollo-utilities';
 import { session } from '../models';
 import { OperationDefinitionNode } from 'graphql';

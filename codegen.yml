@@ -1,5 +1,5 @@
 overwrite: true
-schema: "http://localhost:4000/graphql"
+schema: "http://localhost:4001/graphql"
 documents: "client/*.gql"
 generates:
   common/types/graphql/index.ts:

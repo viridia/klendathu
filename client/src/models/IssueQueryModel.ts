@@ -14,7 +14,7 @@ import { observable, IReactionDisposer, autorun, action, ObservableSet, computed
 import { client } from '../graphql/client';
 import { GraphQLError } from 'graphql';
 import { coerceToString, coerceToStringArray } from '../lib/coerce';
-import { ObservableQuery, OperationVariables } from 'apollo-client';
+import { ObservableQuery, OperationVariables } from '@apollo/client';
 import { idToIndex } from '../lib/idToIndex';
 import { session } from './Session';
 import bind from 'bind-decorator';

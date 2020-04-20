@@ -4,7 +4,7 @@ import { ViewContext, ProjectEnv } from '../models';
 import { ErrorDisplay } from '../graphql';
 import { RouteComponentProps } from 'react-router-dom';
 import { LoadingIndicator } from '../controls';
-import { ApolloError } from 'apollo-client';
+import { ApolloError } from '@apollo/client';
 
 interface Props extends RouteComponentProps<{ owner: string; name: string }> {
   env: ViewContext;

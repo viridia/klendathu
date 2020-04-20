@@ -138,7 +138,7 @@ export const mutations = {
       updated: now,
       watchers: (input.watchers || []).map(id => new ObjectID(id)),
       milestone: input.milestone,
-      sprints: input.sprints.map(id => new ObjectID(id)),
+      sprints: (input.sprints || []).map(id => new ObjectID(id)),
       labels: (input.labels || []),
       custom: input.custom ? customArrayToMap(input.custom) : {},
       attachments: (input.attachments || []).map(attachmentInputToAttachment),
@@ -776,8 +776,6 @@ export const mutations = {
         timelineRecordsToInsert.push(change);
       }
     }
-
-    console.log(timelineRecordsToInsert);
 
     await Promise.all(promises);
 

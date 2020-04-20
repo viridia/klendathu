@@ -22,7 +22,7 @@ import { fragments, updateQueryResults } from '../graphql';
 import { client } from '../graphql/client';
 import bind from 'bind-decorator';
 import { IssueQueryModel } from './IssueQueryModel';
-import { ApolloError } from 'apollo-client';
+import { ApolloError } from '@apollo/client';
 
 export const ProjectEnv = React.createContext<ViewContext>(null);
 

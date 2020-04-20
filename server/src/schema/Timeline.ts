@@ -19,13 +19,16 @@ type StringChange {
   after: String
 }
 
-"A change to a string list field."
+"A change to an ID list field."
 type IDListChange {
   "List of entries that were added to the field."
   added: [ID!]!
 
   "List of entries that were removed from the field."
   removed: [ID!]!
+
+  "List of entries that were removed because the linked items were deleted."
+  deleted: [ID!]
 }
 
 "A change to a linked issue."

@@ -736,12 +736,14 @@ export interface IdChange {
   after?: Maybe<string>;
 }
 
-/** A change to a string list field. */
+/** A change to an ID list field. */
 export interface IdListChange {
   /** List of entries that were added to the field. */
   added: string[];
   /** List of entries that were removed from the field. */
   removed: string[];
+  /** List of entries that were removed because the linked items were deleted. */
+  deleted?: Maybe<string[]>;
 }
 
 /** A change to attachments. */
