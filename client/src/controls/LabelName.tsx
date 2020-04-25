@@ -1,6 +1,6 @@
 import * as React from 'react';
 import gql from 'graphql-tag';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/client';
 import { Query as Q } from '../../../common/types/graphql';
 import { Chip, SizeVariant } from 'skyhook-ui';
 

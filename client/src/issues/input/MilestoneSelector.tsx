@@ -1,4 +1,3 @@
-// tslint:disable:max-classes-per-file
 import * as React from 'react';
 import { Button, Dialog, CheckBox } from 'skyhook-ui';
 import { Autocomplete, SearchCallback } from '../../controls';

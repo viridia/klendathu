@@ -22,6 +22,7 @@ export interface Attachment {
 // Database representation of an issue
 export interface IssueRecord {
   _id: IssueID; // <owner.index>
+  deleted?: boolean;
   project: ObjectID;
   type: string;
   state: string;
@@ -39,6 +40,6 @@ export interface IssueRecord {
   attachments: Attachment[];
   isPublic?: boolean;
   position?: [number, number];
-  milestone?: string;
+  milestone?: ObjectID;
   sprints?: ObjectID[];
 }

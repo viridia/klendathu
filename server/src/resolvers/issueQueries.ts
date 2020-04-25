@@ -73,7 +73,9 @@ export const queries = {
 
     const filter: any = {
       project: project._id,
+      deleted: { $ne: true },
     };
+    const filterConjuncts = [];
 
     // If they are not a project member, only allow public issues to be viewed.
     if (role < Role.VIEWER) {
@@ -142,7 +144,30 @@ export const queries = {
 
     // Match any milestone
     if (query.milestones && query.milestones.length > 0) {
-      filter.milestone = { $in: query.milestones };
+      filter.milestone = { $in: query.milestones.map(id => new ObjectID(id)) };
+    }
+
+    // Match milestones in a given state.
+    if (query.milestoneStatus && query.milestoneStatus.length > 0) {
+      const searchForNone = query.milestoneStatus.indexOf('NONE') >= 0;
+
+      // Fetch milestones in that state.
+      const timeboxQuery = {
+        project: new ObjectID(query.project),
+        status: { $in: query.milestoneStatus.filter(sp => sp !== 'NONE') },
+        type: TimeboxType.Milestone,
+      };
+
+      const milestones = (await context.timeboxes.find(timeboxQuery).toArray())
+        .map(m => new ObjectID(m._id));
+      if (searchForNone) {
+        milestones.push(null);
+      }
+      if (filter.milestone) {
+        filter.milestone.$in = milestones.concat(filter.milestone.$in);
+      } else {
+        filter.milestone = { $in: milestones };
+      }
     }
 
     // Match any sprints
@@ -152,10 +177,12 @@ export const queries = {
 
     // Match sprints in a given state.
     if (query.sprintStatus && query.sprintStatus.length > 0) {
+      const searchForNone = query.sprintStatus.indexOf('NONE') >= 0;
+
       // Fetch sprints in that state.
       const timeboxQuery = {
         project: new ObjectID(query.project),
-        status: { $in: query.sprintStatus },
+        status: { $in: query.sprintStatus.filter(sp => sp !== 'NONE') },
         type: TimeboxType.Sprint,
       };
 
@@ -165,6 +192,17 @@ export const queries = {
         filter.sprints.$in = sprints.concat(filter.sprints.$in);
       } else {
         filter.sprints = { $in: sprints };
+      }
+
+      if (searchForNone) {
+        filterConjuncts.push({
+          $or: [
+            ...filter.sprints.length > 0 ? [{ sprints: filter.sprints }] : [],
+            { sprints: { $size: 0 } },
+            { sprints: { $exists: false } },
+          ]
+        });
+        delete filter.sprints;
       }
     }
 
@@ -226,6 +264,20 @@ export const queries = {
       }
     } else {
       sort.index = 1;
+    }
+
+    if (filterConjuncts) {
+      if (filterConjuncts.length > 1) {
+        if (filter.$and) {
+          filter.$and = filter.$and.concat(filterConjuncts);
+        } else {
+          filter.$and = filterConjuncts;
+        }
+      } else {
+        // This assumes that this key is not already being used...
+        // Generally this will be a $or.
+        Object.assign(filter, filterConjuncts[0]);
+      }
     }
 
     // console.log(query);

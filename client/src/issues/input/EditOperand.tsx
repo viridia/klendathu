@@ -125,6 +125,15 @@ export function EditOperand(props: Props) {
                 onSelectionChange={ms => onChange(ms ? ms.id : null)}
               />);
           }
+          case OperandType.MILESTONE_STATES: {
+            return (
+              <TimeboxSetSelector
+                className="operand-value"
+                type={TimeboxType.Milestone}
+                value={value}
+              />
+            );
+          }
           case OperandType.SPRINT_STATES: {
             return (
               <TimeboxSetSelector

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Issue, Commit } from '../../../../common/types/graphql';
 import { fragments, ErrorDisplay } from '../../graphql';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/client';
 import { session } from '../../models';
 import gql from 'graphql-tag';
 import { CommitLink } from './CommitLink';

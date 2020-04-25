@@ -203,6 +203,15 @@ export class IssueQueryModel {
             coerceToStringArray(queryParams.sstatus).map(id => id.toUpperCase());
       }
 
+      if ('milestone' in queryParams) {
+        issueQuery.milestones = coerceToStringArray(queryParams.milestone);
+      }
+
+      if ('mstatus' in queryParams) {
+        issueQuery.milestoneStatus =
+            coerceToStringArray(queryParams.mstatus).map(id => id.toUpperCase());
+      }
+
       // Custom fields
       for (const key of Object.getOwnPropertyNames(queryParams)) {
         if (key.startsWith('custom.')) {

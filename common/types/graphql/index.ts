@@ -28,6 +28,8 @@ export interface IssueQueryParams {
   labels?: Maybe<string[]>;
   /** Query term that restricts the issue search to specific milestones. */
   milestones?: Maybe<string[]>;
+  /** Query term that restricts the issue search to milestones in a particular state. Additive with milestones. */
+  milestoneStatus?: Maybe<string[]>;
   /** Query term that restricts the issue search to specific sprints. */
   sprints?: Maybe<string[]>;
   /** Query term that restricts the issue search to sprints in a particular state. Additive with sprints. */
@@ -538,6 +540,8 @@ export interface Timebox {
   updatedAt: DateTime;
   /** User that created this timebox. */
   createdBy: string;
+  /** True if this timebox has been deleted (should never appear in query results) */
+  deleted?: Maybe<boolean>;
 }
 
 /** A label which can be attached to an issue. */
@@ -556,6 +560,8 @@ export interface Label {
   created: DateTime;
   /** When the label was last updated. */
   updated: DateTime;
+  /** True if this label has been deleted (should never appear in query results) */
+  deleted?: Maybe<boolean>;
 }
 
 /** An issue. */
@@ -608,6 +614,8 @@ export interface Issue {
   milestone?: Maybe<string>;
   /** List of sprints containing this issue. */
   sprints: string[];
+  /** True if this issue has been deleted (should never appear in query results) */
+  deleted?: Maybe<boolean>;
 }
 
 /** Data for a custom field. */

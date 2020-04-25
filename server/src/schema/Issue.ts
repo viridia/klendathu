@@ -159,6 +159,9 @@ type Issue {
 
   "List of sprints containing this issue."
   sprints: [String!]!
+
+  "True if this issue has been deleted (should never appear in query results)"
+  deleted: Boolean
 }
 
 "Type for posting a new issue."
@@ -342,6 +345,9 @@ input IssueQueryParams {
 
   "Query term that restricts the issue search to specific milestones."
   milestones: [String!]
+
+  "Query term that restricts the issue search to milestones in a particular state. Additive with milestones."
+  milestoneStatus: [String!]
 
   "Query term that restricts the issue search to specific sprints."
   sprints: [String!]

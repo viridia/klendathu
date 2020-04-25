@@ -29,7 +29,7 @@ export const queries = {
       _: any,
       { project, search }: LabelsQueryArgs,
       context: Context): Promise<LabelRecord[]> {
-    const query: any = { project: new ObjectID(project) };
+    const query: any = { project: new ObjectID(project), deleted: { $ne: true } };
     if (search) {
       const pattern = `(?i)\\b${escapeRegExp(search)}`;
       query.name = { $regex: pattern };
@@ -93,7 +93,7 @@ export const mutations = {
     }
 
     const user = context.user.accountName;
-    const label = await context.labels.findOne({ _id: id });
+    const label = await context.labels.findOne({ _id: id, deleted: { $ne: true } });
     if (!label) {
       logger.error('Attempt to update non-existent label:', { user, id });
       throw new UserInputError(Errors.NOT_FOUND);
@@ -133,7 +133,7 @@ export const mutations = {
       throw new AuthenticationError(Errors.UNAUTHORIZED);
     }
     const user = context.user.accountName;
-    const label = await context.labels.findOne({ _id: id });
+    const label = await context.labels.findOne({ _id: id, deleted: { $ne: true } });
     if (!label) {
       logger.error('Attempt to delete non-existent label:', { user, id });
       throw new UserInputError(Errors.NOT_FOUND);
@@ -152,6 +152,7 @@ export const mutations = {
 
     // TODO: Implement
     // We need to remove this label from all issues in the project.
+    // And make a timeline entry record for each of those issues.
     return null;
   },
 };

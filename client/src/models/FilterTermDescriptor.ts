@@ -168,15 +168,31 @@ export const descriptors: { [type: string]: FilterTermDescriptor } = {
   },
   milestone: {
     caption: 'Milestone',
-    type: OperandType.MILESTONE,
+    type: OperandType.MILESTONE_STATES,
     buildQuery: (query, term) => {
       if (term.value) {
-        const timeboxes: string[] = term.value;
-        query.milestone = timeboxes.map(idToIndex);
+        const timeboxes: ObservableSet<string> = term.value;
+        const milestones: string[] = [];
+        const milestoneStates: string[] = [];
+        timeboxes.forEach(value => {
+          if (value.startsWith('.')) {
+            milestoneStates.push(value.slice(1));
+          } else {
+            milestones.push(value);
+          }
+        })
+        if (milestones.length > 0) {
+          query.milestone = milestones;
+        }
+        if (milestoneStates.length > 0) {
+          query.mstatus = milestoneStates;
+        }
       }
     },
     parseQuery(query, term, env) {
-      term.value = coerceToStringArray(query.milestone);
+      const milestones = coerceToStringArray(query.milestone);
+      const milestoneStates = coerceToStringArray(query.mstatus);
+      term.value = new ObservableSet([ ...milestones, ...milestoneStates.map(id => `.${id}`)]);
     }
   },
   sprint: {
@@ -213,6 +229,9 @@ export const descriptors: { [type: string]: FilterTermDescriptor } = {
 export function getDescriptor(env: ViewContext, fieldId: string): FilterTermDescriptor {
   if (fieldId === 'sstatus') {
     return descriptors['sprint'];
+  }
+  if (fieldId === 'mstatus') {
+    return descriptors['milestone'];
   }
   if (fieldId && fieldId.startsWith('custom.')) {
     const id = fieldId.slice(7);

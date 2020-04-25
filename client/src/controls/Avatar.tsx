@@ -1,6 +1,6 @@
 import * as React from 'react';
 import classNames from 'classnames';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/client';
 import { Query as Q } from '../../../common/types/graphql';
 import { hsl } from 'polished';
 import { PublicAccount } from '../../../common/types/graphql';

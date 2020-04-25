@@ -304,6 +304,15 @@ export class FilterParams extends React.Component<Props> {
     this.group = query.group || '';
     const terms: FilterTerm[] = [];
     for (const key of Object.getOwnPropertyNames(query)) {
+      if (key === 'sstatus') {
+        if (query.sprint) {
+          continue;
+        }
+      } else if (key === 'mstatus') {
+        if (query.milestone) {
+          continue;
+        }
+      }
       const descriptor = getDescriptor(env, key);
       if (descriptor) {
         const term: FilterTerm = observable({

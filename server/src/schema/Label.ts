@@ -32,5 +32,8 @@ type Label {
 
   "When the label was last updated."
   updated: DateTime!
+
+  "True if this label has been deleted (should never appear in query results)"
+  deleted: Boolean
 }
 `;

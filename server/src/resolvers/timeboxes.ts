@@ -30,7 +30,10 @@ export const queries = {
       _: any,
       { project, input }: TimeboxesQueryArgs,
       context: Context): Promise<PaginatedTimeboxRecords> {
-    const query: FilterQuery<TimeboxRecord> = { project: new ObjectID(project) };
+    const query: FilterQuery<TimeboxRecord> = {
+      project: new ObjectID(project),
+      deleted: { $ne: true },
+    };
     if (input.search) {
       const pattern = `(?i)\\b${escapeRegExp(input.search)}`;
       query.name = { $regex: pattern };
@@ -107,7 +110,7 @@ export const mutations = {
 
     const user = context.user.accountName;
     const timebox = await context.timeboxes.findOne({ _id: new ObjectID(id) });
-    if (!timebox) {
+    if (!timebox || timebox.deleted) {
       logger.error('Attempt to update non-existent timebox:', { user, id });
       throw new UserInputError(Errors.NOT_FOUND);
     }
@@ -168,7 +171,10 @@ export const mutations = {
       throw new AuthenticationError(Errors.UNAUTHORIZED);
     }
     const user = context.user.accountName;
-    const timebox = await context.timeboxes.findOne({ _id: new ObjectID(id) });
+    const timebox = await context.timeboxes.findOne({
+      _id: new ObjectID(id),
+      deleted: { $ne: true },
+    });
     if (!timebox) {
       logger.error('Attempt to delete non-existent timebox:', { user, id });
       throw new UserInputError(Errors.NOT_FOUND);
@@ -192,6 +198,7 @@ export const mutations = {
 
     // TODO: Implement
     // We need to remove this timebox from all issues in the project.
+    // And we need to make a change record for this - for each of those issues.
     return null;
   },
 };

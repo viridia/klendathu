@@ -6,7 +6,7 @@ import { Label } from '../../../common/types/graphql';
 import { Button, Chip, Dialog, CheckBox } from 'skyhook-ui';
 import { RelativeDate, AccountName, Card } from '../controls';
 import { Role } from '../../../common/types/json';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/client';
 import gql from 'graphql-tag';
 import { ErrorDisplay } from '../graphql/ErrorDisplay';
 import {

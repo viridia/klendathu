@@ -1,17 +1,17 @@
 import React from 'react';
 import { TimeboxType } from '../../../../common/types/graphql';
-import { Menu, MenuButton, MenuList, MenuItem, MenuDivider } from '../../controls/widgets';
+import { Menu, MenuButton, MenuList, MenuDivider } from '../../controls/widgets';
 import { ProjectEnv } from '../../models';
 import { ObservableSet } from 'mobx';
 import { styled } from '../../style';
 import { SprintName, SprintChip } from '../../controls/SprintName';
 import { timeboxStateColors } from '../../style/milestoneColors';
 import { Observer } from 'mobx-react';
+import { CheckBox } from 'skyhook-ui';
 
 const SelectionButton = styled(MenuButton)`
   padding: 0;
   flex: 1;
-  overflow: hidden;
   position: relative;
 `;
 
@@ -40,18 +40,28 @@ const SelectionList = styled.section`
   display: flex;
   flex: 1;
   flex-direction: row;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: flex-start;
+  overflow: hidden;
   padding: 0 6px;
+`;
+
+const CheckableMenu = styled(CheckBox)`
+  display: flex;
+  font-family: ubuntu;
+  font-size: 1rem;
+  margin: 0 4px;
+  padding: 5px 8px;
+  align-items: center;
 `;
 
 function TimeboxMenuItem(
   { id, value, children }: { id: string, value: ObservableSet, children: React.ReactNode }) {
   return (
-    <MenuItem
+    <CheckableMenu
       key={id}
       checked={value && value.has(id)}
-      onSelect={() => {
+      onChange={() => {
         if (value.has(id)) {
           value.delete(id);
         } else {
@@ -60,7 +70,7 @@ function TimeboxMenuItem(
       }}
     >
       {children}
-    </MenuItem>
+    </CheckableMenu>
   );
 }
 
@@ -69,6 +79,7 @@ const timeboxStateGroups: { [id: string]: string } = {
   pending: 'Pending',
   timeless: 'Timeless',
   concluded: 'Concluded',
+  none: 'None of the above',
 };
 
 interface Props {
@@ -89,15 +100,18 @@ export function TimeboxSetSelector({ type, value, className, noStates }: Props) 
               const selection = Array.from(value.values());
               return (
                 <SelectionList>
-                    {value.size === 0 && <span>Select Sprint&hellip;</span>}
-                    {selection.filter(sp => sp.startsWith('.')).map(id =>
-                      <SprintChip key={id} color={timeboxStateColors[id.slice(1)]}>
-                        {timeboxStateGroups[id.slice(1)]}
-                      </SprintChip>
-                    )}
-                    {selection.filter(sp => !sp.startsWith('.')).map(sp =>
-                      <SprintName key={sp} sprint={sp}></SprintName>)}
-                  </SelectionList>
+                  {value.size === 0 &&
+                    (type === TimeboxType.Sprint
+                      ? <span>Select Sprint&hellip;</span>
+                      : <span>Select Milestone&hellip;</span>)}
+                  {selection.filter(sp => sp.startsWith('.')).map(id =>
+                    <SprintChip key={id} color={timeboxStateColors[id.slice(1)]}>
+                      {timeboxStateGroups[id.slice(1)]}
+                    </SprintChip>
+                  )}
+                  {selection.filter(sp => !sp.startsWith('.')).map(sp =>
+                    <SprintName key={sp} sprint={sp}></SprintName>)}
+                </SelectionList>
               );
             }}
           </Observer>

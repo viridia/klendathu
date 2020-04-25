@@ -1,6 +1,6 @@
 import * as React from 'react';
 import gql from 'graphql-tag';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/client';
 import { PieDatum, ResponsivePie } from '@nivo/pie';
 import { Bucket } from '../../../common/types/graphql';
 import { ProjectEnv } from '../models';
@@ -50,7 +50,7 @@ export function TypesRingChart(_props: {}) {
       <section style={{ width: '100%', height: '320px', position: 'relative' }}>
         <ResponsivePie
           innerRadius={0.5}
-          colorBy={(bk: any) => bk.color}
+          colors={(bk: any) => bk.color}
           padAngle={1}
           cornerRadius={3}
           margin={{

@@ -81,6 +81,9 @@ type Timebox {
 
   "User that created this timebox."
   createdBy: ID!
+
+  "True if this timebox has been deleted (should never appear in query results)"
+  deleted: Boolean
 }
 
 "Query params for searching for issues."

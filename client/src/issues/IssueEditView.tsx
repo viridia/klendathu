@@ -6,7 +6,7 @@ import { ProjectEnv, ViewContext } from '../models';
 import { IssueInput, Issue, Project } from '../../../common/types/graphql';
 import gql from 'graphql-tag';
 import { fragments, ErrorDisplay, updateIssue, newIssue } from '../graphql';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/client';
 import { Query as Q } from '../../../common/types/graphql';
 import { idToIndex } from '../lib/idToIndex';
 

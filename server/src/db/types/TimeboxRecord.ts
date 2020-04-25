@@ -2,7 +2,8 @@ import { TimeboxStatus, TimeboxType } from '../../../../common/types/graphql';
 import { ObjectID } from 'mongodb';
 
 export interface TimeboxRecord {
-  _id?: string;
+  _id?: ObjectID;
+  deleted?: boolean;
   project: ObjectID;
   name: string;
   type: TimeboxType;

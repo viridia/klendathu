@@ -38,7 +38,7 @@ export class CommentEdit extends React.Component<Props> {
           className="comment-entry"
           disabled={disabled}
           value={this.newComment}
-          placeholder="Leave a comment... (markdown format supported)"
+          placeholder={'Leave a comment...\n\n(markdown format and :directives supported)'}
           onChange={this.onChangeCommentBody}
         />
         <Button

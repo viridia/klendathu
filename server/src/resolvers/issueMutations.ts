@@ -6,6 +6,7 @@ import {
   IssueRecord,
   CustomValues,
   CustomData,
+  TimeboxRecord,
 } from '../db/types';
 import {
   NewIssueMutationArgs,
@@ -137,7 +138,7 @@ export const mutations = {
       created: now,
       updated: now,
       watchers: (input.watchers || []).map(id => new ObjectID(id)),
-      milestone: input.milestone,
+      milestone: input.milestone ? new ObjectID(input.milestone) : undefined,
       sprints: (input.sprints || []).map(id => new ObjectID(id)),
       labels: (input.labels || []),
       custom: input.custom ? customArrayToMap(input.custom) : {},
@@ -145,6 +146,7 @@ export const mutations = {
       isPublic: !!input.isPublic,
     };
 
+    // Validate owner
     if (input.owner) {
       if (context.user._id.equals(input.owner)) {
         record.owner = context.user._id;
@@ -162,6 +164,14 @@ export const mutations = {
 
     if (input.comments) {
       scanForDirectives(pr.ownerName, pr.name, pr._id, input.comments, input.linked);
+    }
+
+    // Validate milestone
+    if (input.milestone) {
+      const milestone = await context.timeboxes.findOne({ _id: new ObjectID(input.milestone) });
+      if (!milestone) {
+        throw new UserInputError(Errors.NOT_FOUND, { field: 'owner' });
+      }
     }
 
     const timelineRecordsToInsert: TimelineEntryRecord[] = (input.comments || []).map(comment => ({
@@ -240,7 +250,7 @@ export const mutations = {
     const user = context.user.accountName;
 
     const issueLinks = context.db.collection<IssueLinkRecord>('issueLinks');
-    const issue = await context.issues.findOne({ _id: id });
+    const issue = await context.issues.findOne({ _id: id, deleted: { $ne: true } });
     if (!issue) {
       logger.error('Attempt to update non-existent issue:', { user, id });
       throw new UserInputError(Errors.NOT_FOUND);
@@ -326,10 +336,30 @@ export const mutations = {
       change.at = now;
     }
 
-    if ('milestone' in input && input.milestone !== issue.milestone) {
-      update.$set.milestone = input.milestone;
-      change.milestone = { before: issue.milestone, after: input.milestone };
-      change.at = now;
+    if ('milestone' in input) {
+      let milestoneRecord: TimeboxRecord = null;
+      if (input.milestone) {
+        milestoneRecord = await context.timeboxes.findOne({ _id: new ObjectID(input.milestone) });
+        if (!milestoneRecord) {
+          logger.error(
+            'Attempt to set non-existent milestone:',
+            { user, id, milestone: input.milestone });
+          throw new UserInputError(Errors.NOT_FOUND);
+        }
+      }
+
+      if (milestoneRecord) {
+        if (!milestoneRecord._id.equals(issue.milestone)) {
+          update.$set.milestone = milestoneRecord._id;
+          change.milestone = { before: issue.milestone, after: new ObjectID(input.milestone) };
+          change.at = now;
+        }
+      } else if (!input.milestone) {
+        update.$set.milestone = null;
+        update.$set.milestoneSort = null;
+        change.milestone = { before: issue.milestone, after: null };
+        change.at = now;
+      }
     }
 
     if (!issue.sprints) {
@@ -806,7 +836,7 @@ export const mutations = {
     }
     const user = context.user.accountName;
 
-    const issue = await context.issues.findOne({ _id: id });
+    const issue = await context.issues.findOne({ _id: id, deleted: { $ne: true } });
     if (!issue) {
       logger.error('Attempt to delete non-existent issue:', { user, id });
       throw new UserInputError(Errors.NOT_FOUND);
@@ -822,6 +852,10 @@ export const mutations = {
       logger.error('Insufficient permissions to update project:', { user, id });
       throw new UserInputError(Errors.FORBIDDEN);
     }
+
+    // TODO: Mark as deleted
+    // TODO: Delete all issue links
+    // TODO: Send deletion
 
     return null;
   },

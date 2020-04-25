@@ -157,8 +157,12 @@ export const themeAlt: ThemeInterface = {
       borderColor: dye(0.63, alt),
       textColor: dye(0.1, alt),
     },
+    checkbox: {
+      bgColor: dye(0.9, alt),
+      borderColor: dye(0.7, alt),
+      textColor: dye(0.3, alt),
+    },
     radio: null,
-    checkbox: null,
     roundCorners: true,
   },
 

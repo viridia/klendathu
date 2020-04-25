@@ -23,7 +23,8 @@ import { FilterListView } from '../filters/FilterListView';
 import { Dashboard } from '../dashboard/Dashboard';
 import { useObserver } from 'mobx-react';
 
-import 'react-datepicker/dist/react-datepicker.css'; // tslint:disable-line
+import 'react-datepicker/dist/react-datepicker.css';
+import { ErrorBoundary } from './ErrorBoundary';
 
 const MainPageLayout = styled(Page)`
   display: grid;
@@ -88,44 +89,49 @@ export const MainPage = () => {
               render={
                 p => <ViewContextProvider {...p} env={viewContext}>
                   {() => (
-                    <Switch>
-                      <Route path="/:owner/:name/new" component={IssueCreateView} />
-                      <Route
-                        path="/:owner/:name/clone/:id"
-                        render={props =>
-                          <IssueEditView {...props} clone={true} />}
-                      />
-                      <Route path="/:owner/:name/edit/:id" component={IssueEditView} />
-                      <Route path="/:owner/:name/:id(\d+)" component={IssueDetailsView} />
-                      <Route path="/:owner/:name/issues" exact={true} component={IssueListView} />
-                      <Route
-                        path="/:owner/:name/labels"
-                        exact={true}
-                        render={() => (<LabelListView context={viewContext} />)}
-                      />
-                      <Route
-                        path="/:owner/:name/filters"
-                        exact={true}
-                        render={props => (<FilterListView {...props} env={viewContext} />)}
-                      />
-                      <Route
-                        path="/:owner/:name/timeline"
-                        exact={true}
-                        render={props => (<ProjectTimeline {...props} env={viewContext} />)}
-                      />
-                      <Route path="/:owner/:name/progress" exact={true} component={ProgressView} />
-                      {/* <Route
-                        path="/:owner/:name/dependencies"
-                        exact={true}
-                        render={props => (<DependenciesView {...props} {...models}/>)}
-                      /> */}
-                      <Route
-                        path="/:owner/:name/settings/:tab?"
-                        exact={true}
-                        component={ProjectSettings}
-                      />
-                      <Route component={Dashboard} />
-                    </Switch>
+                    <ErrorBoundary>
+                      <Switch>
+                        <Route path="/:owner/:name/new" component={IssueCreateView} />
+                        <Route
+                          path="/:owner/:name/clone/:id"
+                          render={props =>
+                            <IssueEditView {...props} clone={true} />}
+                        />
+                        <Route path="/:owner/:name/edit/:id" component={IssueEditView} />
+                        <Route path="/:owner/:name/:id(\d+)" component={IssueDetailsView} />
+                        <Route path="/:owner/:name/issues" exact={true} component={IssueListView} />
+                        <Route
+                          path="/:owner/:name/labels"
+                          exact
+                          render={() => (<LabelListView context={viewContext} />)}
+                        />
+                        <Route
+                          path="/:owner/:name/filters"
+                          exact
+                          render={props => (<FilterListView {...props} env={viewContext} />)}
+                        />
+                        <Route
+                          path="/:owner/:name/timeline"
+                          exact
+                          render={props => (<ProjectTimeline {...props} env={viewContext} />)}
+                        />
+                        <Route
+                          path="/:owner/:name/progress"
+                          exact
+                          component={ProgressView} />
+                        {/* <Route
+                          path="/:owner/:name/dependencies"
+                          exact={true}
+                          render={props => (<DependenciesView {...props} {...models}/>)}
+                        /> */}
+                        <Route
+                          path="/:owner/:name/settings/:tab?"
+                          exact
+                          component={ProjectSettings}
+                        />
+                        <Route component={Dashboard} />
+                      </Switch>
+                    </ErrorBoundary>
                   )}
                 </ViewContextProvider>}
             />

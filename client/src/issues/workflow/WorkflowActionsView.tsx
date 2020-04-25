@@ -3,7 +3,7 @@ import * as H from 'history';
 import { Issue } from '../../../../common/types/graphql';
 import gql from 'graphql-tag';
 import { fragments, ErrorDisplay } from '../../graphql';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/client';
 import { ProjectEnv } from '../../models';
 import { WorkflowActions } from './WorkflowActions';
 

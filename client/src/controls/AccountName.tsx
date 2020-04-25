@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/client';
 import { PublicAccount } from '../../../common/types/graphql';
 import { NavLink } from './NavLink';
 import { History as H } from 'history';

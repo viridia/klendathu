@@ -12,6 +12,7 @@ interface Props {
 
 export const SprintChip = styled(Chip)`
   margin-right: 4px;
+  flex-shrink: 0;
 `;
 
 export function SprintName({ sprint, className }: Props) {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/client';
 import gql from 'graphql-tag';
 import { WebhookServiceInfo } from '../../../../../common/types/graphql';
 import { ProjectEnv } from '../../../models';
@@ -27,7 +27,7 @@ interface Props {
 
 export function WebhookServiceSelector({ serviceId, onSelect }: Props) {
   const env = React.useContext(ProjectEnv);
-  const { loading, error, data } = useQuery(WebhookServicesQuery);
+  const { error, data } = useQuery(WebhookServicesQuery);
   if (data && data.webhookServices) {
     const services: WebhookServiceInfo[] = data.webhookServices;
     const selected = services.find(svc => svc.serviceId === serviceId);

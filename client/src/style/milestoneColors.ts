@@ -5,6 +5,7 @@ export const MilestoneColors = {
   TIMELESS: '#dcd',
   PENDING: '#aea',
   CONCLUDED: '#ccf',
+  NONE: '#ede',
 };
 
 export const timeboxStateColors: { [id: string]: string } = {
@@ -12,6 +13,7 @@ export const timeboxStateColors: { [id: string]: string } = {
   timeless: MilestoneColors.TIMELESS,
   pending: MilestoneColors.PENDING,
   concluded: MilestoneColors.CONCLUDED,
+  none: MilestoneColors.NONE,
 };
 
 export const timeboxBgColors: { [id: string]: string } = {

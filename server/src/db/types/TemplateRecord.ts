@@ -88,7 +88,7 @@ export interface WorkflowAction {
 }
 
 /** Issue workflow definition, determines how issues may change state. */
-export interface Workflow { // tslint:disable:export-name
+export interface Workflow {
   /** Name of this workflow. */
   name: string;
 

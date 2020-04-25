@@ -2,7 +2,7 @@ import * as React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { Subscription, Mutation } from '../../../common/types/graphql';
 import { session, ProjectEnv } from '../models';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/client';
 import { fragments, ErrorDisplay } from '../graphql';
 import { IssueDetails } from './IssueDetails';
 import { client } from '../graphql/client';

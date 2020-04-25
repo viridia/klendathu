@@ -35,7 +35,7 @@ export interface TimelineEntryRecord {
   owner?: ObjectIDChange;
   watchers?: ObjectIDListChange;
   labels?: StringListChange;
-  milestone?: StringChange;
+  milestone?: ObjectIDChange;
   sprints?: ObjectIDListChange;
   attachments?: {
     added?: Attachment[];

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { ProjectEnv } from '../../../models';
 import gql from 'graphql-tag';
 import { fragments, ErrorDisplay } from '../../../graphql';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/client';
 import { Webhook } from '../../../../../common/types/graphql';
 import { EmptyList, TableHead, Table, TableBody, ActionButtonCell } from '../../../layout';
 import { RelativeDate } from '../../../controls';

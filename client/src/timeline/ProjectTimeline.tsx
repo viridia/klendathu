@@ -2,7 +2,7 @@ import * as React from 'react';
 import { TimelineEntry, Subscription } from '../../../common/types/graphql';
 import { TimelineEntryDisplay } from '../timeline';
 import { fragments, ErrorDisplay } from '../graphql';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/client';
 import { session, ViewContext } from '../models';
 import { isSameDay } from 'date-fns';
 import { TimeLabel } from './TimeLabel';

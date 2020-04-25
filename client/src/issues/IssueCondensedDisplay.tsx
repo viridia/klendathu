@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { NavLink } from 'react-router-dom';
 import { ProjectEnv } from '../models';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/client';
 import { Query as Q } from '../../../common/types/graphql';
 import gql from 'graphql-tag';
 import { fragments } from '../graphql';

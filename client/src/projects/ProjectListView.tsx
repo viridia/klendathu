@@ -9,7 +9,7 @@ import {
   RoleName,
   NavLink,
 } from '../controls';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/client';
 import { ErrorDisplay } from '../graphql/ErrorDisplay';
 import { Project } from '../../../common/types/graphql';
 import { EmptyList } from '../layout';

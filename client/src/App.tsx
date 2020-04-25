@@ -5,11 +5,11 @@ import { Normalize } from 'styled-normalize';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { AccountPage } from './account/AccountPage';
 import { MainPage } from './main/MainPage';
-import { ApolloProvider } from '@apollo/react-hooks';
+import { ApolloProvider } from '@apollo/client';
 import { client } from './graphql/client';
 import { observer } from 'mobx-react';
 
-import 'react-toastify/dist/ReactToastify.css'; // tslint:disable-line
+import 'react-toastify/dist/ReactToastify.css';
 
 @observer
 class App extends React.Component<{}> {

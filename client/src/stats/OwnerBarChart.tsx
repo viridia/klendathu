@@ -1,6 +1,6 @@
 import * as React from 'react';
 import gql from 'graphql-tag';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/client';
 import { Bucket } from '../../../common/types/graphql';
 import { ProjectEnv } from '../models';
 import { BarDatum, ResponsiveBar } from '@nivo/bar';

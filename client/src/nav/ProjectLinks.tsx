@@ -4,7 +4,7 @@ import { QueryLink } from '../controls';
 import styled from 'styled-components';
 import gql from 'graphql-tag';
 import { fragments } from '../graphql';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/client';
 
 const ProjectsQuery = gql`
   query ProjectsQuery {
