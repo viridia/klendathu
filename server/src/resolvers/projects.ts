@@ -18,7 +18,7 @@ import { Context } from './Context';
 import { UserInputError, AuthenticationError } from 'apollo-server-core';
 import { Errors, Role } from '../../../common/types/json';
 import { logger } from '../logger';
-import { ObjectID } from 'mongodb';
+import { ObjectID, FilterQuery } from 'mongodb';
 import { Channels, RecordChange, publish, getPubSub } from './pubsub';
 import { withFilter } from 'graphql-subscriptions';
 import { getProjectRole, getProjectAndRole } from '../db/role';
@@ -39,9 +39,9 @@ interface ProjectAndAccount {
 export const queries = {
   async project(_: any, args: ProjectQueryArgs, context: Context): Promise<AugmentedProjectRecord> {
     const user = context.user ? context.user.accountName : null;
-    const query = args.id
+    const query: FilterQuery<ProjectRecord> = args.id
         ? { _id: new ObjectID(args.id) }
-        : { owner: args.owner, name: args.name };
+        : { owner: new ObjectID(args.owner), name: args.name };
 
     // Look up project
     const project = await context.projects.findOne<ProjectRecord>(query);

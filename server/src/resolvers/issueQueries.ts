@@ -1,5 +1,5 @@
 import { Context } from './Context';
-import { IssueRecord } from '../db/types';
+import { IssueRecord, TimeboxRecord } from '../db/types';
 import {
   IssueQueryArgs,
   IssuesQueryArgs,
@@ -9,12 +9,13 @@ import {
   Relation,
   ReachableIssuesQueryArgs,
   TimeboxType,
+  TimeboxStatus,
 } from '../../../common/types/graphql';
 import { UserInputError, AuthenticationError } from 'apollo-server-core';
 import { Errors, Role } from '../../../common/types/json';
 import { getProjectAndRole } from '../db/role';
 import { logger } from '../logger';
-import { ObjectID } from 'mongodb';
+import { ObjectID, FilterQuery } from 'mongodb';
 import { escapeRegExp } from '../db/helpers';
 import { stringPredicate } from './helpers';
 import { MultiMap } from '../../../common/lib/MultiMap';
@@ -152,9 +153,9 @@ export const queries = {
       const searchForNone = query.milestoneStatus.indexOf('NONE') >= 0;
 
       // Fetch milestones in that state.
-      const timeboxQuery = {
+      const timeboxQuery: FilterQuery<TimeboxRecord> = {
         project: new ObjectID(query.project),
-        status: { $in: query.milestoneStatus.filter(sp => sp !== 'NONE') },
+        status: { $in: query.milestoneStatus.filter(sp => sp !== 'NONE') as TimeboxStatus[] },
         type: TimeboxType.Milestone,
       };
 
@@ -180,9 +181,9 @@ export const queries = {
       const searchForNone = query.sprintStatus.indexOf('NONE') >= 0;
 
       // Fetch sprints in that state.
-      const timeboxQuery = {
+      const timeboxQuery: FilterQuery<TimeboxRecord> = {
         project: new ObjectID(query.project),
-        status: { $in: query.sprintStatus.filter(sp => sp !== 'NONE') },
+        status: { $in: query.sprintStatus.filter(sp => sp !== 'NONE') as TimeboxStatus[] },
         type: TimeboxType.Sprint,
       };
 

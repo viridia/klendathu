@@ -36,9 +36,16 @@ export async function createTestUserAccount(
 }
 
 export async function constructTestServer(): Promise<TestServer> {
+  jest.setTimeout(30 * 1000);
+  // Override the normal DB name and auth params. We don't want to accidentally damage the
+  // real database because of a test!
   process.env.DB_NAME = 'klendathu-test';
-  process.env.DB_USER = 'klendathu-admin';
-  process.env.DB_PASSWORD = 'example';
+  if (!process.env.DB_USER) {
+    process.env.DB_USER = 'klendathu-admin';
+  }
+  if (!process.env.DB_PASSWORD) {
+    process.env.DB_USER = 'example';
+  }
   const client = await createClient();
   const db = client.db(process.env.DB_NAME);
   const dflores = await createTestUserAccount(db, 'dflores', 'Dizzy Flores');

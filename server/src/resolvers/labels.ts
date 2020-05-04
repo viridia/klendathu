@@ -76,7 +76,7 @@ export const mutations = {
       updated: now,
     };
 
-    const result = await context.labels.insertOne(record);
+    const result = await context.labels.insertOne(record as any);
     publish(`${Channels.LABEL_CHANGE}.${pr._id.toHexString()}`, {
       action: ChangeAction.Added,
       value: result.ops[0],

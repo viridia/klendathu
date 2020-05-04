@@ -24,7 +24,7 @@ import { UserInputError, AuthenticationError } from 'apollo-server-core';
 import { Errors, Role, inverseRelations } from '../../../common/types/json';
 import { getProjectAndRole } from '../db/role';
 import { logger } from '../logger';
-import { ObjectID, UpdateQuery } from 'mongodb';
+import { ObjectID } from 'mongodb';
 import { Channels, publish } from './pubsub';
 import { Attachment } from '../db/types/IssueRecord';
 import { escapeRegExp } from '../db/helpers';
@@ -366,18 +366,18 @@ export const mutations = {
       issue.sprints = [];
     }
     if ('sprints' in input) {
-      const issueSprints = issue.sprints.map(id => id.toHexString())
+      const issueSprints = issue.sprints.map(iid => iid.toHexString());
       const sprintsPrev = new Set(issueSprints);    // Current sprints
       const sprintsNext = new Set(input.sprints);    // Newly-added items
       input.sprints.forEach(sprint => sprintsPrev.delete(sprint));
       if (issue.sprints) {
         issueSprints.forEach(sprint => sprintsNext.delete(sprint));
       }
-      update.$set.sprints = input.sprints.map(id => new ObjectID(id));
+      update.$set.sprints = input.sprints.map(iid => new ObjectID(iid));
       if (sprintsNext.size > 0 || sprintsPrev.size > 0) {
         change.sprints = {
-          added: Array.from(sprintsNext).map(id => new ObjectID(id)),
-          removed: Array.from(sprintsPrev).map(id => new ObjectID(id)),
+          added: Array.from(sprintsNext).map(iid => new ObjectID(iid)),
+          removed: Array.from(sprintsPrev).map(iid => new ObjectID(iid)),
         };
         change.at = now;
       }
@@ -698,42 +698,40 @@ export const mutations = {
         const recent = recentChanges[0];
         // Cannot coalesce comment bodies
         if (!(recent.commentBody && change.commentBody)) {
-          const updateRecent: UpdateQuery<TimelineEntryRecord> = {
-            $set: { at: change.at },
-          };
+          const recordChanges: Partial<TimelineEntryRecord> = { at: change.at };
           // Merge property changes.
           if (change.type) {
-            updateRecent.$set.type = {
+            recordChanges.type = {
               before: recent.type ? recent.type.before : change.type.before,
               after: change.type.after,
             };
           }
           if (change.state) {
-            updateRecent.$set.state = {
+            recordChanges.state = {
               before: recent.state ? recent.state.before : change.state.before,
               after: change.state.after,
             };
           }
           if (change.summary) {
-            updateRecent.$set.summary = {
+            recordChanges.summary = {
               before: recent.summary ? recent.summary.before : change.summary.before,
               after: change.summary.after,
             };
           }
           if (change.description) {
-            updateRecent.$set.description = {
+            recordChanges.description = {
               before: recent.description ? recent.description.before : change.description.before,
               after: change.description.after,
             };
           }
           if (change.owner) {
-            updateRecent.$set.owner = {
+            recordChanges.owner = {
               before: recent.owner ? recent.owner.before : change.owner.before,
               after: change.owner.after,
             };
           }
           if (change.watchers) {
-            updateRecent.$set.watchers = {
+            recordChanges.watchers = {
               added: [
                 ...(recent.watchers ? recent.watchers.added : []),
                 ...change.watchers.added,
@@ -745,19 +743,19 @@ export const mutations = {
             };
           }
           if (change.labels) {
-            updateRecent.$set.labels = {
+            recordChanges.labels = {
               added: [...(recent.labels ? recent.labels.added : []), ...change.labels.added],
               removed: [...(recent.labels ? recent.labels.removed : []), ...change.labels.removed],
             };
           }
           if (change.milestone) {
-            updateRecent.$set.milestone = {
+            recordChanges.milestone = {
               before: recent.milestone ? recent.milestone.before : change.milestone.before,
               after: change.milestone.after,
             };
           }
           if (change.sprints) {
-            updateRecent.$set.sprints = {
+            recordChanges.sprints = {
               added: [
                 ...(recent.sprints ? recent.sprints.added : []),
                 ...change.sprints.added,
@@ -770,11 +768,11 @@ export const mutations = {
           }
 
           if (change.custom) {
-            updateRecent.$set.custom = [...(recent.custom || []), ...change.custom];
+            recordChanges.custom = [...(recent.custom || []), ...change.custom];
           }
 
           if (change.linked) {
-            updateRecent.$set.linked = [...(recent.linked || []), ...change.linked];
+            recordChanges.linked = [...(recent.linked || []), ...change.linked];
           }
 
           // TODO:
@@ -787,7 +785,7 @@ export const mutations = {
 
           const chgRes = await context.timeline.findOneAndUpdate(
             { _id: recent._id },
-            updateRecent,
+            { $set: recordChanges },
             {
               returnOriginal: false,
             });

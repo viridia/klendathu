@@ -9,7 +9,7 @@ import {
   TimeboxChangedSubscriptionArgs,
 } from '../../../common/types/graphql';
 import { escapeRegExp } from '../db/helpers';
-import { ObjectID, UpdateQuery, FilterQuery } from 'mongodb';
+import { ObjectID, FilterQuery } from 'mongodb';
 import { AuthenticationError, UserInputError } from 'apollo-server-core';
 import { Errors, Role } from '../../../common/types/json';
 import { logger } from '../logger';
@@ -42,10 +42,10 @@ export const queries = {
       query.status = { $in: input.status };
     }
     if (input.dateRangeStart) {
-      query.endDate = { $le: input.dateRangeStart };
+      query.endDate = { $lte: input.dateRangeStart };
     }
     if (input.dateRangeEnd) {
-      query.startDate = { $ge: input.dateRangeEnd };
+      query.startDate = { $gte: input.dateRangeEnd };
     }
     const results = await context.timeboxes.find(query).sort({ startDate: 1 }).toArray();
     return {
@@ -127,33 +127,31 @@ export const mutations = {
     }
 
     const now = new Date();
-    const record: UpdateQuery<TimeboxRecord> = {
-      $set: { updated: now },
-    };
+    const changes: Partial<TimeboxRecord> = { updated: now };
 
     if ('name' in input) {
-      record.$set.name = input.name;
+      changes.name = input.name;
     }
 
     if ('description' in input) {
-      record.$set.description = input.description;
+      changes.description = input.description;
     }
 
     if ('status' in input) {
-      record.$set.status = input.status;
+      changes.status = input.status;
     }
 
     if ('startDate' in input) {
-      record.$set.startDate = input.startDate;
+      changes.startDate = input.startDate;
     }
 
     if ('endDate' in input) {
-      record.$set.endDate = input.endDate;
+      changes.endDate = input.endDate;
     }
 
     const result = await context.timeboxes.findOneAndUpdate(
       { _id: timebox._id },
-      record,
+      { $set: changes },
       { returnOriginal: false }
     );
     publish(Channels.TIMEBOX_CHANGE, {

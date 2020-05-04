@@ -1,6 +1,7 @@
 import { MongoClient } from 'mongodb';
 import { logger } from '../logger';
 import { ensureCollections } from './helpers';
+import { readFileSync } from 'fs';
 
 function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -8,23 +9,30 @@ function sleep(ms: number) {
 
 async function waitForConnection(): Promise<MongoClient> {
   logger.debug(`Connecting to ${process.env.DB_HOST}.`);
-  let retries = 0;
-  let error: any = null;
-  while (retries < 4) {
-    try {
-      return await MongoClient.connect(process.env.DB_HOST, {
-        useNewUrlParser: true,
-        auth: { user: process.env.DB_USER, password: process.env.DB_PASSWORD }
-      });
-    } catch (e) {
-      error = e;
-      retries += 1;
-      logger.warn('Connection to MongoDB failed, retrying.');
-      await sleep(2000);
-    }
+  const sslValidate = Boolean(process.env.DB_CA);
+  const sslCA = sslValidate ? [readFileSync(process.env.DB_CA)] : [];
+  try {
+    const client = await MongoClient.connect(process.env.DB_HOST, {
+      appname: 'Klendathu',
+      useNewUrlParser: true,
+      sslValidate,
+      sslCA,
+      auth: {
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+      },
+      numberOfRetries: 4,
+      connectTimeoutMS: 1000,
+      loggerLevel: 'debug',
+    });
+    logger.debug('Database connection successful.');
+    return client;
+  } catch (e) {
+    logger.warn('Connection to MongoDB failed, retrying.');
+    logger.error(e);
   }
-  logger.error(`Connection to MongoDB failed after ${retries} attempts, aborting.`);
-  logger.error(error);
+  logger.error('Connection to MongoDB failed, aborting.');
+  await sleep(100); // Give logger time to flush
   process.exit(-1);
 }
 
