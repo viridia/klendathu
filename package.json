@@ -57,7 +57,7 @@
     "http-proxy-middleware": "^1.0.3",
     "ioredis": "^4.9.0",
     "jwt-simple": "^0.5.6",
-    "marked": "^0.6.2",
+    "marked": "^4.0.10",
     "mobx": "^5.15.4",
     "mobx-react": "^6.1.8",
     "mongodb": "^3.2.3",
