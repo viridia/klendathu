@@ -142,7 +142,7 @@
     "jest-enzyme": "^7.1.2",
     "jest-junit": "^6.4.0",
     "jest-transform-stub": "^2.0.0",
-    "jsdom": "^13.2.0",
+    "jsdom": "^16.5.0",
     "ts-jest": "^25.2.1"
   },
   "alias": {
